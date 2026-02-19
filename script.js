@@ -310,3 +310,103 @@ document.querySelectorAll('.project-card').forEach(card => {
         glow.style.top = `${y - rect.height}px`;
     });
 });
+
+
+// ===== Neural Network Canvas Animation =====
+const nnCanvas = document.getElementById('nnCanvas');
+if (nnCanvas) {
+    const nnCtx = nnCanvas.getContext('2d');
+    let nnFrame = 0;
+
+    function resizeNN() {
+        nnCanvas.width = nnCanvas.parentElement.offsetWidth;
+        nnCanvas.height = 350;
+    }
+    resizeNN();
+    window.addEventListener('resize', resizeNN);
+
+    const layers = [4, 6, 8, 10, 8, 6, 4, 2];
+
+    function drawNN() {
+        nnCtx.clearRect(0, 0, nnCanvas.width, nnCanvas.height);
+        nnFrame++;
+
+        const padding = 60;
+        const layerSpacing = (nnCanvas.width - padding * 2) / (layers.length - 1);
+        const nodePositions = [];
+
+        // Calculate positions
+        layers.forEach((count, li) => {
+            const x = padding + li * layerSpacing;
+            const nodeSpacing = (nnCanvas.height - padding * 2) / (count + 1);
+            const layerNodes = [];
+            for (let ni = 0; ni < count; ni++) {
+                layerNodes.push({ x, y: padding + (ni + 1) * nodeSpacing });
+            }
+            nodePositions.push(layerNodes);
+        });
+
+        // Draw connections
+        for (let li = 0; li < nodePositions.length - 1; li++) {
+            for (let ni = 0; ni < nodePositions[li].length; ni++) {
+                for (let nj = 0; nj < nodePositions[li + 1].length; nj++) {
+                    const from = nodePositions[li][ni];
+                    const to = nodePositions[li + 1][nj];
+                    const pulse = Math.sin(nnFrame * 0.02 + li * 0.5 + ni * 0.3 + nj * 0.2) * 0.5 + 0.5;
+                    nnCtx.beginPath();
+                    nnCtx.moveTo(from.x, from.y);
+                    nnCtx.lineTo(to.x, to.y);
+                    nnCtx.strokeStyle = `rgba(0, 240, 255, ${0.03 + pulse * 0.08})`;
+                    nnCtx.lineWidth = 0.5 + pulse * 0.5;
+                    nnCtx.stroke();
+                }
+            }
+        }
+
+        // Draw nodes
+        nodePositions.forEach((layer, li) => {
+            layer.forEach((node, ni) => {
+                const pulse = Math.sin(nnFrame * 0.03 + li + ni * 0.5) * 0.5 + 0.5;
+                const r = 3 + pulse * 3;
+
+                // Glow
+                const grad = nnCtx.createRadialGradient(node.x, node.y, 0, node.x, node.y, r * 4);
+                grad.addColorStop(0, `rgba(0, 240, 255, ${0.2 + pulse * 0.3})`);
+                grad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+                nnCtx.fillStyle = grad;
+                nnCtx.beginPath();
+                nnCtx.arc(node.x, node.y, r * 4, 0, Math.PI * 2);
+                nnCtx.fill();
+
+                // Node
+                nnCtx.beginPath();
+                nnCtx.arc(node.x, node.y, r, 0, Math.PI * 2);
+                nnCtx.fillStyle = `rgba(0, 240, 255, ${0.6 + pulse * 0.4})`;
+                nnCtx.fill();
+            });
+        });
+
+        // Draw signal pulse traveling through the network
+        const signalLayer = (nnFrame * 0.015) % layers.length;
+        const layerIdx = Math.floor(signalLayer);
+        const progress = signalLayer - layerIdx;
+        if (layerIdx < nodePositions.length - 1) {
+            const fromLayer = nodePositions[layerIdx];
+            const toLayer = nodePositions[layerIdx + 1];
+            const fromNode = fromLayer[Math.floor(fromLayer.length / 2)];
+            const toNode = toLayer[Math.floor(toLayer.length / 2)];
+            const sx = fromNode.x + (toNode.x - fromNode.x) * progress;
+            const sy = fromNode.y + (toNode.y - fromNode.y) * progress;
+            const sGrad = nnCtx.createRadialGradient(sx, sy, 0, sx, sy, 20);
+            sGrad.addColorStop(0, 'rgba(176, 102, 255, 0.8)');
+            sGrad.addColorStop(1, 'rgba(176, 102, 255, 0)');
+            nnCtx.fillStyle = sGrad;
+            nnCtx.beginPath();
+            nnCtx.arc(sx, sy, 20, 0, Math.PI * 2);
+            nnCtx.fill();
+        }
+
+        requestAnimationFrame(drawNN);
+    }
+    drawNN();
+}
