@@ -539,6 +539,123 @@ body {
     justify-content: center;
 }
 
+/* Hero Logo */
+.hero-logo {
+    margin-bottom: 20px;
+    animation: fadeInUp 0.8s ease-out both;
+}
+
+.logo-svg {
+    width: 220px;
+    height: 60px;
+    display: block;
+}
+
+.logo-tagline {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+}
+
+/* Cert card as link */
+a.cert-card {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+a.cert-card:hover {
+    border-color: var(--cyan);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 240, 255, 0.15);
+}
+
+.cert-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.cert-link-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--cyan);
+    margin-top: 8px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: var(--transition);
+}
+
+a.cert-card:hover .cert-link-label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Skill category icon as SVG */
+.skill-cat-icon svg {
+    color: var(--cyan);
+}
+
+.btn-linkedin {
+    background: linear-gradient(135deg, #0077b5, #00a0dc);
+    color: #fff;
+}
+
+.btn-linkedin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 119, 181, 0.4);
+}
+
+/* Neural Network Section */
+.nn-section {
+    position: relative;
+    padding: 100px 0;
+    z-index: 1;
+    overflow: hidden;
+    border-top: 1px solid var(--border-glass);
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.nn-section canvas {
+    width: 100%;
+    height: 350px;
+    display: block;
+}
+
+.nn-section .nn-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.nn-overlay h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+}
+
+.nn-overlay p {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
 /* Hero Stats */
 .hero-stats {
     display: flex;
@@ -1759,4 +1876,169 @@ a.contact-link:hover {
     .stat {
         text-align: left;
     }
+}
+/* ===== AI Visuals Section ===== */
+.section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-top: 8px;
+    font-family: var(--font-mono);
+}
+
+.ai-visuals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+}
+
+@media (max-width: 900px) {
+    .ai-visuals-grid { grid-template-columns: 1fr; }
+}
+
+.ai-diagram-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    backdrop-filter: blur(12px);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-diagram-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gradient-main);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.ai-diagram-card:hover::before { opacity: 1; }
+.ai-diagram-card:hover {
+    border-color: var(--cyan);
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0,240,255,0.1);
+}
+
+.diagram-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.diagram-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.diagram-status {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.diagram-status.live {
+    background: rgba(0,255,136,0.1);
+    color: #00ff88;
+    border: 1px solid rgba(0,255,136,0.3);
+}
+
+.diagram-status.active {
+    background: rgba(0,240,255,0.1);
+    color: var(--cyan);
+    border: 1px solid rgba(0,240,255,0.3);
+}
+
+.diagram-status.research {
+    background: rgba(176,102,255,0.1);
+    color: var(--purple);
+    border: 1px solid rgba(176,102,255,0.3);
+}
+
+.diagram-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.diagram-desc {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.diagram-container {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.diagram-container svg {
+    width: 100%;
+    height: auto;
+}
+
+.diagram-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.diagram-tags span {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    background: var(--cyan-dim);
+    border: 1px solid rgba(0,240,255,0.2);
+    border-radius: 4px;
+    color: var(--cyan);
+}
+
+/* Radar chart legend */
+.radar-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 130px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-metric {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    padding: 1px 0;
+    padding-left: 18px;
 }
