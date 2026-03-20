@@ -2,6 +2,16 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import dynamic from "next/dynamic";
+
+const GeometricAvatarCanvas = dynamic(() => import("./GeometricAvatarCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-dark-900/30 rounded-2xl animate-pulse flex items-center justify-center">
+      <span className="text-xs font-mono text-dark-600">Loading 3D...</span>
+    </div>
+  ),
+});
 
 const highlights = [
   {
@@ -88,22 +98,15 @@ export default function About() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-2 space-y-6"
           >
-            {/* Photo placeholder with emerald border */}
-            <div className="relative w-64 h-64 mx-auto lg:mx-0 rounded-2xl overflow-hidden border-2 border-emerald-500/20 group">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-dark-900 flex items-center justify-center">
-                <div className="text-center space-y-2">
-                  <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-                    <span className="font-display text-2xl font-bold text-emerald-400">
-                      ZQ
-                    </span>
-                  </div>
-                  <p className="text-xs font-mono text-dark-500">
-                    Photo coming soon
-                  </p>
-                </div>
+            {/* 3D Geometric Avatar */}
+            <div className="scene-reveal relative w-72 h-80 mx-auto lg:mx-0 rounded-2xl overflow-hidden border border-emerald-500/10 group">
+              <GeometricAvatarCanvas />
+              {/* Label overlay */}
+              <div className="absolute bottom-3 left-0 right-0 text-center">
+                <span className="font-mono text-[10px] text-dark-600 tracking-wider uppercase">
+                  Interactive 3D
+                </span>
               </div>
-              {/* Glow effect on hover */}
-              <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
 
             {/* Quick info */}
