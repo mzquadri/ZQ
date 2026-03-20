@@ -19,104 +19,222 @@ themeToggle.addEventListener('click', () => {
 });
 
 
-// ===== Particle System =====
-const canvas = document.getElementById('particles');
-const ctx = canvas.getContext('2d');
-let particles = [];
-let mouse = { x: null, y: null };
+// ===== Three.js 3D Particle Network =====
+(function() {
+    const container = document.getElementById('particles');
+    if (!container || typeof THREE === 'undefined') return;
 
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 30;
 
-document.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-});
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
 
-class Particle {
-    constructor() {
-        this.reset();
-    }
-    reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.4;
-        this.speedY = (Math.random() - 0.5) * 0.4;
-        this.opacity = Math.random() * 0.5 + 0.1;
-        this.color = Math.random() > 0.5 ? '0, 240, 255' : '176, 102, 255';
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        // Mouse interaction
-        if (mouse.x !== null) {
-            const dx = mouse.x - this.x;
-            const dy = mouse.y - this.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 120) {
-                const force = (120 - dist) / 120;
-                this.x -= (dx / dist) * force * 1.5;
-                this.y -= (dy / dist) * force * 1.5;
-            }
-        }
-
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-            this.reset();
-        }
-    }
-    draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
-        ctx.fill();
-    }
-}
-
-function initParticles() {
-    const count = Math.min(Math.floor((canvas.width * canvas.height) / 12000), 120);
-    particles = [];
-    for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
-    }
-}
-initParticles();
-window.addEventListener('resize', initParticles);
-
-function drawConnections() {
-    for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 140) {
-                const opacity = (1 - dist / 140) * 0.15;
-                ctx.beginPath();
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
-                ctx.lineWidth = 0.5;
-                ctx.stroke();
-            }
-        }
-    }
-}
-
-function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-        p.update();
-        p.draw();
+    // Mouse tracking
+    const mouse = { x: 0, y: 0, target: { x: 0, y: 0 } };
+    document.addEventListener('mousemove', e => {
+        mouse.target.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.target.y = -(e.clientY / window.innerHeight) * 2 + 1;
     });
-    drawConnections();
-    requestAnimationFrame(animateParticles);
-}
-animateParticles();
+
+    // --- Particles ---
+    const PARTICLE_COUNT = 120;
+    const SPREAD = 40;
+    const CONNECTION_DIST = 8;
+    const positions = [];
+    const velocities = [];
+    const sizes = [];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        positions.push(
+            (Math.random() - 0.5) * SPREAD,
+            (Math.random() - 0.5) * SPREAD,
+            (Math.random() - 0.5) * SPREAD * 0.6
+        );
+        velocities.push(
+            (Math.random() - 0.5) * 0.01,
+            (Math.random() - 0.5) * 0.01,
+            (Math.random() - 0.5) * 0.005
+        );
+        sizes.push(Math.random() * 3 + 1.5);
+    }
+
+    const particleGeo = new THREE.BufferGeometry();
+    const posAttr = new THREE.Float32BufferAttribute(positions, 3);
+    particleGeo.setAttribute('position', posAttr);
+    particleGeo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+    const particleMat = new THREE.ShaderMaterial({
+        uniforms: {
+            uColor: { value: new THREE.Color(0x00f0ff) },
+            uTime: { value: 0 }
+        },
+        vertexShader: [
+            'attribute float size;',
+            'uniform float uTime;',
+            'varying float vAlpha;',
+            'void main() {',
+            '    vec4 mvPos = modelViewMatrix * vec4(position, 1.0);',
+            '    gl_PointSize = size * (8.0 / -mvPos.z);',
+            '    gl_Position = projectionMatrix * mvPos;',
+            '    vAlpha = 0.4 + 0.3 * sin(uTime * 1.5 + position.x * 0.5 + position.y * 0.3);',
+            '}'
+        ].join('\n'),
+        fragmentShader: [
+            'uniform vec3 uColor;',
+            'varying float vAlpha;',
+            'void main() {',
+            '    float d = distance(gl_PointCoord, vec2(0.5));',
+            '    if (d > 0.5) discard;',
+            '    float glow = 1.0 - smoothstep(0.0, 0.5, d);',
+            '    gl_FragColor = vec4(uColor, glow * vAlpha);',
+            '}'
+        ].join('\n'),
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    });
+
+    const particleSystem = new THREE.Points(particleGeo, particleMat);
+    scene.add(particleSystem);
+
+    // --- Connection lines ---
+    const MAX_CONNECTIONS = 400;
+    const linePositions = new Float32Array(MAX_CONNECTIONS * 6);
+    const lineColors = new Float32Array(MAX_CONNECTIONS * 6);
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    lineGeo.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
+    lineGeo.setDrawRange(0, 0);
+
+    const lineMat = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.35,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+    const linesMesh = new THREE.LineSegments(lineGeo, lineMat);
+    scene.add(linesMesh);
+
+    // --- Decorative wireframe shapes ---
+    const icoGeo = new THREE.IcosahedronGeometry(3.5, 1);
+    const icoMat = new THREE.MeshBasicMaterial({ color: 0xb066ff, wireframe: true, transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending });
+    const ico = new THREE.Mesh(icoGeo, icoMat);
+    ico.position.set(10, 5, -8);
+    scene.add(ico);
+
+    const torusGeo = new THREE.TorusGeometry(2.5, 0.3, 8, 32);
+    const torusMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.06, blending: THREE.AdditiveBlending });
+    const torus = new THREE.Mesh(torusGeo, torusMat);
+    torus.position.set(-12, -6, -5);
+    scene.add(torus);
+
+    const octaGeo = new THREE.OctahedronGeometry(2, 0);
+    const octaMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.07, blending: THREE.AdditiveBlending });
+    const octa = new THREE.Mesh(octaGeo, octaMat);
+    octa.position.set(-8, 8, -10);
+    scene.add(octa);
+
+    // --- Resize ---
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // --- Animate ---
+    let time = 0;
+    const cyanColor = new THREE.Color(0x00f0ff);
+    const purpleColor = new THREE.Color(0xb066ff);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        time += 0.016;
+
+        mouse.x += (mouse.target.x - mouse.x) * 0.05;
+        mouse.y += (mouse.target.y - mouse.y) * 0.05;
+
+        camera.position.x += (mouse.x * 3 - camera.position.x) * 0.02;
+        camera.position.y += (mouse.y * 2 - camera.position.y) * 0.02;
+        camera.lookAt(0, 0, 0);
+
+        // Update particles
+        const pos = posAttr.array;
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const i3 = i * 3;
+            pos[i3]     += velocities[i3];
+            pos[i3 + 1] += velocities[i3 + 1];
+            pos[i3 + 2] += velocities[i3 + 2];
+            const half = SPREAD / 2;
+            if (Math.abs(pos[i3])     > half) velocities[i3]     *= -1;
+            if (Math.abs(pos[i3 + 1]) > half) velocities[i3 + 1] *= -1;
+            if (Math.abs(pos[i3 + 2]) > half * 0.6) velocities[i3 + 2] *= -1;
+            pos[i3 + 1] += Math.sin(time * 0.8 + pos[i3] * 0.1) * 0.003;
+        }
+        posAttr.needsUpdate = true;
+
+        // Update connections
+        let connIdx = 0;
+        for (let i = 0; i < PARTICLE_COUNT && connIdx < MAX_CONNECTIONS; i++) {
+            for (let j = i + 1; j < PARTICLE_COUNT && connIdx < MAX_CONNECTIONS; j++) {
+                const i3 = i * 3, j3 = j * 3;
+                const dx = pos[i3] - pos[j3];
+                const dy = pos[i3+1] - pos[j3+1];
+                const dz = pos[i3+2] - pos[j3+2];
+                const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                if (dist < CONNECTION_DIST) {
+                    const ci = connIdx * 6;
+                    linePositions[ci]   = pos[i3];
+                    linePositions[ci+1] = pos[i3+1];
+                    linePositions[ci+2] = pos[i3+2];
+                    linePositions[ci+3] = pos[j3];
+                    linePositions[ci+4] = pos[j3+1];
+                    linePositions[ci+5] = pos[j3+2];
+                    const alpha = 1 - dist / CONNECTION_DIST;
+                    const mix = (pos[i3] + SPREAD/2) / SPREAD;
+                    const col = cyanColor.clone().lerp(purpleColor, mix);
+                    lineColors[ci]   = col.r * alpha;
+                    lineColors[ci+1] = col.g * alpha;
+                    lineColors[ci+2] = col.b * alpha;
+                    lineColors[ci+3] = col.r * alpha;
+                    lineColors[ci+4] = col.g * alpha;
+                    lineColors[ci+5] = col.b * alpha;
+                    connIdx++;
+                }
+            }
+        }
+        lineGeo.setDrawRange(0, connIdx * 2);
+        lineGeo.attributes.position.needsUpdate = true;
+        lineGeo.attributes.color.needsUpdate = true;
+
+        // Rotate shapes
+        ico.rotation.x += 0.003; ico.rotation.y += 0.005;
+        torus.rotation.x += 0.004; torus.rotation.z += 0.006;
+        octa.rotation.y += 0.007; octa.rotation.z += 0.003;
+
+        particleMat.uniforms.uTime.value = time;
+
+        // Theme-aware colors
+        const isLight = htmlEl.getAttribute('data-theme') === 'light';
+        if (!isLight) {
+            particleMat.uniforms.uColor.value.set(0x00f0ff);
+            icoMat.color.set(0xb066ff); torusMat.color.set(0x00f0ff); octaMat.color.set(0x00f0ff);
+            lineMat.opacity = 0.35;
+        } else {
+            particleMat.uniforms.uColor.value.set(0x0070d2);
+            icoMat.color.set(0x6d28d9); torusMat.color.set(0x0070d2); octaMat.color.set(0x0070d2);
+            lineMat.opacity = 0.25;
+        }
+
+        renderer.render(scene, camera);
+    }
+    animate();
+})();
 
 
 // ===== Navigation =====
