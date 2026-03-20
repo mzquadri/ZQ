@@ -2,6 +2,16 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import dynamic from "next/dynamic";
+
+const DataSphereCanvas = dynamic(() => import("./DataSphereCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-dark-900/30 rounded-2xl animate-pulse flex items-center justify-center">
+      <span className="text-xs font-mono text-dark-600">Loading 3D...</span>
+    </div>
+  ),
+});
 
 interface SkillCategory {
   name: string;
@@ -104,6 +114,21 @@ export default function Skills() {
             analytics, and infrastructure.
           </p>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-transparent rounded-full mt-4" />
+        </motion.div>
+
+        {/* 3D Data Sphere */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 1, delay: 0.1 }}
+          className="scene-reveal parallax-3d mb-14 h-[300px] md:h-[360px] rounded-2xl border border-emerald-500/10 overflow-hidden relative"
+        >
+          <DataSphereCanvas />
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2">
+            <span className="font-mono text-[10px] text-dark-600 tracking-wider uppercase">
+              Skill Universe
+            </span>
+          </div>
         </motion.div>
 
         {/* Skill categories grid */}

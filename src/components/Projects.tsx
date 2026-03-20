@@ -2,6 +2,16 @@
 
 import { useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+
+const FloatingLaptopCanvas = dynamic(() => import("./FloatingLaptopCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-dark-900/30 rounded-2xl animate-pulse flex items-center justify-center">
+      <span className="text-xs font-mono text-dark-600">Loading 3D...</span>
+    </div>
+  ),
+});
 
 interface Project {
   title: string;
@@ -150,6 +160,21 @@ export default function Projects() {
             NLP, data analytics, and MLOps.
           </p>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-transparent rounded-full mt-4" />
+        </motion.div>
+
+        {/* 3D Laptop Showcase */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="scene-reveal parallax-3d mb-12 h-[320px] md:h-[380px] rounded-2xl border border-emerald-500/10 overflow-hidden relative"
+        >
+          <FloatingLaptopCanvas />
+          <div className="absolute bottom-3 right-4">
+            <span className="font-mono text-[10px] text-dark-600 tracking-wider uppercase">
+              Move mouse to interact
+            </span>
+          </div>
         </motion.div>
 
         {/* Filter tabs */}
