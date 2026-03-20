@@ -1,0 +1,217 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   EMERALD DARK THEME - Portfolio Website
+   Mohd Zamin Quadri | mzquadri.de
+   ======================================== */
+
+@layer base {
+  :root {
+    --background: #030712;
+    --foreground: #f8fafc;
+    --emerald: #10b981;
+    --emerald-light: #34d399;
+    --emerald-dark: #059669;
+    --emerald-glow: rgba(16, 185, 129, 0.15);
+    --card-bg: rgba(15, 23, 42, 0.6);
+    --card-border: rgba(16, 185, 129, 0.1);
+    --glass-bg: rgba(3, 7, 18, 0.8);
+    --glass-border: rgba(16, 185, 129, 0.15);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 #030712;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter), system-ui, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #030712;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #10b981;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #34d399;
+  }
+
+  /* Selection */
+  ::selection {
+    background: rgba(16, 185, 129, 0.3);
+    color: #f8fafc;
+  }
+}
+
+@layer components {
+  /* Glass morphism card */
+  .glass-card {
+    @apply relative rounded-2xl border border-emerald-500/10 bg-dark-900/60 backdrop-blur-xl;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.03);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .glass-card:hover {
+    border-color: rgba(16, 185, 129, 0.25);
+    box-shadow: 0 0 40px rgba(16, 185, 129, 0.08), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+  }
+
+  /* Glass nav */
+  .glass-nav {
+    @apply fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b;
+    background: rgba(3, 7, 18, 0.85);
+    border-color: rgba(16, 185, 129, 0.1);
+  }
+
+  /* Emerald glow text */
+  .text-glow {
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5), 0 0 40px rgba(16, 185, 129, 0.2);
+  }
+
+  /* Emerald gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #34d399, #10b981, #059669);
+  }
+
+  /* Section styling */
+  .section-container {
+    @apply relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 md:py-28;
+  }
+
+  .section-title {
+    @apply font-display text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4;
+  }
+
+  .section-subtitle {
+    @apply text-dark-400 text-base md:text-lg max-w-2xl;
+  }
+
+  /* Glow border on hover */
+  .glow-border {
+    @apply relative;
+  }
+  .glow-border::before {
+    content: '';
+    @apply absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-500;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), transparent, rgba(16, 185, 129, 0.2));
+    z-index: -1;
+  }
+  .glow-border:hover::before {
+    opacity: 1;
+  }
+
+  /* Emerald dot indicator */
+  .dot-indicator {
+    @apply w-3 h-3 rounded-full bg-emerald-500;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+  }
+
+  /* Timeline line */
+  .timeline-line {
+    @apply absolute left-6 top-0 bottom-0 w-px;
+    background: linear-gradient(to bottom, transparent, #10b981, transparent);
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm
+           bg-emerald-500 text-dark-950 hover:bg-emerald-400
+           transition-all duration-300 hover:shadow-lg;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm
+           border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10
+           hover:border-emerald-500/60 transition-all duration-300;
+  }
+
+  /* Skill badge */
+  .skill-badge {
+    @apply px-3 py-1.5 rounded-full text-xs font-mono font-medium
+           border border-emerald-500/20 bg-emerald-500/5 text-emerald-400
+           hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all duration-300;
+  }
+
+  /* Tag */
+  .tag {
+    @apply px-2.5 py-1 rounded-md text-xs font-mono
+           bg-dark-800 text-dark-300 border border-dark-700;
+  }
+
+  /* Animated underline */
+  .animated-underline {
+    @apply relative;
+  }
+  .animated-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-emerald-500 transition-all duration-300;
+  }
+  .animated-underline:hover::after {
+    @apply w-full;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.015;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* Grid background pattern */
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* Radial glow backgrounds */
+  .glow-top-right {
+    background: radial-gradient(ellipse at top right, rgba(16, 185, 129, 0.08) 0%, transparent 60%);
+  }
+  .glow-bottom-left {
+    background: radial-gradient(ellipse at bottom left, rgba(16, 185, 129, 0.08) 0%, transparent 60%);
+  }
+  .glow-center {
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+  }
+}
