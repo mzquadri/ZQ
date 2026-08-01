@@ -23,14 +23,14 @@ interface Project {
   featured?: boolean;
 }
 
-const categories = ["All", "ML/AI", "Deep Learning", "NLP", "Data Analytics", "MLOps"];
+const categories = ["All", "Research", "Deep Learning", "NLP", "Time Series", "Applied ML", "MLOps"];
 
 const projects: Project[] = [
   {
     title: "MLOps End-to-End Pipeline",
     description:
-      "Complete MLOps pipeline with automated training, model versioning, CI/CD, Docker containerization, model monitoring, and drift detection for production ML systems.",
-    tags: ["Python", "Docker", "MLflow", "GitHub Actions", "FastAPI"],
+      "Reference sentiment-classification pipeline with container configuration, FastAPI serving, validation checks, and automated test coverage.",
+    tags: ["Python", "Docker", "FastAPI", "pytest", "GitHub Actions"],
     category: "MLOps",
     github: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline",
     featured: true,
@@ -38,8 +38,8 @@ const projects: Project[] = [
   {
     title: "NLP Text Classification with Transformers",
     description:
-      "Fine-tuned BERT and RoBERTa models for multi-class text classification, achieving state-of-the-art accuracy with custom training pipeline and comprehensive evaluation.",
-    tags: ["PyTorch", "Transformers", "BERT", "NLP", "HuggingFace"],
+      "Experimental AG News classification pipeline with an explicit offline synthetic fixture and reproducibility-oriented evaluation code.",
+    tags: ["Python", "scikit-learn", "Transformers", "NLP"],
     category: "NLP",
     github: "https://github.com/mzquadri/NLP-Text-Classification-Transformers",
     featured: true,
@@ -47,80 +47,62 @@ const projects: Project[] = [
   {
     title: "Neural Network Identifiability Analysis",
     description:
-      "Master's thesis research on theoretical properties of neural network identifiability, investigating convergence and uniqueness of deep learning solutions.",
-    tags: ["PyTorch", "Mathematics", "Research", "LaTeX"],
-    category: "Deep Learning",
+      "Educational numerical tools for studying neural-network symmetries, with tested hidden-unit permutation and sign-flip checks.",
+    tags: ["Python", "NumPy", "Mathematics", "Research"],
+    category: "Research",
     github: "https://github.com/mzquadri/Neural-Network-Identifiability-Analysis",
     featured: true,
   },
   {
     title: "Insurance Claims Prediction",
     description:
-      "End-to-end ML pipeline for insurance claim prediction using ensemble methods, feature engineering, and model interpretability with SHAP analysis.",
-    tags: ["scikit-learn", "XGBoost", "Pandas", "SHAP"],
-    category: "ML/AI",
+      "Research pipeline for claims-risk modelling that prevents preprocessing leakage and documents validation requirements.",
+    tags: ["Python", "scikit-learn", "Pandas", "SHAP"],
+    category: "Applied ML",
     github: "https://github.com/mzquadri/Insurance-Claims-Prediction-ML",
     featured: true,
   },
   {
     title: "Supply Chain Analytics Dashboard",
     description:
-      "Interactive analytics dashboard for supply chain KPI monitoring, demand forecasting, and bottleneck identification using real-world logistics data.",
-    tags: ["Python", "Power BI", "SQL", "Pandas", "Plotly"],
-    category: "Data Analytics",
+      "Exploratory analytics and forecasting code with chronological holdouts and clearly documented supplier-risk proxies.",
+    tags: ["Python", "Pandas", "Plotly", "statsmodels"],
+    category: "Applied ML",
     github: "https://github.com/mzquadri/Supply-Chain-Analytics-Dashboard",
     featured: true,
   },
   {
     title: "Battery SOC Estimation with ML",
     description:
-      "Machine learning approach for battery State of Charge estimation using time-series sensor data, LSTM networks, and feature engineering for EV applications.",
-    tags: ["TensorFlow", "LSTM", "Time-Series", "NumPy"],
-    category: "Deep Learning",
+      "Battery state-of-charge research prototype with NASA-compatible loaders, feature engineering, and reproducible smoke checks.",
+    tags: ["Python", "scikit-learn", "Time Series", "NumPy"],
+    category: "Applied ML",
     github: "https://github.com/mzquadri/Battery-SOC-Estimation-ML",
     featured: true,
   },
   {
     title: "CNN Image Classification",
     description:
-      "Deep convolutional neural network for image classification with data augmentation, transfer learning (ResNet, VGG), and performance optimization.",
-    tags: ["PyTorch", "CNN", "Transfer Learning", "Computer Vision"],
+      "CIFAR-10 CNN experiment with tracked evaluation plots, configuration, and a documented reference run.",
+    tags: ["PyTorch", "CNN", "CIFAR-10", "Computer Vision"],
     category: "Deep Learning",
+    github: "https://github.com/mzquadri/CNN-Image-Classification-PyTorch",
   },
   {
     title: "Flood Prediction with LSTM",
     description:
-      "Deep learning model using LSTM networks for flood water level prediction based on historical meteorological and hydrological data.",
-    tags: ["TensorFlow", "LSTM", "Time-Series", "GeoPandas"],
-    category: "Deep Learning",
+      "Deterministic synthetic one-step-ahead discharge forecasting experiment with tracked model and evaluation artifacts.",
+    tags: ["Python", "TensorFlow", "LSTM", "Time Series"],
+    category: "Time Series",
+    github: "https://github.com/mzquadri/Deep-Learning-Flood-Prediction-LSTM",
   },
   {
-    title: "Sentiment Analysis Engine",
+    title: "Streamflow Forecasting",
     description:
-      "NLP pipeline for sentiment analysis on product reviews using transformer models with attention visualization and model interpretability.",
-    tags: ["NLP", "BERT", "Transformers", "Flask"],
-    category: "NLP",
-  },
-  {
-    title: "Customer Churn Prediction",
-    description:
-      "Predictive model for telecom customer churn using gradient boosting and logistic regression with feature importance analysis.",
-    tags: ["scikit-learn", "XGBoost", "Pandas", "Matplotlib"],
-    category: "ML/AI",
-  },
-  {
-    title: "Real Estate Price Prediction",
-    description:
-      "Regression analysis and ML models for real estate price prediction with geospatial features and interactive visualization.",
-    tags: ["Python", "scikit-learn", "Folium", "Plotly"],
-    category: "ML/AI",
-  },
-  {
-    title: "Financial Data Analysis",
-    description:
-      "Comprehensive financial data analysis pipeline with time-series decomposition, risk metrics, and automated reporting.",
-    tags: ["Python", "Pandas", "Excel", "VBA", "SQL"],
-    category: "Data Analytics",
+      "Synthetic streamflow benchmark comparing SARIMAX and XGBoost under documented one-step-ahead evaluation.",
+    tags: ["Python", "SARIMAX", "XGBoost", "Time Series"],
+    category: "Time Series",
+    github: "https://github.com/mzquadri/Time-Series-Streamflow-Forecasting",
   },
 ];
 
@@ -156,8 +138,9 @@ export default function Projects() {
             <span className="gradient-text">Projects</span>
           </h2>
           <p className="section-subtitle mt-4">
-            A selection of projects spanning machine learning, deep learning,
-            NLP, data analytics, and MLOps.
+            A curated selection of public repositories with source code and
+            clearly scoped results. Experimental and synthetic-data work is
+            labelled accordingly in its documentation.
           </p>
           <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-transparent rounded-full mt-4" />
         </motion.div>
