@@ -98,10 +98,16 @@ export default function Navbar() {
             </button>
           ))}
           <a
+            href="/drive"
+            className="ml-4 px-3 py-2 text-xs font-mono text-emerald-400/80 hover:text-emerald-400 transition-colors"
+          >
+            /drive →
+          </a>
+          <a
             href="/Mohd_Zamin_CV.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-4 btn-outline text-xs py-2 px-4"
+            className="ml-2 btn-outline text-xs py-2 px-4"
           >
             Resume
           </a>
