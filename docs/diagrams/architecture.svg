@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="560" viewBox="0 0 940 560" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="940" height="560" fill="#ffffff"/>
+  <text x="470" y="34" font-size="20" font-weight="700" fill="#1e293b" text-anchor="middle">ZQ &#8212; Portfolio Architecture</text>
+
+  <rect x="38" y="60" width="440" height="34" rx="8" fill="#2563eb"/>
+  <text x="258" y="83" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">src/app/page.tsx &#8212; single-page composition (App Router)</text>
+
+  <rect x="38" y="106" width="440" height="40" rx="8" fill="#0ea5e9"/>
+  <text x="258" y="123" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">Hero + Scene3D (immersive neural-network hero, bloom)</text>
+  <text x="258" y="139" font-size="11" fill="#e0f2fe" text-anchor="middle">/#about . /#projects anchor navigation</text>
+
+  <rect x="38" y="158" width="440" height="40" rx="8" fill="#0ea5e9"/>
+  <text x="258" y="175" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">About &#183; Experience &#183; Education</text>
+  <text x="258" y="191" font-size="11" fill="#e0f2fe" text-anchor="middle">timeline entries, glass cards, skill bars</text>
+
+  <rect x="38" y="210" width="440" height="40" rx="8" fill="#0ea5e9"/>
+  <text x="258" y="227" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">Skills &#183; Certifications &#183; Projects</text>
+  <text x="258" y="243" font-size="11" fill="#e0f2fe" text-anchor="middle">project cards link to live GitHub repos</text>
+
+  <rect x="38" y="262" width="440" height="40" rx="8" fill="#0ea5e9"/>
+  <text x="258" y="279" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">Contact &#183; Footer</text>
+  <text x="258" y="295" font-size="11" fill="#e0f2fe" text-anchor="middle">&#183; &#183; &#183;</text>
+
+  <path d="M160 302 L160 334" stroke="#94a3b8" stroke-width="1.5" fill="none"/>
+
+  <rect x="38" y="334" width="440" height="34" rx="8" fill="#f59e0b"/>
+  <text x="258" y="356" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">&#8594; 3D dividers (FloatingElements, GSAP scroll parallax)</text>
+
+  <path d="M258 368 L258 400" stroke="#94a3b8" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+  <rect x="38" y="400" width="440" height="46" rx="8" fill="#7c3aed"/>
+  <text x="258" y="420" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">3D scene pattern (React Three Fiber, drei, postprocessing)</text>
+  <text x="258" y="438" font-size="11" fill="#ede9fe" text-anchor="middle">XCanvas.tsx = &lt;Canvas&gt; wrapper &#183; X3D.tsx = scene &#183; next/dynamic ssr:false</text>
+
+  <rect x="548" y="106" width="360" height="110" rx="10" fill="#16a34a"/>
+  <text x="728" y="130" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="middle">Scroll animations &#8212; class-driven GSAP</text>
+  <text x="728" y="150" font-size="11.5" fill="#dcfce7" text-anchor="middle">.section-title &#183; .glass-card &#183; .timeline-entry</text>
+  <text x="728" y="166" font-size="11.5" fill="#dcfce7" text-anchor="middle">.skill-bar-fill &#183; .floating-divider</text>
+  <text x="728" y="186" font-size="11.5" fill="#dcfce7" text-anchor="middle">Framer Motion for in-view micro-animations</text>
+  <text x="728" y="202" font-size="11.5" fill="#dcfce7" text-anchor="middle">both libraries coexist intentionally</text>
+
+  <rect x="548" y="232" width="360" height="96" rx="10" fill="#ea580c"/>
+  <text x="728" y="256" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="middle">Theme system</text>
+  <text x="728" y="276" font-size="11.5" fill="#ffedd5" text-anchor="middle">Tailwind emerald + dark palette, named keyframes</text>
+  <text x="728" y="292" font-size="11.5" fill="#ffedd5" text-anchor="middle">.glass-card, .gradient-text, .btn-primary &#8230; in @layer components</text>
+  <text x="728" y="308" font-size="11.5" fill="#ffedd5" text-anchor="middle">next/font: Inter, JetBrains Mono, Orbitron</text>
+
+  <rect x="548" y="344" width="360" height="60" rx="10" fill="#2563eb"/>
+  <text x="728" y="368" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="middle">Build &amp; deploy</text>
+  <text x="728" y="388" font-size="11.5" fill="#dbeafe" text-anchor="middle">npm run build (TypeScript + next lint) &#183; Vercel via vercel.json</text>
+
+  <rect x="548" y="420" width="360" height="40" rx="20" fill="#f0f4ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="728" y="444" font-size="12" font-weight="600" fill="#2563eb" text-anchor="middle">+ /drive &#8212; dedicated 3D scene page (navbar linked)</text>
+
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+</svg>
