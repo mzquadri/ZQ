@@ -1,60 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="940" height="560" viewBox="0 0 940 560" font-family="Segoe UI, Arial, sans-serif">
-  <rect width="940" height="560" fill="#ffffff"/>
-  <text x="470" y="34" font-size="20" font-weight="700" fill="#1e293b" text-anchor="middle">ZQ &#8212; Portfolio Architecture</text>
-
-  <rect x="38" y="60" width="440" height="34" rx="8" fill="#2563eb"/>
-  <text x="258" y="83" font-size="13" font-weight="600" fill="#ffffff" text-anchor="middle">src/app/page.tsx &#8212; single-page composition (App Router)</text>
-
-  <rect x="38" y="106" width="440" height="40" rx="8" fill="#0ea5e9"/>
-  <text x="258" y="123" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">Hero + Scene3D (immersive neural-network hero, bloom)</text>
-  <text x="258" y="139" font-size="11" fill="#e0f2fe" text-anchor="middle">/#about . /#projects anchor navigation</text>
-
-  <rect x="38" y="158" width="440" height="40" rx="8" fill="#0ea5e9"/>
-  <text x="258" y="175" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">About &#183; Experience &#183; Education</text>
-  <text x="258" y="191" font-size="11" fill="#e0f2fe" text-anchor="middle">timeline entries, glass cards, skill bars</text>
-
-  <rect x="38" y="210" width="440" height="40" rx="8" fill="#0ea5e9"/>
-  <text x="258" y="227" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">Skills &#183; Certifications &#183; Projects</text>
-  <text x="258" y="243" font-size="11" fill="#e0f2fe" text-anchor="middle">project cards link to live GitHub repos</text>
-
-  <rect x="38" y="262" width="440" height="40" rx="8" fill="#0ea5e9"/>
-  <text x="258" y="279" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">Contact &#183; Footer</text>
-  <text x="258" y="295" font-size="11" fill="#e0f2fe" text-anchor="middle">&#183; &#183; &#183;</text>
-
-  <path d="M160 302 L160 334" stroke="#94a3b8" stroke-width="1.5" fill="none"/>
-
-  <rect x="38" y="334" width="440" height="34" rx="8" fill="#f59e0b"/>
-  <text x="258" y="356" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">&#8594; 3D dividers (FloatingElements, GSAP scroll parallax)</text>
-
-  <path d="M258 368 L258 400" stroke="#94a3b8" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
-
-  <rect x="38" y="400" width="440" height="46" rx="8" fill="#7c3aed"/>
-  <text x="258" y="420" font-size="12.5" font-weight="600" fill="#ffffff" text-anchor="middle">3D scene pattern (React Three Fiber, drei, postprocessing)</text>
-  <text x="258" y="438" font-size="11" fill="#ede9fe" text-anchor="middle">XCanvas.tsx = &lt;Canvas&gt; wrapper &#183; X3D.tsx = scene &#183; next/dynamic ssr:false</text>
-
-  <rect x="548" y="106" width="360" height="110" rx="10" fill="#16a34a"/>
-  <text x="728" y="130" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="middle">Scroll animations &#8212; class-driven GSAP</text>
-  <text x="728" y="150" font-size="11.5" fill="#dcfce7" text-anchor="middle">.section-title &#183; .glass-card &#183; .timeline-entry</text>
-  <text x="728" y="166" font-size="11.5" fill="#dcfce7" text-anchor="middle">.skill-bar-fill &#183; .floating-divider</text>
-  <text x="728" y="186" font-size="11.5" fill="#dcfce7" text-anchor="middle">Framer Motion for in-view micro-animations</text>
-  <text x="728" y="202" font-size="11.5" fill="#dcfce7" text-anchor="middle">both libraries coexist intentionally</text>
-
-  <rect x="548" y="232" width="360" height="96" rx="10" fill="#ea580c"/>
-  <text x="728" y="256" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="middle">Theme system</text>
-  <text x="728" y="276" font-size="11.5" fill="#ffedd5" text-anchor="middle">Tailwind emerald + dark palette, named keyframes</text>
-  <text x="728" y="292" font-size="11.5" fill="#ffedd5" text-anchor="middle">.glass-card, .gradient-text, .btn-primary &#8230; in @layer components</text>
-  <text x="728" y="308" font-size="11.5" fill="#ffedd5" text-anchor="middle">next/font: Inter, JetBrains Mono, Orbitron</text>
-
-  <rect x="548" y="344" width="360" height="60" rx="10" fill="#2563eb"/>
-  <text x="728" y="368" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="middle">Build &amp; deploy</text>
-  <text x="728" y="388" font-size="11.5" fill="#dbeafe" text-anchor="middle">npm run build (TypeScript + next lint) &#183; Vercel via vercel.json</text>
-
-  <rect x="548" y="420" width="360" height="40" rx="20" fill="#f0f4ff" stroke="#2563eb" stroke-width="1.5"/>
-  <text x="728" y="444" font-size="12" font-weight="600" fill="#2563eb" text-anchor="middle">+ /drive &#8212; dedicated 3D scene page (navbar linked)</text>
-
-  <defs>
-    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
-      <path d="M0,0 L8,3 L0,6 Z" fill="#94a3b8"/>
-    </marker>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">ZQ research portfolio architecture</title>
+  <desc id="desc">Typed evidence content feeds server-rendered routes, metadata, and validation, then a locked build is checked by Playwright and deployed to Vercel.</desc>
+  <rect width="1200" height="650" fill="#f2f0e8"/>
+  <path d="M0 40H1200M0 80H1200M0 120H1200M0 160H1200M0 200H1200M0 240H1200M0 280H1200M0 320H1200M0 360H1200M0 400H1200M0 440H1200M0 480H1200M0 520H1200M0 560H1200M0 600H1200" stroke="#111820" stroke-opacity=".07"/>
+  <text x="70" y="75" fill="#111820" font-family="Georgia,serif" font-size="38">Evidence → static routes → verified delivery</text>
+  <text x="72" y="110" fill="#004c47" font-family="monospace" font-size="15">NEXT.JS 14 / REACT SERVER COMPONENTS / TYPESCRIPT</text>
+  <g font-family="Arial,sans-serif">
+    <rect x="70" y="175" width="280" height="220" fill="#111820"/>
+    <text x="95" y="215" fill="#e5ba38" font-family="monospace" font-size="14">01 / SOURCE</text>
+    <text x="95" y="262" fill="#fbfaf5" font-family="Georgia,serif" font-size="27">Typed evidence</text>
+    <text x="95" y="299" fill="#aeb8bd" font-size="15">Projects, research metrics,</text>
+    <text x="95" y="323" fill="#aeb8bd" font-size="15">limitations, navigation,</text>
+    <text x="95" y="347" fill="#aeb8bd" font-size="15">social links, classifications</text>
+    <rect x="455" y="175" width="290" height="220" fill="#fbfaf5" stroke="#111820" stroke-width="2"/>
+    <text x="480" y="215" fill="#a9361d" font-family="monospace" font-size="14">02 / RENDER</text>
+    <text x="480" y="262" fill="#111820" font-family="Georgia,serif" font-size="27">Static portfolio</text>
+    <text x="480" y="299" fill="#354149" font-size="15">Six routes + six case studies</text>
+    <text x="480" y="323" fill="#354149" font-size="15">Metadata, sitemap, robots, OG</text>
+    <text x="480" y="347" fill="#354149" font-size="15">Local CSS, fonts, and SVG</text>
+    <rect x="850" y="175" width="280" height="220" fill="#006d65"/>
+    <text x="875" y="215" fill="#fff" font-family="monospace" font-size="14">03 / VERIFY</text>
+    <text x="875" y="262" fill="#fff" font-family="Georgia,serif" font-size="27">Locked delivery</text>
+    <text x="875" y="299" fill="#fff" font-size="15">Lint, types, content invariants</text>
+    <text x="875" y="323" fill="#fff" font-size="15">Production build, axe, routes</text>
+    <text x="875" y="347" fill="#fff" font-size="15">Desktop + mobile Playwright</text>
+    <path d="M350 285H455M745 285H850" stroke="#f15a35" stroke-width="6"/>
+    <path d="m443 273 12 12-12 12M838 273l12 12-12 12" fill="none" stroke="#f15a35" stroke-width="6"/>
+    <rect x="70" y="475" width="1060" height="105" fill="#e4e0d4" stroke="#111820"/>
+    <text x="95" y="515" fill="#004c47" font-family="monospace" font-size="14">PUBLICATION BOUNDARY</text>
+    <text x="95" y="548" fill="#111820" font-size="16">No personal contact data · no analytics or cookies · no confidential research rows · no unsupported claims</text>
+  </g>
 </svg>
