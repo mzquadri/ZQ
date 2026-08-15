@@ -1,37 +1,29 @@
-# ZQ &mdash; Personal Portfolio
+# ZQ Research Portfolio
 
-An interactive single-page portfolio for Mohd Zamin Quadri, built with
-Next.js 14, TypeScript, Tailwind CSS, and React Three Fiber. The page is a
-single scroll-through experience: every section lives on `src/app/page.tsx`,
-3D WebGL scenes run between sections, and scroll animations are triggered by
-CSS classes rather than per-component glue code.
+The evidence-led portfolio for Mohd Zamin Quadri, focused on reliable machine learning,
+Applied AI, graph neural networks, scientific computing, and MLOps engineering.
 
-The **Projects** section links to public repositories and intentionally
-describes their verified scope. Experimental or synthetic-data projects are
-not presented as production systems or real-world performance evidence.
+The site is built with Next.js 14, React 18, TypeScript, and a small CSS design system.
+It is server-rendered and statically generated wherever possible. There is no analytics,
+cookie, contact form, remote font, WebGL scene, or third-party client script.
 
-## Architecture
+## Information Architecture
 
-![Architecture overview](docs/diagrams/architecture.svg)
-
-The layout composes section components in vertical order on one route:
-
-| Area | What it does |
+| Route | Purpose |
 |---|---|
-| Hero (`Scene3D`) | Immersive neural-network hero with postprocessing bloom and floating 3D elements |
-| About / Experience / Education | Timeline entries, glass cards, animated skill bars |
-| Skills / Certifications / Projects | Project cards linking to live GitHub repositories |
-| Contact / Footer | Social links and closing section |
-| `/drive` | Dedicated 3D scene page, linked from the navbar |
+| `/` | Recruiter-readable overview, thesis evidence, selected work, and capabilities |
+| `/work` | Six projects with explicit evidence classifications |
+| `/work/[slug]` | Problem, contribution, workflow, evidence, quality controls, and limitations |
+| `/research` | Thesis methodology, protocol distinctions, results, and scientific boundaries |
+| `/about` | Current status, working principles, and proof-linked capabilities |
+| `/contact` | Verified GitHub and LinkedIn channels; no personal-data collection |
 
-Two conventions keep the 3D code tidy. Every scene is split into a
-`XCanvas.tsx` wrapper (owns the R3F `<Canvas>`, lighting, dpr) and an `X3D.tsx`
-scene file, imported via `next/dynamic` with `ssr: false`. Scroll animations
-are registered once in `ScrollAnimations.tsx` and driven by CSS classes
-(`.glass-card`, `.timeline-entry`, `.skill-bar-fill`), so new components opt in
-by adding a class instead of writing their own GSAP calls.
+The retired `/drive` experiment redirects to `/work`. The broken CV route was removed;
+no document should be added until an approved, redacted PDF is available.
 
-## Run locally
+## Run Locally
+
+Node 20 is required.
 
 ```bash
 npm ci
@@ -40,30 +32,48 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Verify a production build
+## Verify
 
 ```bash
-npm run build
+npm run check
+npx playwright install chromium
+npm run test:e2e
 ```
+
+`npm run check` runs lint, TypeScript, evidence/content validation, and a production build.
+Playwright exercises all public routes at desktop and mobile sizes with reduced-motion
+emulation and axe accessibility analysis.
+
+## Content Integrity
+
+Public claims live in `src/content/portfolio.ts`. `scripts/validate-content.ts` checks:
+
+- unique project slugs and valid proof links;
+- evidence, quality controls, and limitations for every project;
+- required routes and metadata endpoints;
+- absence of public email, phone, broken CV paths, and selected unsupported claims.
+
+Research figures are site-native diagrams built from reviewed aggregate values. No raw
+simulation data, row-level predictions, serialized models, confidential files, or local
+filesystem paths are included. See `docs/EVIDENCE_AND_PRIVACY.md` for the publication
+boundary.
+
+## Architecture
+
+![Server-first portfolio architecture](docs/diagrams/architecture.svg)
+
+The site uses React Server Components by default. Shared typed content feeds static pages,
+metadata, structured data, sitemap entries, and content validation. The only runtime
+dependencies are Next.js, React, and React DOM.
 
 ## Deployment
 
-The site is configured for Vercel. Production deployment runs `npm run build`
-via `vercel.json`.
-
-## Repository layout
-
-```
-src/
-|-- app/
-|   |-- page.tsx            # single-page composition
-|   |-- drive/              # /drive 3D scene page
-|   |-- layout.tsx          # fonts, metadata, root layout
-|   `-- globals.css         # Tailwind + reusable component classes
-|-- components/             # section components and 3D scenes
-`-- docs/diagrams/          # architecture diagrams
-```
+Vercel installs the locked dependency graph with `npm ci` and runs `npm run build`.
+Security headers disable framing, MIME sniffing, browser access to cameras, microphones,
+and geolocation, and limit referrer disclosure.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+Website source is licensed under the [MIT License](LICENSE). Linked research repositories,
+thesis material, data, models, and figures retain their own terms and are not relicensed by
+this portfolio.
