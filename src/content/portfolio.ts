@@ -43,7 +43,7 @@ export const site = {
   location: "Munich, Germany",
   availability: "Open to full-time Machine Learning and Applied AI roles",
   github: "https://github.com/mzquadri",
-  linkedin: "https://www.linkedin.com/in/mohd-zamin/",
+  linkedin: "https://www.linkedin.com/in/mohdzaminquadri/",
 } as const;
 
 export const thesis = {
