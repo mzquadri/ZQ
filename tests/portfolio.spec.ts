@@ -60,7 +60,7 @@ test("contact route exposes no form, email, phone, or broken resume action", asy
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   await expect(page.locator('a[href$=".pdf"]')).toHaveCount(0);
-  await expect(page.locator(`.contact-links a[href="https://www.linkedin.com/in/mohd-zamin/"]`)).toBeVisible();
+  await expect(page.locator(`.contact-links a[href="https://www.linkedin.com/in/mohdzaminquadri/"]`)).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://github.com/mzquadri"]`)).toBeVisible();
 });
 
