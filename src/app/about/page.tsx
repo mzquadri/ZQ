@@ -1,0 +1,112 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import PageShell from "@/components/PageShell";
+import { capabilities, getProject, site, thesis } from "@/content/portfolio";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "About",
+  description:
+    "Working approach and evidence-backed capabilities across reliable ML, GNNs, MLOps, AI applications, and scientific computing.",
+  path: "/about",
+});
+
+const principles = [
+  {
+    title: "Evidence before adjectives",
+    copy: "A result should name its dataset, protocol, metric, and limitation. If the artifact is missing, the claim is not promoted.",
+  },
+  {
+    title: "Reliability is a system property",
+    copy: "Model quality includes calibration, failure modes, data contracts, monitoring boundaries, and the human decision around a prediction.",
+  },
+  {
+    title: "Small, inspectable interfaces",
+    copy: "I prefer explicit pipeline stages, typed service contracts, deterministic fixtures, and tests that make assumptions visible.",
+  },
+  {
+    title: "Scope is part of the result",
+    copy: "Research, coursework, prototypes, synthetic demonstrations, and deployed systems answer different questions and should be labelled accordingly.",
+  },
+] as const;
+
+export default function AboutPage() {
+  return (
+    <PageShell current="/about">
+      <header className="page-hero section-wrap">
+        <p className="kicker">About / Working approach</p>
+        <h1>Mathematical care, practical engineering.</h1>
+        <p>
+          I work at the boundary between modelling and systems: understanding what a model
+          can support, then building the data, evaluation, and software path that makes that
+          evidence useful.
+        </p>
+      </header>
+
+      <section className="section-wrap about-profile">
+        <div>
+          <p className="section-index"><span>01</span>Current focus</p>
+          <h2>Applied ML with research depth</h2>
+        </div>
+        <div className="prose-large">
+          <p>
+            My recent work centres on uncertainty-aware graph neural network surrogates,
+            calibration, conformal prediction, and selective review. Alongside that research,
+            I build reference ML pipelines and grounded AI service prototypes to exercise the
+            operational side of model development.
+          </p>
+          <p>
+            My Master&apos;s thesis, <cite>{thesis.title}</cite>, was submitted at {thesis.institution}
+            on May 15, 2026. This site intentionally states submission—not degree conferral—because
+            that is the status supported by the available record.
+          </p>
+          <p>
+            I am based in {site.location} and currently open to full-time roles across Machine
+            Learning Engineering, Applied AI, reliable ML, scientific computing, GNNs, MLOps,
+            and data/AI engineering.
+          </p>
+        </div>
+      </section>
+
+      <section className="section-wrap principles-section">
+        <p className="section-index"><span>02</span>Principles</p>
+        <h2 className="standalone-heading">How I approach technical work</h2>
+        <div className="principle-grid">
+          {principles.map((principle, index) => (
+            <article key={principle.title}>
+              <span aria-hidden="true">{(index + 1).toString().padStart(2, "0")}</span>
+              <h3>{principle.title}</h3>
+              <p>{principle.copy}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-wrap capability-detail">
+        <p className="section-index"><span>03</span>Capabilities with proof</p>
+        <h2 className="standalone-heading">What I can contribute</h2>
+        <div className="capability-table">
+          {capabilities.map((capability) => (
+            <div key={capability.title}>
+              <h3>{capability.title}</h3>
+              <p>{capability.summary}</p>
+              <ul>
+                {capability.proof.map((slug) => {
+                  const project = getProject(slug)!;
+                  return <li key={slug}><Link href={`/work/${slug}`}>{project.title}</Link></li>;
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="closing-section section-wrap">
+        <p className="kicker">Next</p>
+        <h2>Start from the case studies, not a self-rating.</h2>
+        <p>See the models, systems, quality controls, and limitations behind each capability.</p>
+        <Link className="button button-primary" href="/work">Explore the work <span aria-hidden="true">→</span></Link>
+      </section>
+    </PageShell>
+  );
+}
