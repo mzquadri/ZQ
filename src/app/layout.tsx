@@ -1,56 +1,68 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Orbitron } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
+import JsonLd from "@/components/JsonLd";
+import { site } from "@/content/portfolio";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-  display: "swap",
-});
-
-const orbitron = Orbitron({
-  subsets: ["latin"],
-  variable: "--font-orbitron",
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Mohd Zamin Quadri | AI Engineer & Data Scientist",
-  description:
-    "Portfolio of Mohd Zamin Quadri — AI Engineer, Data Scientist, and MSc Mathematics student at TU Munich. Specializing in machine learning, deep learning, NLP, and MLOps.",
+  metadataBase: new URL(site.domain),
+  title: {
+    default: "Mohd Zamin Quadri | Applied ML Engineer",
+    template: "%s | Mohd Zamin Quadri",
+  },
+  description: site.description,
   keywords: [
     "Mohd Zamin Quadri",
-    "AI Engineer",
-    "Data Scientist",
-    "Machine Learning",
-    "TU Munich",
-    "Deep Learning",
-    "NLP",
+    "Machine Learning Engineer",
+    "Applied AI",
+    "Uncertainty Quantification",
+    "Graph Neural Networks",
+    "Scientific Computing",
     "MLOps",
-    "Portfolio",
   ],
-  authors: [{ name: "Mohd Zamin Quadri" }],
+  authors: [{ name: site.name }],
+  creator: site.name,
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Mohd Zamin Quadri | AI Engineer & Data Scientist",
-    description:
-      "AI Engineer and Data Scientist specializing in ML, DL, NLP, and MLOps. MSc Mathematics @ TU Munich.",
-    url: "https://mzquadri.de",
-    siteName: "Mohd Zamin Quadri",
+    title: "Mohd Zamin Quadri | Applied ML Engineer",
+    description: site.description,
+    url: site.domain,
+    siteName: site.name,
+    locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Mohd Zamin Quadri — Applied ML, reliable systems, scientific computing",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mohd Zamin Quadri | AI Engineer & Data Scientist",
-    description:
-      "AI Engineer and Data Scientist specializing in ML, DL, NLP, and MLOps.",
+    title: "Mohd Zamin Quadri | Applied ML Engineer",
+    description: site.description,
+    images: ["/opengraph-image"],
   },
-  robots: "index, follow",
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#f2f0e8",
 };
 
 export default function RootLayout({
@@ -59,11 +71,38 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable} font-sans antialiased`}
-      >
-        <div className="noise-overlay" aria-hidden="true" />
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: site.name,
+            url: site.domain,
+            sameAs: [site.github, site.linkedin],
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Munich",
+              addressCountry: "DE",
+            },
+            knowsAbout: [
+              "Machine learning",
+              "Uncertainty quantification",
+              "Graph neural networks",
+              "Scientific computing",
+              "MLOps",
+            ],
+          }}
+        />
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: site.name,
+            url: site.domain,
+            description: site.description,
+          }}
+        />
         {children}
       </body>
     </html>
