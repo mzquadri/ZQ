@@ -1,52 +1,44 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+# Repository Guidance
 
 ## Commands
 
-- `npm run dev` — start the Next.js dev server on http://localhost:3000
-- `npm run build` — production build (this is what Vercel runs via `vercel.json`)
-- `npm start` — run the production build locally
-- `npm run lint` — `next lint` with `next/core-web-vitals` + `next/typescript`
+- `npm run dev` starts the Next.js development server.
+- `npm run lint` runs the Next.js ESLint configuration.
+- `npm run typecheck` runs TypeScript without emitting files.
+- `npm run validate:content` checks evidence and privacy invariants.
+- `npm run build` creates the production build.
+- `npm run test:e2e` runs desktop/mobile Playwright and axe checks against that build.
+- `npm run check` runs lint, typecheck, content validation, and build.
 
-There is no test suite in this repo.
+Use Node 20 and install with `npm ci`.
 
 ## Architecture
 
-This is a single-page portfolio site (Next.js 14, App Router, TypeScript, Tailwind). Everything renders from `src/app/page.tsx`, which composes the section components in vertical order with `<FloatingElements>` 3D dividers between them. Routing is incidental — the only "page" is `/`, and the navbar uses anchor links (`#about`, `#projects`, etc.) into section IDs on that page.
+This is a server-first Next.js 14 App Router site. Public claims are centralized in
+`src/content/portfolio.ts`; routes and server components render that typed evidence model.
+Do not duplicate project metrics in page components.
 
-### 3D scene pattern (important)
+Routes are `/`, `/work`, `/work/[slug]`, `/research`, `/about`, and `/contact`. `/drive`
+exists only as a redirect to `/work`.
 
-Every 3D feature is split into two files following a strict convention:
+The visual system is plain CSS in `src/app/globals.css`, using local Geist font files and
+static HTML/SVG. Do not reintroduce WebGL, perpetual animation, remote fonts, or a large
+client-side framework for decorative effects.
 
-- `XCanvas.tsx` — a `"use client"` component that owns the `<Canvas>` from `@react-three/fiber`, sets up lights, dpr, and gl options. This file is what gets imported by section components.
-- `X3D.tsx` — the scene contents (meshes, `useFrame` loops, custom geometry/shaders). It assumes it is already inside a `<Canvas>` and must not be rendered standalone.
+## Evidence And Privacy
 
-Examples: `Scene3D.tsx` (hero, special — combines both roles), `NeuralNetwork3D.tsx`, `FloatingLaptop3D.tsx` + `FloatingLaptopCanvas.tsx`, `DataSphere3D.tsx` + `DataSphereCanvas.tsx`, `GeometricAvatar3D.tsx` + `GeometricAvatarCanvas.tsx`.
+- Classify every project honestly: academic research, group coursework, engineering
+  prototype, reference implementation, reproducible experiment, or synthetic demonstration.
+- Keep evidence, limitations, and personal contribution boundaries together.
+- Use “thesis submitted”; do not imply degree conferral, defense, grade, or graduation.
+- Do not publish an email, phone number, address, personal identifier, private path, contact
+  form, or CV until explicitly reviewed and approved.
+- Do not copy confidential data, row-level predictions, model artifacts, or proprietary
+  research figures into this repository.
+- Run `npm run validate:content` whenever content changes.
 
-Canvases are imported via `next/dynamic` with `ssr: false` (WebGL is browser-only). When adding a new 3D feature, follow the split and import the Canvas wrapper dynamically — never import `*3D.tsx` directly into a section.
+## Style
 
-Postprocessing (`@react-three/postprocessing` Bloom + Vignette) is currently only wired into the hero `Scene3D`. Pinned to `2.16` for compatibility with the `@react-three/fiber` 8.x / drei 9.x stack — don't bump it casually.
-
-### Scroll animations are class-driven
-
-`src/components/ScrollAnimations.tsx` is mounted once near the top of `page.tsx` and registers GSAP `ScrollTrigger` animations against CSS class selectors. Components opt in to animations by adding the right class:
-
-- `.section-title`, `.section-subtitle` — fade/slide on enter
-- `.glass-card` — staggered card reveals (stagger key is index `% 3`)
-- `.timeline-entry` — alternating left/right slide based on index parity
-- `.skill-bar-fill` — animates `width` from `data-width` attribute
-- `.floating-divider` — parallax scrub
-- `.scene-reveal`, `.parallax-3d` — for 3D containers
-
-If a new component should animate, add the class — don't add a per-component GSAP call. Framer Motion is used separately for hero/in-view micro-animations; both libraries coexist intentionally.
-
-### Theme
-
-Tailwind config (`tailwind.config.ts`) defines a custom emerald + dark palette and a set of named keyframes (`float`, `pulse-glow`, `gradient`, `slide-up`, `typing`, etc.). Reusable visual primitives — `.glass-card`, `.glass-nav`, `.gradient-text`, `.btn-primary`, `.btn-outline`, `.skill-badge`, `.timeline-line`, `.section-container` — live in `@layer components` inside `src/app/globals.css`. Prefer these over re-rolling utility chains. The `<html>` element is hardcoded to `className="dark"`; there is no light-mode toggle.
-
-Fonts are loaded in `src/app/layout.tsx` via `next/font/google` (Inter, JetBrains Mono, Orbitron) and exposed as the CSS variables `--font-inter`, `--font-jetbrains`, `--font-orbitron`, mapped to Tailwind's `font-sans` / `font-mono` / `font-display`.
-
-### Path alias
-
-`@/*` resolves to `./src/*` (see `tsconfig.json`). Use `@/components/...` rather than relative paths.
+Preserve semantic HTML, visible focus states, WCAG AA contrast, reduced-motion behavior,
+mobile layouts, and server components by default. Reuse existing components and classes
+before adding new abstractions.
