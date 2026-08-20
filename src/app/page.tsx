@@ -74,7 +74,7 @@ export default function Home() {
           ))}
         </div>
         <div className="section-action">
-          <Link className="text-link" href="/research">
+          <Link className="text-link" href="/research/thesis">
             Read the research record and limitations <span aria-hidden="true">→</span>
           </Link>
         </div>

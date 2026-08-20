@@ -1,16 +1,20 @@
-import { researchEvidence } from "@/content/portfolio";
+import { researchEvidence } from "@/content/research";
 
 export function ThesisPipeline() {
   const stages = [
-    ["01", "Simulation", "MATSim policy scenarios"],
-    ["02", "Surrogate", "PointNet + Transformer + GAT"],
-    ["03", "Uncertainty", "MC Dropout / ensemble / CQR"],
-    ["04", "Decision", "Calibrate, retain, or review"],
+    ["01", "Simulate", "Capacity-reduction policy scenarios"],
+    ["02", "Represent", "One graph node per road link"],
+    ["03", "Approximate", "PointNet + TransformerConv + GAT"],
+    ["04", "Quantify", "Dropout, ensembles, and intervals"],
+    ["05", "Decide", "Calibrate, retain, or route to review"],
   ] as const;
 
   return (
-    <figure className="pipeline-figure">
-      <figcaption>Research system, from simulation to confidence-aware review</figcaption>
+    <figure className="pipeline-figure research-figure">
+      <figcaption>
+        <strong>Technical question</strong>
+        How does an expensive transport simulation become a confidence-aware review decision?
+      </figcaption>
       <ol>
         {stages.map(([index, title, detail]) => (
           <li key={index}>
@@ -20,6 +24,97 @@ export function ThesisPipeline() {
           </li>
         ))}
       </ol>
+    </figure>
+  );
+}
+
+export function ResearchMethodMatrix() {
+  return (
+    <figure className="method-matrix research-figure">
+      <figcaption>
+        <strong>Technical question</strong>
+        Which reliability question does each method answer?
+      </figcaption>
+      <div className="method-matrix-grid">
+        {researchEvidence.methods.map((method, index) => (
+          <article key={method.name}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{method.name}</h3>
+            <p className="method-question">{method.question}</p>
+            <dl>
+              <div><dt>Mechanism</dt><dd>{method.mechanism}</dd></div>
+              <div><dt>Finding</dt><dd>{method.finding}</dd></div>
+              <div><dt>Status</dt><dd>{method.status}</dd></div>
+            </dl>
+          </article>
+        ))}
+      </div>
+      <p className="figure-note">
+        Accuracy, ranking, spread, calibration, and coverage are different properties. A stronger
+        score in one column does not establish the others.
+      </p>
+    </figure>
+  );
+}
+
+export function CalibrationComparison() {
+  const scaleMax = 0.4;
+
+  return (
+    <figure className="calibration-figure research-figure">
+      <figcaption>
+        <strong>Technical question</strong>
+        Did uncertainty scaling reduce expected calibration error under each named protocol?
+      </figcaption>
+      <div className="calibration-grid">
+        {researchEvidence.calibrationProtocols.map((protocol) => {
+          const prefix = protocol.approximate ? "≈" : "";
+          return (
+            <article key={protocol.id}>
+              <p className="calibration-label">{protocol.label}</p>
+              <h3>{protocol.split}</h3>
+              <div className="calibration-bars" aria-hidden="true">
+                <div><span style={{ width: `${(protocol.beforeEce / scaleMax) * 100}%` }} /></div>
+                <div><span style={{ width: `${(protocol.afterEce / scaleMax) * 100}%` }} /></div>
+              </div>
+              <dl>
+                <div><dt>Before ECE</dt><dd>{prefix}{protocol.beforeEce.toFixed(3)}</dd></div>
+                <div><dt>After ECE</dt><dd>{prefix}{protocol.afterEce.toFixed(3)}</dd></div>
+                <div><dt>Scale</dt><dd>{prefix}{protocol.temperature.toFixed(3)}</dd></div>
+              </dl>
+              <p>{protocol.evidence}.</p>
+            </article>
+          );
+        })}
+      </div>
+      <p className="figure-note">
+        ECE is expected calibration error; lower is better. These protocols use different units
+        and splits, so their values are shown as separate records rather than one combined trend.
+      </p>
+    </figure>
+  );
+}
+
+export function MarginalCoverageFigure() {
+  return (
+    <figure className="coverage-figure research-figure">
+      <figcaption>
+        <strong>Technical question</strong>
+        Did split conformal intervals reach their nominal marginal coverage on the evaluated split?
+      </figcaption>
+      <div className="coverage-grid">
+        {researchEvidence.marginalCoverage.map((item) => (
+          <article key={item.nominalPct}>
+            <span>Nominal {item.nominalPct}%</span>
+            <strong>{item.observedPct.toFixed(2)}%</strong>
+            <p>Observed empirical marginal coverage</p>
+          </article>
+        ))}
+      </div>
+      <p className="figure-note">
+        Submission-era reported result from a 50/50 scenario split. Marginal coverage does not
+        guarantee the same coverage for every scenario, road link, uncertainty stratum, or city.
+      </p>
     </figure>
   );
 }
@@ -50,87 +145,88 @@ export function MlopsPipeline() {
 }
 
 export function SelectiveRiskChart() {
-  const [low, middle, full] = researchEvidence.selectiveRisk.points;
+  const points = researchEvidence.selectiveRisk.points;
+  const x = (retention: number) => 82 + ((retention - 10) / 90) * 592;
+  const y = (mae: number) => 262 - (mae / 4.1) * 194;
 
   return (
-    <figure className="chart-figure">
+    <figure className="chart-figure research-figure">
       <figcaption>
-        Selective prediction: accepted-set MAE falls as uncertain predictions are routed to review
+        <strong>Technical question</strong>
+        How does accepted-set error change at six audited review-capacity choices?
       </figcaption>
-      <div className="chart-scroll" role="region" aria-label="Scrollable selective prediction chart" tabIndex={0}>
-        <svg
-          viewBox="0 0 720 320"
-          role="img"
-          aria-labelledby="risk-title risk-description"
-        >
-        <title id="risk-title">Accepted prediction fraction compared with mean absolute error</title>
-        <desc id="risk-description">
-          Mean absolute error is about {low.mae} vehicles per hour at {low.retentionPct} percent
-          retention, {middle.mae} at {middle.retentionPct} percent retention, and {full.mae} when
-          every prediction is accepted.
-        </desc>
-        <g className="chart-grid" aria-hidden="true">
-          <path d="M78 44V262H680" />
-          <path d="M78 207H680M78 152H680M78 98H680M78 44H680" />
-        </g>
-        <g className="chart-labels" aria-hidden="true">
-          <text x="66" y="266">0</text>
-          <text x="52" y="211">1</text>
-          <text x="52" y="156">2</text>
-          <text x="52" y="102">3</text>
-          <text x="52" y="48">4</text>
-          <text x="76" y="287">10%</text>
-          <text x="330" y="287">50%</text>
-          <text x="646" y="287">100%</text>
-          <text x="287" y="313">Predictions accepted</text>
-          <text transform="translate(17 216) rotate(-90)">MAE (veh/h)</text>
-        </g>
-        <path
-          className="chart-line"
-          d="M82 204 L350 137 L674 47"
-          aria-hidden="true"
-        />
-        <g className="chart-points" aria-hidden="true">
-          <circle cx="82" cy="204" r="7" />
-          <circle cx="350" cy="137" r="7" />
-          <circle cx="674" cy="47" r="7" />
-          <text x="96" y="197">{low.mae.toFixed(2)}</text>
-          <text x="364" y="130">{middle.mae.toFixed(2)}</text>
-          <text x="610" y="39">{full.mae.toFixed(2)}</text>
-        </g>
+      <div className="chart-visual" aria-hidden="true">
+        <svg viewBox="0 0 720 320">
+          <g className="chart-grid">
+            <path d="M78 44V262H680" />
+            <path d="M78 215H680M78 168H680M78 120H680M78 73H680" />
+          </g>
+          <g className="chart-labels">
+            <text x="66" y="266">0</text>
+            <text x="52" y="219">1</text>
+            <text x="52" y="172">2</text>
+            <text x="52" y="124">3</text>
+            <text x="52" y="77">4</text>
+            {points.map((point) => (
+              <text x={x(point.retentionPct)} y="287" textAnchor="middle" key={point.retentionPct}>
+                {point.retentionPct}%
+              </text>
+            ))}
+            <text x="286" y="313">Predictions retained</text>
+            <text transform="translate(17 216) rotate(-90)">Accepted-set MAE (veh/h)</text>
+          </g>
+          <g className="chart-points">
+            {points.map((point) => (
+              <g data-retention={point.retentionPct} key={point.retentionPct}>
+                <circle cx={x(point.retentionPct)} cy={y(point.mae)} r="7" />
+                <text x={x(point.retentionPct)} y={y(point.mae) - 15} textAnchor="middle">
+                  {point.mae.toFixed(2)}
+                </text>
+              </g>
+            ))}
+          </g>
         </svg>
       </div>
+      <div className="research-table-wrap">
+        <table className="research-data-table">
+          <caption>Six selected audited operating points; values are observed, not interpolated</caption>
+          <thead><tr><th scope="col">Retained</th><th scope="col">Accepted-set MAE</th><th scope="col">Review queue</th></tr></thead>
+          <tbody>
+            {points.map((point) => (
+              <tr key={point.retentionPct}>
+                <th scope="row">{point.retentionPct}%</th>
+                <td>{point.mae.toFixed(2)} veh/h</td>
+                <td>{point.review.toLocaleString("en-US")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <p className="figure-note">
-        {researchEvidence.selectiveRisk.source}. Retention is a review-capacity choice, not
-        proof that rejected predictions are incorrect.
+        {researchEvidence.selectiveRisk.boundary} Rows outside the retained set enter a review
+        queue; the analysis does not label them wrong or unsafe.
       </p>
     </figure>
   );
 }
 
 export function ConfidenceProtocol() {
+  const stages = [
+    ["01", "Predict", "Estimate policy response"],
+    ["02", "Measure", "Quantify model uncertainty"],
+    ["03", "Calibrate", "Test coverage and ranking"],
+    ["04", "Decide", "Retain or route to review"],
+  ] as const;
+
   return (
-    <div className="confidence-protocol" aria-label="Evidence to decision protocol">
-      <div>
-        <span>01</span>
-        <strong>Predict</strong>
-        <small>Estimate policy response</small>
-      </div>
-      <div>
-        <span>02</span>
-        <strong>Measure</strong>
-        <small>Quantify model uncertainty</small>
-      </div>
-      <div>
-        <span>03</span>
-        <strong>Calibrate</strong>
-        <small>Test coverage and ranking</small>
-      </div>
-      <div className="protocol-accent">
-        <span>04</span>
-        <strong>Decide</strong>
-        <small>Accept, review, or abstain</small>
-      </div>
-    </div>
+    <ol className="confidence-protocol" aria-label="Evidence to decision protocol">
+      {stages.map(([index, title, detail], position) => (
+        <li className={position === stages.length - 1 ? "protocol-accent" : undefined} key={index}>
+          <span>{index}</span>
+          <strong>{title}</strong>
+          <small>{detail}</small>
+        </li>
+      ))}
+    </ol>
   );
 }

@@ -91,11 +91,11 @@ The ordering matters more than the scale of the uncertainty score. Multiplying e
 
 ## Read the curve as a system decision
 
-In my transport-surrogate research, the reviewed MC Dropout archive covered 100 held-out scenarios and 3,163,500 road-link predictions. Three reported operating points were:
+In my transport-surrogate research, the reviewed MC Dropout archive covered 100 held-out scenarios and 3,163,500 road-link predictions. Three selected audited operating points were:
 
 | Retained predictions | MAE |
 | --- | ---: |
-| 10% | 1.06 veh/h |
+| 10% | 1.05 veh/h |
 | 50% | 2.32 veh/h |
 | 100% | 3.95 veh/h |
 
@@ -147,4 +147,4 @@ The result is a modest but powerful shift: uncertainty becomes a routing signal,
 
 ## References
 
-The quantitative example and its limitations come from the [canonical thesis repository](https://github.com/mzquadri/ml-surrogates-thesis). The selective-classification framing follows Geifman and El-Yaniv's [selective classification work](https://arxiv.org/abs/1705.08500).
+The quantitative example and its limitations come from the [canonical thesis repository](https://github.com/mzquadri/ml-surrogates-thesis). The [research experience](/research/thesis) places this decision rule inside the wider GNN, calibration, and conformal-prediction study. The selective-classification framing follows Geifman and El-Yaniv's [selective classification work](https://arxiv.org/abs/1705.08500).

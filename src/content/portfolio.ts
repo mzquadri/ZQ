@@ -1,4 +1,5 @@
 import { site, thesis, truthRegistry } from "./truth";
+import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "./research";
 
 export { site, thesis } from "./truth";
 
@@ -52,32 +53,11 @@ export interface Project {
   systemSummary?: string;
   artifacts?: readonly ArtifactLink[];
   nextStep?: string;
+  researchPath?: string;
 }
 
-export const researchEvidence = {
-  selectiveRisk: {
-    points: [
-      { retentionPct: 10, mae: 1.06 },
-      { retentionPct: 50, mae: 2.32 },
-      { retentionPct: 100, mae: 3.95 },
-    ],
-    source: "Full cached Trial 8 MC Dropout analysis",
-  },
-  calibrationProtocols: [
-    {
-      id: "graph20_80_v1",
-      split: "First 20 graphs / last 80",
-      result: "ECE 0.269 → 0.048",
-      evidence: "Replayable tracked JSON",
-    },
-    {
-      id: "node30_70_thesis_final",
-      split: "Random 30% / 70% nodes",
-      result: "ECE ≈ 0.356 → 0.034",
-      evidence: "Final-thesis reported value",
-    },
-  ],
-} as const;
+const halfRetention = researchEvidence.selectiveRisk.points.find((point) => point.retentionPct === 50)!;
+const [coverage90, coverage95] = researchEvidence.marginalCoverage;
 
 export const projects: readonly Project[] = [
   {
@@ -114,33 +94,33 @@ export const projects: readonly Project[] = [
     evidence: [
       {
         label: "Held-out scope",
-        value: "100 scenarios",
-        note: "3,163,500 road-link predictions in the cached test artifacts.",
+        value: `${researchEvidence.scope.scenarios} scenarios`,
+        note: `${researchEvidence.scope.predictions.toLocaleString("en-US")} road-link predictions in the cached test artifacts.`,
       },
       {
         label: "Primary GNN",
-        value: "R² 0.596",
-        note: "Deterministic Trial 8; MAE 3.96 veh/h and RMSE 7.12 veh/h.",
+        value: `R² ${researchEvidence.results.deterministic.r2.toFixed(3)}`,
+        note: `Deterministic Trial 8; MAE ${researchEvidence.results.deterministic.mae.toFixed(2)} veh/h and RMSE ${researchEvidence.results.deterministic.rmse.toFixed(2)} veh/h.`,
       },
       {
         label: "Uncertainty ranking",
-        value: "ρ 0.482",
+        value: `ρ ${researchEvidence.results.mcDropout.spearman.toFixed(3)}`,
         note: "Pooled Spearman correlation between MC Dropout uncertainty and absolute error.",
       },
       {
         label: "Selective review",
-        value: "41.2% lower MAE",
-        note: "Accepted-set MAE at 50% retention versus accepting every prediction.",
+        value: `${halfRetention.reductionPct.toFixed(1)}% lower MAE`,
+        note: `Accepted-set MAE at ${halfRetention.retentionPct}% retention versus accepting every prediction.`,
       },
       {
         label: "Deep ensemble",
-        value: "R² 0.684",
-        note: "Five-member ensemble; MAE 3.49 veh/h and uncertainty-error ρ 0.400.",
+        value: `R² ${researchEvidence.results.deepEnsemble.r2.toFixed(3)}`,
+        note: `${researchEvidence.results.deepEnsemble.members}-member ensemble; MAE ${researchEvidence.results.deepEnsemble.mae.toFixed(2)} veh/h and uncertainty-error ρ ${researchEvidence.results.deepEnsemble.spearman.toFixed(3)}.`,
       },
       {
         label: "Marginal coverage",
-        value: "90.02% / 95.01%",
-        note: "Reported final-thesis split-conformal protocol at nominal 90% / 95%.",
+        value: `${coverage90.observedPct.toFixed(2)}% / ${coverage95.observedPct.toFixed(2)}%`,
+        note: `Reported final-thesis split-conformal protocol at nominal ${coverage90.nominalPct}% / ${coverage95.nominalPct}%.`,
       },
     ],
     quality: [
@@ -164,12 +144,12 @@ export const projects: readonly Project[] = [
     artifacts: [
       {
         label: "Corrigendum",
-        href: `${thesis.repository}/blob/main/docs/CORRIGENDUM.md`,
+        href: canonicalThesisEvidence.corrigendum,
         note: "Post-submission corrections and protocol boundaries.",
       },
       {
         label: "Aggregate audit report",
-        href: `${thesis.repository}/blob/main/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md`,
+        href: canonicalThesisEvidence.aggregateReport,
         note: "Privacy-safe evidence generated from hash-locked source artifacts.",
       },
       {
@@ -180,6 +160,7 @@ export const projects: readonly Project[] = [
     ],
     nextStep:
       "A future replication should fit preprocessing only on training data and test transfer across networks and intervention families.",
+    researchPath: thesisResearchPath,
   },
   {
     slug: "insureassist-rag",
@@ -488,6 +469,12 @@ export const navigation = [
 
 export function getProject(slug: string) {
   return projects.find((project) => project.slug === slug);
+}
+
+export const researchProjectSlugs = ["transport-uq", "hydrology-uq", "streamflow-forecasting"] as const;
+
+export function getResearchProjects() {
+  return researchProjectSlugs.map((slug) => getProject(slug)!);
 }
 
 export const resumeProjectSlugs = ["transport-uq", "mlops-reference-pipeline", "insureassist-rag"] as const;

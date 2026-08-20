@@ -145,10 +145,13 @@ export default async function LearnEntryPage({ params }: { params: Promise<{ slu
             <div className="article-related-grid">
               {relatedProjects.map((project) => (
                 <article key={project.slug}>
-                  <p>{project.classification}</p>
-                  <h3><Link href={`/work/${project.slug}`}>{project.title}</Link></h3>
-                  <span>{project.summary}</span>
-                </article>
+                   <p>{project.classification}</p>
+                   <h3><Link href={`/work/${project.slug}`}>{project.title}</Link></h3>
+                   <span>{project.summary}</span>
+                   {project.researchPath ? (
+                     <Link className="text-link" href={project.researchPath}>Research record <span aria-hidden="true">→</span></Link>
+                   ) : null}
+                 </article>
               ))}
             </div>
           </section>

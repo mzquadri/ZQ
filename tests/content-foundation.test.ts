@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   calculateReadingTime,
   getPublishedLearnWriting,
+  getPublishedWritingForProject,
   getWritingTaxonomy,
   parseWritingSource,
 } from "../src/content/writing/repository";
@@ -14,7 +15,11 @@ test("published learning content has stable routing and taxonomy", () => {
   assert.equal(entries[0].path, "/learn/selective-prediction-when-models-should-abstain");
   assert.ok(entries[0].readingTime >= 4);
   assert.ok(entries[0].tableOfContents.some((item) => item.id === "risk-and-coverage"));
-  assert.match(entries[0].body, /\| 10% \| 1\.06 veh\/h \|/);
+  assert.match(entries[0].body, /\| 10% \| 1\.05 veh\/h \|/);
+  assert.deepEqual(
+    getPublishedWritingForProject("transport-uq").map((entry) => entry.slug),
+    ["selective-prediction-when-models-should-abstain"],
+  );
 
   const taxonomy = getWritingTaxonomy();
   assert.deepEqual(taxonomy.categories.map((item) => item.slug), ["reliable-ai"]);
