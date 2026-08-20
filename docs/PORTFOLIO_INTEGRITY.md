@@ -90,9 +90,12 @@ After migration:
 - Portfolio Integrity v1 `npm run test:e2e`: 39 passed and one expected desktop-only skip.
 - Recruiter Core v1 local verification: 47 passed and one expected desktop-only skip across desktop
   and mobile Chromium, including 320 px reflow and resume coverage.
+- Content Foundation v1 local verification: 55 passed and one expected desktop-only skip, including
+  Learn routes, RSS, article metadata, static code and equations, axe scans, and 320 px reflow.
 - Public website, GitHub profile, project repositories, and credited contributor profiles:
   resolved successfully on August 20, 2026. LinkedIn's exact profile path was manually
   verified because automated requests receive its anti-bot status.
 
-A production smoke test for the upgraded code remains a deployment-stage check; the live URL
-continues to represent the frozen baseline until a reviewed change is deployed.
+Recruiter Core v1 was deployed from commit `8ac1cce5d5c362040a453dfdd5ec9f0d94fcbc2e`.
+GitHub Actions passed all checks, both configured production deployments succeeded, and the live
+home, resume, and MLOps case-study routes were smoke-tested on August 20, 2026.

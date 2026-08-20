@@ -15,9 +15,12 @@ cookie, contact form, remote font, WebGL scene, or third-party client script.
 | `/work` | Six projects with explicit evidence classifications |
 | `/work/[slug]` | Problem, contribution, workflow, evidence, quality controls, and limitations |
 | `/research` | Thesis methodology, protocol distinctions, results, and scientific boundaries |
+| `/learn` | Technical tutorials and notes backed by a typed local MDX collection |
+| `/learn/[slug]` | Long-form technical content with code, equations, references, and related work |
 | `/about` | Current status, working principles, and proof-linked capabilities |
 | `/resume` | Canonical HTML resume generated from the approved truth and project models |
 | `/contact` | Verified GitHub, LinkedIn, and resume paths; no personal-data collection |
+| `/rss.xml` | RSS 2.0 feed for published technical content |
 
 The retired `/drive` experiment redirects to `/work`. One redacted PDF export is generated
 from `/resume`; it intentionally omits email, phone, address, identifiers, and disputed dates.
@@ -49,7 +52,7 @@ emulation and axe accessibility analysis.
 ## Content Integrity
 
 Current public facts live in `src/content/truth.ts`; project evidence lives in
-`src/content/portfolio.ts`. `scripts/validate-content.ts` checks:
+`src/content/portfolio.ts`; long-form content lives in `content/writing`. `scripts/validate-content.ts` checks:
 
 - source tiers, verification dates, review deadlines, and approved visibility;
 - unique project slugs, authorship records, and valid proof links;
@@ -57,6 +60,7 @@ Current public facts live in `src/content/truth.ts`; project evidence lives in
 - required routes and metadata endpoints;
 - approved experience and education records, canonical resume paths, and omitted disputed dates;
 - absence of public email, phone, stale CV paths, and selected unsupported claims.
+- MDX metadata, publication dates, taxonomy consistency, project relationships, and privacy boundaries.
 
 Research figures are site-native diagrams built from reviewed aggregate values. No raw
 simulation data, row-level predictions, serialized models, confidential files, or local
@@ -67,13 +71,13 @@ boundary.
 
 ![Server-first portfolio architecture](docs/diagrams/architecture.svg)
 
-The site uses React Server Components by default. Shared typed content feeds static pages,
+The site uses React Server Components by default. Shared typed content and trusted local MDX feed static pages,
 metadata, structured data, sitemap entries, and content validation. The only runtime
-dependencies are Next.js, React, and React DOM.
+dependencies beyond Next.js and React are build/server-side content parsing and rendering tools.
 
 ## Deployment
 
-Vercel installs the locked dependency graph with `npm ci` and runs `npm run build`.
+Vercel installs the locked dependency graph with `npm ci` and runs `npm run check`.
 Security headers disable framing, MIME sniffing, browser access to cameras, microphones,
 and geolocation, and limit referrer disclosure.
 
