@@ -17,11 +17,24 @@ import {
   truthRegistry,
   type TruthFact,
 } from "../src/content/truth";
-import { getResumeSourceSha256, sha256, type ResumeManifest } from "./resume-contract";
+import {
+  getResumeSourceSha256,
+  hasDeterministicResumePdfMetadata,
+  sha256,
+  type ResumeManifest,
+} from "./resume-contract";
+import {
+  getAllWriting,
+  getPublishedLearnWriting,
+  getPublishedWriting,
+  publicWritingSections,
+} from "../src/content/writing/repository";
 
 const failures: string[] = [];
 const projectSlugs = new Set<string>();
 const projectBySlug = new Map(projects.map((project) => [project.slug, project]));
+const writing = getAllWriting();
+const publishedWriting = getPublishedWriting();
 
 function check(condition: boolean, message: string) {
   if (!condition) failures.push(message);
@@ -118,6 +131,10 @@ const requiredFiles = [
   "src/app/about/page.tsx",
   "src/app/contact/page.tsx",
   "src/app/resume/page.tsx",
+  "src/app/learn/page.tsx",
+  "src/app/learn/[slug]/page.tsx",
+  "src/app/learn/[slug]/opengraph-image.tsx",
+  "src/app/rss.xml/route.ts",
   "src/app/robots.ts",
   "src/app/sitemap.ts",
   "src/app/opengraph-image.tsx",
@@ -141,7 +158,12 @@ const publicSource = publicSourceRoots
   )
   .concat(readFileSync(resolve("scripts/generate-resume.ts"), "utf8"))
   .join("\n");
-const renderedSource = `${publicContent}\n${publicSource}`;
+const writingSource = readdirSync(resolve("content/writing"))
+  .filter((path) => path.endsWith(".mdx"))
+  .map((path) => readFileSync(resolve("content/writing", path), "utf8"))
+  .join("\n");
+const renderedSource = `${publicContent}\n${publicSource}\n${writingSource}`;
+const privacyText = renderedSource.replace(/https?:\/\/\S+/g, "");
 const forbiddenClaims = [
   "production-grade",
   "Dean's List",
@@ -157,10 +179,12 @@ for (const claim of forbiddenClaims) {
   check(!renderedSource.toLowerCase().includes(claim.toLowerCase()), `Forbidden or unsupported claim found: ${claim}`);
 }
 
+check(!/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/.test(privacyText), "Public content contains an email address");
+check(!/\+\d[\d\s()-]{7,}/.test(privacyText), "Public content contains a phone number");
+check(!/[A-Za-z]:\\Users\\|\/(?:Users|home)\//.test(renderedSource), "Public content contains a local filesystem path");
 check(!/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/.test(renderedSource), "Public content contains an email address");
-check(!/\+\d[\d\s()-]{7,}/.test(renderedSource), "Public content contains a phone number");
 check(
-  !Array.from(renderedSource.matchAll(/\b(?:\d[ .()-]*){9,15}\b/g)).some(
+  !Array.from(privacyText.matchAll(/\b(?:\d[ .()-]*){9,15}\b/g)).some(
     ([candidate]) => candidate.replace(/\D/g, "").length >= 9,
   ),
   "Public content contains a possible domestic-format phone number",
@@ -184,6 +208,7 @@ if (existsSync(resumePdfPath)) {
   const pdfStructure = pdf.toString("latin1");
   check(/\/MarkInfo\s*<<[\s\S]*?\/Marked\s+true/.test(pdfStructure), "Canonical resume PDF is not tagged");
   check(!pdfStructure.includes("/S /Strong"), "Canonical resume PDF contains unsupported Strong structure elements");
+  check(hasDeterministicResumePdfMetadata(pdf), "Canonical resume PDF metadata is not deterministic");
 
   const manifestPath = resolve("public/mohd-zamin-quadri-resume.manifest.json");
   if (existsSync(manifestPath)) {
@@ -210,11 +235,44 @@ check(thesis.repository === "https://github.com/mzquadri/ml-surrogates-thesis", 
 check(researchEvidence.selectiveRisk.points.length === 3, "Selective-risk figure requires three reviewed points");
 check(researchEvidence.calibrationProtocols.length === 2, "Expected two distinct calibration protocols");
 
+check(publishedWriting.length > 0, "Public writing routes require at least one published entry");
+check(getPublishedLearnWriting().length > 0, "The Learn route must not launch empty");
+check(new Set(writing.map((entry) => entry.slug)).size === writing.length, "Writing slugs must be unique");
+const taxonomyLabels = new Map<string, string>();
+for (const entry of writing) {
+  if (entry.status === "published") {
+    check(Boolean(entry.publishedAt), `${entry.slug} is published without a publication date`);
+    check((entry.publishedAt ?? "") <= new Date().toISOString().slice(0, 10), `${entry.slug} has a future publication date`);
+    check((entry.updatedAt ?? entry.publishedAt ?? "") <= new Date().toISOString().slice(0, 10), `${entry.slug} has a future update date`);
+    check(
+      existsSync(resolve(`src/app/${entry.section}/[slug]/page.tsx`)),
+      `${entry.slug} is published to a section without a public detail route`,
+    );
+    check(publicWritingSections.includes(entry.section), `${entry.slug} targets a section that is not enabled for publication`);
+  }
+  check(entry.wordCount >= 500 || entry.status === "draft", `${entry.slug} is too short for a published technical piece`);
+  check(entry.tableOfContents.length >= 2 || entry.status === "draft", `${entry.slug} needs a useful table of contents`);
+  for (const taxon of [entry.category, ...entry.tags]) {
+    const existingLabel = taxonomyLabels.get(taxon.slug);
+    check(!existingLabel || existingLabel === taxon.label, `Taxonomy label conflict for ${taxon.slug}`);
+    taxonomyLabels.set(taxon.slug, taxon.label);
+  }
+  if (entry.coverImage) check(existsSync(resolve(`public${entry.coverImage.src}`)), `${entry.slug} cover image is missing`);
+}
+const selectivePredictionTutorial = writing.find(
+  (entry) => entry.slug === "selective-prediction-when-models-should-abstain",
+);
+for (const point of researchEvidence.selectiveRisk.points) {
+  check(
+    selectivePredictionTutorial?.body.includes(`| ${point.retentionPct}% | ${point.mae.toFixed(2)} veh/h |`) ?? false,
+    `Selective-prediction tutorial diverges from the reviewed ${point.retentionPct}% retention value`,
+  );
+}
 if (failures.length > 0) {
   console.error(failures.map((failure) => `- ${failure}`).join("\n"));
   process.exit(1);
 }
 
 console.log(
-  `Validated ${truthFacts.length} truth facts, ${projects.length} projects, ${capabilities.length} capability groups, and ${requiredFiles.length} route files.`,
+  `Validated ${truthFacts.length} truth facts, ${projects.length} projects, ${publishedWriting.length} published writing entry, ${capabilities.length} capability groups, and ${requiredFiles.length} route files.`,
 );

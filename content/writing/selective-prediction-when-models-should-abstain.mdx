@@ -1,0 +1,150 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Selective Prediction: When Models Should Abstain"
+description: "A practical guide to risk-coverage trade-offs: use uncertainty to decide which predictions to accept, review, or defer."
+publishedAt: "2026-08-20"
+updatedAt: "2026-08-20"
+author: "Mohd Zamin Quadri"
+category:
+  slug: reliable-ai
+  label: Reliable AI
+tags:
+  - slug: uncertainty-quantification
+    label: Uncertainty Quantification
+  - slug: model-evaluation
+    label: Model Evaluation
+  - slug: selective-prediction
+    label: Selective Prediction
+projectSlugs:
+  - transport-uq
+relatedSlugs: []
+references:
+  - id: thesis
+    title: "Uncertainty Quantification for Machine Learning Models in Transportation Policy Analysis"
+    authors:
+      - Mohd Zamin Quadri
+    year: 2026
+    publisher: Technical University of Munich
+    url: https://github.com/mzquadri/ml-surrogates-thesis
+  - id: selective-classification
+    title: "Selective Classification for Deep Neural Networks"
+    authors:
+      - Yonatan Geifman
+      - Ran El-Yaniv
+    year: 2017
+    publisher: NeurIPS
+    url: https://arxiv.org/abs/1705.08500
+featured: true
+---
+
+Most prediction systems answer every request. That default is convenient, but it hides an important design choice: some predictions are much less trustworthy than others.
+
+Selective prediction makes that choice explicit. The model still produces a prediction, but a separate policy decides whether to **accept**, **review**, or **defer** it. The objective is not to make uncertainty look sophisticated. It is to spend limited review capacity where errors are more likely.
+
+<Callout title="Core idea">
+  A useful uncertainty score should rank risk. As the system retains fewer, more confident predictions, error should fall in a stable and operationally meaningful way.
+</Callout>
+
+## Risk and coverage
+
+Let a model produce a prediction $\hat{y}_i$ and an uncertainty score $u_i$ for each input. A threshold $\tau$ defines the accepted set:
+
+$$
+A_{\tau} = \{i : u_i \leq \tau\}.
+$$
+
+**Coverage** is the fraction of predictions that remain automated:
+
+$$
+\operatorname{coverage}(\tau) = \frac{|A_{\tau}|}{n}.
+$$
+
+**Selective risk** is the error measured only on that accepted set. For mean absolute error:
+
+$$
+\operatorname{risk}(\tau) = \frac{1}{|A_{\tau}|}\sum_{i \in A_{\tau}} |y_i - \hat{y}_i|.
+$$
+
+Lowering the threshold normally reduces coverage and sends more cases to review. If uncertainty ranks errors well, selective risk should also decrease.
+
+## Build the curve, not one threshold
+
+A single threshold hides the operating trade-off. Evaluate many retention levels and draw a risk-coverage curve instead.
+
+```python
+import numpy as np
+
+
+def risk_coverage_curve(y_true, y_pred, uncertainty):
+    order = np.argsort(uncertainty)
+    errors = np.abs(y_true[order] - y_pred[order])
+
+    coverage = np.arange(1, len(errors) + 1) / len(errors)
+    risk = np.cumsum(errors) / np.arange(1, len(errors) + 1)
+    return coverage, risk
+```
+
+The ordering matters more than the scale of the uncertainty score. Multiplying every score by ten changes its numeric value but not which predictions are reviewed first.
+
+## Read the curve as a system decision
+
+In my transport-surrogate research, the reviewed MC Dropout archive covered 100 held-out scenarios and 3,163,500 road-link predictions. Three reported operating points were:
+
+| Retained predictions | MAE |
+| --- | ---: |
+| 10% | 1.06 veh/h |
+| 50% | 2.32 veh/h |
+| 100% | 3.95 veh/h |
+
+At 50% retention, MAE was 41.2% lower than at full coverage. This is evidence that the uncertainty score ranked error usefully in that experiment. It is **not** a universal service-level guarantee: the study used one Paris network, one intervention family, and a fixed scenario subset.
+
+The business or scientific question determines the operating point. A low-cost batch workflow might automate most cases. A high-consequence decision may route a larger fraction to a simulator, specialist, or stronger model.
+
+## Separate ranking from calibration
+
+Selective prediction and calibration answer different questions:
+
+- **Ranking:** Are uncertain predictions more likely to be wrong?
+- **Calibration:** Does a stated probability or interval have the claimed frequency?
+
+A score can rank errors well while being numerically miscalibrated. Conversely, average coverage can look correct while the score fails to identify the most difficult cases. Evaluate both properties rather than treating one as a substitute for the other.
+
+## Test the failure modes
+
+A credible evaluation should go beyond a smooth aggregate curve.
+
+### Respect dependence
+
+If many rows come from the same scenario, patient, document, or device, they are not independent observations. Split and report at the operational unit whenever possible. In the transport study, road links within one policy scenario shared graph structure and policy inputs.
+
+### Inspect subgroups
+
+Aggregate improvement can hide poor ranking in the cases that matter most. Compare risk-coverage behavior across response magnitude, geography, class, data source, or another domain-relevant stratum.
+
+### Include a random baseline
+
+Uncertainty-based review should outperform reviewing the same number of randomly selected cases. Without that comparison, lower error at lower coverage may be mistaken for useful ranking.
+
+### Account for review capacity
+
+Deferral is not free. A policy that sends half of all predictions to a human or expensive simulator may improve accuracy while making the overall system unusable. Report workload alongside risk.
+
+## A practical deployment contract
+
+Treat selective prediction as an explicit interface between a model and the rest of the system:
+
+1. Define the unit of decision and the cost of a bad automated prediction.
+2. Produce a prediction and a versioned uncertainty score.
+3. Evaluate risk across realistic coverage levels on held-out groups.
+4. Choose a threshold from review capacity and acceptable residual risk.
+5. Log accepted and deferred cases without exposing sensitive payloads.
+6. Re-evaluate the curve when the model, data distribution, or review process changes.
+
+The result is a modest but powerful shift: uncertainty becomes a routing signal, not a decorative number beside the prediction.
+
+## References
+
+The quantitative example and its limitations come from the [canonical thesis repository](https://github.com/mzquadri/ml-surrogates-thesis). The selective-classification framing follows Geifman and El-Yaniv's [selective classification work](https://arxiv.org/abs/1705.08500).

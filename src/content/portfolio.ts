@@ -481,6 +481,7 @@ export const capabilities = [
 export const navigation = [
   { href: "/work", label: "Work" },
   { href: "/research", label: "Research" },
+  { href: "/learn", label: "Learn" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ] as const;

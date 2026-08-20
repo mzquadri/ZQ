@@ -8,6 +8,10 @@ interface PageMetadata {
   type?: "website" | "article";
   imagePath?: string;
   imageAlt?: string;
+  publishedTime?: string;
+  modifiedTime?: string;
+  authors?: string[];
+  tags?: string[];
 }
 
 export function createPageMetadata({
@@ -17,11 +21,18 @@ export function createPageMetadata({
   type = "website",
   imagePath = "/opengraph-image",
   imageAlt = `${site.name} portfolio`,
+  publishedTime,
+  modifiedTime,
+  authors,
+  tags,
 }: PageMetadata): Metadata {
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      types: { "application/rss+xml": "/rss.xml" },
+    },
     openGraph: {
       title,
       description,
@@ -30,6 +41,7 @@ export function createPageMetadata({
       siteName: site.name,
       locale: "en_US",
       images: [{ url: imagePath, width: 1200, height: 630, alt: imageAlt }],
+      ...(type === "article" ? { publishedTime, modifiedTime, authors, tags } : {}),
     },
     twitter: {
       card: "summary_large_image",

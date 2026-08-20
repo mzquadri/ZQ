@@ -4,6 +4,8 @@ import { extname, relative, resolve } from "node:path";
 
 import { capabilities, getProject, resumeProjectSlugs, site, thesis } from "../src/content/portfolio";
 
+const deterministicPdfDate = "D:20260820000000+00'00'";
+
 const rendererFiles = [
   "next.config.mjs",
   "package.json",
@@ -63,6 +65,27 @@ export const resumeSourceRecord = {
 
 export function sha256(value: string | Uint8Array) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+export function normalizeResumePdfMetadata(value: Uint8Array) {
+  const source = Buffer.from(value).toString("latin1");
+  const seen = new Set<string>();
+  const normalized = source.replace(
+    /\/(CreationDate|ModDate) \(D:\d{14}[+-]\d{2}'\d{2}'\)/g,
+    (_, field: string) => {
+      seen.add(field);
+      return `/${field} (${deterministicPdfDate})`;
+    },
+  );
+  if (!seen.has("CreationDate") || !seen.has("ModDate")) {
+    throw new Error("Resume PDF is missing expected Chromium date metadata");
+  }
+  return Buffer.from(normalized, "latin1");
+}
+
+export function hasDeterministicResumePdfMetadata(value: Uint8Array) {
+  const source = Buffer.from(value).toString("latin1");
+  return ["CreationDate", "ModDate"].every((field) => source.includes(`/${field} (${deterministicPdfDate})`));
 }
 
 export function getResumeSourceSha256() {

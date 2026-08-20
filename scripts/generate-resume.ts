@@ -2,7 +2,12 @@ import { spawn } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { chromium } from "@playwright/test";
-import { getResumeSourceSha256, sha256, type ResumeManifest } from "./resume-contract";
+import {
+  getResumeSourceSha256,
+  normalizeResumePdfMetadata,
+  sha256,
+  type ResumeManifest,
+} from "./resume-contract";
 
 const port = 3200;
 const origin = `http://127.0.0.1:${port}`;
@@ -42,7 +47,8 @@ async function main() {
       margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
     });
     await browser.close();
-    const pdf = await readFile(pdfPath);
+    const pdf = normalizeResumePdfMetadata(await readFile(pdfPath));
+    await writeFile(pdfPath, pdf);
     const manifest: ResumeManifest = {
       schemaVersion: 1,
       sourceSha256: getResumeSourceSha256(),
