@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import PageShell from "@/components/PageShell";
-import { SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
+import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import { getProject, projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -25,6 +25,8 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     description: project.summary,
     path: `/work/${project.slug}`,
     type: "article",
+    imagePath: `/work/${project.slug}/opengraph-image`,
+    imageAlt: `${project.title} — ${project.classification} case study`,
   });
 }
 
@@ -62,6 +64,22 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <p className="kicker">{project.eyebrow}</p>
           <h1>{project.title}</h1>
           <p className="case-summary">{project.summary}</p>
+          <dl className="case-facts">
+            <div>
+              <dt>Role</dt>
+              <dd>{project.projectRole}</dd>
+            </div>
+            <div>
+              <dt>Authorship</dt>
+              <dd>{project.authors.map((author) => author.name).join(", ")}</dd>
+            </div>
+            {project.institution ? (
+              <div>
+                <dt>Institution</dt>
+                <dd>{project.institution}</dd>
+              </div>
+            ) : null}
+          </dl>
           <a className="button button-primary" href={project.repository}>
             Inspect repository <span aria-hidden="true">↗</span>
           </a>
@@ -87,9 +105,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </section>
         ) : null}
 
+        {project.slug === "mlops-reference-pipeline" ? (
+          <section className="section-wrap visual-section" aria-label="MLOps reference architecture">
+            <MlopsPipeline />
+          </section>
+        ) : null}
+
         <section className="section-wrap case-section">
           <p className="section-index"><span>03</span>System</p>
           <h2>Workflow and decisions</h2>
+          {project.systemSummary ? <p className="system-summary">{project.systemSummary}</p> : null}
           <ol className="workflow-list">
             {project.workflow.map((step, index) => (
               <li key={step}>
@@ -117,16 +142,32 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
         </section>
 
+        {project.artifacts ? (
+          <section className="section-wrap case-section artifact-section">
+            <p className="section-index"><span>05</span>Inspection points</p>
+            <h2>Go directly to the evidence</h2>
+            <div className="artifact-links">
+              {project.artifacts.map((artifact) => (
+                <a href={artifact.href} key={artifact.href}>
+                  <strong>{artifact.label}</strong>
+                  <span>{artifact.note}</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section className="section-wrap case-section quality-grid">
           <div>
-            <p className="section-index"><span>05</span>Quality controls</p>
+            <p className="section-index"><span>{project.artifacts ? "06" : "05"}</span>Quality controls</p>
             <h2>How the work is checked</h2>
             <ul className="editorial-list positive-list">
               {project.quality.map((item) => <li key={item}>{item}</li>)}
             </ul>
           </div>
           <div className="limitation-panel">
-            <p className="section-index"><span>06</span>Limitations</p>
+            <p className="section-index"><span>{project.artifacts ? "07" : "06"}</span>Limitations</p>
             <h2>Where the evidence stops</h2>
             <ul className="editorial-list">
               {project.limitations.map((item) => <li key={item}>{item}</li>)}
@@ -137,6 +178,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <section className="case-learning section-wrap">
           <p className="kicker">What this changed in my practice</p>
           <blockquote>{project.learned}</blockquote>
+          {project.nextStep ? <p className="next-step"><strong>Next evidence milestone:</strong> {project.nextStep}</p> : null}
           <div className="case-actions">
             <a className="text-link" href={project.repository}>
               Source and documentation <span aria-hidden="true">↗</span>

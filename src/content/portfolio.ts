@@ -24,6 +24,12 @@ export interface ProjectAuthor {
   url?: string;
 }
 
+export interface ArtifactLink {
+  label: string;
+  href: string;
+  note: string;
+}
+
 export interface Project {
   slug: string;
   title: string;
@@ -43,6 +49,9 @@ export interface Project {
   limitations: readonly string[];
   learned: string;
   repository: string;
+  systemSummary?: string;
+  artifacts?: readonly ArtifactLink[];
+  nextStep?: string;
 }
 
 export const researchEvidence = {
@@ -150,6 +159,27 @@ export const projects: readonly Project[] = [
     learned:
       "Reliable ML is not one score. Ranking, calibration, conditional behavior, compute cost, and the operational cost of review must be evaluated together.",
     repository: thesis.repository,
+    systemSummary:
+      "The research separates fast surrogate inference from uncertainty estimation, calibration, and the downstream accept-or-review decision. Each layer has a distinct evaluation protocol so confidence claims are not inferred from point accuracy alone.",
+    artifacts: [
+      {
+        label: "Corrigendum",
+        href: `${thesis.repository}/blob/main/docs/CORRIGENDUM.md`,
+        note: "Post-submission corrections and protocol boundaries.",
+      },
+      {
+        label: "Aggregate audit report",
+        href: `${thesis.repository}/blob/main/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md`,
+        note: "Privacy-safe evidence generated from hash-locked source artifacts.",
+      },
+      {
+        label: "Repository checks",
+        href: `${thesis.repository}/actions`,
+        note: "Automated provenance, static-analysis, and regression checks.",
+      },
+    ],
+    nextStep:
+      "A future replication should fit preprocessing only on training data and test transfer across networks and intervention families.",
   },
   {
     slug: "insureassist-rag",
@@ -257,6 +287,27 @@ export const projects: readonly Project[] = [
     learned:
       "The valuable part of MLOps is the contract between stages: provenance, validation, promotion criteria, and serving behavior must agree.",
     repository: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline",
+    systemSummary:
+      "The pipeline treats each stage as a contract: data is validated and fingerprinted, features are fitted once and reused, evaluation controls promotion, and the API serves only registered bundles that pass the gate.",
+    artifacts: [
+      {
+        label: "Pipeline documentation",
+        href: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline#readme",
+        note: "Lifecycle, commands, data contracts, and explicit scope boundaries.",
+      },
+      {
+        label: "Automated tests",
+        href: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline/tree/main/tests",
+        note: "API, data-pipeline, model, and bundle behavior.",
+      },
+      {
+        label: "CI workflow",
+        href: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline/actions",
+        note: "The default branch executes pytest for versioned behavior.",
+      },
+    ],
+    nextStep:
+      "The next evidence milestone is a reproducible licensed-data run with a published bundle and container integration test.",
   },
   {
     slug: "hydrology-uq",
@@ -401,28 +452,28 @@ export const projects: readonly Project[] = [
 
 export const capabilities = [
   {
-    title: "Reliable ML and UQ",
-    summary: "Calibration, conformal prediction, selective prediction, uncertainty diagnostics",
+    title: "Machine Learning & Research",
+    summary: "Graph models, uncertainty quantification, calibration, experiments, and evidence-led evaluation",
     proof: ["transport-uq", "hydrology-uq"],
   },
   {
-    title: "Deep learning and GNNs",
-    summary: "PyTorch, PyG, graph surrogates, ensembles, CNN experiments",
-    proof: ["transport-uq", "cifar10-cnn"],
-  },
-  {
-    title: "MLOps and deployment",
-    summary: "Validation, experiment tracking, model gates, APIs, containers, CI",
-    proof: ["mlops-reference-pipeline", "insureassist-rag"],
-  },
-  {
-    title: "AI application engineering",
-    summary: "Grounded retrieval, vector search, typed services, local model integration",
+    title: "Generative AI & Retrieval",
+    summary: "Grounded retrieval, vector search, citation-aware responses, and local model integration",
     proof: ["insureassist-rag"],
   },
   {
-    title: "Scientific computing",
-    summary: "Numerical experiments, sensitivity analysis, time series, reproducible reports",
+    title: "Backend & Data Systems",
+    summary: "Typed APIs, data validation, reusable transformations, service boundaries, and traceable artifacts",
+    proof: ["mlops-reference-pipeline", "insureassist-rag"],
+  },
+  {
+    title: "MLOps & Engineering",
+    summary: "Experiment tracking, promotion gates, model registries, containers, CI, and testable workflows",
+    proof: ["mlops-reference-pipeline", "insureassist-rag"],
+  },
+  {
+    title: "Data Science & Analytics",
+    summary: "Scientific computing, sensitivity analysis, time series, diagnostics, and reproducible reporting",
     proof: ["hydrology-uq", "streamflow-forecasting"],
   },
 ] as const;
@@ -437,6 +488,8 @@ export const navigation = [
 export function getProject(slug: string) {
   return projects.find((project) => project.slug === slug);
 }
+
+export const resumeProjectSlugs = ["transport-uq", "mlops-reference-pipeline", "insureassist-rag"] as const;
 
 export function getFeaturedProjects() {
   const featuredSlugs: readonly string[] = truthRegistry.portfolio.featuredProjectSlugs.value;

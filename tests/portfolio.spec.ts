@@ -7,6 +7,7 @@ const routes = [
   "/research",
   "/about",
   "/contact",
+  "/resume",
   "/work/transport-uq",
   "/work/insureassist-rag",
   "/work/mlops-reference-pipeline",
@@ -77,12 +78,12 @@ test("mobile primary navigation meets minimum target sizing", async ({ page }) =
   }
 });
 
-test("contact route exposes no form, email, phone, or broken resume action", async ({ page }) => {
+test("contact route exposes approved channels and the canonical resume", async ({ page }) => {
   await page.goto("/contact");
   await expect(page.locator("form")).toHaveCount(0);
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
-  await expect(page.locator('a[href$=".pdf"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/mohd-zamin-quadri-resume.pdf"]')).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://www.linkedin.com/in/mohdzaminquadri/"]`)).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://github.com/mzquadri"]`)).toBeVisible();
 });
@@ -116,6 +117,10 @@ test("metadata endpoints and security headers are production-ready", async ({ re
   expect(image.status()).toBe(200);
   expect(image.headers()["content-type"]).toContain("image/png");
 
+  const projectImage = await request.get("/work/transport-uq/opengraph-image");
+  expect(projectImage.status()).toBe(200);
+  expect(projectImage.headers()["content-type"]).toContain("image/png");
+
   const missingProject = await request.get("/work/not-an-evidence-backed-project");
   expect(missingProject.status()).toBe(404);
   const missingProjectHtml = await missingProject.text();
@@ -136,7 +141,13 @@ test("canonical and structured metadata are present", async ({ page }) => {
     ["/research", "Research"],
     ["/about", "About"],
     ["/contact", "Contact"],
+    ["/resume", "Resume"],
     ["/work/transport-uq", "Reliable GNN Surrogates for Transport Policy Analysis"],
+    ["/work/insureassist-rag", "InsureAssist: Grounded RAG Service"],
+    ["/work/mlops-reference-pipeline", "A Testable End-to-End MLOps Pipeline"],
+    ["/work/hydrology-uq", "Uncertainty Quantification in Hydrology"],
+    ["/work/cifar10-cnn", "CIFAR-10 CNN: A Reproducible Baseline"],
+    ["/work/streamflow-forecasting", "Synthetic Streamflow Forecasting Benchmark"],
   ] as const;
 
   for (const [route, title] of routeMetadata) {
@@ -145,6 +156,61 @@ test("canonical and structured metadata are present", async ({ page }) => {
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", `https://mzquadri.de${route}`);
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", title);
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", title);
+  }
+
+  for (const [route] of routeMetadata.filter(([route]) => route.startsWith("/work/"))) {
+    await page.goto(route);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      "content",
+      `https://mzquadri.de${route}/opengraph-image`,
+    );
+    const image = await page.request.get(`${route}/opengraph-image`);
+    expect(image.status()).toBe(200);
+    expect(image.headers()["content-type"]).toContain("image/png");
+  }
+});
+
+test("resume publishes approved records without disputed experience dates", async ({ page, request }) => {
+  await page.goto("/resume");
+  await expect(page.getByRole("heading", { name: "Experience" })).toBeVisible();
+  await expect(page.getByText("AI Engineer (Working Student)", { exact: true })).toBeVisible();
+  await expect(page.getByText("Intern, Programming of Workflows and Linking of Databases", { exact: true })).toBeVisible();
+  await expect(page.getByText("B.Sc. (Hons.) Mathematics", { exact: true })).toBeVisible();
+  await expect(page.getByText("M.Sc. program: Mathematics in Science and Engineering", { exact: true })).toBeVisible();
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
+  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+
+  for (const context of await page.locator(".career-context").allTextContents()) {
+    expect(context).not.toMatch(/20\d{2}/);
+  }
+
+  const pdf = await request.get("/mohd-zamin-quadri-resume.pdf");
+  expect(pdf.status()).toBe(200);
+  expect(pdf.headers()["content-type"]).toContain("application/pdf");
+  expect(pdf.headers()["content-disposition"]).toContain("mohd-zamin-quadri-resume.pdf");
+  expect(Number(pdf.headers()["content-length"])).toBeGreaterThan(20_000);
+  const pdfStructure = (await pdf.body()).toString("latin1");
+  expect(pdfStructure).toMatch(/\/MarkInfo\s*<<[\s\S]*?\/Marked\s+true/);
+  expect(pdfStructure).not.toContain("/S /Strong");
+});
+
+test("case studies expose ownership and direct evidence", async ({ page }) => {
+  await page.goto("/work/transport-uq");
+  await expect(page.getByText("Researcher and thesis author", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Corrigendum/ })).toBeVisible();
+
+  await page.goto("/work/mlops-reference-pipeline");
+  await expect(page.getByText("Project author and engineer", { exact: true })).toBeVisible();
+  await expect(page.getByRole("figure", { name: /Reference lifecycle/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Automated tests/ })).toBeVisible();
+});
+
+test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  for (const route of ["/", "/resume", "/work/mlops-reference-pipeline"]) {
+    await page.goto(route);
+    const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+    expect(overflows).toBe(false);
   }
 });
 

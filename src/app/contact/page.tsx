@@ -27,11 +27,10 @@ export default function ContactPage() {
       <section className="section-wrap contact-grid" aria-labelledby="contact-options">
         <div>
           <p className="section-index"><span>01</span>Contact options</p>
-          <h2 id="contact-options">Use a channel that actually works.</h2>
+          <h2 id="contact-options">Choose the shortest useful path.</h2>
           <p>
-            No contact form is used: this site does not collect, store, or claim to send
-            personal information. A public email is intentionally omitted until a durable
-            address is confirmed.
+            LinkedIn is the primary conversation channel; GitHub provides the technical record.
+            This site uses no form, tracking, or personal-data collection.
           </p>
         </div>
         <div className="contact-links">
@@ -50,15 +49,20 @@ export default function ContactPage() {
 
       <section className="section-wrap contact-note">
         <div>
-          <p className="section-index"><span>02</span>CV status</p>
-          <h2>No broken download and no placeholder document.</h2>
+          <p className="section-index"><span>02</span>Resume</p>
+          <h2>One canonical recruiter record.</h2>
         </div>
-        <p>
-          An approved redacted CV is not currently available in this repository, so the old
-          404 download link has been removed. A reviewed PDF can be added later without
-          exposing an address, phone number, birth date, identifiers, signatures, or private
-          references.
-        </p>
+        <div>
+          <p>
+            The HTML resume and its PDF export use the same approved experience, education,
+            profile, and project facts. Neither publishes an email, phone number, street
+            address, private identifier, or disputed employment date.
+          </p>
+          <div className="case-actions">
+            <Link className="button button-secondary" href={site.resume.htmlPath}>View resume</Link>
+            <a className="text-link" href={site.resume.pdfPath} download>Download PDF <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
       </section>
 
       <section className="closing-section section-wrap">

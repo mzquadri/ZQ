@@ -78,11 +78,12 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "Person",
             name: site.name,
+            jobTitle: site.role,
             url: site.domain,
             sameAs: [site.github, site.linkedin],
             address: {
               "@type": "PostalAddress",
-              addressLocality: "Munich",
+              addressLocality: site.location.split(",")[0],
               addressCountry: "DE",
             },
             knowsAbout: [

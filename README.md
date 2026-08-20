@@ -16,10 +16,11 @@ cookie, contact form, remote font, WebGL scene, or third-party client script.
 | `/work/[slug]` | Problem, contribution, workflow, evidence, quality controls, and limitations |
 | `/research` | Thesis methodology, protocol distinctions, results, and scientific boundaries |
 | `/about` | Current status, working principles, and proof-linked capabilities |
-| `/contact` | Verified GitHub and LinkedIn channels; no personal-data collection |
+| `/resume` | Canonical HTML resume generated from the approved truth and project models |
+| `/contact` | Verified GitHub, LinkedIn, and resume paths; no personal-data collection |
 
-The retired `/drive` experiment redirects to `/work`. The broken CV route was removed;
-no document should be added until an approved, redacted PDF is available.
+The retired `/drive` experiment redirects to `/work`. One redacted PDF export is generated
+from `/resume`; it intentionally omits email, phone, address, identifiers, and disputed dates.
 
 ## Run Locally
 
@@ -36,6 +37,7 @@ Open `http://localhost:3000`.
 
 ```bash
 npm run check
+npm run generate:resume
 npx playwright install chromium
 npm run test:e2e
 ```
@@ -53,7 +55,8 @@ Current public facts live in `src/content/truth.ts`; project evidence lives in
 - unique project slugs, authorship records, and valid proof links;
 - evidence, quality controls, and limitations for every project;
 - required routes and metadata endpoints;
-- absence of public email, phone, broken CV paths, and selected unsupported claims.
+- approved experience and education records, canonical resume paths, and omitted disputed dates;
+- absence of public email, phone, stale CV paths, and selected unsupported claims.
 
 Research figures are site-native diagrams built from reviewed aggregate values. No raw
 simulation data, row-level predictions, serialized models, confidential files, or local

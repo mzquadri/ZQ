@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { EducationList, ExperienceList } from "@/components/CareerProfile";
 import PageShell from "@/components/PageShell";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
@@ -57,8 +58,7 @@ export default function AboutPage() {
           </p>
           <p>
             My Master&apos;s thesis, <cite>{thesis.title}</cite>, was submitted at {thesis.institution}.
-            The available record states: {thesis.status}. This site intentionally states
-            submission—not degree conferral—because that is the supported status.
+            The available record states: {thesis.status}. No later education status is published.
           </p>
           <p>
             I am based in {site.location}. {site.availability}, including roles across Machine
@@ -68,8 +68,28 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="section-wrap career-section">
+        <p className="section-index"><span>02</span>Experience</p>
+        <h2 className="standalone-heading">Professional and research roles</h2>
+        <p className="section-lede">
+          These approved titles establish the public record without inferring disputed dates,
+          private client details, or unsupported impact figures.
+        </p>
+        <ExperienceList />
+      </section>
+
+      <section className="section-wrap education-section">
+        <p className="section-index"><span>03</span>Education and academic roles</p>
+        <h2 className="standalone-heading">Mathematics carried into computation</h2>
+        <p className="section-lede">
+          The approved public record includes TUM student research assistant titles in programming,
+          visualization, and numerical methods. No duties beyond those titles are inferred.
+        </p>
+        <EducationList />
+      </section>
+
       <section className="section-wrap principles-section">
-        <p className="section-index"><span>02</span>Principles</p>
+        <p className="section-index"><span>04</span>Principles</p>
         <h2 className="standalone-heading">How I approach technical work</h2>
         <div className="principle-grid">
           {principles.map((principle, index) => (
@@ -83,7 +103,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap capability-detail">
-        <p className="section-index"><span>03</span>Capabilities with proof</p>
+        <p className="section-index"><span>05</span>Capabilities with proof</p>
         <h2 className="standalone-heading">What I can contribute</h2>
         <div className="capability-table">
           {capabilities.map((capability) => (
@@ -102,10 +122,10 @@ export default function AboutPage() {
       </section>
 
       <section className="closing-section section-wrap">
-        <p className="kicker">Next</p>
-        <h2>Start from the case studies, not a self-rating.</h2>
-        <p>See the models, systems, quality controls, and limitations behind each capability.</p>
-        <Link className="button button-primary" href="/work">Explore the work <span aria-hidden="true">→</span></Link>
+        <p className="kicker">Recruiter record</p>
+        <h2>Need the concise version?</h2>
+        <p>The canonical resume is generated from the same approved facts and project evidence as this site.</p>
+        <Link className="button button-primary" href={site.resume.htmlPath}>View resume <span aria-hidden="true">→</span></Link>
       </section>
     </PageShell>
   );
