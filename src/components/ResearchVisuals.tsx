@@ -32,11 +32,12 @@ export function SelectiveRiskChart() {
       <figcaption>
         Selective prediction: accepted-set MAE falls as uncertain predictions are routed to review
       </figcaption>
-      <svg
-        viewBox="0 0 720 320"
-        role="img"
-        aria-labelledby="risk-title risk-description"
-      >
+      <div className="chart-scroll" role="region" aria-label="Scrollable selective prediction chart" tabIndex={0}>
+        <svg
+          viewBox="0 0 720 320"
+          role="img"
+          aria-labelledby="risk-title risk-description"
+        >
         <title id="risk-title">Accepted prediction fraction compared with mean absolute error</title>
         <desc id="risk-description">
           Mean absolute error is about {low.mae} vehicles per hour at {low.retentionPct} percent
@@ -72,7 +73,8 @@ export function SelectiveRiskChart() {
           <text x="364" y="130">{middle.mae.toFixed(2)}</text>
           <text x="610" y="39">{full.mae.toFixed(2)}</text>
         </g>
-      </svg>
+        </svg>
+      </div>
       <p className="figure-note">
         {researchEvidence.selectiveRisk.source}. Retention is a review-capacity choice, not
         proof that rejected predictions are incorrect.

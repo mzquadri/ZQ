@@ -37,11 +37,9 @@ JavaScript before deferred scene chunks. The redesigned production build reports
 first-load JavaScript for content routes, with only 192 B of route-specific client code.
 Removing the decorative 3D stack eliminated 141 installed packages.
 
-## Known Boundary
+## Historical Boundary
 
-The project remains on Next.js 14.2.35 to preserve the requested framework compatibility.
-As of the redesign, npm audit reports advisories whose offered remediation is a breaking
-upgrade to Next.js 16. The site does not use remote image patterns, Server Actions, rewrites,
-user-controlled scripts, or mutable application data, which narrows exposure but does not
-erase framework advisories. Upgrade planning should be handled separately and tested as a
-framework migration rather than forced into this redesign.
+The redesign originally remained on Next.js 14.2.35 to preserve the requested framework
+compatibility, despite advisories requiring a breaking upgrade. The later Portfolio Integrity
+v1 migration moved the site to Next.js 16 and React 19. See `PORTFOLIO_INTEGRITY.md` for the
+frozen baseline, migration boundary, and current verification results.

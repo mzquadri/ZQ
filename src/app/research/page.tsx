@@ -18,7 +18,7 @@ export default function ResearchPage() {
   return (
     <PageShell current="/research">
       <header className="page-hero research-hero section-wrap">
-        <p className="kicker">Research record / Thesis submitted May 2026</p>
+        <p className="kicker">Research record / {thesis.status}</p>
         <h1>{thesis.title}</h1>
         <p>
           A study of predictive quality, uncertainty ranking, calibration, and selective
@@ -108,7 +108,7 @@ export default function ResearchPage() {
           tracked prediction artifacts. Raw MATSim data and serialized local graph data are
           intentionally excluded.
         </p>
-        <a className="button button-primary" href={project.repository} target="_blank" rel="noreferrer">
+        <a className="button button-primary" href={project.repository}>
           Open research repository <span aria-hidden="true">↗</span>
         </a>
         <Link className="text-link" href="/work/transport-uq">

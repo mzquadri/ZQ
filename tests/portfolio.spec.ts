@@ -40,8 +40,7 @@ for (const route of routes) {
     expect(consoleErrors).toEqual([]);
 
     const results = await new AxeBuilder({ page }).analyze();
-    const serious = results.violations.filter((violation) => ["serious", "critical"].includes(violation.impact ?? ""));
-    expect(serious).toEqual([]);
+    expect(results.violations).toEqual([]);
   });
 }
 
@@ -52,6 +51,30 @@ test("primary navigation and project routes work", async ({ page }) => {
   await page.getByRole("link", { name: "Reliable GNN Surrogates for Transport Policy Analysis", exact: true }).click();
   await expect(page).toHaveURL(/\/work\/transport-uq$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Reliable GNN");
+});
+
+test("keyboard users can skip navigation and reach the primary links", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Mohd Zamin Quadri, home" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Work", exact: true })).toBeFocused();
+
+  await page.getByRole("link", { name: "Skip to main content" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("main")).toBeFocused();
+});
+
+test("mobile primary navigation meets minimum target sizing", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) > 640, "Mobile viewport only");
+  await page.goto("/");
+
+  for (const link of await page.locator(".nav-list a").all()) {
+    const box = await link.boundingBox();
+    expect(box?.height).toBeGreaterThanOrEqual(44);
+  }
 });
 
 test("contact route exposes no form, email, phone, or broken resume action", async ({ page }) => {
@@ -95,7 +118,9 @@ test("metadata endpoints and security headers are production-ready", async ({ re
 
   const missingProject = await request.get("/work/not-an-evidence-backed-project");
   expect(missingProject.status()).toBe(404);
-  expect(await missingProject.text()).toContain("This route does not exist.");
+  const missingProjectHtml = await missingProject.text();
+  expect(missingProjectHtml).toContain("This route does not exist.");
+  expect(missingProjectHtml).toContain('name="robots" content="noindex, nofollow"');
 });
 
 test("canonical and structured metadata are present", async ({ page }) => {
@@ -121,6 +146,21 @@ test("canonical and structured metadata are present", async ({ page }) => {
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", title);
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", title);
   }
+});
+
+test("group coursework structured data credits every author", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const records = await page.locator('script[type="application/ld+json"]').allTextContents();
+  const creativeWork = records.map((record) => JSON.parse(record)).find((record) => record["@type"] === "CreativeWork");
+
+  expect(creativeWork.creator).toBeUndefined();
+  expect(creativeWork.author).toEqual([
+    { "@type": "Person", name: "Mohd Zamin Quadri", url: "https://github.com/mzquadri" },
+    { "@type": "Person", name: "Christine Leers", url: "https://github.com/chrLeers" },
+    { "@type": "Person", name: "Yihan Shen", url: "https://github.com/warumso7" },
+  ]);
+  expect(creativeWork.creditText).toContain("Group contributor");
+  expect(creativeWork.sourceOrganization.name).toBe("Technical University of Munich");
 });
 
 test("homepage makes no third-party requests and mounts no canvas", async ({ page }) => {

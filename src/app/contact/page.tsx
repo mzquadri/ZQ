@@ -18,8 +18,8 @@ export default function ContactPage() {
         <p className="kicker">Contact / Full-time opportunities</p>
         <h1>Let&apos;s discuss the problem, the evidence, and the engineering.</h1>
         <p>
-          I&apos;m available for relevant full-time roles in Munich, Germany, and open to
-          conversations about Machine Learning Engineering, Applied AI, reliable ML,
+          I&apos;m based in {site.location}. {site.availability}, and I&apos;m open to conversations
+          about Machine Learning Engineering, Applied AI, reliable ML,
           scientific computing, GNNs, MLOps, and data/AI engineering.
         </p>
       </header>
@@ -35,12 +35,12 @@ export default function ContactPage() {
           </p>
         </div>
         <div className="contact-links">
-          <a href={site.linkedin} target="_blank" rel="noreferrer">
+          <a href={site.linkedin}>
             <span>LinkedIn</span>
             <strong>Professional conversation</strong>
             <span aria-hidden="true">↗</span>
           </a>
-          <a href={site.github} target="_blank" rel="noreferrer">
+          <a href={site.github}>
             <span>GitHub</span>
             <strong>Repositories and technical work</strong>
             <span aria-hidden="true">↗</span>

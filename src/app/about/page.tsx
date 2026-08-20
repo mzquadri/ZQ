@@ -56,12 +56,12 @@ export default function AboutPage() {
             operational side of model development.
           </p>
           <p>
-            My Master&apos;s thesis, <cite>{thesis.title}</cite>, was submitted at {thesis.institution}
-            on May 15, 2026. This site intentionally states submission—not degree conferral—because
-            that is the status supported by the available record.
+            My Master&apos;s thesis, <cite>{thesis.title}</cite>, was submitted at {thesis.institution}.
+            The available record states: {thesis.status}. This site intentionally states
+            submission—not degree conferral—because that is the supported status.
           </p>
           <p>
-            I am based in {site.location} and currently open to full-time roles across Machine
+            I am based in {site.location}. {site.availability}, including roles across Machine
             Learning Engineering, Applied AI, reliable ML, scientific computing, GNNs, MLOps,
             and data/AI engineering.
           </p>
