@@ -3,7 +3,7 @@ import { projects, site } from "@/content/portfolio";
 import { getPublishedWriting } from "@/content/writing/repository";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/work", "/research", "/learn", "/about", "/contact", "/resume"];
+  const routes = ["", "/work", "/research", "/research/thesis", "/learn", "/about", "/contact", "/resume"];
   const projectRoutes = projects.map((project) => `/work/${project.slug}`);
   const writingRoutes: MetadataRoute.Sitemap = getPublishedWriting().map((entry) => ({
     url: `${site.domain}${entry.path}`,

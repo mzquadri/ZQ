@@ -180,6 +180,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <blockquote>{project.learned}</blockquote>
           {project.nextStep ? <p className="next-step"><strong>Next evidence milestone:</strong> {project.nextStep}</p> : null}
           <div className="case-actions">
+            {project.researchPath ? (
+              <Link className="text-link" href={project.researchPath}>
+                Scientific research record <span aria-hidden="true">→</span>
+              </Link>
+            ) : null}
             <a className="text-link" href={project.repository}>
               Source and documentation <span aria-hidden="true">↗</span>
             </a>

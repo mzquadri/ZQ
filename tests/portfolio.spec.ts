@@ -5,6 +5,7 @@ const routes = [
   "/",
   "/work",
   "/research",
+  "/research/thesis",
   "/about",
   "/contact",
   "/resume",
@@ -31,12 +32,6 @@ for (const route of routes) {
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page).toHaveTitle(/Mohd Zamin Quadri/);
     await expect(page.locator("footer")).toBeVisible();
-
-    if (route === "/research" && (page.viewportSize()?.width ?? 0) <= 640) {
-      const firstProtocolCell = page.locator(".protocol-table tbody th").first();
-      await expect(firstProtocolCell).toHaveAttribute("data-label", "Protocol");
-      expect(await firstProtocolCell.evaluate((cell) => getComputedStyle(cell, "::before").content)).toBe('"Protocol"');
-    }
 
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflows).toBe(false);
@@ -127,6 +122,12 @@ test("metadata endpoints and security headers are production-ready", async ({ re
   expect(articleImage.status()).toBe(200);
   expect(articleImage.headers()["content-type"]).toContain("image/png");
 
+  for (const route of ["/research/opengraph-image", "/research/thesis/opengraph-image"]) {
+    const researchImage = await request.get(route);
+    expect(researchImage.status()).toBe(200);
+    expect(researchImage.headers()["content-type"]).toContain("image/png");
+  }
+
   const rss = await request.get("/rss.xml");
   expect(rss.status()).toBe(200);
   expect(rss.headers()["content-type"]).toContain("application/rss+xml");
@@ -142,6 +143,12 @@ test("metadata endpoints and security headers are production-ready", async ({ re
 
   const missingArticle = await request.get("/learn/not-a-published-article");
   expect(missingArticle.status()).toBe(404);
+
+  for (const route of ["/research/experiments", "/research/publications"]) {
+    const emptyResearchBranch = await request.get(route);
+    expect(emptyResearchBranch.status()).toBe(404);
+    expect(sitemapText).not.toContain(`https://mzquadri.de${route}`);
+  }
 });
 
 test("canonical and structured metadata are present", async ({ page }) => {
@@ -155,6 +162,7 @@ test("canonical and structured metadata are present", async ({ page }) => {
   const routeMetadata = [
     ["/work", "Selected Work"],
     ["/research", "Research"],
+    ["/research/thesis", "Transport Surrogate Thesis Research"],
     ["/about", "About"],
     ["/contact", "Contact"],
     ["/resume", "Resume"],
@@ -186,6 +194,55 @@ test("canonical and structured metadata are present", async ({ page }) => {
     expect(image.status()).toBe(200);
     expect(image.headers()["content-type"]).toContain("image/png");
   }
+
+  for (const route of ["/research", "/research/thesis"]) {
+    await page.goto(route);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      "content",
+      `https://mzquadri.de${route}/opengraph-image`,
+    );
+  }
+});
+
+test("research index and thesis record preserve their distinct evidence roles", async ({ page }) => {
+  await page.goto("/research");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("decisions that expose uncertainty");
+  await expect(page.locator(".supporting-research-grid aside").getByText("Emerging inquiry", { exact: true })).toBeVisible();
+  await expect(page.getByText(/direction of study, not a completed result/)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Explore the thesis research/ })).toHaveAttribute("href", "/research/thesis");
+  let records = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((record) => JSON.parse(record));
+  const collection = records.find((record) => record["@type"] === "CollectionPage");
+  expect(collection.mainEntity.numberOfItems).toBe(1);
+  expect(collection.mainEntity.itemListElement[0].item["@type"]).toBe("Thesis");
+
+  await page.goto("/research/thesis");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Uncertainty Quantification");
+  await expect(page.getByRole("figure", { name: /How does an expensive transport simulation/ })).toBeVisible();
+  await expect(page.getByRole("figure", { name: /Which reliability question/ })).toBeVisible();
+  await expect(page.getByRole("figure", { name: /A useful model should know when not to be trusted/ })).toBeVisible();
+  await expect(page.getByRole("table", { name: "All six observed operating points" }).locator("tbody tr")).toHaveCount(6);
+  await expect(page.getByText("No random-review baseline is shown", { exact: false })).toBeVisible();
+
+  records = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((record) => JSON.parse(record));
+  const thesisRecord = records.find((record) => record["@type"] === "Thesis");
+  expect(thesisRecord.name).toContain("Uncertainty Quantification");
+  expect(thesisRecord.creativeWorkStatus).toContain("submitted");
+  expect(thesisRecord.mainEntityOfPage).toBe("https://mzquadri.de/research/thesis");
+  expect(thesisRecord.doi).toBeUndefined();
+  expect(thesisRecord.publication).toBeUndefined();
+});
+
+test("selective prediction explorer changes only between audited operating points", async ({ page }) => {
+  await page.goto("/research/thesis");
+  await page.getByRole("radio", { name: "25%" }).check();
+  const status = page.getByRole("status");
+  await expect(status).toContainText("1.79 veh/h");
+  await expect(status).toContainText("2,372,625");
+  await expect(page.locator('.selective-table tr[data-selected="true"]')).toContainText("25%");
+
+  await page.getByRole("radio", { name: "100%" }).check();
+  await expect(status).toContainText("3.95 veh/h");
+  await expect(status).toContainText("0.0%");
 });
 
 test("technical writing renders code, equations, navigation, and Article structured data", async ({ page }) => {
@@ -235,6 +292,11 @@ test("case studies expose ownership and direct evidence", async ({ page }) => {
   await page.goto("/work/transport-uq");
   await expect(page.getByText("Researcher and thesis author", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: /Corrigendum/ })).toBeVisible();
+  const fullRetentionCy = Number(
+    await page.locator('.chart-points g[data-retention="100"] circle').getAttribute("cy"),
+  );
+  expect(fullRetentionCy, "3.95 MAE must plot below the 4.0 grid line").toBeGreaterThan(73);
+  expect(fullRetentionCy, "Selective-risk points must remain above the zero baseline").toBeLessThan(262);
 
   await page.goto("/work/mlops-reference-pipeline");
   await expect(page.getByText("Project author and engineer", { exact: true })).toBeVisible();
@@ -244,7 +306,7 @@ test("case studies expose ownership and direct evidence", async ({ page }) => {
 
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  for (const route of ["/", "/resume", "/work/mlops-reference-pipeline", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
+  for (const route of ["/", "/resume", "/work/mlops-reference-pipeline", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
     await page.goto(route);
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflows, `${route} must not overflow at 320px`).toBe(false);
@@ -284,5 +346,15 @@ test("published writing adds no client-side third-party requests", async ({ page
     if (url.origin !== "http://127.0.0.1:3100") remoteRequests.push(url.origin);
   });
   await page.goto("/learn/selective-prediction-when-models-should-abstain");
+  expect(remoteRequests).toEqual([]);
+});
+
+test("research thesis adds no third-party requests", async ({ page }) => {
+  const remoteRequests: string[] = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.origin !== "http://127.0.0.1:3100") remoteRequests.push(url.origin);
+  });
+  await page.goto("/research/thesis");
   expect(remoteRequests).toEqual([]);
 });

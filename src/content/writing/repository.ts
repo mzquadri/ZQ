@@ -220,6 +220,10 @@ export function getPublishedWritingEntry(slug: string, section?: WritingFrontmat
   return getPublishedWriting().find((entry) => entry.slug === slug && (!section || entry.section === section));
 }
 
+export function getPublishedWritingForProject(projectSlug: string) {
+  return getPublishedWriting().filter((entry) => entry.projectSlugs.includes(projectSlug));
+}
+
 export function getRelatedWriting(entry: WritingEntry, limit = 3) {
   const explicit = new Set(entry.relatedSlugs);
   return getPublishedWriting()
