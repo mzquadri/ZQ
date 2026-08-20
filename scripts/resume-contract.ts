@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { relative, resolve } from "node:path";
+import { extname, relative, resolve } from "node:path";
 
 import { capabilities, getProject, resumeProjectSlugs, site, thesis } from "../src/content/portfolio";
 
@@ -21,6 +21,15 @@ function collectFiles(root: string): string[] {
     .map((path) => resolve(root, path))
     .filter((path) => statSync(path).isFile())
     .map((path) => relative(process.cwd(), path).replace(/\\/g, "/"));
+}
+
+function hashFile(path: string) {
+  const content = readFileSync(resolve(path));
+  const textExtensions = new Set([".css", ".json", ".mjs", ".ts", ".tsx"]);
+  if (textExtensions.has(extname(path))) {
+    return sha256(content.toString("utf8").replace(/\r\n/g, "\n"));
+  }
+  return sha256(content);
 }
 
 export const resumeSourceRecord = {
@@ -59,7 +68,7 @@ export function sha256(value: string | Uint8Array) {
 export function getResumeSourceSha256() {
   const renderer = [...rendererFiles, ...collectFiles("src")].sort().map((path) => ({
     path,
-    sha256: sha256(readFileSync(resolve(path))),
+    sha256: hashFile(path),
   }));
   return sha256(JSON.stringify({ record: resumeSourceRecord, renderer }));
 }
