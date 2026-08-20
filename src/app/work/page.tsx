@@ -15,7 +15,7 @@ export default function WorkPage() {
   return (
     <PageShell current="/work">
       <header className="page-hero section-wrap">
-        <p className="kicker">Selected work / 06 case studies</p>
+        <p className="kicker">Selected work / {projects.length.toString().padStart(2, "0")} case studies</p>
         <h1>Engineering claims that can be inspected.</h1>
         <p>
           Research, coursework, prototypes, reference implementations, and synthetic

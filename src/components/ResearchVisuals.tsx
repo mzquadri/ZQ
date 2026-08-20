@@ -24,6 +24,31 @@ export function ThesisPipeline() {
   );
 }
 
+export function MlopsPipeline() {
+  const stages = [
+    ["01", "Validate", "Check, fingerprint, and version input data"],
+    ["02", "Transform", "Fit features once for training and serving"],
+    ["03", "Evaluate", "Track runs and apply the promotion gate"],
+    ["04", "Register", "Package an immutable model bundle"],
+    ["05", "Serve", "Load the approved bundle behind FastAPI"],
+  ] as const;
+
+  return (
+    <figure className="system-flow">
+      <figcaption>Reference lifecycle, with an explicit contract between each stage</figcaption>
+      <ol>
+        {stages.map(([index, title, detail]) => (
+          <li key={index}>
+            <span>{index}</span>
+            <strong>{title}</strong>
+            <small>{detail}</small>
+          </li>
+        ))}
+      </ol>
+    </figure>
+  );
+}
+
 export function SelectiveRiskChart() {
   const [low, middle, full] = researchEvidence.selectiveRisk.points;
 
@@ -62,7 +87,7 @@ export function SelectiveRiskChart() {
         </g>
         <path
           className="chart-line"
-          d="M82 204 C160 191 245 169 350 137 C470 100 570 69 674 47"
+          d="M82 204 L350 137 L674 47"
           aria-hidden="true"
         />
         <g className="chart-points" aria-hidden="true">

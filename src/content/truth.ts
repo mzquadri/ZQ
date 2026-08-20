@@ -20,9 +20,25 @@ export interface TruthFact<T> {
   public: boolean;
 }
 
+export interface ExperienceRecord {
+  id: string;
+  organization: string;
+  title: string;
+  location?: string;
+  status?: "Present";
+}
+
+export interface EducationRecord {
+  id: string;
+  institution: string;
+  credential: string;
+  status?: string;
+}
+
 const verifiedAt = "2026-08-20";
 const currentFactReviewAfter = "2026-11-20";
 const canonicalThesisRepository = "https://github.com/mzquadri/ml-surrogates-thesis";
+const recruiterCoreApproval = "Recruiter Core v1 fact approval, 2026-08-20";
 
 export const truthRegistry = {
   identity: {
@@ -63,10 +79,67 @@ export const truthRegistry = {
       public: true,
     },
     employment: {
-      value: [] as readonly never[],
-      source: { tier: "official-record", reference: "No employment dates approved for publication" },
+      value: [
+        {
+          id: "bp-itcs",
+          organization: "BP-IT Consulting & Solutions GmbH",
+          title: "AI Engineer (Working Student)",
+          location: "Munich",
+          status: "Present",
+        },
+        {
+          id: "tum-programming-visualization",
+          organization: "Technical University of Munich",
+          title: "Student Research Assistant / Programming and Visualization",
+        },
+        {
+          id: "audi-workflows-databases",
+          organization: "AUDI AG",
+          title: "Intern, Programming of Workflows and Linking of Databases",
+        },
+        {
+          id: "tum-numerical-methods",
+          organization: "Technical University of Munich",
+          title: "Student Research Assistant, Numerical Methods and Scientific Visualization",
+        },
+        {
+          id: "iiser-battery-ml",
+          organization: "IISER Bhopal",
+          title: "Summer Research Intern, Machine Learning for Li-ion Battery State Estimation",
+        },
+      ] as const satisfies readonly ExperienceRecord[],
+      source: { tier: "approved-document", reference: recruiterCoreApproval },
       verifiedAt,
-      public: false,
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+    supportingIdentity: {
+      value: "Mathematics and scientific computing foundations applied to reliable AI systems.",
+      source: { tier: "approved-document", reference: recruiterCoreApproval },
+      verifiedAt,
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+  },
+  education: {
+    records: {
+      value: [
+        {
+          id: "tum-mse",
+          institution: "Technical University of Munich",
+          credential: "M.Sc. program: Mathematics in Science and Engineering",
+          status: "Master's thesis submitted May 15, 2026",
+        },
+        {
+          id: "amu-mathematics",
+          institution: "Aligarh Muslim University",
+          credential: "B.Sc. (Hons.) Mathematics",
+        },
+      ] as const satisfies readonly EducationRecord[],
+      source: { tier: "approved-document", reference: recruiterCoreApproval },
+      verifiedAt,
+      reviewAfter: currentFactReviewAfter,
+      public: true,
     },
   },
   thesis: {
@@ -162,9 +235,22 @@ export const truthRegistry = {
       public: false,
     },
   },
+  resume: {
+    canonical: {
+      value: {
+        htmlPath: "/resume",
+        pdfPath: "/mohd-zamin-quadri-resume.pdf",
+        label: "Mohd Zamin Quadri resume",
+      },
+      source: { tier: "approved-document", reference: "Recruiter Core v1 canonical resume decision" },
+      verifiedAt,
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+  },
   portfolio: {
     featuredProjectSlugs: {
-      value: ["transport-uq", "insureassist-rag", "mlops-reference-pipeline", "hydrology-uq"] as const,
+      value: ["transport-uq", "mlops-reference-pipeline", "insureassist-rag", "hydrology-uq"] as const,
       source: { tier: "reproducible-evidence", reference: "Portfolio repository audit, 2026-08-20" },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,
@@ -185,11 +271,15 @@ export const currentPublicFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.professional.role,
   truthRegistry.professional.location,
   truthRegistry.professional.availability,
+  truthRegistry.professional.employment,
+  truthRegistry.professional.supportingIdentity,
+  truthRegistry.education.records,
   truthRegistry.thesis.status,
   truthRegistry.thesis.repository,
   truthRegistry.profiles.domain,
   truthRegistry.profiles.github,
   truthRegistry.profiles.linkedin,
+  truthRegistry.resume.canonical,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -199,6 +289,9 @@ export const publishedFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.professional.role,
   truthRegistry.professional.location,
   truthRegistry.professional.availability,
+  truthRegistry.professional.employment,
+  truthRegistry.professional.supportingIdentity,
+  truthRegistry.education.records,
   truthRegistry.thesis.title,
   truthRegistry.thesis.status,
   truthRegistry.thesis.submittedOn,
@@ -212,6 +305,7 @@ export const publishedFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.profiles.domain,
   truthRegistry.profiles.github,
   truthRegistry.profiles.linkedin,
+  truthRegistry.resume.canonical,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -225,8 +319,12 @@ export const site = {
     "AI/ML engineer working across reliable ML, graph neural networks, scientific computing, and production-oriented AI systems.",
   location: truthRegistry.professional.location.value,
   availability: truthRegistry.professional.availability.value,
+  supportingIdentity: truthRegistry.professional.supportingIdentity.value,
+  experience: truthRegistry.professional.employment.value as readonly ExperienceRecord[],
+  education: truthRegistry.education.records.value as readonly EducationRecord[],
   github: truthRegistry.profiles.github.value,
   linkedin: truthRegistry.profiles.linkedin.value,
+  resume: truthRegistry.resume.canonical.value,
 } as const;
 
 export const thesis = {

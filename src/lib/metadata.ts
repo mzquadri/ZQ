@@ -6,6 +6,8 @@ interface PageMetadata {
   description: string;
   path: string;
   type?: "website" | "article";
+  imagePath?: string;
+  imageAlt?: string;
 }
 
 export function createPageMetadata({
@@ -13,6 +15,8 @@ export function createPageMetadata({
   description,
   path,
   type = "website",
+  imagePath = "/opengraph-image",
+  imageAlt = `${site.name} portfolio`,
 }: PageMetadata): Metadata {
   return {
     title,
@@ -25,13 +29,13 @@ export function createPageMetadata({
       type,
       siteName: site.name,
       locale: "en_US",
-      images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: `${site.name} portfolio` }],
+      images: [{ url: imagePath, width: 1200, height: 630, alt: imageAlt }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/opengraph-image"],
+      images: [imagePath],
     },
   };
 }

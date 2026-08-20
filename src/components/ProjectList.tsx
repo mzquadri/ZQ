@@ -23,6 +23,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
                 <Link href={`/work/${project.slug}`}>{project.title}</Link>
               </h3>
               <p>{project.summary}</p>
+              <p className="project-role">{project.projectRole}</p>
               <ul className="tool-list" aria-label={`${project.title} technologies`}>
                 {project.tools.slice(0, 5).map((tool) => (
                   <li key={tool}>{tool}</li>

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { projects, site } from "@/content/portfolio";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/work", "/research", "/about", "/contact"];
+  const routes = ["", "/work", "/research", "/about", "/contact", "/resume"];
   const projectRoutes = projects.map((project) => `/work/${project.slug}`);
 
   return [...routes, ...projectRoutes].map((route) => ({

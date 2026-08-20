@@ -66,10 +66,12 @@ source as canonical.
 | Calibration | Keep both protocols separate | Graph 20/80 replay: ECE 0.269 to 0.048; final-thesis node 30/70 report: approximately 0.356 to 0.034 |
 | Dataset scope | 100 held-out scenarios and 3,163,500 cached road-link predictions within a fixed 1,000-scenario subset | Not a claim about all MATSim data or fresh raw-data replay |
 | Defect status | Do not publish “zero bugs” | Tests and audits bound known checks; they cannot prove absence of defects |
-| Education | Thesis submitted May 15, 2026 | No claim of defense, grade, graduation, or degree conferral |
-| Employment and Audi dates | Not published | No approved primary employment record is present in this repository |
+| Experience titles | Approved titles and organizations published in Recruiter Core v1 | No private duties, client details, or quantified employment impact inferred |
+| Experience dates | Dates omitted; only the approved current BP status is shown | No employment dates are published |
+| Education | TUM M.Sc. program with thesis submitted; AMU B.Sc. (Hons.) Mathematics | No claim of TUM defense, grade, graduation, or degree conferral |
 | Contact email | Not published | No durable address has passed privacy review |
-| Repository status | `ml-surrogates-thesis` is the only canonical destination | Migration sources remain non-canonical until consolidation completes |
+| Resume | One HTML record and one generated redacted PDF | Both derive from the typed registry; no email, phone, address, identifiers, or disputed dates |
+| Repository status | `ml-surrogates-thesis` is the only canonical destination | It preserves the submitted artifact and separates post-submission corrections and audited evidence |
 | Services | No public services offer | Services remain inactive until a real offer and operating boundary are approved |
 
 Unresolved or unpublished facts must not be inferred into page copy, metadata, structured data,
@@ -85,7 +87,9 @@ After migration:
 
 - `npm audit --audit-level=high`: zero vulnerabilities;
 - `npm run check`: passed;
-- `npm run test:e2e`: 39 passed and one expected desktop-only skip across desktop and mobile Chromium.
+- Portfolio Integrity v1 `npm run test:e2e`: 39 passed and one expected desktop-only skip.
+- Recruiter Core v1 local verification: 47 passed and one expected desktop-only skip across desktop
+  and mobile Chromium, including 320 px reflow and resume coverage.
 - Public website, GitHub profile, project repositories, and credited contributor profiles:
   resolved successfully on August 20, 2026. LinkedIn's exact profile path was manually
   verified because automated requests receive its anti-bot status.
