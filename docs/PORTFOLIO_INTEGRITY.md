@@ -92,6 +92,9 @@ After migration:
   and mobile Chromium, including 320 px reflow and resume coverage.
 - Content Foundation v1 local verification: 55 passed and one expected desktop-only skip, including
   Learn routes, RSS, article metadata, static code and equations, axe scans, and 320 px reflow.
+- Research Experience v1 local verification: 63 passed and one expected desktop-only skip, including
+  the research index, thesis record, discrete selective-prediction control, scholarly metadata,
+  axe scans, and 320 px reflow.
 - Public website, GitHub profile, project repositories, and credited contributor profiles:
   resolved successfully on August 20, 2026. LinkedIn's exact profile path was manually
   verified because automated requests receive its anti-bot status.

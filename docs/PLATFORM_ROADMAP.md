@@ -42,12 +42,18 @@ resume, project social images, accessibility coverage, and production deployment
 
 ## Milestone 3 — Research Experience
 
-- Evolve `/research` into a research index and move the current thesis experience to
-  `/research/thesis` with a stable redirect or canonical transition.
-- Add experiment summaries only when methodology, artifacts, limitations, and ownership are clear.
-- Build a reusable research visual language for calibration, coverage, uncertainty, graph models,
-  and reproducibility boundaries.
-- Keep publications and raw-data links absent until real public records exist.
+Status: Research Experience v1 implemented locally for review.
+
+- `/research` is a self-canonical overview of primary reliable-ML research, supporting scientific
+  modelling work, and an explicitly emerging identifiability direction.
+- `/research/thesis` is the self-canonical scientific record; `/work/transport-uq` remains the
+  engineering case study and the Learn tutorial remains the teaching layer.
+- Site-native pipeline, method, selective-review, calibration, coverage, and reproducibility
+  visuals use audited aggregate values without importing thesis figures or row-level artifacts.
+- A focused client interaction switches only between six discrete audited operating points. It
+  does not interpolate, add a random baseline, or label reviewed rows as wrong.
+- Empty experiments and publications routes remain absent. Add them only when methodology,
+  artifacts, limitations, and ownership are clear.
 
 ## Milestone 4 — Video System
 
