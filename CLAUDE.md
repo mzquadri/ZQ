@@ -19,8 +19,9 @@ This is a server-first Next.js 16 App Router site. Current public facts are cent
 Routes and server components render those typed models. Do not duplicate project metrics
 or current facts in page components.
 
-Routes are `/`, `/work`, `/work/[slug]`, `/research`, `/about`, and `/contact`. `/drive`
-exists only as a redirect to `/work`.
+Routes are `/`, `/work`, `/work/[slug]`, `/research`, `/learn`, `/learn/[slug]`, `/about`,
+`/resume`, and `/contact`. `/drive` exists only as a redirect to `/work`. Trusted local MDX
+is stored in `content/writing`; never accept or compile user-provided MDX.
 
 The visual system is plain CSS in `src/app/globals.css`, using local Geist font files and
 static HTML/SVG. Do not reintroduce WebGL, perpetual animation, remote fonts, or a large
