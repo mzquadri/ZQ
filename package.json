@@ -9,14 +9,26 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "validate:content": "tsx scripts/validate-content.ts",
+    "test:content": "tsx --test tests/content-foundation.test.ts tests/resume-contract.test.ts",
     "generate:resume": "npm run build && tsx scripts/generate-resume.ts",
     "test:e2e": "npm run build && playwright test",
-    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run build"
+    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build"
   },
   "dependencies": {
+    "@shikijs/rehype": "4.4.3",
+    "katex": "0.18.4",
     "next": "16.3.1",
+    "next-mdx-remote": "6.0.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "rehype-katex": "7.0.1",
+    "rehype-slug": "6.0.0",
+    "remark-math": "6.0.0",
+    "remark-mdx": "3.1.1",
+    "remark-parse": "11.0.0",
+    "unified": "11.0.5",
+    "yaml": "2.9.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",

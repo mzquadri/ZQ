@@ -8,6 +8,8 @@ const routes = [
   "/about",
   "/contact",
   "/resume",
+  "/learn",
+  "/learn/selective-prediction-when-models-should-abstain",
   "/work/transport-uq",
   "/work/insureassist-rag",
   "/work/mlops-reference-pipeline",
@@ -121,11 +123,25 @@ test("metadata endpoints and security headers are production-ready", async ({ re
   expect(projectImage.status()).toBe(200);
   expect(projectImage.headers()["content-type"]).toContain("image/png");
 
+  const articleImage = await request.get("/learn/selective-prediction-when-models-should-abstain/opengraph-image");
+  expect(articleImage.status()).toBe(200);
+  expect(articleImage.headers()["content-type"]).toContain("image/png");
+
+  const rss = await request.get("/rss.xml");
+  expect(rss.status()).toBe(200);
+  expect(rss.headers()["content-type"]).toContain("application/rss+xml");
+  const rssText = await rss.text();
+  expect(rssText).toContain("<rss version=\"2.0\">");
+  expect(rssText).toContain("/learn/selective-prediction-when-models-should-abstain");
+
   const missingProject = await request.get("/work/not-an-evidence-backed-project");
   expect(missingProject.status()).toBe(404);
   const missingProjectHtml = await missingProject.text();
   expect(missingProjectHtml).toContain("This route does not exist.");
   expect(missingProjectHtml).toContain('name="robots" content="noindex, nofollow"');
+
+  const missingArticle = await request.get("/learn/not-a-published-article");
+  expect(missingArticle.status()).toBe(404);
 });
 
 test("canonical and structured metadata are present", async ({ page }) => {
@@ -142,6 +158,8 @@ test("canonical and structured metadata are present", async ({ page }) => {
     ["/about", "About"],
     ["/contact", "Contact"],
     ["/resume", "Resume"],
+    ["/learn", "Learn"],
+    ["/learn/selective-prediction-when-models-should-abstain", "Selective Prediction: When Models Should Abstain"],
     ["/work/transport-uq", "Reliable GNN Surrogates for Transport Policy Analysis"],
     ["/work/insureassist-rag", "InsureAssist: Grounded RAG Service"],
     ["/work/mlops-reference-pipeline", "A Testable End-to-End MLOps Pipeline"],
@@ -168,6 +186,25 @@ test("canonical and structured metadata are present", async ({ page }) => {
     expect(image.status()).toBe(200);
     expect(image.headers()["content-type"]).toContain("image/png");
   }
+});
+
+test("technical writing renders code, equations, navigation, and Article structured data", async ({ page }) => {
+  await page.goto("/learn/selective-prediction-when-models-should-abstain");
+  await expect(page.getByRole("navigation", { name: "On this page" })).toBeVisible();
+  await expect(page.locator("pre code")).toContainText("risk_coverage_curve");
+  await expect(page.locator(".katex-display")).toHaveCount(3);
+  await expect(page.getByRole("heading", { name: "Risk and coverage", exact: true })).toHaveAttribute("id", "risk-and-coverage");
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "article");
+  await expect(page.locator('meta[property="article:published_time"]')).toHaveAttribute("content", /2026-08-20/);
+  await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute(
+    "href",
+    "https://mzquadri.de/rss.xml",
+  );
+
+  const records = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((record) => JSON.parse(record));
+  const article = records.find((record) => record["@type"] === "TechArticle");
+  expect(article.headline).toBe("Selective Prediction: When Models Should Abstain");
+  expect(article.about[0].url).toBe("https://mzquadri.de/work/transport-uq");
 });
 
 test("resume publishes approved records without disputed experience dates", async ({ page, request }) => {
@@ -207,10 +244,10 @@ test("case studies expose ownership and direct evidence", async ({ page }) => {
 
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  for (const route of ["/", "/resume", "/work/mlops-reference-pipeline"]) {
+  for (const route of ["/", "/resume", "/work/mlops-reference-pipeline", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
     await page.goto(route);
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-    expect(overflows).toBe(false);
+    expect(overflows, `${route} must not overflow at 320px`).toBe(false);
   }
 });
 
@@ -237,5 +274,15 @@ test("homepage makes no third-party requests and mounts no canvas", async ({ pag
   });
   await page.goto("/");
   await expect(page.locator("canvas")).toHaveCount(0);
+  expect(remoteRequests).toEqual([]);
+});
+
+test("published writing adds no client-side third-party requests", async ({ page }) => {
+  const remoteRequests: string[] = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.origin !== "http://127.0.0.1:3100") remoteRequests.push(url.origin);
+  });
+  await page.goto("/learn/selective-prediction-when-models-should-abstain");
   expect(remoteRequests).toEqual([]);
 });

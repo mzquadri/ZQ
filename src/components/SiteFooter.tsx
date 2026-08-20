@@ -15,6 +15,7 @@ export default function SiteFooter() {
         </div>
         <nav aria-label="Footer navigation" className="footer-links">
           <Link href="/work">Selected work</Link>
+          <Link href="/learn">Learn</Link>
           <Link href={site.resume.htmlPath}>Resume</Link>
           <a href={site.github}>
             GitHub <span aria-hidden="true">↗</span>
