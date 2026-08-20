@@ -14,9 +14,10 @@ Use Node 20 and install with `npm ci`.
 
 ## Architecture
 
-This is a server-first Next.js 14 App Router site. Public claims are centralized in
-`src/content/portfolio.ts`; routes and server components render that typed evidence model.
-Do not duplicate project metrics in page components.
+This is a server-first Next.js 16 App Router site. Current public facts are centralized in
+`src/content/truth.ts`, and project evidence is centralized in `src/content/portfolio.ts`.
+Routes and server components render those typed models. Do not duplicate project metrics
+or current facts in page components.
 
 Routes are `/`, `/work`, `/work/[slug]`, `/research`, `/about`, and `/contact`. `/drive`
 exists only as a redirect to `/work`.

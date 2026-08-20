@@ -23,7 +23,7 @@ export default function Home() {
             Building machine learning systems that know when to be <em>uncertain.</em>
           </h1>
           <p className="hero-intro">
-            I&apos;m {site.name}, an applied ML engineer in Munich. My work connects
+            I&apos;m {site.name}, an {site.role} based in {site.location}. My work connects
             uncertainty-aware modelling, graph neural networks, reproducible experiments,
             and the engineering needed to make evidence usable.
           </p>

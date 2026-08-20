@@ -11,7 +11,7 @@ export default function PageShell({ current, children }: PageShellProps) {
   return (
     <>
       <SiteHeader current={current} />
-      <main id="main-content">{children}</main>
+      <main id="main-content" tabIndex={-1}>{children}</main>
       <SiteFooter />
     </>
   );

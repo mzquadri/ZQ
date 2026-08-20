@@ -19,7 +19,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(site.domain),
   title: {
-    default: "Mohd Zamin Quadri | Applied ML Engineer",
+    default: `${site.name} | ${site.role}`,
     template: "%s | Mohd Zamin Quadri",
   },
   description: site.description,
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   creator: site.name,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Mohd Zamin Quadri | Applied ML Engineer",
+    title: `${site.name} | ${site.role}`,
     description: site.description,
     url: site.domain,
     siteName: site.name,
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mohd Zamin Quadri | Applied ML Engineer",
+    title: `${site.name} | ${site.role}`,
     description: site.description,
     images: ["/opengraph-image"],
   },

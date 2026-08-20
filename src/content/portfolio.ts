@@ -1,3 +1,7 @@
+import { site, thesis, truthRegistry } from "./truth";
+
+export { site, thesis } from "./truth";
+
 export const projectClassifications = [
   "Academic research",
   "Group coursework",
@@ -15,13 +19,20 @@ export interface EvidenceMetric {
   note: string;
 }
 
+export interface ProjectAuthor {
+  name: string;
+  url?: string;
+}
+
 export interface Project {
   slug: string;
   title: string;
   eyebrow: string;
   classification: ProjectClassification;
-  featured: boolean;
   year: string;
+  authors: readonly ProjectAuthor[];
+  projectRole: string;
+  institution?: string;
   summary: string;
   problem: string;
   contribution: string;
@@ -33,30 +44,6 @@ export interface Project {
   learned: string;
   repository: string;
 }
-
-export const site = {
-  name: "Mohd Zamin Quadri",
-  shortName: "MZQ",
-  domain: "https://mzquadri.de",
-  description:
-    "Applied machine learning engineer working across reliable ML, graph neural networks, scientific computing, and production-oriented AI systems.",
-  location: "Munich, Germany",
-  availability: "Open to full-time Machine Learning and Applied AI roles",
-  github: "https://github.com/mzquadri",
-  linkedin: "https://www.linkedin.com/in/mohdzaminquadri/",
-} as const;
-
-export const thesis = {
-  title:
-    "Uncertainty Quantification for Machine Learning Models in Transportation Policy Analysis",
-  status: "Master's thesis submitted May 15, 2026",
-  institution: "Technical University of Munich",
-  school: "TUM School of Computation, Information and Technology",
-  department: "Department of Computer Science",
-  program: "Mathematics in Science and Engineering",
-  examiner: "Prof. Dr. Stephan Günnemann",
-  advisors: "Dominik Fuchsgruber and Elena Natterer",
-} as const;
 
 export const researchEvidence = {
   selectiveRisk: {
@@ -89,8 +76,10 @@ export const projects: readonly Project[] = [
     title: "Reliable GNN Surrogates for Transport Policy Analysis",
     eyebrow: "Master's thesis / Reliable ML",
     classification: "Academic research",
-    featured: true,
     year: "2026",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Researcher and thesis author",
+    institution: thesis.institution,
     summary:
       "An evidence-led study of when a graph neural network surrogate is accurate, when it is uncertain, and how that uncertainty can support review decisions.",
     problem:
@@ -160,16 +149,16 @@ export const projects: readonly Project[] = [
     ],
     learned:
       "Reliable ML is not one score. Ranking, calibration, conditional behavior, compute cost, and the operational cost of review must be evaluated together.",
-    repository:
-      "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models",
+    repository: thesis.repository,
   },
   {
     slug: "insureassist-rag",
     title: "InsureAssist: Grounded RAG Service",
     eyebrow: "AI application engineering",
     classification: "Engineering prototype",
-    featured: true,
     year: "2026",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author and engineer",
     summary:
       "A local-first insurance-policy question-answering prototype that retrieves source clauses and returns cited answers through a FastAPI service.",
     problem:
@@ -225,8 +214,9 @@ export const projects: readonly Project[] = [
     title: "A Testable End-to-End MLOps Pipeline",
     eyebrow: "ML systems engineering",
     classification: "Reference implementation",
-    featured: true,
     year: "2026",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author and engineer",
     summary:
       "A compact, runnable reference for the lifecycle around a text classifier: validated data, traceable training, quality gates, promotion, serving, and tests.",
     problem:
@@ -273,8 +263,14 @@ export const projects: readonly Project[] = [
     title: "Uncertainty Quantification in Hydrology",
     eyebrow: "TUM project seminar",
     classification: "Group coursework",
-    featured: true,
     year: "2024",
+    authors: [
+      { name: site.name, url: site.github },
+      { name: "Christine Leers", url: "https://github.com/chrLeers" },
+      { name: "Yihan Shen", url: "https://github.com/warumso7" },
+    ],
+    projectRole: "Group contributor; individual ownership of assignment results is not claimed",
+    institution: thesis.institution,
     summary:
       "A team seminar connecting HBV rainfall-runoff calibration, local and global sensitivity analysis, and input/output uncertainty propagation.",
     problem:
@@ -321,8 +317,9 @@ export const projects: readonly Project[] = [
     title: "CIFAR-10 CNN: A Reproducible Baseline",
     eyebrow: "Deep learning experiment",
     classification: "Reproducible experiment",
-    featured: false,
     year: "2026",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author",
     summary:
       "A compact PyTorch image-classification experiment with a tracked configuration, learning history, class-level diagnostics, and an honest reference result.",
     problem:
@@ -362,8 +359,9 @@ export const projects: readonly Project[] = [
     title: "Synthetic Streamflow Forecasting Benchmark",
     eyebrow: "Scientific computing demonstration",
     classification: "Synthetic demonstration",
-    featured: false,
     year: "2026",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author",
     summary:
       "A deterministic benchmark comparing seasonal-naive, SARIMAX, and gradient-boosted one-step streamflow predictions.",
     problem:
@@ -441,5 +439,6 @@ export function getProject(slug: string) {
 }
 
 export function getFeaturedProjects() {
-  return projects.filter((project) => project.featured);
+  const featuredSlugs: readonly string[] = truthRegistry.portfolio.featuredProjectSlugs.value;
+  return featuredSlugs.map((slug) => projects.find((project) => project.slug === slug)!);
 }

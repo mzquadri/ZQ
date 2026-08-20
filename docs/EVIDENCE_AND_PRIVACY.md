@@ -7,6 +7,10 @@ configuration, reports, metrics, or repository history. Repository configuration
 the public source links, but current third-party availability is not treated as experimental
 evidence.
 
+The typed publication source is `src/content/truth.ts`. Its source hierarchy, freshness rules,
+canonical thesis decision, and conflict register are documented in
+`docs/PORTFOLIO_INTEGRITY.md`.
+
 The portfolio intentionally avoids numerical skill ratings, project counters, certification
 counts, employer impact claims, and degree-completion wording that could not be corroborated.
 
@@ -41,6 +45,8 @@ separate. They are not pooled or presented as the same experiment.
 
 The correct exact-zero target share is 27.6%. The separate 88.7% value belongs to the
 capacity-reduction input feature and is prohibited by validation as a public target claim.
+The submitted PDF is immutable; maintained sources describe this as a post-submission
+corrigendum or reproducibility update rather than silently changing the submitted artifact.
 
 ## Project Boundaries
 

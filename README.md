@@ -3,7 +3,7 @@
 The evidence-led portfolio for Mohd Zamin Quadri, focused on reliable machine learning,
 Applied AI, graph neural networks, scientific computing, and MLOps engineering.
 
-The site is built with Next.js 14, React 18, TypeScript, and a small CSS design system.
+The site is built with Next.js 16, React 19, TypeScript, and a small CSS design system.
 It is server-rendered and statically generated wherever possible. There is no analytics,
 cookie, contact form, remote font, WebGL scene, or third-party client script.
 
@@ -46,9 +46,11 @@ emulation and axe accessibility analysis.
 
 ## Content Integrity
 
-Public claims live in `src/content/portfolio.ts`. `scripts/validate-content.ts` checks:
+Current public facts live in `src/content/truth.ts`; project evidence lives in
+`src/content/portfolio.ts`. `scripts/validate-content.ts` checks:
 
-- unique project slugs and valid proof links;
+- source tiers, verification dates, review deadlines, and approved visibility;
+- unique project slugs, authorship records, and valid proof links;
 - evidence, quality controls, and limitations for every project;
 - required routes and metadata endpoints;
 - absence of public email, phone, broken CV paths, and selected unsupported claims.

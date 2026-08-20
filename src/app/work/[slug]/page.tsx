@@ -8,15 +8,16 @@ import { getProject, projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 
 interface ProjectPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
 }
 
-export function generateMetadata({ params }: ProjectPageProps): Metadata {
-  const project = getProject(params.slug);
+export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = getProject(slug);
   if (!project) return {};
 
   return createPageMetadata({
@@ -27,8 +28,9 @@ export function generateMetadata({ params }: ProjectPageProps): Metadata {
   });
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
-  const project = getProject(params.slug);
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
+  const project = getProject(slug);
   if (!project) notFound();
 
   return (
@@ -40,7 +42,11 @@ export default function ProjectPage({ params }: ProjectPageProps) {
           name: project.title,
           description: project.summary,
           dateCreated: project.year,
-          creator: { "@type": "Person", name: site.name, url: site.domain },
+          author: project.authors.map((author) => ({ "@type": "Person", ...author })),
+          creditText: project.projectRole,
+          sourceOrganization: project.institution
+            ? { "@type": "Organization", name: project.institution }
+            : undefined,
           url: `${site.domain}/work/${project.slug}`,
           codeRepository: project.repository,
           genre: project.classification,
@@ -56,7 +62,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
           <p className="kicker">{project.eyebrow}</p>
           <h1>{project.title}</h1>
           <p className="case-summary">{project.summary}</p>
-          <a className="button button-primary" href={project.repository} target="_blank" rel="noreferrer">
+          <a className="button button-primary" href={project.repository}>
             Inspect repository <span aria-hidden="true">↗</span>
           </a>
         </header>
@@ -132,7 +138,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
           <p className="kicker">What this changed in my practice</p>
           <blockquote>{project.learned}</blockquote>
           <div className="case-actions">
-            <a className="text-link" href={project.repository} target="_blank" rel="noreferrer">
+            <a className="text-link" href={project.repository}>
               Source and documentation <span aria-hidden="true">↗</span>
             </a>
             <Link className="text-link" href="/contact">

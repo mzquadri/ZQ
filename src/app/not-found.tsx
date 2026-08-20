@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  description: "The requested portfolio route does not exist.",
+  alternates: {},
+  robots: { index: false, follow: false },
+};
 
 export default function NotFound() {
   return (
