@@ -182,6 +182,8 @@ ${body}`;
     "https://example.com/%2B49123456789",
     "https://example.com/089%20123%2045%2067",
     "https://example.com/089-123-45-67",
+    "https://example.com/089.123.4567",
+    "https://example.com/089.1234567",
   ];
   for (const [index, privateUrl] of privateUrls.entries()) {
     assert.throws(

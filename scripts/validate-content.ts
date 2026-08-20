@@ -23,6 +23,7 @@ import {
   sha256,
   type ResumeManifest,
 } from "./resume-contract";
+import { getPrivateTextIssue } from "../src/content/writing/schema";
 import {
   getAllWriting,
   getPublishedLearnWriting,
@@ -179,16 +180,10 @@ for (const claim of forbiddenClaims) {
   check(!renderedSource.toLowerCase().includes(claim.toLowerCase()), `Forbidden or unsupported claim found: ${claim}`);
 }
 
-check(!/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/.test(privacyText), "Public content contains an email address");
-check(!/\+\d[\d\s()-]{7,}/.test(privacyText), "Public content contains a phone number");
+const privateTextIssue = getPrivateTextIssue(privacyText);
+check(!privateTextIssue, `Public content ${privateTextIssue ?? "violates the privacy boundary"}`);
 check(!/[A-Za-z]:\\Users\\|\/(?:Users|home)\//.test(renderedSource), "Public content contains a local filesystem path");
 check(!/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/.test(renderedSource), "Public content contains an email address");
-check(
-  !Array.from(privacyText.matchAll(/\b(?:\d[ .()-]*){9,15}\b/g)).some(
-    ([candidate]) => candidate.replace(/\D/g, "").length >= 9,
-  ),
-  "Public content contains a possible domestic-format phone number",
-);
 check(site.experience.length === 5, "Expected five approved experience records");
 check(new Set(site.experience.map((record) => record.id)).size === site.experience.length, "Experience IDs must be unique");
 check(!/\b(?:19|20)\d{2}\b/.test(JSON.stringify(site.experience)), "Public experience records must omit dates");

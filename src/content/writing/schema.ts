@@ -17,9 +17,14 @@ export function getPrivateTextIssue(value: string) {
   if (/(?:^|[/?#=&])\d{10,15}(?=$|[/?#=&])/.test(value)) return "contains a possible phone number";
   if (/(?:phone|mobile|tel)=[^&#]*\d{7,}/i.test(value)) return "contains a possible phone number";
   if (
-    Array.from(value.matchAll(/\b(?:\d[ ()-]*){9,15}\b/g)).some(
-      ([candidate]) => candidate.replace(/\D/g, "").length >= 9,
-    )
+    Array.from(value.matchAll(/\b(?:\d[ .()-]*){9,15}\b/g)).some(([candidate]) => {
+      const normalized = candidate.trim();
+      const decimalParts = normalized.match(/^(\d+)\.(\d+)$/);
+      const isSingleScientificDecimal = Boolean(
+        decimalParts && (decimalParts[1] === "0" || !decimalParts[1].startsWith("0")),
+      );
+      return !isSingleScientificDecimal && normalized.replace(/\D/g, "").length >= 9;
+    })
   ) {
     return "contains a possible phone number";
   }
