@@ -14,7 +14,8 @@ cookie, contact form, remote font, WebGL scene, or third-party client script.
 | `/` | Recruiter-readable overview, thesis evidence, selected work, and capabilities |
 | `/work` | Six projects with explicit evidence classifications |
 | `/work/[slug]` | Problem, contribution, workflow, evidence, quality controls, and limitations |
-| `/research` | Thesis methodology, protocol distinctions, results, and scientific boundaries |
+| `/research` | Research overview with primary, supporting, and emerging directions |
+| `/research/thesis` | Progressive thesis record with methods, aggregate findings, interaction, limits, and provenance |
 | `/learn` | Technical tutorials and notes backed by a typed local MDX collection |
 | `/learn/[slug]` | Long-form technical content with code, equations, references, and related work |
 | `/about` | Current status, working principles, and proof-linked capabilities |
@@ -52,7 +53,8 @@ emulation and axe accessibility analysis.
 ## Content Integrity
 
 Current public facts live in `src/content/truth.ts`; project evidence lives in
-`src/content/portfolio.ts`; long-form content lives in `content/writing`. `scripts/validate-content.ts` checks:
+`src/content/portfolio.ts`; research protocols and aggregate values live in
+`src/content/research.ts`; long-form content lives in `content/writing`. `scripts/validate-content.ts` checks:
 
 - source tiers, verification dates, review deadlines, and approved visibility;
 - unique project slugs, authorship records, and valid proof links;
@@ -61,8 +63,10 @@ Current public facts live in `src/content/truth.ts`; project evidence lives in
 - approved experience and education records, canonical resume paths, and omitted disputed dates;
 - absence of public email, phone, stale CV paths, and selected unsupported claims.
 - MDX metadata, publication dates, taxonomy consistency, project relationships, and privacy boundaries.
+- research route ownership, pinned thesis provenance, distinct calibration protocols, and discrete selective-risk points.
 
-Research figures are site-native diagrams built from reviewed aggregate values. No raw
+Research figures and the focused selective-prediction interaction are site-native and use only
+reviewed aggregate values. No raw
 simulation data, row-level predictions, serialized models, confidential files, or local
 filesystem paths are included. See `docs/EVIDENCE_AND_PRIVACY.md` for the publication
 boundary.

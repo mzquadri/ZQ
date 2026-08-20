@@ -4,20 +4,20 @@
   <rect width="1200" height="650" fill="#f2f0e8"/>
   <path d="M0 40H1200M0 80H1200M0 120H1200M0 160H1200M0 200H1200M0 240H1200M0 280H1200M0 320H1200M0 360H1200M0 400H1200M0 440H1200M0 480H1200M0 520H1200M0 560H1200M0 600H1200" stroke="#111820" stroke-opacity=".07"/>
   <text x="70" y="75" fill="#111820" font-family="Georgia,serif" font-size="38">Evidence → static routes → verified delivery</text>
-  <text x="72" y="110" fill="#004c47" font-family="monospace" font-size="15">NEXT.JS 14 / REACT SERVER COMPONENTS / TYPESCRIPT</text>
+  <text x="72" y="110" fill="#004c47" font-family="monospace" font-size="15">NEXT.JS 16 / REACT SERVER COMPONENTS / TYPESCRIPT</text>
   <g font-family="Arial,sans-serif">
     <rect x="70" y="175" width="280" height="220" fill="#111820"/>
     <text x="95" y="215" fill="#e5ba38" font-family="monospace" font-size="14">01 / SOURCE</text>
     <text x="95" y="262" fill="#fbfaf5" font-family="Georgia,serif" font-size="27">Typed evidence</text>
-    <text x="95" y="299" fill="#aeb8bd" font-size="15">Projects, research metrics,</text>
-    <text x="95" y="323" fill="#aeb8bd" font-size="15">limitations, navigation,</text>
-    <text x="95" y="347" fill="#aeb8bd" font-size="15">social links, classifications</text>
+    <text x="95" y="299" fill="#aeb8bd" font-size="15">Facts, projects, research,</text>
+    <text x="95" y="323" fill="#aeb8bd" font-size="15">trusted MDX, limitations,</text>
+    <text x="95" y="347" fill="#aeb8bd" font-size="15">provenance, classifications</text>
     <rect x="455" y="175" width="290" height="220" fill="#fbfaf5" stroke="#111820" stroke-width="2"/>
     <text x="480" y="215" fill="#a9361d" font-family="monospace" font-size="14">02 / RENDER</text>
     <text x="480" y="262" fill="#111820" font-family="Georgia,serif" font-size="27">Static portfolio</text>
-    <text x="480" y="299" fill="#354149" font-size="15">Six routes + six case studies</text>
-    <text x="480" y="323" fill="#354149" font-size="15">Metadata, sitemap, robots, OG</text>
-    <text x="480" y="347" fill="#354149" font-size="15">Local CSS, fonts, and SVG</text>
+    <text x="480" y="299" fill="#354149" font-size="15">Recruiter, research, Learn, work</text>
+    <text x="480" y="323" fill="#354149" font-size="15">Metadata, JSON-LD, RSS, sitemap</text>
+    <text x="480" y="347" fill="#354149" font-size="15">Local CSS, fonts, SVG, one UI</text>
     <rect x="850" y="175" width="280" height="220" fill="#006d65"/>
     <text x="875" y="215" fill="#fff" font-family="monospace" font-size="14">03 / VERIFY</text>
     <text x="875" y="262" fill="#fff" font-family="Georgia,serif" font-size="27">Locked delivery</text>
