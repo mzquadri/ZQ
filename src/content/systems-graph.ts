@@ -184,7 +184,7 @@ export function projectPoint(
 }
 
 /** Rotation used for the static fallback and as the interactive starting position. */
-export const restingRotation = { yaw: 0.62, pitch: 0.3 } as const;
+export const restingRotation = { yaw: 0.48, pitch: 0.28 } as const;
 
 export function getNode(id: string) {
   return graphNodes.find((node) => node.id === id);

@@ -15,12 +15,17 @@ import {
 import styles from "./SystemGraph.module.css";
 
 const STATIC_WIDTH = 720;
-const STATIC_HEIGHT = 400;
+const STATIC_HEIGHT = 460;
+// Divisors chosen so the widest rotation still clears the frame; see the projection test.
+const UNIT_X_DIVISOR = 6.8;
+const UNIT_Y_DIVISOR = 5.2;
+// Pitch is clamped so a steep tilt cannot rotate the z-spread out of the frame.
+const MAX_PITCH = 0.42;
 const DEFAULT_NODE = "reliable";
 
 /** Fixed-rotation projection of the same graph, used where the interactive canvas is not run. */
 function StaticGraph({ selectedId }: { selectedId: string }) {
-  const unit = Math.min(STATIC_WIDTH / 8, STATIC_HEIGHT / 4.6);
+  const unit = Math.min(STATIC_WIDTH / UNIT_X_DIVISOR, STATIC_HEIGHT / UNIT_Y_DIVISOR);
   const points = new Map<string, ProjectedPoint>(
     graphNodes.map((node) => [
       node.id,
@@ -56,7 +61,7 @@ function StaticGraph({ selectedId }: { selectedId: string }) {
       <g className={styles.staticNodes}>
         {orderedNodes.map((node) => {
           const point = points.get(node.id)!;
-          const radius = (node.id === selectedId ? 12 : 9) * point.scale;
+          const radius = (node.id === selectedId ? 15 : 11) * point.scale;
           return (
             <g
               data-selected={node.id === selectedId || undefined}
@@ -64,7 +69,7 @@ function StaticGraph({ selectedId }: { selectedId: string }) {
               key={node.id}
             >
               <circle cx={point.x} cy={point.y} r={radius} />
-              <text textAnchor="middle" x={point.x} y={point.y + radius + 20}>
+              <text textAnchor="middle" x={point.x} y={point.y + radius + 24}>
                 {node.label}
               </text>
             </g>
@@ -131,7 +136,7 @@ export default function SystemGraph() {
     const draw = () => {
       if (width === 0 || height === 0) return;
 
-      const unit = Math.min(width / 8, height / 4.6);
+      const unit = Math.min(width / UNIT_X_DIVISOR, height / UNIT_Y_DIVISOR);
       const points = new Map<string, ProjectedPoint>(
         graphNodes.map((node) => [node.id, projectPoint(node, rotation.yaw, rotation.pitch, width, height, unit)]),
       );
@@ -156,8 +161,8 @@ export default function SystemGraph() {
         const to = points.get(edge.to)!;
         const highlight = edge.from === selected || edge.to === selected;
         context.strokeStyle = highlight ? theme.teal : theme.ink;
-        context.globalAlpha = highlight ? 0.85 : 0.18;
-        context.lineWidth = highlight ? 1.9 : 1;
+        context.globalAlpha = highlight ? 0.9 : 0.24;
+        context.lineWidth = highlight ? 2.1 : 1.1;
         context.beginPath();
         context.moveTo(from.x, from.y);
         context.lineTo(to.x, to.y);
@@ -170,7 +175,7 @@ export default function SystemGraph() {
       for (const node of orderedNodes) {
         const point = points.get(node.id)!;
         const isSelected = node.id === selected;
-        const radius = (isSelected ? 11 : 8) * point.scale;
+        const radius = (isSelected ? 13 : 9.5) * point.scale;
         hitTargets.push({ id: node.id, x: point.x, y: point.y, radius });
 
         context.beginPath();
@@ -185,7 +190,7 @@ export default function SystemGraph() {
         context.stroke();
         context.setLineDash([]);
 
-        const fontSize = Math.max(11, Math.round(12 * point.scale));
+        const fontSize = Math.max(12, Math.round(13.5 * point.scale));
         context.font = `${isSelected ? 600 : 500} ${fontSize}px ${theme.font}`;
         context.textAlign = "center";
         context.textBaseline = "middle";
@@ -253,7 +258,7 @@ export default function SystemGraph() {
       const deltaY = event.clientY - lastY;
       travel += Math.abs(deltaX) + Math.abs(deltaY);
       rotation.yaw += deltaX * 0.008;
-      rotation.pitch = Math.min(0.85, Math.max(-0.85, rotation.pitch + deltaY * 0.005));
+      rotation.pitch = Math.min(MAX_PITCH, Math.max(-MAX_PITCH, rotation.pitch + deltaY * 0.005));
       lastX = event.clientX;
       lastY = event.clientY;
       schedule();
