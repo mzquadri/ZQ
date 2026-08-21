@@ -306,7 +306,7 @@ test("case studies expose ownership and direct evidence", async ({ page }) => {
 
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  for (const route of ["/", "/resume", "/work/mlops-reference-pipeline", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
+  for (const route of ["/", "/work", "/resume", "/work/mlops-reference-pipeline", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
     await page.goto(route);
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflows, `${route} must not overflow at 320px`).toBe(false);
@@ -328,15 +328,106 @@ test("group coursework structured data credits every author", async ({ page }) =
   expect(creativeWork.sourceOrganization.name).toBe("Technical University of Munich");
 });
 
-test("homepage makes no third-party requests and mounts no canvas", async ({ page }) => {
+test("homepage makes no third-party requests", async ({ page }) => {
   const remoteRequests: string[] = [];
   page.on("request", (request) => {
     const url = new URL(request.url());
     if (url.origin !== "http://127.0.0.1:3100") remoteRequests.push(url.origin);
   });
   await page.goto("/");
-  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.locator("#systems-graph")).toBeVisible();
   expect(remoteRequests).toEqual([]);
+});
+
+test("the systems graph paints in 3D on desktop and falls back below it", async ({ page }) => {
+  await page.goto("/");
+  const graph = page.locator("#systems-graph");
+  const canvas = graph.locator("canvas");
+  const isDesktop = (page.viewportSize()?.width ?? 0) >= 760;
+
+  await expect(graph).toHaveAttribute("data-mode", isDesktop ? "interactive" : "static");
+
+  if (isDesktop) {
+    await expect(canvas).toBeVisible();
+    // The projection must actually reach the canvas, not leave an empty box behind the fallback.
+    const painted = await canvas.evaluate((element: HTMLCanvasElement) => {
+      const context = element.getContext("2d");
+      if (!context || element.width === 0) return false;
+      const { data } = context.getImageData(0, 0, element.width, element.height);
+      for (let index = 3; index < data.length; index += 4) {
+        if (data[index] !== 0) return true;
+      }
+      return false;
+    });
+    expect(painted, "the 3D graph must render visible geometry").toBe(true);
+  } else {
+    await expect(canvas).toBeHidden();
+  }
+
+  // The stage list carries the same information in either mode.
+  for (const label of ["Data", "GNN", "RAG", "Agents", "MLOps", "Reliable AI"]) {
+    await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
+  }
+});
+
+test("systems graph selection is keyboard operable and never overclaims", async ({ page }) => {
+  await page.goto("/");
+  const detail = page.locator("#systems-graph [aria-live='polite']");
+  await expect(detail).toContainText("Reliable AI");
+
+  const rag = page.getByRole("button", { name: "RAG", exact: true });
+  await rag.focus();
+  await page.keyboard.press("Enter");
+  await expect(rag).toHaveAttribute("aria-pressed", "true");
+  await expect(detail).toContainText("Evidenced");
+  await expect(detail.getByRole("link", { name: /See the evidence/ })).toHaveAttribute(
+    "href",
+    "/work/insureassist-rag",
+  );
+
+  // A direction of study must not present itself as delivered work.
+  const agents = page.getByRole("button", { name: "Agents", exact: true });
+  await agents.click();
+  await expect(agents).toHaveAttribute("aria-pressed", "true");
+  await expect(detail).toContainText("Direction");
+  await expect(detail).toContainText("No public project yet");
+  await expect(detail.getByRole("link")).toHaveCount(0);
+});
+
+test("the repository index catalogues public work beyond the case studies", async ({ page }) => {
+  await page.goto("/work");
+  const index = page.locator("#ecosystem");
+  await expect(index).toBeVisible();
+
+  for (const category of ["Featured", "Active", "Research", "Experiment", "Reference"]) {
+    await expect(index.getByRole("heading", { name: category, exact: true })).toBeVisible();
+  }
+
+  const repositoryLinks = index.locator('a[href^="https://github.com/mzquadri/"]');
+  await expect(repositoryLinks).toHaveCount(13);
+
+  await expect(
+    index.locator('a[href="https://github.com/mzquadri/Battery-SOC-Estimation-ML"]'),
+  ).toBeVisible();
+  await expect(index.getByText(/renders identically if GitHub is unavailable/)).toBeVisible();
+
+  // No fabricated activity metrics are published.
+  await expect(index.getByText(/\d+\s*(stars?|forks?|watchers?|contributions?)/i)).toHaveCount(0);
+});
+
+test("resume is reachable but is not a conversion call to action", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/resume"]')).toHaveCount(0);
+  await expect(page.locator('main a[href="/resume"]')).toHaveCount(0);
+  await expect(page.locator('main a[href="/mohd-zamin-quadri-resume.pdf"]')).toHaveCount(0);
+  await expect(page.locator('footer a[href="/resume"]')).toHaveCount(1);
+
+  await page.goto("/contact");
+  await expect(page.locator(".contact-note a.button")).toHaveCount(0);
+  await expect(page.locator(".resume-footnote a[href='/resume']")).toBeVisible();
+
+  await page.goto("/about");
+  await expect(page.locator("main a.button[href='/resume']")).toHaveCount(0);
 });
 
 test("published writing adds no client-side third-party requests", async ({ page }) => {
