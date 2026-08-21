@@ -26,6 +26,12 @@ export interface ExperienceRecord {
   title: string;
   location?: string;
   status?: "Present";
+  /**
+   * Sanitized, abstract description of confidential professional work. It must never name an
+   * internal endpoint, URL, host, customer, credential, or unpublished company document, and
+   * must be approved individually before publication.
+   */
+  practice?: string;
 }
 
 export interface EducationRecord {
@@ -39,6 +45,8 @@ const verifiedAt = "2026-08-20";
 const currentFactReviewAfter = "2026-11-20";
 const canonicalThesisRepository = "https://github.com/mzquadri/ml-surrogates-thesis";
 const recruiterCoreApproval = "Recruiter Core v1 fact approval, 2026-08-20";
+const confidentialWorkApproval =
+  "Website Completion v1 confidential-work sanitization approval, 2026-08-21";
 
 export const truthRegistry = {
   identity: {
@@ -86,6 +94,8 @@ export const truthRegistry = {
           title: "AI Engineer (Working Student)",
           location: "Munich",
           status: "Present",
+          practice:
+            "Built verification workflows for a multilingual legal knowledge platform using relational, vector, and graph storage.",
         },
         {
           id: "tum-programming-visualization",
@@ -108,7 +118,10 @@ export const truthRegistry = {
           title: "Summer Research Intern, Machine Learning for Li-ion Battery State Estimation",
         },
       ] as const satisfies readonly ExperienceRecord[],
-      source: { tier: "approved-document", reference: recruiterCoreApproval },
+      source: {
+        tier: "approved-document",
+        reference: `${recruiterCoreApproval}; sanitized practice descriptions under ${confidentialWorkApproval}`,
+      },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,
       public: true,

@@ -17,6 +17,7 @@ export function ExperienceList({ compact = false }: CareerProfileProps) {
           <div>
             <h3>{record.title}</h3>
             <p>{record.organization}</p>
+            {record.practice ? <p className="career-practice">{record.practice}</p> : null}
           </div>
           <p className="career-context">
             {[record.location, record.status].filter(Boolean).join(" / ")}
