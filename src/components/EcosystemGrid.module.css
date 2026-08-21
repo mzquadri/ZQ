@@ -1,8 +1,8 @@
+/* The old technique drew the grid background through 1px gaps, so an incomplete last
+   row appeared as a large grey block rather than simply as fewer cards. */
 .grid {
   display: grid;
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
+  gap: 1.1rem;
   grid-template-columns: 1fr;
 }
 
@@ -10,7 +10,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-  padding: 1.4rem 1.5rem 1.25rem;
+  padding: 1.35rem 1.45rem 1.2rem;
+  border: 1px solid var(--line-strong);
   background: var(--paper-raised);
 }
 

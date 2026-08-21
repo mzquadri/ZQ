@@ -448,18 +448,19 @@ ol {
 
 .pipeline-figure ol {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+  gap: 0.6rem;
   list-style: none;
 }
 
 .pipeline-figure li {
   position: relative;
   display: flex;
-  min-height: 11rem;
+  min-height: 9rem;
   flex-direction: column;
-  padding: 1.4rem;
-  border-top: 1px solid var(--line);
-  border-right: 1px solid var(--line);
+  padding: 1.15rem;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
 }
 
 .pipeline-figure li:last-child {
@@ -492,17 +493,20 @@ ol {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 0.75rem;
   margin-top: 2rem;
-  border-top: 1px solid var(--line-strong);
-  border-left: 1px solid var(--line);
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--ink);
 }
 
 .metric {
-  min-height: 13rem;
-  padding: 1.35rem;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  display: flex;
+  min-height: 11rem;
+  flex-direction: column;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
 }
 
 .metric > span {
@@ -2854,18 +2858,18 @@ ol {
 
 .system-flow ol {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  border-left: 1px solid var(--line);
+  grid-template-columns: repeat(auto-fit, minmax(min(10.5rem, 100%), 1fr));
+  gap: 0.6rem;
   list-style: none;
 }
 
 .system-flow li {
   display: flex;
-  min-height: 12rem;
+  min-height: 9rem;
   flex-direction: column;
-  padding: 1.2rem;
+  padding: 1.1rem;
   border: 1px solid var(--line);
-  border-left: 0;
+  background: var(--paper-raised);
 }
 
 .system-flow li > span {
@@ -2888,21 +2892,22 @@ ol {
 
 .artifact-links {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+  gap: 0.75rem;
   margin-top: 2.5rem;
+  padding-top: 1.5rem;
   border-top: 2px solid var(--ink);
-  border-left: 1px solid var(--line);
 }
 
 .artifact-links a {
   display: grid;
-  min-height: 12rem;
+  min-height: 10rem;
   grid-template-columns: 1fr auto;
   align-content: space-between;
-  gap: 1rem;
-  padding: 1.3rem;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  gap: 0.85rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
   text-decoration: none;
 }
 
