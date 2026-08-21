@@ -55,7 +55,32 @@ Status: Research Experience v1 implemented locally for review.
 - Empty experiments and publications routes remain absent. Add them only when methodology,
   artifacts, limitations, and ownership are clear.
 
-## Milestone 4 — Video System
+## Milestone 4 — Website Completion
+
+Status: Website Completion v1 implemented locally for review.
+
+- The homepage reads as an engineering platform: current focus and currently-building threads,
+  featured case studies, an interactive systems graph, research, the public repository index,
+  experience, capabilities, writing, and education.
+- Resume is reachable from the footer and from quiet footnotes on `/about` and `/contact`. It is
+  not in navigation and is not a primary or secondary call to action anywhere.
+- `src/content/ecosystem.ts` catalogues the public repositories as a reviewed static snapshot.
+  See `docs/GITHUB_ECOSYSTEM.md` for the field rules and refresh procedure.
+- `SystemGraph` is the sanctioned interactive visual: hand-written canvas 2D, no 3D dependency,
+  with a server-rendered static SVG and stage list for every non-interactive path.
+- Confidential professional work is described only through an approved abstract `practice` string
+  on an experience record.
+- Deferred deliberately: cross-document View Transitions. Next's client router does not perform a
+  cross-document navigation, so the `@view-transition` at-rule would be dead CSS. Revisit if the
+  router's view-transition support leaves experimental status.
+
+### Later Website Completion increments
+
+- Project screenshots and architecture diagrams for the repositories that currently rely on prose.
+- A `/now` route if the currently-building panel outgrows the homepage.
+- Per-category repository routes only if the index becomes hard to scan.
+
+## Milestone 5 — Video System
 
 - Add a typed video collection with public-platform ID, duration, thumbnail, chapters, transcript
   or notes, resources, and related content/project links.
@@ -63,7 +88,7 @@ Status: Research Experience v1 implemented locally for review.
   large video binaries by default.
 - Let tutorials embed the same validated video record instead of duplicating iframe metadata.
 
-## Milestone 5 — Lab
+## Milestone 6 — Lab
 
 - Start with `/lab/uncertainty`: an accessible teaching tool for confidence, calibration,
   intervals, selective prediction, and conformal coverage.
@@ -71,14 +96,14 @@ Status: Research Experience v1 implemented locally for review.
 - Add RAG and agent labs only when they demonstrate retrieval/evaluation or tool-routing concepts;
   do not ship decorative chatbots.
 
-## Milestone 6 — Services
+## Milestone 7 — Services
 
 - Publish services only after the public case studies support the positioning.
 - Organize each service around the problem, suitable use cases, deliverables, process, evidence,
   boundaries, and a direct contact action.
 - Avoid agency-scale, guaranteed-outcome, or confidential-client claims.
 
-## Milestone 7 — Flagship Projects
+## Milestone 8 — Flagship Projects
 
 Develop one capability gap at a time: reliable ML, MLOps, document intelligence, decision
 analytics, forecasting, data engineering/streaming, and the ZQ platform itself. Extend strong
