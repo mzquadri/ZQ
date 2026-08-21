@@ -1,22 +1,20 @@
 import Link from "next/link";
-import { EducationList, ExperienceList } from "@/components/CareerProfile";
+import { ExperienceList } from "@/components/CareerProfile";
 import CurrentFocus from "@/components/CurrentFocus";
 import { RepositoryCardGrid, SnapshotNote } from "@/components/EcosystemGrid";
+import { ExternalArrow, ForwardArrow } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
 import ProjectList from "@/components/ProjectList";
 import { ConfidenceProtocol, ThesisPipeline } from "@/components/ResearchVisuals";
 import SectionHeading from "@/components/SectionHeading";
 import SystemGraph from "@/components/SystemGraph";
-import WritingCard from "@/components/writing/WritingCard";
 import { ecosystemRepositories, getEcosystemHighlights } from "@/content/ecosystem";
 import { capabilities, getFeaturedProjects, getProject, site, thesis } from "@/content/portfolio";
 import { getPublishedLearnWriting } from "@/content/writing/repository";
-import { ExternalArrow } from "@/components/Icon";
 
 export default function Home() {
   const thesisProject = getProject("transport-uq")!;
-  const writing = getPublishedLearnWriting();
-  const latest = writing[0];
+  const latest = getPublishedLearnWriting()[0];
 
   return (
     <PageShell>
@@ -28,13 +26,13 @@ export default function Home() {
           <p className="supporting-identity">{site.supportingIdentity}</p>
           <div className="hero-actions">
             <Link className="button button-primary" href="/work">
-              Examine selected work <ExternalArrow />
+              Examine selected work <ForwardArrow />
             </Link>
             <Link className="button button-secondary" href="/research/thesis">
               Read the research
             </Link>
             <Link className="text-link" href="/contact">
-              Contact <span aria-hidden="true">→</span>
+              Contact <ForwardArrow />
             </Link>
           </div>
           <p className="availability"><span aria-hidden="true" />{site.availability}</p>
@@ -52,6 +50,8 @@ export default function Home() {
         <div>Scientific software</div>
       </section>
 
+      {/* Current focus now also carries the capability surface. The two sections asked the
+          same question and answered it twice. */}
       <section className="section-wrap focus-section reveal-section">
         <SectionHeading
           index="01"
@@ -60,6 +60,7 @@ export default function Home() {
           introduction="Three engineering themes, each pointing at a public artifact, plus the next evidence gate for every repository that is still moving."
         />
         <CurrentFocus
+          capabilities={capabilities}
           latest={
             latest
               ? {
@@ -93,7 +94,7 @@ export default function Home() {
           index="03"
           eyebrow="How the work connects"
           title="From data to a decision someone can act on"
-          introduction="An interactive map of the engineering path I work along. Select any node to see what it means here and which public artifact backs it. Dashed nodes are directions of study with no public project yet."
+          introduction="Select any node to see what it means here and which public artifact backs it. Dashed nodes are directions of study with no public project yet."
         />
         <SystemGraph />
       </section>
@@ -117,7 +118,7 @@ export default function Home() {
         </div>
         <div className="section-action">
           <Link className="text-link" href="/research/thesis">
-            Read the research record and limitations <span aria-hidden="true">→</span>
+            Read the research record and limitations <ForwardArrow />
           </Link>
         </div>
       </section>
@@ -146,62 +147,12 @@ export default function Home() {
           index="06"
           eyebrow="Experience"
           title="Across AI engineering, research, and technical computing"
-          introduction="Titles below are approved for publication. Confidential work is described at an abstract level only. Disputed historical dates and unverified impact figures are intentionally omitted."
+          introduction="Titles are approved for publication. Confidential work is described at an abstract level only. Disputed historical dates and unverified impact figures are intentionally omitted."
         />
         <ExperienceList />
         <div className="section-action">
-          <Link className="text-link" href="/about">Experience and education context <span aria-hidden="true">→</span></Link>
+          <Link className="text-link" href="/about">Experience and education context <ForwardArrow /></Link>
         </div>
-      </section>
-
-      <section className="section-wrap capabilities-section reveal-section">
-        <SectionHeading
-          index="07"
-          eyebrow="Capabilities"
-          title="Grouped by the work they enable"
-          introduction="No self-rated percentages. Every capability points to a case study where it was applied and bounded."
-        />
-        <div className="capability-grid">
-          {capabilities.map((capability) => (
-            <article key={capability.title}>
-              <h3>{capability.title}</h3>
-              <p>{capability.summary}</p>
-              <div className="proof-links">
-                {capability.proof.map((slug) => {
-                  const project = getProject(slug)!;
-                  return <Link key={slug} href={`/work/${slug}`}>{project.title} <ExternalArrow /></Link>;
-                })}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {writing.length > 0 ? (
-        <section className="section-wrap writing-section reveal-section">
-          <SectionHeading
-            index="08"
-            eyebrow="Learn"
-            title="Explaining the reasoning, not only the result"
-            introduction="Technical tutorials and notes that connect a mathematical idea to the engineering decision it changes."
-          />
-          <div className="writing-grid">
-            {writing.slice(0, 3).map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
-          </div>
-          <div className="section-action">
-            <Link className="text-link" href="/learn">All tutorials and notes <span aria-hidden="true">→</span></Link>
-          </div>
-        </section>
-      ) : null}
-
-      <section className="section-wrap education-section reveal-section">
-        <SectionHeading
-          index="09"
-          eyebrow="Education & academic roles"
-          title="Mathematics, computation, and explanation"
-          introduction="Formal mathematics underpins the modelling work. The approved record also includes TUM student research assistant roles in programming, visualization, and numerical methods."
-        />
-        <EducationList />
       </section>
 
       <section className="closing-section section-wrap">
@@ -209,8 +160,8 @@ export default function Home() {
         <h2>Need an engineer who treats evidence as part of the system?</h2>
         <p>{site.availability}. Start with the case studies, the research record, or the open-source ecosystem.</p>
         <div className="hero-actions">
-          <Link className="button button-primary" href="/contact">Contact <span aria-hidden="true">→</span></Link>
-          <Link className="button button-secondary" href="/work">Selected work</Link>
+          <Link className="button button-primary" href="/contact">Contact <ForwardArrow /></Link>
+          <Link className="button button-secondary" href="/learn">Read the tutorials</Link>
         </div>
       </section>
     </PageShell>
