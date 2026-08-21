@@ -3813,3 +3813,96 @@ ol {
 .writing-grid-rest {
   margin-top: 1.5rem;
 }
+/* Experience as a deliberate compact timeline rather than half-filled rows. */
+.career-list.timeline {
+  margin-top: 2rem;
+  border-top: 2px solid var(--ink);
+}
+
+.career-list.timeline li {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) minmax(7rem, auto);
+  gap: 1rem 1.25rem;
+  align-items: baseline;
+  padding: 1.15rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.career-list.timeline li:last-child {
+  border-bottom: 0;
+}
+
+.career-list.timeline .career-rail {
+  position: relative;
+  align-self: stretch;
+}
+
+.career-list.timeline .career-rail::before {
+  content: "";
+  position: absolute;
+  top: 0.45rem;
+  left: 0.3rem;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.career-list.timeline li:first-child .career-rail::before {
+  background: var(--teal);
+  border-color: var(--teal-dark);
+}
+
+.career-list.timeline .career-rail::after {
+  content: "";
+  position: absolute;
+  top: 1.3rem;
+  bottom: -1.15rem;
+  left: 0.6rem;
+  width: 1px;
+  background: var(--line);
+}
+
+.career-list.timeline li:last-child .career-rail::after {
+  display: none;
+}
+
+.career-list.timeline h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 1.7vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.career-list.timeline .career-org {
+  margin-top: 0.15rem;
+  font-size: 0.87rem;
+  color: var(--ink-soft);
+}
+
+.career-list.timeline .career-practice {
+  margin-top: 0.5rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid var(--teal);
+  font-size: 0.88rem;
+  max-width: 56ch;
+}
+
+.career-list.timeline .career-context {
+  justify-self: end;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .career-list.timeline li {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+  }
+
+  .career-list.timeline .career-context {
+    grid-column: 2;
+    justify-self: start;
+    text-align: left;
+  }
+}
+
