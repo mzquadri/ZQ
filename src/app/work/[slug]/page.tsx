@@ -6,6 +6,7 @@ import PageShell from "@/components/PageShell";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import { getProject, projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
+import { ExternalArrow } from "@/components/Icon";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -81,7 +82,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             ) : null}
           </dl>
           <a className="button button-primary" href={project.repository}>
-            Inspect repository <span aria-hidden="true">↗</span>
+            Inspect repository <ExternalArrow />
           </a>
         </header>
 
@@ -151,7 +152,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 <a href={artifact.href} key={artifact.href}>
                   <strong>{artifact.label}</strong>
                   <span>{artifact.note}</span>
-                  <span aria-hidden="true">↗</span>
+                  <ExternalArrow />
                 </a>
               ))}
             </div>
@@ -186,7 +187,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </Link>
             ) : null}
             <a className="text-link" href={project.repository}>
-              Source and documentation <span aria-hidden="true">↗</span>
+              Source and documentation <ExternalArrow />
             </a>
             <Link className="text-link" href="/contact">
               Discuss relevant work <span aria-hidden="true">→</span>

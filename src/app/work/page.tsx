@@ -7,6 +7,7 @@ import SectionHeading from "@/components/SectionHeading";
 import { ecosystemRepositories, getPopulatedCategories } from "@/content/ecosystem";
 import { projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
+import { ExternalArrow } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Selected Work",
@@ -58,7 +59,7 @@ export default function WorkPage() {
         <SnapshotNote />
         <div className="section-action">
           <a className="text-link" href={site.github}>
-            Full GitHub profile <span aria-hidden="true">↗</span>
+            Full GitHub profile <ExternalArrow />
           </a>
         </div>
       </section>

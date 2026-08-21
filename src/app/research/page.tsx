@@ -8,6 +8,7 @@ import { getProject, getResearchProjects, site, thesis } from "@/content/portfol
 import { researchEvidence, researchThemes, thesisResearchPath } from "@/content/research";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
 import { createPageMetadata } from "@/lib/metadata";
+import { ExternalArrow } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Research",
@@ -122,8 +123,8 @@ export default function ResearchPage() {
           </dl>
           <div className="research-record-actions">
             <Link className="button button-primary" href={thesisResearchPath}>Explore the thesis research <span aria-hidden="true">→</span></Link>
-            <Link className="text-link" href="/work/transport-uq">Engineering case study <span aria-hidden="true">↗</span></Link>
-            <a className="text-link" href={thesis.repository}>Canonical repository <span aria-hidden="true">↗</span></a>
+            <Link className="text-link" href="/work/transport-uq">Engineering case study <ExternalArrow /></Link>
+            <a className="text-link" href={thesis.repository}>Canonical repository <ExternalArrow /></a>
           </div>
         </article>
       </section>

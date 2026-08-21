@@ -4,6 +4,7 @@ import rehypeShiki from "@shikijs/rehype";
 import rehypeKatex from "rehype-katex";
 import rehypeSlug from "rehype-slug";
 import remarkMath from "remark-math";
+import { ExternalArrow } from "@/components/Icon";
 
 function Callout({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -35,7 +36,7 @@ function ExternalAwareLink({ href = "", children, ...props }: ComponentPropsWith
   return (
     <a href={href} {...props}>
       {children}
-      {external ? <span className="external-marker" aria-hidden="true"> ↗</span> : null}
+      {external ? <ExternalArrow className="external-marker" /> : null}
     </a>
   );
 }

@@ -11,6 +11,7 @@ import WritingCard from "@/components/writing/WritingCard";
 import { ecosystemRepositories, getEcosystemHighlights } from "@/content/ecosystem";
 import { capabilities, getFeaturedProjects, getProject, site, thesis } from "@/content/portfolio";
 import { getPublishedLearnWriting } from "@/content/writing/repository";
+import { ExternalArrow } from "@/components/Icon";
 
 export default function Home() {
   const thesisProject = getProject("transport-uq")!;
@@ -27,7 +28,7 @@ export default function Home() {
           <p className="supporting-identity">{site.supportingIdentity}</p>
           <div className="hero-actions">
             <Link className="button button-primary" href="/work">
-              Examine selected work <span aria-hidden="true">↗</span>
+              Examine selected work <ExternalArrow />
             </Link>
             <Link className="button button-secondary" href="/research/thesis">
               Read the research
@@ -135,7 +136,7 @@ export default function Home() {
             Browse every public repository
           </Link>
           <a className="text-link" href={site.github}>
-            GitHub profile <span aria-hidden="true">↗</span>
+            GitHub profile <ExternalArrow />
           </a>
         </div>
       </section>
@@ -168,7 +169,7 @@ export default function Home() {
               <div className="proof-links">
                 {capability.proof.map((slug) => {
                   const project = getProject(slug)!;
-                  return <Link key={slug} href={`/work/${slug}`}>{project.title} <span aria-hidden="true">↗</span></Link>;
+                  return <Link key={slug} href={`/work/${slug}`}>{project.title} <ExternalArrow /></Link>;
                 })}
               </div>
             </article>

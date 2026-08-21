@@ -2,6 +2,7 @@ import Link from "next/link";
 import { repositoryUrl } from "@/content/ecosystem";
 import { focusThemes, getBuildingThreads } from "@/content/focus";
 import styles from "./CurrentFocus.module.css";
+import { ExternalArrow } from "@/components/Icon";
 
 interface CurrentFocusProps {
   latest?: {
@@ -45,7 +46,7 @@ export default function CurrentFocus({ latest }: CurrentFocusProps) {
           {threads.map((thread) => (
             <li key={thread.id}>
               <a className={styles.threadRepo} href={repositoryUrl(thread.detail)}>
-                {thread.detail.name} <span aria-hidden="true">↗</span>
+                {thread.detail.name} <ExternalArrow />
               </a>
               <p>{thread.nextEvidenceGate}</p>
             </li>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Project } from "@/content/portfolio";
+import { ExternalArrow } from "@/components/Icon";
 
 interface ProjectListProps {
   projects: readonly Project[];
@@ -36,7 +37,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
               aria-label={`Read case study: ${project.title}`}
             >
               <span>Case study</span>
-              <span aria-hidden="true">↗</span>
+              <ExternalArrow />
             </Link>
           </article>
         </li>

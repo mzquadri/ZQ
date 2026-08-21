@@ -3,6 +3,7 @@ import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import { site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
+import { ExternalArrow } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Contact",
@@ -37,12 +38,12 @@ export default function ContactPage() {
           <a href={site.linkedin}>
             <span>LinkedIn</span>
             <strong>Professional conversation</strong>
-            <span aria-hidden="true">↗</span>
+            <ExternalArrow />
           </a>
           <a href={site.github}>
             <span>GitHub</span>
             <strong>Repositories and technical work</strong>
-            <span aria-hidden="true">↗</span>
+            <ExternalArrow />
           </a>
         </div>
       </section>
