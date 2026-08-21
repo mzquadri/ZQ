@@ -122,10 +122,20 @@ export default function AboutPage() {
       </section>
 
       <section className="closing-section section-wrap">
-        <p className="kicker">Recruiter record</p>
-        <h2>Need the concise version?</h2>
-        <p>The canonical resume is generated from the same approved facts and project evidence as this site.</p>
-        <Link className="button button-primary" href={site.resume.htmlPath}>View resume <span aria-hidden="true">→</span></Link>
+        <p className="kicker">Next</p>
+        <h2>The clearest version of this is the work itself.</h2>
+        <p>
+          Each case study states the problem, the evidence, and the limitation. The repository
+          index shows the same standard applied to smaller projects.
+        </p>
+        <div className="hero-actions">
+          <Link className="button button-primary" href="/work">Selected work <span aria-hidden="true">→</span></Link>
+          <Link className="button button-secondary" href="/contact">Contact</Link>
+        </div>
+        <p className="resume-footnote">
+          A condensed record is available as an <Link href={site.resume.htmlPath}>HTML resume</Link>,
+          generated from the same approved facts as this site.
+        </p>
       </section>
     </PageShell>
   );
