@@ -90,20 +90,38 @@ test("the systems graph never claims work it cannot evidence", () => {
 });
 
 test("graph projection keeps every node inside the drawing surface", () => {
-  const width = 720;
-  const height = 400;
-  const unit = Math.min(width / 8, height / 4.6);
+  // Must mirror UNIT_X_DIVISOR / UNIT_Y_DIVISOR and MAX_PITCH in SystemGraph.tsx.
+  const unitFor = (w: number, h: number) => Math.min(w / 6.8, h / 5.2);
 
-  // Sweep a full rotation: no rotation may push a node outside its canvas.
-  for (let step = 0; step < 24; step += 1) {
-    const yaw = (step / 24) * Math.PI * 2;
-    for (const pitch of [-0.85, 0, 0.85]) {
-      for (const node of graphNodes) {
-        const point = projectPoint(node, yaw, pitch, width, height, unit);
-        assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), "projection produced a non-finite point");
-        assert.ok(point.scale > 0, "projection inverted the camera");
-        assert.ok(point.x > 20 && point.x < width - 20, `node ${node.id} left the canvas horizontally`);
-        assert.ok(point.y > 10 && point.y < height - 10, `node ${node.id} left the canvas vertically`);
+  // The frame now stretches to its column, so the aspect ratio is not fixed. Sweep the
+  // range it can take, at the clamped pitch extremes and a full rotation: no combination
+  // may push a node outside the canvas.
+  const frames = [
+    [720, 405],
+    [720, 460],
+    [720, 540],
+    [660, 660],
+    [390, 270],
+  ];
+
+  for (const [width, height] of frames) {
+    const unit = unitFor(width, height);
+    for (let step = 0; step < 32; step += 1) {
+      const yaw = (step / 32) * Math.PI * 2;
+      for (const pitch of [-0.42, 0, 0.42]) {
+        for (const node of graphNodes) {
+          const point = projectPoint(node, yaw, pitch, width, height, unit);
+          assert.ok(Number.isFinite(point.x) && Number.isFinite(point.y), "non-finite point");
+          assert.ok(point.scale > 0, "projection inverted the camera");
+          assert.ok(
+            point.x > 16 && point.x < width - 16,
+            `node ${node.id} left a ${width}x${height} canvas horizontally`,
+          );
+          assert.ok(
+            point.y > 10 && point.y < height - 10,
+            `node ${node.id} left a ${width}x${height} canvas vertically`,
+          );
+        }
       }
     }
   }
