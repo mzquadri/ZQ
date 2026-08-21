@@ -49,19 +49,22 @@ export default function ContactPage() {
 
       <section className="section-wrap contact-note">
         <div>
-          <p className="section-index"><span>02</span>Resume</p>
-          <h2>One canonical recruiter record.</h2>
+          <p className="section-index"><span>02</span>The record itself</p>
+          <h2>The site is the evidence.</h2>
         </div>
         <div>
           <p>
-            The HTML resume and its PDF export use the same approved experience, education,
-            profile, and project facts. Neither publishes an email, phone number, street
-            address, private identifier, or disputed employment date.
+            The case studies, research record, and repository index carry the detail a
+            conversation usually needs: what was built, how it was checked, and where the claim
+            stops. Starting there is faster than a summary document.
           </p>
-          <div className="case-actions">
-            <Link className="button button-secondary" href={site.resume.htmlPath}>View resume</Link>
-            <a className="text-link" href={site.resume.pdfPath} download>Download PDF <span aria-hidden="true">↓</span></a>
-          </div>
+          <p className="resume-footnote">
+            A condensed record is also available as an{" "}
+            <Link href={site.resume.htmlPath}>HTML resume</Link> or a{" "}
+            <a href={site.resume.pdfPath} download>PDF export</a>. Both are generated from the same
+            approved facts and publish no email, phone number, street address, private identifier,
+            or disputed employment date.
+          </p>
         </div>
       </section>
 
