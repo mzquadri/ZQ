@@ -2,9 +2,11 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 
 import {
+  canonicalMlopsEvidence,
   capabilities,
   getFeaturedProjects,
   getResearchProjects,
+  mlopsReferenceRun,
   navigation,
   projects,
   site,
@@ -387,6 +389,76 @@ check(
     { nominalPct: 95, observedPct: 95.01 },
   ]),
   "Marginal coverage pairs diverge from the reported thesis protocol",
+);
+
+// --- MLOps reference-run evidence --------------------------------------------------------------
+
+// Numbers are locked to the released commit. Changing a figure here has to be a deliberate
+// edit accompanied by a new upstream release, not a drift.
+check(
+  /^[0-9a-f]{40}$/.test(canonicalMlopsEvidence.commit),
+  "MLOps evidence commit must be a full 40-character SHA",
+);
+check(
+  canonicalMlopsEvidence.commit === "226ef7f1ec3d02d19f51327689e4c736854473cc",
+  "MLOps evidence commit changed unexpectedly",
+);
+check(
+  canonicalMlopsEvidence.repository === "https://github.com/mzquadri/MLOps-End-to-End-Pipeline",
+  "MLOps evidence must use the canonical repository URL",
+);
+for (const [label, href] of Object.entries(canonicalMlopsEvidence)) {
+  if (label === "repository" || label === "commit") continue;
+  check(href.startsWith(`${canonicalMlopsEvidence.repository}/`), `MLOps ${label} link leaves the repository`);
+  // The Actions view is a live status page, not a source for a published number.
+  if (label === "actions") {
+    check(href.endsWith("/actions"), "MLOps actions link must point at the workflow runs view");
+    continue;
+  }
+  check(
+    href.includes(`/${canonicalMlopsEvidence.commit}/`),
+    `MLOps ${label} link must be pinned to the released commit`,
+  );
+}
+check(
+  JSON.stringify(mlopsReferenceRun.test) === JSON.stringify({
+    accuracy: 0.8067,
+    f1Weighted: 0.8067,
+    rocAuc: 0.8795,
+    prAuc: 0.8895,
+    baselineAccuracy: 0.5,
+  }),
+  "MLOps held-out metrics diverge from the released reference run",
+);
+check(
+  JSON.stringify(mlopsReferenceRun.split) === JSON.stringify({ train: 1800, validation: 600, test: 600 }),
+  "MLOps split sizes diverge from the released reference run",
+);
+check(
+  mlopsReferenceRun.test.accuracy > mlopsReferenceRun.test.baselineAccuracy,
+  "A published model must beat its own baseline",
+);
+check(mlopsReferenceRun.dataset.rows === 3000, "MLOps dataset row count diverges from the released run");
+check(mlopsReferenceRun.dataset.license === "CC BY 4.0", "MLOps dataset licence must be published accurately");
+check(
+  mlopsReferenceRun.dataset.redistributed === false,
+  "The MLOps dataset must not be described as redistributed",
+);
+check(mlopsReferenceRun.tests.total === 99, "MLOps test count diverges from the released run");
+check(
+  mlopsReferenceRun.split.train + mlopsReferenceRun.split.validation + mlopsReferenceRun.split.test ===
+    mlopsReferenceRun.dataset.rows,
+  "MLOps split sizes must account for every dataset row",
+);
+
+const mlopsProject = projectBySlug.get("mlops-reference-pipeline");
+check(
+  !(mlopsProject?.nextStep ?? "").toLowerCase().includes("licensed-data run"),
+  "The completed licensed-data milestone must not remain as an open next step",
+);
+check(
+  (mlopsProject?.limitations ?? []).some((item) => item.includes(String(mlopsReferenceRun.split.test))),
+  "The MLOps case study must keep its held-out sample size visible next to the result",
 );
 
 // --- Public repository ecosystem -------------------------------------------------------------

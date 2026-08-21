@@ -304,6 +304,51 @@ test("case studies expose ownership and direct evidence", async ({ page }) => {
   await expect(page.getByRole("link", { name: /Automated tests/ })).toBeVisible();
 });
 
+test("the MLOps case study publishes the released reference run, not the retired one", async ({ page }) => {
+  await page.goto("/work/mlops-reference-pipeline");
+  const body = page.locator("main");
+
+  // Held-out numbers, always next to the baseline that gives them scale.
+  await expect(body).toContainText("0.8067");
+  await expect(body).toContainText("ROC-AUC 0.8795");
+  await expect(body).toContainText("0.5000");
+  await expect(body).toContainText("CC BY 4.0");
+  await expect(body).toContainText("99 tests");
+
+  // The milestone completed by the upstream release must not still read as future work.
+  await expect(body).not.toContainText(/licensed-data run/i);
+  await expect(page.locator(".next-step")).toContainText("Slice-aware evaluation");
+
+  // Limitations stay visible rather than being quietly dropped once there is a result.
+  const limitations = body.getByRole("heading", { name: "Where the evidence stops" });
+  await expect(limitations).toBeVisible();
+  await expect(body).toContainText("600 held-out test rows");
+  await expect(body).toContainText("never carried production traffic");
+
+  // Evidence links are pinned to the released commit, not to a floating branch.
+  const pinned = page.locator('a[href*="226ef7f1ec3d02d19f51327689e4c736854473cc"]');
+  expect(await pinned.count()).toBeGreaterThanOrEqual(4);
+  await expect(
+    page.locator('main a[href*="MLOps-End-to-End-Pipeline/tree/main"], main a[href*="MLOps-End-to-End-Pipeline/blob/main"]'),
+  ).toHaveCount(0);
+});
+
+test("the repository index and homepage stay concise about MLOps", async ({ page }) => {
+  await page.goto("/work");
+  const card = page.locator("#ecosystem").getByRole("heading", { name: /Testable End-to-End MLOps Pipeline/ });
+  await expect(card).toBeVisible();
+  await expect(page.locator("#ecosystem")).toContainText("licensed dataset");
+
+  // Detail belongs in the case study; the index must not restate the metric table.
+  await expect(page.locator("#ecosystem")).not.toContainText("ROC-AUC");
+
+  await page.goto("/");
+  const main = page.locator("main");
+  await expect(main).toContainText("Slice-aware evaluation");
+  await expect(main).not.toContainText("0.8067");
+  await expect(main).not.toContainText(/licensed-data run/i);
+});
+
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   for (const route of ["/", "/work", "/resume", "/work/mlops-reference-pipeline", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
