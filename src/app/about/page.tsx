@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EducationList, ExperienceList } from "@/components/CareerProfile";
 import PageShell from "@/components/PageShell";
+import ProfilePortrait from "@/components/ProfilePortrait";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -35,6 +36,14 @@ export default function AboutPage() {
   return (
     <PageShell current="/about">
       <header className="page-hero section-wrap">
+        <div className="about-identity">
+          <ProfilePortrait variant="feature" />
+          <p className="portrait-caption">
+            <strong>{site.name}</strong>
+            <span>{site.role}</span>
+            <span>{site.location}</span>
+          </p>
+        </div>
         <p className="kicker">About / Working approach</p>
         <h1>Mathematical care, practical engineering.</h1>
         <p>

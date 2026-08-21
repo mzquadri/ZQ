@@ -578,6 +578,44 @@ check(
   "Systems-graph edges must be unique",
 );
 
+// --- Profile portrait ---------------------------------------------------------------------------
+
+/*
+ * A published photograph is the first personal identifier on this site, approved in the
+ * Visual Rebuild v2 privacy review. The strip step is not trusted: the committed file is
+ * inspected here on every build, so a re-export that quietly reintroduces EXIF fails
+ * rather than shipping. GPS coordinates are the specific risk.
+ */
+const portraitPath = resolve("public/images/zamin-profile.jpg");
+if (existsSync(portraitPath)) {
+  const portrait = readFileSync(portraitPath);
+  check(portrait.subarray(0, 2).toString("hex") === "ffd8", "Profile portrait is not a JPEG");
+  check(statSync(portraitPath).size < 900_000, "Profile portrait is unexpectedly large for the web");
+
+  // APP1 is where EXIF (and therefore GPS) lives; APP13 carries IPTC/Photoshop blocks.
+  const markers: string[] = [];
+  for (let index = 2; index + 4 < portrait.length; ) {
+    if (portrait[index] !== 0xff) break;
+    const marker = portrait[index + 1];
+    if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+      index += 2;
+      continue;
+    }
+    if (marker === 0xda || marker === 0xd9) break;
+    const length = portrait.readUInt16BE(index + 2);
+    const segment = portrait.subarray(index + 4, index + 2 + length);
+    if (marker === 0xe1 && segment.subarray(0, 4).toString("latin1") === "Exif") markers.push("EXIF");
+    if (marker === 0xe1 && segment.subarray(0, 5).toString("latin1") === "http:") markers.push("XMP");
+    if (marker === 0xed) markers.push("IPTC");
+    index += 2 + length;
+  }
+  check(markers.length === 0, `Profile portrait still carries metadata segments: ${markers.join(", ")}`);
+  check(
+    !portrait.toString("latin1").includes("GPS"),
+    "Profile portrait contains a GPS reference and must be re-stripped",
+  );
+}
+
 // --- Confidential work -------------------------------------------------------------------------
 
 for (const record of site.experience) {

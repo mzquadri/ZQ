@@ -5,6 +5,7 @@ import { RepositoryCardGrid, SnapshotNote } from "@/components/EcosystemGrid";
 import FeaturedWork from "@/components/FeaturedWork";
 import { ExternalArrow, ForwardArrow } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
+import ProfilePortrait from "@/components/ProfilePortrait";
 import { ConfidenceProtocol, ThesisPipeline } from "@/components/ResearchVisuals";
 import SectionHeading from "@/components/SectionHeading";
 import SystemGraph from "@/components/SystemGraph";
@@ -20,22 +21,27 @@ export default function Home() {
     <PageShell>
       <section className="hero recruiter-hero section-wrap" aria-labelledby="hero-title">
         <div className="hero-copy">
-          <p className="kicker">AI/ML engineering / Munich</p>
-          <h1 id="hero-title">Reliable models. <em>Usable systems.</em></h1>
-          <p className="hero-intro">{site.positioning}</p>
-          <p className="supporting-identity">{site.supportingIdentity}</p>
-          <div className="hero-actions">
-            <Link className="button button-primary" href="/work">
-              Examine selected work <ForwardArrow />
-            </Link>
-            <Link className="button button-secondary" href="/research/thesis">
-              Read the research
-            </Link>
-            <Link className="text-link" href="/contact">
-              Contact <ForwardArrow />
-            </Link>
+          <div className="hero-identity">
+            <ProfilePortrait priority variant="hero" />
+            <div className="hero-identity-copy">
+              <p className="kicker">AI/ML engineering / Munich</p>
+              <h1 id="hero-title">Reliable models. <em>Usable systems.</em></h1>
+              <p className="hero-intro">{site.positioning}</p>
+              <p className="supporting-identity">{site.supportingIdentity}</p>
+              <div className="hero-actions">
+                <Link className="button button-primary" href="/work">
+                  Examine selected work <ForwardArrow />
+                </Link>
+                <Link className="button button-secondary" href="/research/thesis">
+                  Read the research
+                </Link>
+                <Link className="text-link" href="/contact">
+                  Contact <ForwardArrow />
+                </Link>
+              </div>
+              <p className="availability"><span aria-hidden="true" />{site.availability}</p>
+            </div>
           </div>
-          <p className="availability"><span aria-hidden="true" />{site.availability}</p>
         </div>
         <div className="hero-visual">
           <div className="hero-visual-label">How I turn model output into a decision</div>
