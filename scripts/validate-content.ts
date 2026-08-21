@@ -17,6 +17,15 @@ import {
   thesisResearchPath,
 } from "../src/content/research";
 import {
+  ecosystemCategories,
+  ecosystemRepositories,
+  ecosystemSnapshot,
+  getPopulatedCategories,
+  repositoryUrl,
+} from "../src/content/ecosystem";
+import { buildingThreads, focusThemes } from "../src/content/focus";
+import { graphEdges, graphNodes, graphStages } from "../src/content/systems-graph";
+import {
   currentPublicFacts,
   publishedFacts,
   sourceTiers,
@@ -159,8 +168,15 @@ for (const path of requiredFiles) {
 }
 
 const publicContent = JSON.stringify({
+  buildingThreads,
   capabilities,
   canonicalThesisEvidence,
+  ecosystemRepositories,
+  ecosystemSnapshot,
+  focusThemes,
+  graphEdges,
+  graphNodes,
+  graphStages,
   navigation,
   projects,
   researchEvidence,
@@ -372,6 +388,137 @@ check(
   ]),
   "Marginal coverage pairs diverge from the reported thesis protocol",
 );
+
+// --- Public repository ecosystem -------------------------------------------------------------
+
+const today = new Date().toISOString().slice(0, 10);
+const repositoryNames = new Set<string>();
+const projectRepositoryUrls = new Set(projects.map((project) => project.repository));
+const ecosystemUrls = new Set(ecosystemRepositories.map((repository) => repositoryUrl(repository)));
+
+check(isIsoDate(ecosystemSnapshot.observedAt), "Ecosystem snapshot has an invalid observation date");
+check(ecosystemSnapshot.observedAt <= today, "Ecosystem snapshot claims a future observation date");
+check(ecosystemSnapshot.profile === site.github, "Ecosystem snapshot must use the verified GitHub profile");
+check(ecosystemRepositories.length > projects.length, "The repository index must show more than the case studies alone");
+
+for (const repository of ecosystemRepositories) {
+  const label = `Repository ${repository.name}`;
+  check(!repositoryNames.has(repository.name), `Duplicate repository entry: ${repository.name}`);
+  repositoryNames.add(repository.name);
+  check(ecosystemCategories.includes(repository.category), `${label} has an invalid category`);
+  check(repository.description.trim().length > 0, `${label} has no description`);
+  check(repository.boundary.trim().length > 0, `${label} has no evidence boundary`);
+  check(repository.language.trim().length > 0, `${label} has no language`);
+  check(repository.topics.length > 0, `${label} has no focus areas`);
+  check(new Set(repository.topics).size === repository.topics.length, `${label} repeats a focus area`);
+  check(isIsoDate(repository.lastCommit), `${label} has an invalid last-commit date`);
+  check(repository.lastCommit <= today, `${label} claims a future commit date`);
+  check(
+    repositoryUrl(repository).startsWith(`${site.github}/`),
+    `${label} does not resolve under the verified GitHub profile`,
+  );
+
+  if (repository.caseStudySlug) {
+    const project = projectBySlug.get(repository.caseStudySlug);
+    check(Boolean(project), `${label} references unknown case study: ${repository.caseStudySlug}`);
+    // The repository index and the case study must agree on the canonical repository URL.
+    check(
+      project?.repository === repositoryUrl(repository),
+      `${label} and case study ${repository.caseStudySlug} disagree on the repository URL`,
+    );
+  }
+}
+
+for (const url of projectRepositoryUrls) {
+  check(ecosystemUrls.has(url), `Case-study repository is missing from the repository index: ${url}`);
+}
+
+const populatedCategories = getPopulatedCategories();
+check(populatedCategories.length >= 4, "The repository index should use more than a couple of categories");
+check(
+  populatedCategories.reduce((total, group) => total + group.repositories.length, 0) === ecosystemRepositories.length,
+  "Every repository must appear in exactly one populated category group",
+);
+
+// --- Current focus ---------------------------------------------------------------------------
+
+const publishedWritingPaths = new Set(publishedWriting.map((entry) => entry.path));
+
+function checkPublicPath(path: string, label: string) {
+  check(path.startsWith("/"), `${label} is not site-relative: ${path}`);
+  if (path.startsWith("/work/")) {
+    check(projectBySlug.has(path.slice("/work/".length)), `${label} points at an unknown case study: ${path}`);
+    return;
+  }
+  if (path.startsWith("/learn/")) {
+    check(publishedWritingPaths.has(path), `${label} points at unpublished writing: ${path}`);
+    return;
+  }
+  check(existsSync(resolve(`src/app${path}/page.tsx`)), `${label} points at a route that does not exist: ${path}`);
+}
+
+check(focusThemes.length > 0, "Current focus must describe at least one theme");
+for (const theme of focusThemes) {
+  check(theme.summary.trim().length > 0, `Focus theme ${theme.id} has no summary`);
+  check(theme.evidence.length > 0, `Focus theme ${theme.id} claims a focus with no public evidence`);
+  for (const item of theme.evidence) checkPublicPath(item.href, `Focus theme ${theme.id} evidence`);
+}
+
+for (const thread of buildingThreads) {
+  check(repositoryNames.has(thread.repository), `Currently-building thread references unknown repository: ${thread.repository}`);
+  check(thread.nextEvidenceGate.trim().length > 0, `Currently-building thread ${thread.id} states no evidence gate`);
+}
+
+// --- Systems graph ---------------------------------------------------------------------------
+
+const graphNodeIds = new Set(graphNodes.map((node) => node.id));
+const graphStageIds = new Set(graphStages.map((stage) => stage.id));
+
+check(graphNodeIds.size === graphNodes.length, "Systems-graph node IDs must be unique");
+check(graphStageIds.size === graphStages.length, "Systems-graph stage IDs must be unique");
+
+for (const node of graphNodes) {
+  check(graphStageIds.has(node.stage), `Systems-graph node ${node.id} sits in an unknown stage`);
+  check(node.blurb.trim().length > 0, `Systems-graph node ${node.id} has no explanation`);
+  // A node may only claim delivered work when a public artifact backs it.
+  if (node.status === "Evidenced") {
+    check(Boolean(node.href), `Systems-graph node ${node.id} is marked evidenced without a public artifact`);
+    if (node.href) checkPublicPath(node.href, `Systems-graph node ${node.id}`);
+  } else {
+    check(!node.href, `Systems-graph node ${node.id} is a direction of study and must not link to claimed work`);
+  }
+}
+
+for (const stage of graphStages) {
+  check(
+    graphNodes.some((node) => node.stage === stage.id),
+    `Systems-graph stage ${stage.id} is empty and must not be shown`,
+  );
+}
+
+for (const edge of graphEdges) {
+  check(graphNodeIds.has(edge.from), `Systems-graph edge starts at an unknown node: ${edge.from}`);
+  check(graphNodeIds.has(edge.to), `Systems-graph edge ends at an unknown node: ${edge.to}`);
+  check(edge.from !== edge.to, `Systems-graph edge loops on itself: ${edge.from}`);
+}
+check(
+  new Set(graphEdges.map((edge) => `${edge.from}>${edge.to}`)).size === graphEdges.length,
+  "Systems-graph edges must be unique",
+);
+
+// --- Confidential work -------------------------------------------------------------------------
+
+for (const record of site.experience) {
+  if (!record.practice) continue;
+  check(
+    record.practice.trim().length >= 40,
+    `${record.id} publishes a practice description that is too thin to be useful`,
+  );
+  check(
+    !/https?:|\bhttp\b|\b\d{1,3}(?:\.\d{1,3}){3}\b|localhost|\.internal\b|\.local\b/i.test(record.practice),
+    `${record.id} practice description leaks an endpoint, host, or address`,
+  );
+}
 
 check(publishedWriting.length > 0, "Public writing routes require at least one published entry");
 check(getPublishedLearnWriting().length > 0, "The Learn route must not launch empty");

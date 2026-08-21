@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "validate:content": "tsx scripts/validate-content.ts",
-    "test:content": "tsx --test tests/content-foundation.test.ts tests/resume-contract.test.ts",
+    "test:content": "tsx --test tests/content-foundation.test.ts tests/resume-contract.test.ts tests/ecosystem.test.ts",
     "generate:resume": "npm run build && tsx scripts/generate-resume.ts",
     "test:e2e": "npm run build && playwright test",
     "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build"
