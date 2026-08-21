@@ -4,19 +4,28 @@ interface CareerProfileProps {
   compact?: boolean;
 }
 
+/**
+ * Experience as a deliberate timeline.
+ *
+ * Only one role carries an approved description, so the previous list read as four
+ * unfinished rows following one complete one. A rail with explicit markers makes the
+ * shape intentional: the entries are titles because titles are what has been approved
+ * for publication, and the one role with a sanitized description shows it as an
+ * annotation on the rail rather than as the only row with content.
+ *
+ * No date is rendered anywhere. Disputed historical dates are deliberately unpublished.
+ */
 export function ExperienceList({ compact = false }: CareerProfileProps) {
   const records = compact ? site.experience.slice(0, 3) : site.experience;
 
   return (
-    <ol className="career-list">
-      {records.map((record, index) => (
+    <ol className="career-list timeline">
+      {records.map((record) => (
         <li key={record.id}>
-          <span className="career-number" aria-hidden="true">
-            {(index + 1).toString().padStart(2, "0")}
-          </span>
+          <span aria-hidden="true" className="career-rail" />
           <div>
             <h3>{record.title}</h3>
-            <p>{record.organization}</p>
+            <p className="career-org">{record.organization}</p>
             {record.practice ? <p className="career-practice">{record.practice}</p> : null}
           </div>
           <p className="career-context">
