@@ -109,6 +109,22 @@ export const mlopsReferenceRun = {
   },
   tests: { total: 99, layers: ["unit", "integration", "container"] },
   bundle: { checksummedArtifacts: 5 },
+  /**
+   * Held-out confusion matrix published in docs/EVALUATION.md at the pinned commit.
+   * Rows are actual classes, columns predicted, in the label order below.
+   */
+  confusion: {
+    labels: ["negative", "positive"],
+    rows: [
+      [241, 59],
+      [57, 243],
+    ],
+  },
+  /** Commands the released repository documents, and the output its CI reproduces. */
+  referenceCommands: [
+    "python -m src.pipeline --config configs/train_config.yaml",
+    "python scripts/check_reference_run.py",
+  ],
 } as const;
 
 const mlopsBaselineMargin =
