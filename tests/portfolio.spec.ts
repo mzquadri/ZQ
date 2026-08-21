@@ -345,8 +345,15 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
   await page.goto("/");
   const main = page.locator("main");
   await expect(main).toContainText("Slice-aware evaluation");
-  await expect(main).not.toContainText("0.8067");
   await expect(main).not.toContainText(/licensed-data run/i);
+
+  // A featured card may lead with the project's headline number - that is the point of
+  // the card. What the homepage must not do is restate the case study's whole evidence
+  // table, so the supporting rows stay off it.
+  await expect(main).toContainText("0.8067");
+  await expect(main).not.toContainText("1,800 / 600 / 600");
+  await expect(main).not.toContainText("Byte-identical");
+  await expect(main).not.toContainText("99 tests");
 });
 
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
