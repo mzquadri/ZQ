@@ -2,9 +2,9 @@ import Link from "next/link";
 import { ExperienceList } from "@/components/CareerProfile";
 import CurrentFocus from "@/components/CurrentFocus";
 import { RepositoryCardGrid, SnapshotNote } from "@/components/EcosystemGrid";
+import FeaturedWork from "@/components/FeaturedWork";
 import { ExternalArrow, ForwardArrow } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
-import ProjectList from "@/components/ProjectList";
 import { ConfidenceProtocol, ThesisPipeline } from "@/components/ResearchVisuals";
 import SectionHeading from "@/components/SectionHeading";
 import SystemGraph from "@/components/SystemGraph";
@@ -74,14 +74,14 @@ export default function Home() {
         />
       </section>
 
-      <section className="section-wrap reveal-section">
+      <section className="section-wrap featured-section reveal-section">
         <SectionHeading
           index="02"
           eyebrow="Selected work"
           title="Systems with inspectable evidence"
-          introduction="Research, reference implementations, and prototypes are labelled separately. Each case states my role, the versioned evidence, and where the claim stops."
+          introduction="Each card leads with the project's own audited result or the pipeline it runs. Research, reference implementations, and prototypes are labelled separately."
         />
-        <ProjectList projects={getFeaturedProjects()} />
+        <FeaturedWork projects={getFeaturedProjects()} />
         <div className="section-action">
           <Link className="button button-secondary" href="/work">View the full portfolio</Link>
         </div>

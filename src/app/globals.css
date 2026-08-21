@@ -3270,3 +3270,161 @@ ol {
   opacity: 0.7;
 }
 
+/* Featured work cards: each flagship carries a visual, not only prose. */
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(27rem, 100%), 1fr));
+  gap: 1.25rem;
+  margin-top: 2rem;
+}
+
+.featured-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+}
+
+.featured-visual {
+  padding: 1.15rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.featured-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.25rem;
+}
+
+.featured-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+.featured-meta span:last-child {
+  color: var(--ink-soft);
+}
+
+.featured-card h3 {
+  margin-top: 0.6rem;
+  font-family: var(--serif);
+  font-size: 1.42rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.featured-card h3 a {
+  text-decoration: none;
+}
+
+.featured-card h3 a:hover {
+  text-decoration: underline;
+}
+
+.featured-summary {
+  margin-top: 0.55rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.featured-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.featured-role {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  max-width: 26ch;
+}
+
+.featured-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--teal-dark);
+}
+
+/* Metric strip used inside a featured card: real audited numbers, nothing decorative. */
+.card-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(7rem, 100%), 1fr));
+  gap: 0.85rem;
+}
+
+.card-metric span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.card-metric strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* Compact flow rail used where a project's evidence is a pipeline rather than a number. */
+.card-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.45rem;
+}
+
+.card-flow li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+  list-style: none;
+}
+
+.card-flow li::after {
+  content: "";
+  width: 0.9rem;
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.card-flow li:last-child::after {
+  display: none;
+}
+
+.card-flow li span {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  font-family: var(--mono);
+  font-size: 0.67rem;
+  overflow-wrap: anywhere;
+}
+
+.card-flow li:last-child span {
+  border-color: var(--teal-dark);
+  color: var(--teal-dark);
+}
+
