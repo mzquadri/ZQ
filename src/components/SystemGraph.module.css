@@ -1,0 +1,241 @@
+.graph {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+
+.viewport {
+  position: relative;
+  display: none;
+  aspect-ratio: 720 / 400;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(120% 100% at 50% 0%, var(--paper-raised), transparent 70%),
+    var(--paper);
+  overflow: hidden;
+}
+
+.static,
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas {
+  display: none;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.canvas:active {
+  cursor: grabbing;
+}
+
+.graph[data-mode="interactive"] .static {
+  display: none;
+}
+
+.graph[data-mode="interactive"] .canvas {
+  display: block;
+}
+
+.hint {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.6rem;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Static projection */
+
+.staticEdges line {
+  stroke: var(--ink);
+  stroke-width: 1;
+  opacity: 0.18;
+}
+
+.staticEdges line[data-highlight] {
+  stroke: var(--teal);
+  stroke-width: 1.9;
+  opacity: 0.85;
+}
+
+.staticNodes circle {
+  fill: var(--paper-raised);
+  stroke: var(--ink);
+  stroke-width: 1.3;
+}
+
+.staticNodes g[data-status="Direction"] circle {
+  stroke-dasharray: 3 3;
+  opacity: 0.7;
+}
+
+.staticNodes g[data-selected] circle {
+  fill: var(--teal);
+  stroke: var(--teal);
+  stroke-width: 2;
+}
+
+.staticNodes text {
+  fill: var(--ink-soft);
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.staticNodes g[data-selected] text {
+  fill: var(--ink);
+  font-weight: 600;
+}
+
+/* Stage list and detail */
+
+.stages {
+  list-style: none;
+  display: grid;
+  gap: 1.15rem;
+  border-top: 1px solid var(--line);
+}
+
+.stages li {
+  padding-top: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+}
+
+.stages li:last-child {
+  border-bottom: 0;
+}
+
+.stageLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+
+.stageLabel span {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--orange-text);
+  letter-spacing: 0.08em;
+}
+
+.stageSummary {
+  margin-top: 0.15rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.nodeButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.nodeButton {
+  min-height: 44px;
+  padding: 0.35rem 0.95rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nodeButton[data-status="Direction"] {
+  border-style: dashed;
+  color: var(--ink-soft);
+}
+
+.nodeButton[aria-pressed="true"] {
+  background: var(--teal);
+  border-color: var(--teal-dark);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.detail {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+
+.detailStatus {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+.detailStatus[data-status="Direction"] {
+  color: var(--orange-text);
+}
+
+.detailTitle {
+  margin-top: 0.3rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.detailBlurb {
+  margin-top: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.detailLink {
+  display: inline-block;
+  margin-top: 0.85rem;
+  font-weight: 600;
+  color: var(--teal-dark);
+}
+
+.detailNote {
+  margin-top: 0.85rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+@media (min-width: 520px) {
+  .viewport {
+    display: block;
+  }
+}
+
+@media (min-width: 960px) {
+  .graph {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: 2.75rem;
+  }
+
+  /* The visual stays in view while the stage list is read beside it. */
+  .viewport {
+    position: sticky;
+    top: 5rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .nodeButton[aria-pressed="true"] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
