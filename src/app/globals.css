@@ -814,7 +814,10 @@ ol {
 
 .visual-section {
   display: grid;
-  gap: 4rem;
+  /* Grid items default to min-width:auto, so one wide child - the pre-formatted terminal -
+     would stretch the track and take the whole section past the viewport. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.75rem;
   background: var(--paper-raised);
   border-bottom: 1px solid var(--line-strong);
 }
@@ -3428,3 +3431,226 @@ ol {
   color: var(--teal-dark);
 }
 
+/* MLOps case-study evidence visuals */
+
+.terminal-figure,
+.result-figure {
+  margin: 0;
+}
+
+.terminal-figure figcaption,
+.result-figure figcaption {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 62ch;
+  margin-bottom: 1.1rem;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.terminal-figure figcaption strong,
+.result-figure figcaption strong {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+/* A terminal is the one place a dark panel is literal rather than decorative. */
+.terminal {
+  min-width: 0;
+  border: 1px solid var(--ink);
+  background: #101720;
+  overflow: hidden;
+}
+
+.terminal-bar {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.terminal-bar span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.terminal pre {
+  margin: 0;
+  padding: 1.15rem 1.25rem 1.35rem;
+  overflow-x: auto;
+}
+
+.terminal pre:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: -3px;
+}
+
+.terminal code {
+  font-family: var(--mono);
+  font-size: 0.79rem;
+  line-height: 1.75;
+  color: #e8e4d9;
+  white-space: pre;
+}
+
+.terminal-prompt {
+  color: var(--yellow);
+}
+
+.terminal-dim {
+  color: #9aa6b2;
+}
+
+.terminal-ok {
+  color: #7fd6a2;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  gap: 1.75rem;
+}
+
+.figure-label {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.7rem;
+}
+
+.confusion-matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.confusion-matrix th {
+  padding: 0.5rem 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.confusion-matrix td {
+  position: relative;
+  padding: 0.9rem 0.7rem;
+  border: 1px solid var(--line);
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  text-align: center;
+  isolation: isolate;
+}
+
+/* Cell weight is drawn behind the number, so the shape of the errors is readable
+   without relying on colour alone. */
+.confusion-matrix td::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: var(--fill, 0%);
+  margin: auto;
+  background: rgba(0, 109, 101, 0.1);
+}
+
+.confusion-matrix td[data-correct] {
+  border-color: var(--teal-dark);
+}
+
+.confusion-matrix td[data-correct]::before {
+  background: rgba(0, 109, 101, 0.22);
+}
+
+.baseline-bars {
+  display: grid;
+  gap: 0.9rem;
+  list-style: none;
+}
+
+.baseline-bars li {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr) minmax(4rem, auto);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.baseline-name {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.baseline-track {
+  height: 1.6rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.baseline-fill {
+  display: block;
+  height: 100%;
+  background: var(--teal);
+}
+
+.baseline-fill.is-baseline {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--line-strong),
+    var(--line-strong) 3px,
+    transparent 3px,
+    transparent 7px
+  );
+}
+
+.baseline-value {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  text-align: right;
+}
+
+@media (forced-colors: active) {
+  .baseline-fill {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}
+
+.confusion-block {
+  min-width: 0;
+}
+
+.confusion-matrix {
+  table-layout: fixed;
+}
+
+@media (max-width: 440px) {
+  .confusion-matrix th {
+    font-size: 0.58rem;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .confusion-matrix td {
+    padding: 0.65rem 0.3rem;
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .terminal code {
+    font-size: 0.7rem;
+  }
+}

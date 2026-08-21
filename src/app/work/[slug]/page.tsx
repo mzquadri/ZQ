@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import PageShell from "@/components/PageShell";
+import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import { getProject, projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
@@ -107,8 +108,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         ) : null}
 
         {project.slug === "mlops-reference-pipeline" ? (
-          <section className="section-wrap visual-section" aria-label="MLOps reference architecture">
+          <section className="section-wrap visual-section" aria-label="MLOps architecture and held-out result">
             <MlopsPipeline />
+            <ReferenceRunTerminal />
+            <HeldOutResultFigure />
           </section>
         ) : null}
 
