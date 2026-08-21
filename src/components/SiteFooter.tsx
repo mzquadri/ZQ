@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { site } from "@/content/portfolio";
+import { ExternalArrow } from "@/components/Icon";
 
 export default function SiteFooter() {
   const year = new Date().getUTCFullYear();
@@ -18,10 +19,10 @@ export default function SiteFooter() {
           <Link href="/learn">Learn</Link>
           <Link href={site.resume.htmlPath}>Resume</Link>
           <a href={site.github}>
-            GitHub <span aria-hidden="true">↗</span>
+            GitHub <ExternalArrow />
           </a>
           <a href={site.linkedin}>
-            LinkedIn <span aria-hidden="true">↗</span>
+            LinkedIn <ExternalArrow />
           </a>
         </nav>
       </div>

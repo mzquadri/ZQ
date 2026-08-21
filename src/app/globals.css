@@ -3246,3 +3246,22 @@ ol {
     padding-left: 0.6rem;
   }
 }
+
+/* Visual Refinement v1 */
+
+/*
+ * Inline link icons. These replaced the `↗` character, which had an emoji presentation
+ * on Windows and Android and rendered a blue tile inside otherwise ink-coloured text.
+ */
+.icon {
+  width: 0.72em;
+  height: 0.72em;
+  margin-left: 0.35em;
+  vertical-align: baseline;
+  flex: none;
+}
+
+.external-marker {
+  opacity: 0.7;
+}
+

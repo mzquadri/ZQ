@@ -14,6 +14,7 @@ import { getProject, site, thesis } from "@/content/portfolio";
 import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "@/content/research";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
 import { createPageMetadata } from "@/lib/metadata";
+import { ExternalArrow } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Transport Surrogate Thesis Research",
@@ -74,8 +75,8 @@ export default function ThesisResearchPage() {
             <div><dt>Role</dt><dd>{project.projectRole}</dd></div>
           </dl>
           <div className="hero-actions">
-            <a className="button button-primary" href={canonicalThesisEvidence.repository}>Canonical repository <span aria-hidden="true">↗</span></a>
-            <a className="button button-secondary" href={canonicalThesisEvidence.corrigendum}>Read the corrigendum <span aria-hidden="true">↗</span></a>
+            <a className="button button-primary" href={canonicalThesisEvidence.repository}>Canonical repository <ExternalArrow /></a>
+            <a className="button button-secondary" href={canonicalThesisEvidence.corrigendum}>Read the corrigendum <ExternalArrow /></a>
           </div>
         </header>
 
@@ -194,10 +195,10 @@ export default function ThesisResearchPage() {
             </div>
           </div>
           <div className="artifact-links research-artifact-links">
-            <a href={canonicalThesisEvidence.submittedPdf}><strong>Immutable submitted PDF</strong><span>Baseline artifact; read with the corrigendum.</span><span aria-hidden="true">↗</span></a>
-            <a href={canonicalThesisEvidence.corrigendum}><strong>Post-submission corrigendum</strong><span>Corrections, protocol labels, and replay boundaries.</span><span aria-hidden="true">↗</span></a>
-            <a href={canonicalThesisEvidence.aggregateReport}><strong>Aggregate evidence report</strong><span>Privacy-safe findings generated from controlled artifacts.</span><span aria-hidden="true">↗</span></a>
-            <a href={canonicalThesisEvidence.provenance}><strong>Artifact provenance</strong><span>Hashes, immutable boundaries, and excluded assets.</span><span aria-hidden="true">↗</span></a>
+            <a href={canonicalThesisEvidence.submittedPdf}><strong>Immutable submitted PDF</strong><span>Baseline artifact; read with the corrigendum.</span><ExternalArrow /></a>
+            <a href={canonicalThesisEvidence.corrigendum}><strong>Post-submission corrigendum</strong><span>Corrections, protocol labels, and replay boundaries.</span><ExternalArrow /></a>
+            <a href={canonicalThesisEvidence.aggregateReport}><strong>Aggregate evidence report</strong><span>Privacy-safe findings generated from controlled artifacts.</span><ExternalArrow /></a>
+            <a href={canonicalThesisEvidence.provenance}><strong>Artifact provenance</strong><span>Hashes, immutable boundaries, and excluded assets.</span><ExternalArrow /></a>
           </div>
         </section>
 
@@ -224,8 +225,8 @@ export default function ThesisResearchPage() {
             </div>
             <div className="research-record-actions">
               <Link className="text-link" href="/work/transport-uq">Engineering case study <span aria-hidden="true">→</span></Link>
-              <a className="text-link" href={canonicalThesisEvidence.aggregateJson}>Audited aggregate JSON <span aria-hidden="true">↗</span></a>
-              <a className="text-link" href={canonicalThesisEvidence.manifest}>Artifact manifest <span aria-hidden="true">↗</span></a>
+              <a className="text-link" href={canonicalThesisEvidence.aggregateJson}>Audited aggregate JSON <ExternalArrow /></a>
+              <a className="text-link" href={canonicalThesisEvidence.manifest}>Artifact manifest <ExternalArrow /></a>
             </div>
           </section>
         ) : null}
