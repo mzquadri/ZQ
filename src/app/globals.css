@@ -3654,3 +3654,162 @@ ol {
     font-size: 0.7rem;
   }
 }
+/* One published article should look intentional, not like an empty three-column grid. */
+.writing-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin-top: 2rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+}
+
+.writing-feature-body {
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.writing-feature-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+.writing-feature h3 {
+  margin-top: 0.8rem;
+  max-width: 22ch;
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.writing-feature h3 a {
+  text-decoration: none;
+}
+
+.writing-feature h3 a:hover {
+  text-decoration: underline;
+}
+
+.writing-feature-description {
+  margin-top: 0.9rem;
+  max-width: 54ch;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+.writing-feature-toc {
+  margin-top: 1.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.writing-feature-toc p {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.writing-feature-toc ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+  gap: 0.35rem 1.5rem;
+  margin-top: 0.6rem;
+  list-style: none;
+  counter-reset: toc;
+}
+
+.writing-feature-toc li {
+  display: flex;
+  gap: 0.55rem;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  counter-increment: toc;
+}
+
+.writing-feature-toc li::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--orange-text);
+}
+
+.writing-feature-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-top: 1.75rem;
+}
+
+.writing-upcoming {
+  padding: 1.25rem clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+@media (min-width: 900px) {
+  .writing-feature {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+
+  .writing-feature-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border-left: 1px solid var(--line);
+    background: var(--paper);
+  }
+}
+
+
+.topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  list-style: none;
+}
+
+.topic-chips li {
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.topic-chips li[data-kind="category"] {
+  border-color: var(--teal-dark);
+  color: var(--teal-dark);
+}
+
+.writing-side-note {
+  margin-top: 1.25rem;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+}
+
+.writing-feature-actions time {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.writing-grid-rest {
+  margin-top: 1.5rem;
+}
