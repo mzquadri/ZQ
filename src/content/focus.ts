@@ -61,11 +61,11 @@ export const buildingThreads: readonly BuildingThread[] = [
       "Extending this platform: a typed public-repository snapshot, an interactive systems graph, and a broader project surface beyond the case studies.",
   },
   {
-    id: "mlops-licensed-run",
+    id: "mlops-slice-evaluation",
     repository: "MLOps-End-to-End-Pipeline",
     nextEvidenceGate:
       getProject("mlops-reference-pipeline")?.nextStep ??
-      "A reproducible licensed-data run with a published bundle and container integration test.",
+      "Per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
   },
   {
     id: "rag-evaluation",
