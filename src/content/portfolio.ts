@@ -111,6 +111,9 @@ export const mlopsReferenceRun = {
   bundle: { checksummedArtifacts: 5 },
 } as const;
 
+const mlopsBaselineMargin =
+  mlopsReferenceRun.test.accuracy - mlopsReferenceRun.test.baselineAccuracy;
+
 export const projects: readonly Project[] = [
   {
     slug: "transport-uq",
@@ -281,62 +284,98 @@ export const projects: readonly Project[] = [
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Project author and engineer",
     summary:
-      "A compact, runnable reference for the lifecycle around a text classifier: validated data, traceable training, quality gates, promotion, serving, and tests.",
+      "A runnable reference for the lifecycle around a text classifier, rebuilt on a licensed dataset so the pipeline's own quality gate has something real to refuse.",
     problem:
-      "A model notebook does not provide data provenance, repeatable promotion decisions, train/serve consistency, or a stable serving contract.",
+      "The first version of this pipeline had every stage in place and proved nothing. Its only data path generated review text from ten templates, so the classifier scored a perfect 1.000 on rows that were 99% duplicates. The validator detected those duplicates, logged a warning, and let the run continue. A gate that cannot fail is not a gate, and a metric produced that way describes the fixture rather than the model.",
     contribution:
-      "Implemented hash-based data versions, validation and drift checks, reusable TF-IDF features, MLflow logging, configurable model gates, a local registry, FastAPI serving, Docker configuration, and pytest coverage.",
+      "Replaced the synthetic evidence path with a checksum-verified licensed dataset, split it three ways so the test partition is read exactly once, restricted feature fitting to a single function so leakage is testable rather than asserted, added a majority-class baseline and a gate that requires a margin over it, and made the container prove a real prediction in CI instead of only building.",
     workflow: [
-      "Validate and hash data",
-      "Fit reusable features",
-      "Train and track",
-      "Evaluate quality gate",
-      "Register and serve",
+      "Verify and validate licensed data",
+      "Split train / validation / test",
+      "Fit features on train only",
+      "Evaluate held-out and gate",
+      "Register, promote, and serve",
     ],
-    tools: ["scikit-learn", "MLflow", "FastAPI", "Docker", "pytest", "GitHub Actions"],
+    tools: ["scikit-learn", "FastAPI", "Docker", "pytest", "GitHub Actions", "ruff"],
     evidence: [
       {
+        label: "Held-out accuracy",
+        value: mlopsReferenceRun.test.accuracy.toFixed(4),
+        note: `Weighted F1 ${mlopsReferenceRun.test.f1Weighted.toFixed(4)} on ${mlopsReferenceRun.split.test} test rows, against a majority-class baseline of ${mlopsReferenceRun.test.baselineAccuracy.toFixed(4)} — a margin of ${mlopsBaselineMargin.toFixed(4)}.`,
+      },
+      {
+        label: "Ranking quality",
+        value: `ROC-AUC ${mlopsReferenceRun.test.rocAuc.toFixed(4)}`,
+        note: `PR-AUC ${mlopsReferenceRun.test.prAuc.toFixed(4)} on the same held-out rows.`,
+      },
+      {
+        label: "Licensed data",
+        value: `${mlopsReferenceRun.dataset.rows.toLocaleString("en-US")} rows`,
+        note: `${mlopsReferenceRun.dataset.name}, ${mlopsReferenceRun.dataset.balance}, ${mlopsReferenceRun.dataset.license}. Downloaded on demand against a pinned SHA-256 and never redistributed.`,
+      },
+      {
+        label: "Split discipline",
+        value: `${mlopsReferenceRun.split.train.toLocaleString("en-US")} / ${mlopsReferenceRun.split.validation} / ${mlopsReferenceRun.split.test}`,
+        note: "Train, validation, test. Gate thresholds were derived from the validation split and the baseline; the test split was not used to select a threshold, model, or hyperparameter.",
+      },
+      {
         label: "Reproducibility",
-        value: "Deterministic fallback",
-        note: "The full lifecycle runs with a synthetic review fixture when no licensed dataset is supplied.",
-      },
-      {
-        label: "Quality control",
-        value: "Promotion gate",
-        note: "Models that miss a configured threshold are not promoted in the reference workflow.",
-      },
-    ],
-    quality: [
-      "CLI stages can also be imported as modules",
-      "Data validation covers nulls, duplicates, balance, KS tests, and PSI",
-      "Feature transformers are reused at serving time",
-      "API, model, and data pipeline behavior has automated tests",
-    ],
-    limitations: [
-      "A reference implementation, not a deployed product",
-      "No real dataset, model artifact, or production accuracy report is versioned",
-      "Operational concerns such as managed secrets, real monitoring backends, and incident response remain outside scope",
-    ],
-    learned:
-      "The valuable part of MLOps is the contract between stages: provenance, validation, promotion criteria, and serving behavior must agree.",
-    repository: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline",
-    systemSummary:
-      "The pipeline treats each stage as a contract: data is validated and fingerprinted, features are fitted once and reused, evaluation controls promotion, and the API serves only registered bundles that pass the gate.",
-    artifacts: [
-      {
-        label: "Pipeline documentation",
-        href: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline#readme",
-        note: "Lifecycle, commands, data contracts, and explicit scope boundaries.",
+        value: "Byte-identical artifacts",
+        note: "The same model and transformer files, and metrics agreeing to twelve decimal places, across Windows, a clean virtual environment, and Ubuntu CI.",
       },
       {
         label: "Automated tests",
-        href: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline/tree/main/tests",
-        note: "API, data-pipeline, model, and bundle behavior.",
+        value: `${mlopsReferenceRun.tests.total} tests`,
+        note: `Unit, integration, and container layers. The container test builds the image, mounts a promoted bundle, and makes a real HTTP prediction.`,
+      },
+    ],
+    quality: [
+      "Input validation can refuse: a degenerate dataset stops the run instead of producing a flattering score on it",
+      "One function fits preprocessing state; a test asserts that a token seen only outside training never enters the vocabulary",
+      "The promotion gate requires a margin over a majority-class baseline, so a raw accuracy floor cannot pass an imbalanced non-model",
+      `A published bundle carries SHA-256 checksums for ${mlopsReferenceRun.bundle.checksummedArtifacts} artifacts plus dataset provenance and licence, all validated before loading`,
+      "The service separates liveness from readiness and starts unready rather than crashing when no model is available",
+      "CI runs offline tests, the licensed-data reference run, and container integration as separate jobs",
+    ],
+    limitations: [
+      `Only ${mlopsReferenceRun.split.test} held-out test rows, so the confidence interval on accuracy is roughly three points; a one-point difference between models on this split is noise`,
+      "Metrics are pooled across the dataset's three sources; per-source performance is not reported and would very likely differ",
+      "No probability calibration is reported, because nothing downstream consumes the probabilities as probabilities",
+      "A reference implementation that has never carried production traffic",
+      "Monitoring is an in-process counter endpoint over a bounded window, not a monitoring system",
+      "No delayed-label path exists, so nothing measures accuracy after deployment — only behaviour",
+      "MLflow tracking is optional and disabled by default; the bundle, not a tracking server, is the source of truth for promotion",
+    ],
+    learned:
+      "A pipeline can have every correct stage and still prove nothing. The evidence a run produces is only as good as the data underneath it, and the fastest way to find that out is to give the quality gate something it can actually refuse.",
+    repository: canonicalMlopsEvidence.repository,
+    systemSummary:
+      "Each stage is a contract. Data is verified against a pinned checksum and can be refused, preprocessing is fitted on the training partition alone, evaluation reconstructs the split recorded in the candidate's lineage rather than accepting one supplied later, and the service loads only a checksum-valid bundle the registry marks as production.",
+    artifacts: [
+      {
+        label: "Evaluation methodology",
+        href: canonicalMlopsEvidence.evaluation,
+        note: "Split methodology, metric choices, and how the gate thresholds were derived from the validation split.",
+      },
+      {
+        label: "Data provenance and licence",
+        href: canonicalMlopsEvidence.data,
+        note: "Dataset source, pinned checksum, attribution obligations, and why the data is downloaded rather than committed.",
+      },
+      {
+        label: "Automated tests",
+        href: canonicalMlopsEvidence.tests,
+        note: `${mlopsReferenceRun.tests.total} tests covering leakage, gate refusal, reproducibility, the serving path, and the container.`,
+      },
+      {
+        label: "Production gaps",
+        href: canonicalMlopsEvidence.production,
+        note: "What a production system would add, and why none of it is simulated here.",
       },
       {
         label: "CI workflow",
-        href: "https://github.com/mzquadri/MLOps-End-to-End-Pipeline/actions",
-        note: "The default branch executes pytest for versioned behavior.",
+        href: canonicalMlopsEvidence.actions,
+        note: "Live status for the offline tests, the licensed-data reference run, and container integration.",
       },
     ],
     nextStep:
