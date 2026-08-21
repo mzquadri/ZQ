@@ -3906,3 +3906,137 @@ ol {
   }
 }
 
+
+/* Profile portrait */
+
+.portrait {
+  flex: none;
+}
+
+.portrait-frame {
+  position: relative;
+  overflow: hidden;
+  /* Squircle rather than a circle: it sits beside a serif headline and a rounded
+     rectangle holds the grid rhythm better than a disc. */
+  border-radius: 28%;
+  border: 1px solid var(--line-strong);
+  outline: 4px solid var(--paper-raised);
+  background: var(--paper-raised);
+  line-height: 0;
+}
+
+.portrait-image,
+.portrait-monogram {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portrait[data-variant="hero"] .portrait-frame {
+  width: 6.6rem;
+  height: 6.6rem;
+}
+
+.portrait[data-variant="feature"] .portrait-frame {
+  width: 11rem;
+  height: 11rem;
+}
+
+/* Hero identity row: portrait beside the headline rather than stacked above it. */
+/* Portrait in its own column beside the copy stack, top-aligned, so the headline and
+   the paragraphs under it share one left edge instead of the headline being indented. */
+.hero-identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+  margin-bottom: 1.6rem;
+}
+
+.hero-identity-copy > * + * {
+  margin-top: 0.85rem;
+}
+
+.hero-identity-copy .hero-actions,
+.hero-identity-copy .availability {
+  margin-top: 1.6rem;
+}
+
+.hero-identity .kicker {
+  margin-bottom: 0.35rem;
+}
+
+.about-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.portrait-caption {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.35rem;
+}
+
+.portrait-caption strong {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.portrait-caption span {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.portrait-caption span:last-child {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+/*
+ * Parallax, done with a scroll-driven CSS animation so it costs no JavaScript and
+ * disappears entirely where the feature or the motion preference is absent. Travel is
+ * capped at 12px; only transform is animated, so nothing reflows.
+ */
+@keyframes portrait-drift {
+  from {
+    transform: translateY(6px);
+  }
+
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .portrait[data-variant="hero"] .portrait-frame {
+      animation: portrait-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-identity {
+    gap: 1rem;
+  }
+
+  .portrait[data-variant="hero"] .portrait-frame {
+    width: 5.2rem;
+    height: 5.2rem;
+  }
+
+  .portrait[data-variant="feature"] .portrait-frame {
+    width: 8.5rem;
+    height: 8.5rem;
+  }
+}

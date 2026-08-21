@@ -73,3 +73,24 @@ The site does not include or collect:
 Contact is limited to verified GitHub and LinkedIn profile links. The canonical HTML resume
 and generated PDF omit email, phone, address, identifiers, and disputed employment dates.
 Linked repositories retain their own licenses and privacy obligations.
+
+## Reviewed publication decisions
+
+**2026-08-22 — profile portrait approved for publication.**
+
+A photograph of the site owner is published in the homepage hero and at the top of
+`/about`. This is the first personal identifier on the site and was approved explicitly
+rather than by default.
+
+Checked before approval, and re-checked on every build by `scripts/validate-content.ts`:
+
+- all EXIF, XMP and IPTC metadata segments stripped from the committed JPEG
+- no GPS reference anywhere in the file
+- file is a JPEG and under 900 KB
+- the image is served from this origin only; no third-party image host is involved
+
+The check runs against the committed file rather than trusting the strip step, so a
+future re-export that reintroduces metadata fails the build.
+
+Nothing else about the privacy boundary changes: no email, phone number, address, or
+other personal identifier is published, and the site still collects nothing.
