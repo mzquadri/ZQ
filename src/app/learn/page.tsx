@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ForwardArrow } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedLearnWriting, getWritingTaxonomy } from "@/content/writing/repository";
@@ -10,9 +12,28 @@ export const metadata: Metadata = createPageMetadata({
   path: "/learn",
 });
 
+/**
+ * A three-column grid holding one card looked like a page that had failed to load. Until
+ * there are enough entries to fill a grid, the newest piece is presented as a single
+ * feature with its own table of contents, and the taxonomy sits beside it rather than in
+ * a second, emptier section.
+ */
+const GRID_THRESHOLD = 3;
+
+function formatDate(date: string) {
+  return new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`));
+}
+
 export default function LearnPage() {
   const entries = getPublishedLearnWriting();
   const { categories, tags } = getWritingTaxonomy();
+  const [feature, ...rest] = entries;
+  const useGrid = entries.length >= GRID_THRESHOLD;
 
   return (
     <PageShell current="/learn">
@@ -29,28 +50,70 @@ export default function LearnPage() {
         <div className="writing-index-header">
           <div>
             <p className="section-index"><span>01</span>Published</p>
-            <h2 id="latest-writing">Latest tutorials and notes</h2>
+            <h2 id="latest-writing">{useGrid ? "Latest tutorials and notes" : "Latest tutorial"}</h2>
           </div>
           <a className="rss-link" href="/rss.xml">RSS feed</a>
         </div>
-        <div className="writing-grid">
-          {entries.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
-        </div>
-      </section>
 
-      <section className="section-wrap topic-index" aria-labelledby="topic-index-title">
-        <p className="section-index"><span>02</span>Topics</p>
-        <h2 id="topic-index-title">A focused library that can grow deliberately.</h2>
-        <div className="topic-columns">
-          <div>
-            <h3>Categories</h3>
-            <ul>{categories.map((category) => <li key={category.slug}>{category.label}</li>)}</ul>
+        {useGrid ? (
+          <div className="writing-grid">
+            {entries.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
           </div>
-          <div>
-            <h3>Current tags</h3>
-            <ul>{tags.map((tag) => <li key={tag.slug}>{tag.label}</li>)}</ul>
+        ) : feature ? (
+          <article className="writing-feature">
+            <div className="writing-feature-body">
+              <p className="writing-feature-meta">
+                <span>{feature.kind}</span>
+                <span>{feature.readingTime} min read</span>
+                <span>{feature.category.label}</span>
+              </p>
+              <h3>
+                <Link href={feature.path}>{feature.title}</Link>
+              </h3>
+              <p className="writing-feature-description">{feature.description}</p>
+
+              {feature.tableOfContents.length > 0 ? (
+                <div className="writing-feature-toc">
+                  <p>What it covers</p>
+                  <ol>
+                    {feature.tableOfContents.map((item) => (
+                      <li key={item.id}>{item.title}</li>
+                    ))}
+                  </ol>
+                </div>
+              ) : null}
+
+              <div className="writing-feature-actions">
+                <Link className="button button-primary" href={feature.path}>
+                  Read the tutorial <ForwardArrow />
+                </Link>
+                <time dateTime={feature.publishedAt}>{formatDate(feature.publishedAt!)}</time>
+              </div>
+            </div>
+
+            <div className="writing-feature-side">
+              <p className="figure-label">Topics covered so far</p>
+              <ul className="topic-chips">
+                {categories.map((category) => (
+                  <li key={category.slug} data-kind="category">{category.label}</li>
+                ))}
+                {tags.map((tag) => (
+                  <li key={tag.slug}>{tag.label}</li>
+                ))}
+              </ul>
+              <p className="writing-side-note">
+                The library grows deliberately. A piece is published when the underlying work is
+                finished and its limitations are known, not on a schedule.
+              </p>
+            </div>
+          </article>
+        ) : null}
+
+        {!useGrid && rest.length > 0 ? (
+          <div className="writing-grid writing-grid-rest">
+            {rest.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
           </div>
-        </div>
+        ) : null}
       </section>
     </PageShell>
   );
