@@ -102,12 +102,12 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     title: "Testable End-to-End MLOps Pipeline",
     category: "Featured",
     language: "Python",
-    topics: ["MLOps", "MLflow", "FastAPI", "Data Contracts", "pytest"],
+    topics: ["MLOps", "Reproducibility", "FastAPI", "Data Contracts", "pytest"],
     description:
-      "A compact reference for the lifecycle around a text classifier: validated and fingerprinted data, tracked training, a promotion gate, a local registry, and a served bundle.",
+      "The lifecycle around a text classifier on a licensed dataset: checksum-verified data that validation can refuse, leak-free feature fitting, a promotion gate measured against a baseline, atomic checksummed bundles, and a served container.",
     boundary:
-      "A reference implementation with a deterministic synthetic fallback. No production deployment or real-dataset accuracy is claimed.",
-    lastCommit: "2026-08-20",
+      "A reference implementation, not a deployed product. The published result is an ordinary TF-IDF baseline on 600 held-out rows, pooled across three sources, and has never carried production traffic.",
+    lastCommit: "2026-08-21",
     caseStudySlug: "mlops-reference-pipeline",
   },
   {

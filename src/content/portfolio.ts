@@ -379,7 +379,7 @@ export const projects: readonly Project[] = [
       },
     ],
     nextStep:
-      "The next evidence milestone is a reproducible licensed-data run with a published bundle and container integration test.",
+      "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
   },
   {
     slug: "hydrology-uq",
