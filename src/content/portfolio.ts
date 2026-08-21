@@ -59,6 +59,58 @@ export interface Project {
 const halfRetention = researchEvidence.selectiveRisk.points.find((point) => point.retentionPct === 50)!;
 const [coverage90, coverage95] = researchEvidence.marginalCoverage;
 
+const mlopsRepository = "https://github.com/mzquadri/MLOps-End-to-End-Pipeline";
+const mlopsCommit = "226ef7f1ec3d02d19f51327689e4c736854473cc";
+
+/**
+ * Evidence links for the MLOps reference pipeline, pinned to the released commit.
+ *
+ * Numerical claims are backed by files at a fixed commit rather than by a floating
+ * branch, so a later change upstream cannot silently alter what this site cites. The
+ * Actions view is intentionally unpinned: it is a live status page, not a source for a
+ * number.
+ */
+export const canonicalMlopsEvidence = {
+  repository: mlopsRepository,
+  commit: mlopsCommit,
+  readme: `${mlopsRepository}/blob/${mlopsCommit}/README.md`,
+  evaluation: `${mlopsRepository}/blob/${mlopsCommit}/docs/EVALUATION.md`,
+  data: `${mlopsRepository}/blob/${mlopsCommit}/docs/DATA.md`,
+  architecture: `${mlopsRepository}/blob/${mlopsCommit}/docs/ARCHITECTURE.md`,
+  production: `${mlopsRepository}/blob/${mlopsCommit}/docs/PRODUCTION.md`,
+  testing: `${mlopsRepository}/blob/${mlopsCommit}/docs/TESTING.md`,
+  tests: `${mlopsRepository}/tree/${mlopsCommit}/tests`,
+  notice: `${mlopsRepository}/blob/${mlopsCommit}/NOTICE`,
+  actions: `${mlopsRepository}/actions`,
+} as const;
+
+/**
+ * The audited reference run published at {@link canonicalMlopsEvidence.commit}.
+ *
+ * Single source for every MLOps number on this site. Components read from here rather
+ * than restating figures, so a metric cannot drift between the case study, the resume
+ * and the repository index.
+ */
+export const mlopsReferenceRun = {
+  dataset: {
+    name: "UCI Sentiment Labelled Sentences",
+    license: "CC BY 4.0",
+    rows: 3_000,
+    balance: "1,500 positive / 1,500 negative",
+    redistributed: false,
+  },
+  split: { train: 1_800, validation: 600, test: 600 },
+  test: {
+    accuracy: 0.8067,
+    f1Weighted: 0.8067,
+    rocAuc: 0.8795,
+    prAuc: 0.8895,
+    baselineAccuracy: 0.5,
+  },
+  tests: { total: 99, layers: ["unit", "integration", "container"] },
+  bundle: { checksummedArtifacts: 5 },
+} as const;
+
 export const projects: readonly Project[] = [
   {
     slug: "transport-uq",
