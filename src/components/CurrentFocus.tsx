@@ -4,6 +4,11 @@ import { focusThemes, getBuildingThreads } from "@/content/focus";
 import styles from "./CurrentFocus.module.css";
 import { ExternalArrow } from "@/components/Icon";
 
+interface CapabilityGroup {
+  title: string;
+  summary: string;
+}
+
 interface CurrentFocusProps {
   latest?: {
     title: string;
@@ -11,9 +16,15 @@ interface CurrentFocusProps {
     description: string;
     label: string;
   };
+  /**
+   * Capability groups, merged in from what used to be a separate homepage section.
+   * The two answered the same question — "what areas do you work in, and what proves
+   * it" — so they now sit together as themes with evidence, then the wider surface.
+   */
+  capabilities?: readonly CapabilityGroup[];
 }
 
-export default function CurrentFocus({ latest }: CurrentFocusProps) {
+export default function CurrentFocus({ latest, capabilities }: CurrentFocusProps) {
   const threads = getBuildingThreads();
 
   return (
@@ -32,6 +43,20 @@ export default function CurrentFocus({ latest }: CurrentFocusProps) {
             </ul>
           </article>
         ))}
+
+        {capabilities && capabilities.length > 0 ? (
+          <section aria-labelledby="capability-surface" className={styles.capabilities}>
+            <h3 id="capability-surface">Wider capability surface</h3>
+            <dl>
+              {capabilities.map((capability) => (
+                <div key={capability.title}>
+                  <dt>{capability.title}</dt>
+                  <dd>{capability.summary}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ) : null}
       </div>
 
       <aside className={styles.building} aria-labelledby="currently-building">
