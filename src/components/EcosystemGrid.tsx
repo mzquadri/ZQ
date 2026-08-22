@@ -6,7 +6,7 @@ import {
 } from "@/content/ecosystem";
 import { getProject } from "@/content/portfolio";
 import styles from "./EcosystemGrid.module.css";
-import { ExternalArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 
 function formatDate(isoDate: string) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -31,7 +31,7 @@ export function RepositoryCard({ repository }: { repository: EcosystemRepository
 
       <h3 className={styles.title}>
         <a href={repositoryUrl(repository)}>
-          {repository.title} <ExternalArrow />
+          <ArrowLabel>{repository.title}</ArrowLabel>
         </a>
       </h3>
       <p className={styles.repoName}>{repository.name}</p>
@@ -50,7 +50,7 @@ export function RepositoryCard({ repository }: { repository: EcosystemRepository
         </p>
         {caseStudy ? (
           <Link className={styles.caseLink} href={`/work/${caseStudy.slug}`}>
-            Case study <span aria-hidden="true">→</span>
+<ArrowLabel kind="forward">Case study</ArrowLabel>
           </Link>
         ) : null}
       </div>

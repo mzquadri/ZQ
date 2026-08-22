@@ -1,0 +1,128 @@
+{
+  "source": "arXiv",
+  "sourceUrl": "https://arxiv.org/",
+  "attribution": "Thank you to arXiv for use of its open access interoperability.",
+  "fetchedAt": "2026-08-22",
+  "entries": [
+    {
+      "id": "2608.20258",
+      "title": "DICS: Data-Informed Centroid Splitting for Decision Tree Classifiers",
+      "authors": [
+        "MD Saifur Rahman Mazumder",
+        "Feng Yu"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20258",
+      "topic": "uncertainty-quantification"
+    },
+    {
+      "id": "2608.20255",
+      "title": "Transfer Learning in Nonparametric Regression with Deep ReLU Networks",
+      "authors": [
+        "Junpeng Ren",
+        "Carlos Misael Madrid Padilla",
+        "Yanzhen Chen",
+        "Oscar Hernan Madrid Padilla"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20255",
+      "topic": "uncertainty-quantification"
+    },
+    {
+      "id": "2608.20183",
+      "title": "Exact Algebraic Computation of Learning Coefficients for Two-Dimensional Singular Models",
+      "authors": [
+        "Grégoire Sergeant-Perthuis",
+        "Elias Tsigaridas",
+        "Jules Tsukahara"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20183",
+      "topic": "uncertainty-quantification"
+    },
+    {
+      "id": "2608.20123",
+      "title": "Discrete Diffusion Inference-Time Control with Nested Sequential Monte Carlo",
+      "authors": [
+        "Lohithsai Yadala Chanchu",
+        "Hany Abdulsamad",
+        "Christian A. Naesseth"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20123",
+      "topic": "uncertainty-quantification"
+    },
+    {
+      "id": "2608.20337",
+      "title": "Information on trajectories: martingales and random times",
+      "authors": [
+        "Akshay Balsubramani"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20337",
+      "topic": "machine-learning"
+    },
+    {
+      "id": "2608.20326",
+      "title": "$TCP_α$: Margin-Controlled Confidence estimation for reliable Music Information Retrieval",
+      "authors": [
+        "Parampreet Singh",
+        "Anushka Singh",
+        "Sumit Kumar",
+        "Vipul Arora"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20326",
+      "topic": "machine-learning"
+    },
+    {
+      "id": "2608.20322",
+      "title": "A comparison between ceiling-mounted FMCW, IR-UWB and Wi-Fi radar for in-bedroom human activity monitoring and sleep interruption detection",
+      "authors": [
+        "Anton Lambrecht",
+        "Reda El Hail",
+        "Xianjun Jiao",
+        "Pieter Crombez",
+        "Dominique Schreurs",
+        "Peter Karsmakers",
+        "Adnan Shahid",
+        "Eli De Poorter"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20322",
+      "topic": "machine-learning"
+    },
+    {
+      "id": "2608.20318",
+      "title": "AI4AI-Bench: Benchmarking LLM Agents in Algorithmic Design for Recursive Self-Improvement",
+      "authors": [
+        "Yizhe Chi",
+        "Wenyi Li",
+        "Deyao Hong",
+        "Xiaoqiu Wang",
+        "Mingju Gao",
+        "Kaisen Yang",
+        "Bingxiang He",
+        "Youjie Zheng",
+        "Calvin Xiao",
+        "Qinhuai Na"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20318",
+      "topic": "machine-learning"
+    },
+    {
+      "id": "2608.20317",
+      "title": "Projecting BrowseComp-Plus onto ClimbMix: Toward More Realistic Corpora for Agentic Search",
+      "authors": [
+        "Sahel Sharifymoghaddam",
+        "Lingwei Gu",
+        "Yijun Ge",
+        "Jimmy Lin"
+      ],
+      "published": "2026-08-20",
+      "link": "https://arxiv.org/abs/2608.20317",
+      "topic": "retrieval-and-grounded-generation"
+    }
+  ]
+}

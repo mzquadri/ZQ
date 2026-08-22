@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
+import { ArrowLabel } from "@/components/Icon";
 
 export const metadata: Metadata = {
   title: "Page Not Found",
@@ -18,7 +19,7 @@ export default function NotFound() {
         <p>The useful paths are still available: selected work, research, and contact.</p>
         <div className="hero-actions">
           <Link className="button button-primary" href="/">Return home</Link>
-          <Link className="text-link" href="/work">Browse work <span aria-hidden="true">→</span></Link>
+          <Link className="text-link" href="/work"><ArrowLabel kind="forward">Browse work</ArrowLabel></Link>
         </div>
       </section>
     </PageShell>

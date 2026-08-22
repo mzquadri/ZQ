@@ -34,6 +34,35 @@ export function ExternalArrow({ className }: IconProps) {
   );
 }
 
+/**
+ * A label with its trailing arrow bound to the final word.
+ *
+ * An SVG is an atomic inline box, and browsers allow a line break immediately before one.
+ * Deleting the whitespace in the markup is therefore not enough on its own: a long title
+ * that filled its line still pushed the arrow onto a line by itself, which is what happened
+ * to the repository and arXiv titles. Only the last word and the icon are held together,
+ * so everything before them keeps wrapping normally — the alternative, `nowrap` on the whole
+ * link, would force long titles to overflow instead.
+ *
+ * The label stays plain text in the accessible name; the arrow remains decorative and
+ * aria-hidden, exactly as when it is used on its own.
+ */
+export function ArrowLabel({ children, kind = "external" }: { children: string; kind?: "external" | "forward" }) {
+  const words = children.trim().split(/\s+/);
+  const last = words.pop() ?? "";
+  const Arrow = kind === "forward" ? ForwardArrow : ExternalArrow;
+
+  return (
+    <>
+      {words.length > 0 ? `${words.join(" ")} ` : null}
+      <span className="arrow-label">
+        {last}
+        <Arrow />
+      </span>
+    </>
+  );
+}
+
 /** Rightward arrow for in-site continuation links. */
 export function ForwardArrow({ className }: IconProps) {
   return (

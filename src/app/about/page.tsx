@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EducationList, ExperienceList } from "@/components/CareerProfile";
 import PageShell from "@/components/PageShell";
+import ProfilePortrait from "@/components/ProfilePortrait";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
+import { ArrowLabel } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "About",
@@ -35,6 +37,14 @@ export default function AboutPage() {
   return (
     <PageShell current="/about">
       <header className="page-hero section-wrap">
+        <div className="about-identity">
+          <ProfilePortrait variant="feature" />
+          <p className="portrait-caption">
+            <strong>{site.name}</strong>
+            <span>{site.role}</span>
+            <span>{site.location}</span>
+          </p>
+        </div>
         <p className="kicker">About / Working approach</p>
         <h1>Mathematical care, practical engineering.</h1>
         <p>
@@ -129,7 +139,7 @@ export default function AboutPage() {
           index shows the same standard applied to smaller projects.
         </p>
         <div className="hero-actions">
-          <Link className="button button-primary" href="/work">Selected work <span aria-hidden="true">→</span></Link>
+          <Link className="button button-primary" href="/work"><ArrowLabel kind="forward">Selected work</ArrowLabel></Link>
           <Link className="button button-secondary" href="/contact">Contact</Link>
         </div>
         <p className="resume-footnote">

@@ -40,7 +40,8 @@ import {
   sha256,
   type ResumeManifest,
 } from "./resume-contract";
-import { getPrivateTextIssue } from "../src/content/writing/schema";
+import { getPrivateTextIssue, writingLevels, writingTopics } from "../src/content/writing/schema";
+import researchFeed from "../src/content/research-feed.json";
 import {
   getAllWriting,
   getPublishedLearnWriting,
@@ -578,6 +579,44 @@ check(
   "Systems-graph edges must be unique",
 );
 
+// --- Profile portrait ---------------------------------------------------------------------------
+
+/*
+ * A published photograph is the first personal identifier on this site, approved in the
+ * Visual Rebuild v2 privacy review. The strip step is not trusted: the committed file is
+ * inspected here on every build, so a re-export that quietly reintroduces EXIF fails
+ * rather than shipping. GPS coordinates are the specific risk.
+ */
+const portraitPath = resolve("public/images/zamin-profile.jpg");
+if (existsSync(portraitPath)) {
+  const portrait = readFileSync(portraitPath);
+  check(portrait.subarray(0, 2).toString("hex") === "ffd8", "Profile portrait is not a JPEG");
+  check(statSync(portraitPath).size < 900_000, "Profile portrait is unexpectedly large for the web");
+
+  // APP1 is where EXIF (and therefore GPS) lives; APP13 carries IPTC/Photoshop blocks.
+  const markers: string[] = [];
+  for (let index = 2; index + 4 < portrait.length; ) {
+    if (portrait[index] !== 0xff) break;
+    const marker = portrait[index + 1];
+    if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) {
+      index += 2;
+      continue;
+    }
+    if (marker === 0xda || marker === 0xd9) break;
+    const length = portrait.readUInt16BE(index + 2);
+    const segment = portrait.subarray(index + 4, index + 2 + length);
+    if (marker === 0xe1 && segment.subarray(0, 4).toString("latin1") === "Exif") markers.push("EXIF");
+    if (marker === 0xe1 && segment.subarray(0, 5).toString("latin1") === "http:") markers.push("XMP");
+    if (marker === 0xed) markers.push("IPTC");
+    index += 2 + length;
+  }
+  check(markers.length === 0, `Profile portrait still carries metadata segments: ${markers.join(", ")}`);
+  check(
+    !portrait.toString("latin1").includes("GPS"),
+    "Profile portrait contains a GPS reference and must be re-stripped",
+  );
+}
+
 // --- Confidential work -------------------------------------------------------------------------
 
 for (const record of site.experience) {
@@ -609,13 +648,59 @@ for (const entry of writing) {
   }
   check(entry.wordCount >= 500 || entry.status === "draft", `${entry.slug} is too short for a published technical piece`);
   check(entry.tableOfContents.length >= 2 || entry.status === "draft", `${entry.slug} needs a useful table of contents`);
-  for (const taxon of [entry.category, ...entry.tags]) {
+  for (const taxon of entry.tags) {
     const existingLabel = taxonomyLabels.get(taxon.slug);
     check(!existingLabel || existingLabel === taxon.label, `Taxonomy label conflict for ${taxon.slug}`);
     taxonomyLabels.set(taxon.slug, taxon.label);
   }
   if (entry.coverImage) check(existsSync(resolve(`public${entry.coverImage.src}`)), `${entry.slug} cover image is missing`);
 }
+// --- Level and topic vocabulary -----------------------------------------------------------
+
+/*
+ * Unknown level or topic is a build failure, not a warning. The vocabularies are closed
+ * because the filter routes are generated from them: a value that is not in the list has
+ * no route, so publishing it would produce a chip pointing at a 404.
+ */
+const knownTopics = new Set<string>(writingTopics.map((topic) => topic.slug));
+const knownLevels = new Set<string>(writingLevels.map((level) => level.slug));
+
+for (const entry of writing) {
+  check(knownTopics.has(entry.topic), `${entry.slug} uses an unknown topic: ${entry.topic}`);
+  check(knownLevels.has(entry.level), `${entry.slug} uses an unknown level: ${entry.level}`);
+}
+
+for (const topic of writingTopics) {
+  check(
+    existsSync(resolve("src/app/learn/topic/[topic]/page.tsx")),
+    "The topic route is missing, so topic chips would link nowhere",
+  );
+  check(topic.label.trim().length > 0, `Topic ${topic.slug} has no label`);
+}
+for (const level of writingLevels) {
+  check(
+    existsSync(resolve("src/app/learn/level/[level]/page.tsx")),
+    "The level route is missing, so level chips would link nowhere",
+  );
+  check(level.label.trim().length > 0, `Level ${level.slug} has no label`);
+}
+
+// The research feed is other people's work. These checks exist so it cannot quietly drift
+// into reading as authored content.
+check(Array.isArray(researchFeed.entries), "Research feed cache is malformed");
+check(isIsoDate(researchFeed.fetchedAt), "Research feed cache has no valid fetch date");
+for (const item of researchFeed.entries) {
+  check(item.authors.length > 0, `Research feed entry ${item.id} has no authors`);
+  check(
+    item.link.startsWith("https://arxiv.org/abs/"),
+    `Research feed entry ${item.id} does not link to arXiv`,
+  );
+  check(
+    !Object.prototype.hasOwnProperty.call(item, "summary"),
+    `Research feed entry ${item.id} carries a summary; the feed publishes metadata only`,
+  );
+}
+
 const selectivePredictionTutorial = writing.find(
   (entry) => entry.slug === "selective-prediction-when-models-should-abstain",
 );

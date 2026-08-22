@@ -11,6 +11,8 @@ const routes = [
   "/resume",
   "/learn",
   "/learn/selective-prediction-when-models-should-abstain",
+  "/learn/topic/uncertainty-quantification",
+  "/learn/level/applied",
   "/work/transport-uq",
   "/work/insureassist-rag",
   "/work/mlops-reference-pipeline",
@@ -335,12 +337,13 @@ test("the MLOps case study publishes the released reference run, not the retired
 
 test("the repository index and homepage stay concise about MLOps", async ({ page }) => {
   await page.goto("/work");
-  const card = page.locator("#ecosystem").getByRole("heading", { name: /Testable End-to-End MLOps Pipeline/ });
+  const index = page.locator('[data-showcase="index"]');
+  const card = index.getByRole("heading", { name: /Testable End-to-End MLOps Pipeline/ });
   await expect(card).toBeVisible();
-  await expect(page.locator("#ecosystem")).toContainText("licensed dataset");
+  await expect(index).toContainText("licensed dataset");
 
   // Detail belongs in the case study; the index must not restate the metric table.
-  await expect(page.locator("#ecosystem")).not.toContainText("ROC-AUC");
+  await expect(index).not.toContainText("ROC-AUC");
 
   await page.goto("/");
   const main = page.locator("main");
@@ -448,7 +451,7 @@ test("systems graph selection is keyboard operable and never overclaims", async 
 
 test("the repository index catalogues public work beyond the case studies", async ({ page }) => {
   await page.goto("/work");
-  const index = page.locator("#ecosystem");
+  const index = page.locator('[data-showcase="index"]');
   await expect(index).toBeVisible();
 
   for (const category of ["Featured", "Active", "Research", "Experiment", "Reference"]) {
@@ -465,6 +468,104 @@ test("the repository index catalogues public work beyond the case studies", asyn
 
   // No fabricated activity metrics are published.
   await expect(index.getByText(/\d+\s*(stars?|forks?|watchers?|contributions?)/i)).toHaveCount(0);
+});
+
+test("the repository showcase strip is the content of record", async ({ page }) => {
+  await page.goto("/work");
+  const showcase = page.locator('[data-showcase="flagship"]');
+
+  // Four flagship cards, each carrying its parts as readable rows.
+  await expect(showcase.locator("li h3")).toHaveCount(4);
+  await expect(showcase.getByText("Reliable GNN Surrogates for Transport Policy")).toBeVisible();
+  await expect(showcase.getByText("Uncertainty Quantification").first()).toBeVisible();
+  await expect(showcase.getByText("Focus area").first()).toBeVisible();
+  await expect(showcase.getByText("Evidence boundary").first()).toBeVisible();
+  await expect(showcase.getByText("Portfolio status").first()).toBeVisible();
+
+  // Anything the 3D layer could show is on the card: label, kind, repo, last commit.
+  await expect(showcase.getByText(/Last public commit/).first()).toBeVisible();
+});
+
+test("the 3D layer never mounts where it should not", async ({ page }) => {
+  await page.goto("/work");
+  const host = page.locator("[data-mode]").first();
+
+  // Playwright runs every project with reducedMotion: "reduce", and the mobile project is
+  // narrower than the island's floor, so the layer must stay off in both.
+  await expect(host).toHaveAttribute("data-mode", "static");
+  await expect(page.locator("#ecosystem canvas")).toHaveCount(0);
+
+  // And the record is still complete without it.
+  await expect(page.locator('[data-showcase="flagship"] li h3')).toHaveCount(4);
+});
+
+test("generated topic and level routes are reachable and honest when empty", async ({ page }) => {
+  await page.goto("/learn/topic/uncertainty-quantification");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Uncertainty Quantification");
+  await expect(page.getByText("1 published piece on this topic.")).toBeVisible();
+  await expect(page.locator(".writing-grid article")).toHaveCount(1);
+
+  // A vocabulary entry with nothing published still has a route, and says so plainly
+  // rather than rendering an empty grid.
+  await page.goto("/learn/topic/graph-neural-networks");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Graph Neural Networks");
+  await expect(page.getByText(/Nothing is published on this topic yet/)).toBeVisible();
+  await expect(page.locator(".writing-grid")).toHaveCount(0);
+
+  await page.goto("/learn/level/applied");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Applied");
+  await expect(page.locator(".writing-grid article")).toHaveCount(1);
+});
+
+test("the filter interface stays hidden at one published article", async ({ page }) => {
+  await page.goto("/learn");
+  // The single-feature layout, not the grid.
+  await expect(page.locator(".writing-feature")).toHaveCount(1);
+  await expect(page.locator(".writing-grid")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Latest tutorial" })).toBeVisible();
+});
+
+test("the arXiv listing is unmistakably other people's work", async ({ page }) => {
+  await page.goto("/learn");
+  const feed = page.locator(".research-feed");
+  await expect(feed).toBeVisible();
+  await expect(feed.getByRole("heading", { name: "Recent work by others in these areas" })).toBeVisible();
+  await expect(feed).toContainText("These papers are not mine");
+  await expect(feed).toContainText("Thank you to arXiv");
+
+  // Every entry names its real authors and links to arXiv by identifier.
+  const items = feed.locator("li");
+  expect(await items.count()).toBeGreaterThan(0);
+  for (const item of await items.all()) {
+    await expect(item.locator(".research-feed-authors")).not.toBeEmpty();
+    await expect(item.locator("a")).toHaveAttribute("href", /^https:\/\/arxiv\.org\/abs\//);
+    await expect(item).toContainText(/arXiv:/);
+  }
+
+  // It sits below the authored writing and never appears on the homepage.
+  await page.goto("/");
+  await expect(page.locator(".research-feed")).toHaveCount(0);
+});
+
+test("article pages carry topic and level chips and a pager", async ({ page }) => {
+  await page.goto("/learn/selective-prediction-when-models-should-abstain");
+  const chips = page.locator(".article-chips a");
+  await expect(chips).toHaveCount(2);
+  await expect(chips.first()).toHaveAttribute("href", "/learn/topic/uncertainty-quantification");
+  await expect(chips.last()).toHaveAttribute("href", "/learn/level/applied");
+  await expect(page.getByRole("navigation", { name: "On this page" })).toBeVisible();
+});
+
+test("/learn makes no third-party requests", async ({ page }) => {
+  const remote: string[] = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.origin !== "http://127.0.0.1:3100") remote.push(url.origin);
+  });
+  await page.goto("/learn");
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(600);
+  expect(remote).toEqual([]);
 });
 
 test("resume is reachable but is not a conversion call to action", async ({ page }) => {

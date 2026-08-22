@@ -1,4 +1,5 @@
 import type { WritingEntry } from "@/content/writing/schema";
+import { topicLabel } from "@/content/writing/schema";
 
 export function escapeXml(value: string) {
   return value.replace(/[<>&'\"]/g, (character) => ({
@@ -28,7 +29,7 @@ export function createRssFeed({
       <link>${url}</link>
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${new Date(`${entry.publishedAt}T00:00:00Z`).toUTCString()}</pubDate>
-      <category>${escapeXml(entry.category.label)}</category>
+      <category>${escapeXml(topicLabel(entry.topic))}</category>
     </item>`;
     })
     .join("\n");

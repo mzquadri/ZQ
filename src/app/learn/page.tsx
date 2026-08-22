@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ForwardArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedLearnWriting, getWritingTaxonomy } from "@/content/writing/repository";
 import { createPageMetadata } from "@/lib/metadata";
+import { levelLabel, topicLabel } from "@/content/writing/schema";
+import ResearchFeed from "@/components/writing/ResearchFeed";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Learn",
@@ -31,7 +33,7 @@ function formatDate(date: string) {
 
 export default function LearnPage() {
   const entries = getPublishedLearnWriting();
-  const { categories, tags } = getWritingTaxonomy();
+  const { topics, levels, tags } = getWritingTaxonomy();
   const [feature, ...rest] = entries;
   const useGrid = entries.length >= GRID_THRESHOLD;
 
@@ -65,7 +67,8 @@ export default function LearnPage() {
               <p className="writing-feature-meta">
                 <span>{feature.kind}</span>
                 <span>{feature.readingTime} min read</span>
-                <span>{feature.category.label}</span>
+                <span>{topicLabel(feature.topic)}</span>
+                <span>{levelLabel(feature.level)}</span>
               </p>
               <h3>
                 <Link href={feature.path}>{feature.title}</Link>
@@ -85,7 +88,7 @@ export default function LearnPage() {
 
               <div className="writing-feature-actions">
                 <Link className="button button-primary" href={feature.path}>
-                  Read the tutorial <ForwardArrow />
+                  <ArrowLabel kind="forward">Read the tutorial</ArrowLabel>
                 </Link>
                 <time dateTime={feature.publishedAt}>{formatDate(feature.publishedAt!)}</time>
               </div>
@@ -94,8 +97,15 @@ export default function LearnPage() {
             <div className="writing-feature-side">
               <p className="figure-label">Topics covered so far</p>
               <ul className="topic-chips">
-                {categories.map((category) => (
-                  <li key={category.slug} data-kind="category">{category.label}</li>
+                {topics.map((topic) => (
+                  <li key={topic.slug} data-kind="category">
+                    <Link href={`/learn/topic/${topic.slug}`}>{topic.label}</Link>
+                  </li>
+                ))}
+                {levels.map((level) => (
+                  <li key={level.slug}>
+                    <Link href={`/learn/level/${level.slug}`}>{level.label}</Link>
+                  </li>
                 ))}
                 {tags.map((tag) => (
                   <li key={tag.slug}>{tag.label}</li>
@@ -115,6 +125,8 @@ export default function LearnPage() {
           </div>
         ) : null}
       </section>
+
+      <ResearchFeed />
     </PageShell>
   );
 }
