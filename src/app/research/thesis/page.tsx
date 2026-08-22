@@ -14,7 +14,7 @@ import { getProject, site, thesis } from "@/content/portfolio";
 import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "@/content/research";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
 import { createPageMetadata } from "@/lib/metadata";
-import { ExternalArrow } from "@/components/Icon";
+import { ArrowLabel, ExternalArrow } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Transport Surrogate Thesis Research",
@@ -62,7 +62,8 @@ export default function ThesisResearchPage() {
       <article>
         <header className="page-hero research-hero thesis-research-hero section-wrap">
           <Link className="back-link" href="/research">← Research overview</Link>
-          <p className="kicker">Master&apos;s thesis / {thesis.status}</p>
+          {/* `thesis.status` already begins with "Master's thesis" - do not prefix it again. */}
+          <p className="kicker">{thesis.status}</p>
           <h1>{thesis.title}</h1>
           <p>
             A scientific record of what was tested, which reliability property each method
@@ -75,8 +76,8 @@ export default function ThesisResearchPage() {
             <div><dt>Role</dt><dd>{project.projectRole}</dd></div>
           </dl>
           <div className="hero-actions">
-            <a className="button button-primary" href={canonicalThesisEvidence.repository}>Canonical repository <ExternalArrow /></a>
-            <a className="button button-secondary" href={canonicalThesisEvidence.corrigendum}>Read the corrigendum <ExternalArrow /></a>
+            <a className="button button-primary" href={canonicalThesisEvidence.repository}><ArrowLabel>Canonical repository</ArrowLabel></a>
+            <a className="button button-secondary" href={canonicalThesisEvidence.corrigendum}><ArrowLabel>Read the corrigendum</ArrowLabel></a>
           </div>
         </header>
 
@@ -224,9 +225,9 @@ export default function ThesisResearchPage() {
               {relatedWriting.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
             </div>
             <div className="research-record-actions">
-              <Link className="text-link" href="/work/transport-uq">Engineering case study <span aria-hidden="true">→</span></Link>
-              <a className="text-link" href={canonicalThesisEvidence.aggregateJson}>Audited aggregate JSON <ExternalArrow /></a>
-              <a className="text-link" href={canonicalThesisEvidence.manifest}>Artifact manifest <ExternalArrow /></a>
+              <Link className="text-link" href="/work/transport-uq"><ArrowLabel kind="forward">Engineering case study</ArrowLabel></Link>
+              <a className="text-link" href={canonicalThesisEvidence.aggregateJson}><ArrowLabel>Audited aggregate JSON</ArrowLabel></a>
+              <a className="text-link" href={canonicalThesisEvidence.manifest}><ArrowLabel>Artifact manifest</ArrowLabel></a>
             </div>
           </section>
         ) : null}

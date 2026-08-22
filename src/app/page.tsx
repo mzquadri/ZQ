@@ -3,8 +3,9 @@ import { ExperienceList } from "@/components/CareerProfile";
 import CurrentFocus from "@/components/CurrentFocus";
 import { RepositoryCardGrid, SnapshotNote } from "@/components/EcosystemGrid";
 import FeaturedWork from "@/components/FeaturedWork";
-import { ExternalArrow, ForwardArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
+import ProfilePortrait from "@/components/ProfilePortrait";
 import { ConfidenceProtocol, ThesisPipeline } from "@/components/ResearchVisuals";
 import SectionHeading from "@/components/SectionHeading";
 import SystemGraph from "@/components/SystemGraph";
@@ -20,22 +21,27 @@ export default function Home() {
     <PageShell>
       <section className="hero recruiter-hero section-wrap" aria-labelledby="hero-title">
         <div className="hero-copy">
-          <p className="kicker">AI/ML engineering / Munich</p>
-          <h1 id="hero-title">Reliable models. <em>Usable systems.</em></h1>
-          <p className="hero-intro">{site.positioning}</p>
-          <p className="supporting-identity">{site.supportingIdentity}</p>
-          <div className="hero-actions">
-            <Link className="button button-primary" href="/work">
-              Examine selected work <ForwardArrow />
-            </Link>
-            <Link className="button button-secondary" href="/research/thesis">
-              Read the research
-            </Link>
-            <Link className="text-link" href="/contact">
-              Contact <ForwardArrow />
-            </Link>
+          <div className="hero-identity">
+            <ProfilePortrait priority variant="hero" />
+            <div className="hero-identity-copy">
+              <p className="kicker">AI/ML engineering / Munich</p>
+              <h1 id="hero-title">Reliable models. <em>Usable systems.</em></h1>
+              <p className="hero-intro">{site.positioning}</p>
+              <p className="supporting-identity">{site.supportingIdentity}</p>
+              <div className="hero-actions">
+                <Link className="button button-primary" href="/work">
+                  <ArrowLabel kind="forward">Examine selected work</ArrowLabel>
+                </Link>
+                <Link className="button button-secondary" href="/research/thesis">
+                  Read the research
+                </Link>
+                <Link className="text-link" href="/contact">
+                  <ArrowLabel kind="forward">Contact</ArrowLabel>
+                </Link>
+              </div>
+              <p className="availability"><span aria-hidden="true" />{site.availability}</p>
+            </div>
           </div>
-          <p className="availability"><span aria-hidden="true" />{site.availability}</p>
         </div>
         <div className="hero-visual">
           <div className="hero-visual-label">How I turn model output into a decision</div>
@@ -118,7 +124,7 @@ export default function Home() {
         </div>
         <div className="section-action">
           <Link className="text-link" href="/research/thesis">
-            Read the research record and limitations <ForwardArrow />
+            <ArrowLabel kind="forward">Read the research record and limitations</ArrowLabel>
           </Link>
         </div>
       </section>
@@ -137,7 +143,7 @@ export default function Home() {
             Browse every public repository
           </Link>
           <a className="text-link" href={site.github}>
-            GitHub profile <ExternalArrow />
+            <ArrowLabel>GitHub profile</ArrowLabel>
           </a>
         </div>
       </section>
@@ -151,7 +157,7 @@ export default function Home() {
         />
         <ExperienceList />
         <div className="section-action">
-          <Link className="text-link" href="/about">Experience and education context <ForwardArrow /></Link>
+          <Link className="text-link" href="/about"><ArrowLabel kind="forward">Experience and education context</ArrowLabel></Link>
         </div>
       </section>
 
@@ -160,7 +166,7 @@ export default function Home() {
         <h2>Need an engineer who treats evidence as part of the system?</h2>
         <p>{site.availability}. Start with the case studies, the research record, or the open-source ecosystem.</p>
         <div className="hero-actions">
-          <Link className="button button-primary" href="/contact">Contact <ForwardArrow /></Link>
+          <Link className="button button-primary" href="/contact"><ArrowLabel kind="forward">Contact</ArrowLabel></Link>
           <Link className="button button-secondary" href="/learn">Read the tutorials</Link>
         </div>
       </section>

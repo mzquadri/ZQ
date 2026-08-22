@@ -1,0 +1,44 @@
+---
+schemaVersion: 1
+status: draft
+section: learn
+kind: article
+title: "Scaffold: the shape of a Learn article"
+description: "A skeleton showing every frontmatter field and the heading structure the table of contents is built from. Replace all of it."
+author: "Mohd Zamin Quadri"
+topic: machine-learning
+level: foundations
+tags:
+  - slug: scaffold
+    label: Scaffold
+projectSlugs: []
+relatedSlugs: []
+references: []
+---
+
+This file exists to document the schema, not to say anything. It is `status: draft`, so it
+is never published, never routed, and never counted toward the threshold that reveals the
+filter interface. Copy it, change every field, delete this paragraph.
+
+## Frontmatter
+
+`topic` and `level` both come from closed vocabularies in `src/content/writing/schema.ts`.
+A value outside those lists fails the build rather than rendering a chip that links to a
+route which does not exist. `tags` stays free-form for anything finer-grained.
+
+`publishedAt` is required once `status` becomes `published`, and must not be in the future.
+
+## Headings become the table of contents
+
+Every `##` and `###` in the body is collected into the contents panel that appears beside
+the article on wide screens. Two headings are the minimum before the panel renders at all.
+
+### Third-level headings nest
+
+They appear indented under the second-level heading above them.
+
+## What not to do here
+
+Do not leave placeholder prose that reads like real content. An unfinished draft that looks
+finished is worse than an obviously empty one, because it can be published by accident and
+nobody notices the claims are hollow.

@@ -13,6 +13,7 @@ import {
   type ProjectedPoint,
 } from "@/content/systems-graph";
 import styles from "./SystemGraph.module.css";
+import { ArrowLabel } from "@/components/Icon";
 
 const STATIC_WIDTH = 720;
 const STATIC_HEIGHT = 460;
@@ -378,7 +379,7 @@ export default function SystemGraph() {
           <p className={styles.detailBlurb}>{selected.blurb}</p>
           {selected.href ? (
             <Link className={styles.detailLink} href={selected.href}>
-              See the evidence <span aria-hidden="true">→</span>
+<ArrowLabel kind="forward">See the evidence</ArrowLabel>
             </Link>
           ) : (
             <p className={styles.detailNote}>No public project yet, so nothing is claimed here.</p>

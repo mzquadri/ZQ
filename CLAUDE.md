@@ -31,12 +31,35 @@ static HTML/SVG. New components introduced after Website Completion v1 keep thei
 CSS module beside the component instead of extending `globals.css`. Do not add remote fonts or
 a large client-side framework for decorative effects.
 
-`SystemGraph` is the one sanctioned interactive visual. It is hand-written canvas 2D with no
-3D dependency, it explains the data-to-decision path rather than decorating the page, and it
-must keep all four of its guarantees: a server-rendered static SVG and stage list that work
-without JavaScript, no canvas below 760px, no auto-rotation under `prefers-reduced-motion` or
-after the user takes control, and a usable page when the 2D context is unavailable. Do not add
-WebGL, perpetual animation, particle fields, or decorative motion.
+`SystemGraph` is the sanctioned canvas 2D visual. It is hand-written with no 3D dependency,
+it explains the data-to-decision path rather than decorating the page, and it must keep all
+four of its guarantees: a server-rendered static SVG and stage list that work without
+JavaScript, no canvas below 760px, no auto-rotation under `prefers-reduced-motion` or after
+the user takes control, and a usable page when the 2D context is unavailable.
+
+WebGL is permitted in exactly one place: the repository assemblies in
+`src/components/repo-assembly/`, on `/work`. That exception was granted deliberately and is
+narrow. It does not generalise. Any other proposal to add WebGL, to a different page or a
+different component, is out of scope and needs its own decision.
+
+The assemblies must keep every one of these properties, or the exception no longer applies:
+
+- The server-rendered card strip is the content of record. It renders always, carries every
+  fact the 3D layer can show, and stays fully navigable with JavaScript disabled.
+- three.js is loaded through `next/dynamic` with `ssr: false`, behind an IntersectionObserver,
+  and is absent from the initial payload.
+- The layer does not mount at all under `prefers-reduced-motion`, below 900px, or without
+  WebGL. Those are not degraded modes; they are the intended experience.
+- Rendering is `frameloop="demand"` and scroll-driven. Nothing renders while the page is
+  still. There is no ambient or idle animation.
+- A frame-budget guard unmounts the layer on sustained slow frames, leaving the strip visible
+  with no frozen frame and no layout shift.
+- Part labels come only from the typed registry through `src/content/assembly.ts`, which is a
+  pure mapping. No copy is authored there and assemblies are never padded to a uniform part
+  count.
+
+Outside that exception the rule is unchanged: do not add WebGL, perpetual animation, particle
+fields, or decorative motion.
 
 ## Evidence And Privacy
 

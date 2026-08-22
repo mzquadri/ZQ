@@ -404,6 +404,34 @@ ol {
   color: var(--teal-dark);
 }
 
+/*
+ * The index holds still while its heading block scrolls past, so the number a reader is
+ * inside stays legible for longer. Deliberately narrow: this applies only to the two-column
+ * `.section-heading`, where the index sits in its own column and nothing can scroll behind
+ * it. Every other `.section-index` on the site is stacked directly above an `h2` in the same
+ * column, so sticking it there would drag it over the copy it labels. Those stay in flow.
+ *
+ * `align-self: start` is required, not cosmetic: a stretched grid item fills the row and has
+ * no room to travel. Travel is therefore bounded by the heading's own height, which is the
+ * point - the number never outlives the heading it belongs to.
+ */
+@media (min-width: 901px) {
+  .section-heading > .section-index {
+    position: sticky;
+    top: 6.4rem; /* clears the 4.8rem sticky header */
+    align-self: start;
+    /* Optically settles the numeral against the h2 cap height rather than its line box. */
+    padding-top: 0.35rem;
+  }
+}
+
+/* Position that changes on scroll is still movement the reader did not ask for. */
+@media (prefers-reduced-motion: reduce) {
+  .section-heading > .section-index {
+    position: static;
+  }
+}
+
 .section-index span {
   display: inline-grid;
   width: 2rem;
@@ -1460,6 +1488,12 @@ ol {
     padding-left: 1.5rem;
   }
 
+  /*
+   * `1fr` floors at min-content, and the longest workflow step ("Road-link graph
+   * representation") sets a 157px floor at 1.2rem serif. Two of those plus padding exceed a
+   * 320px viewport, so the page scrolled sideways. One column below 360px removes the floor
+   * entirely; the fixed row height goes with it, since stacked cards have nothing to align.
+   */
   .workflow-list {
     grid-template-columns: 1fr 1fr;
   }
@@ -2729,6 +2763,14 @@ ol {
     padding-inline: 0.14rem;
     font-size: 0.66rem;
   }
+
+  .workflow-list {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-list li {
+    min-height: 0;
+  }
 }
 
 .supporting-identity,
@@ -3262,11 +3304,28 @@ ol {
  * on Windows and Android and rendered a blue tile inside otherwise ink-coloured text.
  */
 .icon {
+  /*
+   * Tailwind Preflight sets `svg { display: block }`, which silently drops the arrow onto a
+   * line of its own inside any link that is not a flex container. Restoring inline flow is
+   * the whole fix, and it is deliberately made here rather than at the call sites: the icon
+   * component owns its own layout so no link has to remember to compensate.
+   *
+   * The gap comes from `margin-left`, never from whitespace in the markup - whitespace is a
+   * break opportunity, and it is the one thing that could still orphan the arrow. Call sites
+   * therefore write `{title}<ExternalArrow />` with nothing between them, which leaves the
+   * title free to wrap normally while the arrow stays welded to its final word.
+   */
+  display: inline-block;
   width: 0.72em;
   height: 0.72em;
   margin-left: 0.35em;
   vertical-align: baseline;
   flex: none;
+}
+
+/* Holds the final word and its arrow on one line. See `ArrowLabel` for why. */
+.arrow-label {
+  white-space: nowrap;
 }
 
 .external-marker {
@@ -3906,3 +3965,303 @@ ol {
   }
 }
 
+
+/* Profile portrait */
+
+.portrait {
+  flex: none;
+}
+
+.portrait-frame {
+  position: relative;
+  overflow: hidden;
+  /* Squircle rather than a circle: it sits beside a serif headline and a rounded
+     rectangle holds the grid rhythm better than a disc. */
+  border-radius: 28%;
+  border: 1px solid var(--line-strong);
+  outline: 4px solid var(--paper-raised);
+  background: var(--paper-raised);
+  line-height: 0;
+}
+
+.portrait-image,
+.portrait-monogram {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portrait[data-variant="hero"] .portrait-frame {
+  width: 6.6rem;
+  height: 6.6rem;
+}
+
+.portrait[data-variant="feature"] .portrait-frame {
+  width: 11rem;
+  height: 11rem;
+}
+
+/* Hero identity row: portrait beside the headline rather than stacked above it. */
+/* Portrait in its own column beside the copy stack, top-aligned, so the headline and
+   the paragraphs under it share one left edge instead of the headline being indented. */
+.hero-identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+  margin-bottom: 1.6rem;
+}
+
+.hero-identity-copy > * + * {
+  margin-top: 0.85rem;
+}
+
+.hero-identity-copy .hero-actions,
+.hero-identity-copy .availability {
+  margin-top: 1.6rem;
+}
+
+.hero-identity .kicker {
+  margin-bottom: 0.35rem;
+}
+
+.about-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.portrait-caption {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.35rem;
+}
+
+.portrait-caption strong {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.portrait-caption span {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.portrait-caption span:last-child {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+/*
+ * Parallax, done with a scroll-driven CSS animation so it costs no JavaScript and
+ * disappears entirely where the feature or the motion preference is absent. Travel is
+ * capped at 12px; only transform is animated, so nothing reflows.
+ */
+@keyframes portrait-drift {
+  from {
+    transform: translateY(6px);
+  }
+
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .portrait[data-variant="hero"] .portrait-frame {
+      animation: portrait-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-identity {
+    gap: 1rem;
+  }
+
+  .portrait[data-variant="hero"] .portrait-frame {
+    width: 5.2rem;
+    height: 5.2rem;
+  }
+
+  .portrait[data-variant="feature"] .portrait-frame {
+    width: 8.5rem;
+    height: 8.5rem;
+  }
+}
+
+.ecosystem-index-rest {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 2px solid var(--ink);
+}
+
+.ecosystem-index-rest .section-index {
+  margin-bottom: 1.5rem;
+}
+
+/* Article chips, pager, and the arXiv listing */
+
+.article-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  list-style: none;
+}
+
+.article-chips li a {
+  display: inline-block;
+  padding: 0.24rem 0.7rem;
+  border: 1px solid var(--teal-dark);
+  color: var(--teal-dark);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.article-chips li[data-kind="level"] a {
+  border-color: var(--line-strong);
+  color: var(--ink-soft);
+}
+
+.article-chips li a:hover {
+  text-decoration: underline;
+}
+
+.article-pager {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.article-pager a {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  text-decoration: none;
+}
+
+.article-pager a[data-direction="next"] {
+  text-align: right;
+}
+
+.article-pager span {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.article-pager strong {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/*
+ * The listing is deliberately unlike the article cards above it. Authors come first and
+ * are the most prominent line, because the one thing a reader must not do is mistake
+ * these for something written here.
+ */
+.research-feed {
+  border-top: 2px solid var(--ink);
+}
+
+.research-feed-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* h2 has no global font-size; without this it falls back to the browser default and
+   collides with the section index above it. Matches the standalone-heading scale. */
+.research-feed h2 {
+  margin-top: 1.1rem;
+  font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+}
+
+.research-feed-lede {
+  max-width: 56ch;
+  margin-top: 0.6rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+.research-feed-stamp {
+  display: grid;
+  gap: 0.15rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.research-feed-stale {
+  color: var(--orange-text);
+}
+
+.research-feed-list {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.research-feed-list li {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.research-feed-authors {
+  font-size: 0.84rem;
+  color: var(--ink);
+}
+
+.research-feed-list h3 {
+  margin-top: 0.25rem;
+  max-width: 68ch;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.research-feed-list h3 a {
+  color: var(--teal-dark);
+}
+
+.research-feed-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin-top: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.research-feed-attribution {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}

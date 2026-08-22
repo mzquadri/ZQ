@@ -9,13 +9,17 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "validate:content": "tsx scripts/validate-content.ts",
-    "test:content": "tsx --test tests/content-foundation.test.ts tests/resume-contract.test.ts tests/ecosystem.test.ts",
+    "test:content": "tsx --test tests/content-foundation.test.ts tests/resume-contract.test.ts tests/ecosystem.test.ts tests/assembly.test.ts",
     "generate:resume": "npm run build && tsx scripts/generate-resume.ts",
     "test:e2e": "npm run build && playwright test",
-    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build"
+    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build",
+    "refresh:research-feed": "tsx scripts/refresh-research-feed.ts"
   },
   "dependencies": {
+    "@react-three/drei": "10.7.6",
+    "@react-three/fiber": "9.3.0",
     "@shikijs/rehype": "4.4.3",
+    "framer-motion": "12.23.12",
     "katex": "0.18.4",
     "next": "16.3.1",
     "next-mdx-remote": "6.0.0",
@@ -26,6 +30,7 @@
     "remark-math": "6.0.0",
     "remark-mdx": "3.1.1",
     "remark-parse": "11.0.0",
+    "three": "0.181.0",
     "unified": "11.0.5",
     "yaml": "2.9.0",
     "zod": "4.4.3"
@@ -36,6 +41,7 @@
     "@types/node": "^20",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
+    "@types/three": "0.181.0",
     "eslint": "9.39.1",
     "eslint-config-next": "16.3.1",
     "postcss": "^8",

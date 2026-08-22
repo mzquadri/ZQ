@@ -8,7 +8,7 @@ import { getProject, getResearchProjects, site, thesis } from "@/content/portfol
 import { researchEvidence, researchThemes, thesisResearchPath } from "@/content/research";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
 import { createPageMetadata } from "@/lib/metadata";
-import { ExternalArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Research",
@@ -92,7 +92,7 @@ export default function ResearchPage() {
                   {theme.projectSlugs.map((slug) => {
                     const project = getProject(slug)!;
                     const href = project.researchPath ?? `/work/${project.slug}`;
-                    return <Link href={href} key={slug}>{project.title} <span aria-hidden="true">→</span></Link>;
+                    return <Link href={href} key={slug}><ArrowLabel kind="forward">{project.title}</ArrowLabel></Link>;
                   })}
                 </div>
               ) : null}
@@ -122,9 +122,9 @@ export default function ResearchPage() {
             <div><dt>Selective review</dt><dd>{halfRetention.reductionPct.toFixed(1)}%<small>Lower MAE at 50% retention</small></dd></div>
           </dl>
           <div className="research-record-actions">
-            <Link className="button button-primary" href={thesisResearchPath}>Explore the thesis research <span aria-hidden="true">→</span></Link>
-            <Link className="text-link" href="/work/transport-uq">Engineering case study <ExternalArrow /></Link>
-            <a className="text-link" href={thesis.repository}>Canonical repository <ExternalArrow /></a>
+            <Link className="button button-primary" href={thesisResearchPath}><ArrowLabel kind="forward">Explore the thesis research</ArrowLabel></Link>
+            <Link className="text-link" href="/work/transport-uq"><ArrowLabel kind="forward">Engineering case study</ArrowLabel></Link>
+            <a className="text-link" href={thesis.repository}><ArrowLabel>Canonical repository</ArrowLabel></a>
           </div>
         </article>
       </section>

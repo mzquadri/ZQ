@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ForwardArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import type { Project } from "@/content/portfolio";
 
 /**
@@ -72,8 +72,7 @@ export default function FeaturedWork({ projects }: { projects: readonly Project[
             <div className="featured-foot">
               <p className="featured-role">{project.projectRole}</p>
               <Link className="featured-link" href={`/work/${project.slug}`}>
-                Case study
-                <ForwardArrow />
+                <ArrowLabel kind="forward">Case study</ArrowLabel>
               </Link>
             </div>
           </div>
