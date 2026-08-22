@@ -1,4 +1,4 @@
-import { ExternalArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import feed from "@/content/research-feed.json";
 
 /**
@@ -61,7 +61,7 @@ export default function ResearchFeed() {
             <p className="research-feed-authors">{entry.authors.join(", ")}</p>
             <h3>
               <a href={entry.link} rel="noopener noreferrer external" target="_blank">
-                {entry.title}<ExternalArrow />
+                <ArrowLabel>{entry.title}</ArrowLabel>
               </a>
             </h3>
             <p className="research-feed-meta">
@@ -75,7 +75,7 @@ export default function ResearchFeed() {
       <p className="research-feed-attribution">
         {feed.attribution}{" "}
         <a href={feed.sourceUrl} rel="noopener noreferrer external" target="_blank">
-          arxiv.org<ExternalArrow />
+          <ArrowLabel>arxiv.org</ArrowLabel>
         </a>
       </p>
     </section>

@@ -27,9 +27,14 @@ export default async function LearnOpenGraphImage({ params }: { params: Promise<
         <div style={{ display: "flex", fontFamily: "serif", fontSize: 72, fontWeight: 600, lineHeight: 1.02, maxWidth: 1020 }}>
           {entry.title}
         </div>
+        {/*
+          The byline is nowrap, so it fits only if the description is capped. Uncapped, a
+          two-line description pushed the byline past the right edge and the name rendered as
+          "mzqua" - Satori will not shrink a nowrap box to make room for it.
+        */}
         <div style={{ alignItems: "center", display: "flex", justifyContent: "space-between" }}>
-          <div style={{ color: "#455158", display: "flex", fontSize: 25 }}>{entry.description}</div>
-          <div style={{ display: "flex", fontSize: 23, fontWeight: 700, marginLeft: 48, whiteSpace: "nowrap" }}>{site.name} / mzquadri.de</div>
+          <div style={{ color: "#455158", display: "flex", flexShrink: 1, fontSize: 25, maxWidth: 600 }}>{entry.description}</div>
+          <div style={{ display: "flex", flexShrink: 0, fontSize: 23, fontWeight: 700, marginLeft: 48, whiteSpace: "nowrap" }}>{site.name} / mzquadri.de</div>
         </div>
       </div>
     </div>,

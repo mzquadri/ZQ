@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ForwardArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedLearnWritingByLevel } from "@/content/writing/repository";
@@ -33,11 +33,17 @@ export async function generateMetadata({ params }: LevelPageProps): Promise<Meta
   const match = findLevel(level);
   if (!match) return {};
 
-  return createPageMetadata({
-    title: `${match.label} writing`,
-    description: `Tutorials and notes at the ${match.label.toLowerCase()} level from the Learn library.`,
-    path: `/learn/level/${match.slug}`,
-  });
+  const published = getPublishedLearnWritingByLevel(match.slug as WritingLevelSlug).length;
+
+  return {
+    ...createPageMetadata({
+      title: `${match.label} writing`,
+      description: `Tutorials and notes at the ${match.label.toLowerCase()} level from the Learn library.`,
+      path: `/learn/level/${match.slug}`,
+    }),
+    // Same rule as the topic routes: reachable, but not advertised while empty.
+    ...(published === 0 ? { robots: { index: false, follow: true } } : {}),
+  };
 }
 
 export default async function LevelPage({ params }: LevelPageProps) {
@@ -59,8 +65,7 @@ export default async function LevelPage({ params }: LevelPageProps) {
         </p>
         <div className="work-jump">
           <Link href="/learn">
-            All writing
-            <ForwardArrow />
+            <ArrowLabel kind="forward">All writing</ArrowLabel>
           </Link>
         </div>
       </header>

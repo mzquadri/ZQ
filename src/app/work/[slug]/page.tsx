@@ -7,7 +7,7 @@ import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVis
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import { getProject, projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
-import { ExternalArrow } from "@/components/Icon";
+import { ArrowLabel, ExternalArrow } from "@/components/Icon";
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -83,7 +83,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             ) : null}
           </dl>
           <a className="button button-primary" href={project.repository}>
-            Inspect repository <ExternalArrow />
+            <ArrowLabel>Inspect repository</ArrowLabel>
           </a>
         </header>
 
@@ -154,8 +154,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               {project.artifacts.map((artifact) => (
                 <a href={artifact.href} key={artifact.href}>
                   <strong>{artifact.label}</strong>
-                  <span>{artifact.note}</span>
-                  <ExternalArrow />
+                  <span>{artifact.note}</span><ExternalArrow />
                 </a>
               ))}
             </div>
@@ -186,14 +185,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="case-actions">
             {project.researchPath ? (
               <Link className="text-link" href={project.researchPath}>
-                Scientific research record <span aria-hidden="true">→</span>
+<ArrowLabel kind="forward">Scientific research record</ArrowLabel>
               </Link>
             ) : null}
             <a className="text-link" href={project.repository}>
-              Source and documentation <ExternalArrow />
+              <ArrowLabel>Source and documentation</ArrowLabel>
             </a>
             <Link className="text-link" href="/contact">
-              Discuss relevant work <span aria-hidden="true">→</span>
+<ArrowLabel kind="forward">Discuss relevant work</ArrowLabel>
             </Link>
           </div>
         </section>

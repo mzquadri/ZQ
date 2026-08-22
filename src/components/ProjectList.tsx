@@ -36,8 +36,7 @@ export default function ProjectList({ projects }: ProjectListProps) {
               href={`/work/${project.slug}`}
               aria-label={`Read case study: ${project.title}`}
             >
-              <span>Case study</span>
-              <ExternalArrow />
+              <span>Case study</span><ExternalArrow />
             </Link>
           </article>
         </li>

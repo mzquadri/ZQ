@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ForwardArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedLearnWritingByTopic } from "@/content/writing/repository";
@@ -38,11 +38,18 @@ export async function generateMetadata({ params }: TopicPageProps): Promise<Meta
   const match = findTopic(topic);
   if (!match) return {};
 
-  return createPageMetadata({
-    title: `${match.label} writing`,
-    description: `Tutorials and notes on ${match.label.toLowerCase()} from the Learn library.`,
-    path: `/learn/topic/${match.slug}`,
-  });
+  const published = getPublishedLearnWritingByTopic(match.slug as WritingTopicSlug).length;
+
+  return {
+    ...createPageMetadata({
+      title: `${match.label} writing`,
+      description: `Tutorials and notes on ${match.label.toLowerCase()} from the Learn library.`,
+      path: `/learn/topic/${match.slug}`,
+    }),
+    // The route stays reachable so the vocabulary never 404s, but an empty shelf is not
+    // something to put in front of a crawler. It indexes itself once it has content.
+    ...(published === 0 ? { robots: { index: false, follow: true } } : {}),
+  };
 }
 
 export default async function TopicPage({ params }: TopicPageProps) {
@@ -64,8 +71,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
         </p>
         <div className="work-jump">
           <Link href="/learn">
-            All writing
-            <ForwardArrow />
+            <ArrowLabel kind="forward">All writing</ArrowLabel>
           </Link>
         </div>
       </header>
