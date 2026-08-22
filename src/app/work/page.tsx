@@ -8,7 +8,7 @@ import SectionHeading from "@/components/SectionHeading";
 import { ecosystemRepositories, getPopulatedCategories } from "@/content/ecosystem";
 import { projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
-import { ExternalArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Selected Work",
@@ -64,7 +64,7 @@ export default function WorkPage() {
         </div>
         <div className="section-action">
           <a className="text-link" href={site.github}>
-            Full GitHub profile <ExternalArrow />
+            <ArrowLabel>Full GitHub profile</ArrowLabel>
           </a>
         </div>
       </section>
@@ -77,7 +77,7 @@ export default function WorkPage() {
           useful, not because they carry production evidence. Where a claim needs proof, the case
           study links directly to the artifact.
         </p>
-        <Link className="button button-primary" href="/research">Research record <span aria-hidden="true">→</span></Link>
+        <Link className="button button-primary" href="/research"><ArrowLabel kind="forward">Research record</ArrowLabel></Link>
       </section>
     </PageShell>
   );

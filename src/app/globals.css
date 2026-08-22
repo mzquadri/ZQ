@@ -404,6 +404,34 @@ ol {
   color: var(--teal-dark);
 }
 
+/*
+ * The index holds still while its heading block scrolls past, so the number a reader is
+ * inside stays legible for longer. Deliberately narrow: this applies only to the two-column
+ * `.section-heading`, where the index sits in its own column and nothing can scroll behind
+ * it. Every other `.section-index` on the site is stacked directly above an `h2` in the same
+ * column, so sticking it there would drag it over the copy it labels. Those stay in flow.
+ *
+ * `align-self: start` is required, not cosmetic: a stretched grid item fills the row and has
+ * no room to travel. Travel is therefore bounded by the heading's own height, which is the
+ * point - the number never outlives the heading it belongs to.
+ */
+@media (min-width: 901px) {
+  .section-heading > .section-index {
+    position: sticky;
+    top: 6.4rem; /* clears the 4.8rem sticky header */
+    align-self: start;
+    /* Optically settles the numeral against the h2 cap height rather than its line box. */
+    padding-top: 0.35rem;
+  }
+}
+
+/* Position that changes on scroll is still movement the reader did not ask for. */
+@media (prefers-reduced-motion: reduce) {
+  .section-heading > .section-index {
+    position: static;
+  }
+}
+
 .section-index span {
   display: inline-grid;
   width: 2rem;
@@ -1460,6 +1488,12 @@ ol {
     padding-left: 1.5rem;
   }
 
+  /*
+   * `1fr` floors at min-content, and the longest workflow step ("Road-link graph
+   * representation") sets a 157px floor at 1.2rem serif. Two of those plus padding exceed a
+   * 320px viewport, so the page scrolled sideways. One column below 360px removes the floor
+   * entirely; the fixed row height goes with it, since stacked cards have nothing to align.
+   */
   .workflow-list {
     grid-template-columns: 1fr 1fr;
   }
@@ -2729,6 +2763,14 @@ ol {
     padding-inline: 0.14rem;
     font-size: 0.66rem;
   }
+
+  .workflow-list {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-list li {
+    min-height: 0;
+  }
 }
 
 .supporting-identity,
@@ -3262,11 +3304,28 @@ ol {
  * on Windows and Android and rendered a blue tile inside otherwise ink-coloured text.
  */
 .icon {
+  /*
+   * Tailwind Preflight sets `svg { display: block }`, which silently drops the arrow onto a
+   * line of its own inside any link that is not a flex container. Restoring inline flow is
+   * the whole fix, and it is deliberately made here rather than at the call sites: the icon
+   * component owns its own layout so no link has to remember to compensate.
+   *
+   * The gap comes from `margin-left`, never from whitespace in the markup - whitespace is a
+   * break opportunity, and it is the one thing that could still orphan the arrow. Call sites
+   * therefore write `{title}<ExternalArrow />` with nothing between them, which leaves the
+   * title free to wrap normally while the arrow stays welded to its final word.
+   */
+  display: inline-block;
   width: 0.72em;
   height: 0.72em;
   margin-left: 0.35em;
   vertical-align: baseline;
   flex: none;
+}
+
+/* Holds the final word and its arrow on one line. See `ArrowLabel` for why. */
+.arrow-label {
+  white-space: nowrap;
 }
 
 .external-marker {

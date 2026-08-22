@@ -15,6 +15,7 @@ import {
 } from "@/content/writing/repository";
 import { createPageMetadata } from "@/lib/metadata";
 import { levelLabel, topicLabel } from "@/content/writing/schema";
+import { ArrowLabel } from "@/components/Icon";
 
 export const dynamicParams = false;
 
@@ -178,7 +179,7 @@ export default async function LearnEntryPage({ params }: { params: Promise<{ slu
                    <h3><Link href={`/work/${project.slug}`}>{project.title}</Link></h3>
                    <span>{project.summary}</span>
                    {project.researchPath ? (
-                     <Link className="text-link" href={project.researchPath}>Research record <span aria-hidden="true">→</span></Link>
+                     <Link className="text-link" href={project.researchPath}><ArrowLabel kind="forward">Research record</ArrowLabel></Link>
                    ) : null}
                  </article>
               ))}

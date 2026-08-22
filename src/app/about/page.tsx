@@ -5,6 +5,7 @@ import PageShell from "@/components/PageShell";
 import ProfilePortrait from "@/components/ProfilePortrait";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
+import { ArrowLabel } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
   title: "About",
@@ -138,7 +139,7 @@ export default function AboutPage() {
           index shows the same standard applied to smaller projects.
         </p>
         <div className="hero-actions">
-          <Link className="button button-primary" href="/work">Selected work <span aria-hidden="true">→</span></Link>
+          <Link className="button button-primary" href="/work"><ArrowLabel kind="forward">Selected work</ArrowLabel></Link>
           <Link className="button button-secondary" href="/contact">Contact</Link>
         </div>
         <p className="resume-footnote">

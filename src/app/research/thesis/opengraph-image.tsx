@@ -14,7 +14,8 @@ export default function ThesisResearchOpenGraphImage() {
       <div style={{ background: "#d76531", display: "flex", width: 34 }} />
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "58px 70px", width: "100%" }}>
         <div style={{ color: "#f2cb57", display: "flex", fontSize: 23, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>
-          Master&apos;s thesis / {thesis.status}
+          {/* The status string already opens with "Master's thesis"; prefixing it said so twice. */}
+          {thesis.status}
         </div>
         <div style={{ display: "flex", fontFamily: "serif", fontSize: 61, fontWeight: 600, lineHeight: 1.02, maxWidth: 1050 }}>
           Reliable GNN Surrogates for Transport Policy Analysis

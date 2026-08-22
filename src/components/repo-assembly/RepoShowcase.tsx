@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalArrow, ForwardArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import { getRepoAssemblies, PART_KIND_LABEL } from "@/content/assembly";
 import ShowcaseCanvas from "./ShowcaseCanvas";
 import styles from "./RepoShowcase.module.css";
@@ -32,8 +32,7 @@ export default function RepoShowcase() {
 
             <h3 className={styles.title}>
               <a href={assembly.href}>
-                {assembly.title}
-                <ExternalArrow />
+                <ArrowLabel>{assembly.title}</ArrowLabel>
               </a>
             </h3>
             <p className={styles.repoName}>{assembly.name}</p>
@@ -55,8 +54,7 @@ export default function RepoShowcase() {
               </p>
               {assembly.caseStudyHref ? (
                 <Link className={styles.caseLink} href={assembly.caseStudyHref}>
-                  Case study
-                  <ForwardArrow />
+                  <ArrowLabel kind="forward">Case study</ArrowLabel>
                 </Link>
               ) : null}
             </div>

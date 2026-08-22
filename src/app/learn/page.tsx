@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ForwardArrow } from "@/components/Icon";
+import { ArrowLabel } from "@/components/Icon";
 import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedLearnWriting, getWritingTaxonomy } from "@/content/writing/repository";
@@ -88,7 +88,7 @@ export default function LearnPage() {
 
               <div className="writing-feature-actions">
                 <Link className="button button-primary" href={feature.path}>
-                  Read the tutorial <ForwardArrow />
+                  <ArrowLabel kind="forward">Read the tutorial</ArrowLabel>
                 </Link>
                 <time dateTime={feature.publishedAt}>{formatDate(feature.publishedAt!)}</time>
               </div>
