@@ -1,0 +1,226 @@
+.showcase {
+  display: grid;
+  gap: 2rem;
+}
+
+/*
+ * The canvas band. It occupies no height at all until the island decides 3D is worth
+ * running, so a visitor on a phone, with reduced motion, or without WebGL does not
+ * scroll past an empty rectangle.
+ */
+/* Zero height rather than display:none. A display:none element is out of layout, so an
+   IntersectionObserver can never report it as visible - which would leave the layer
+   waiting for a signal that cannot arrive. */
+.canvasHost {
+  position: relative;
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
+.canvasHost[data-mode="webgl"],
+.canvasHost[data-mode="degraded"] {
+  height: min(66vh, 34rem);
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--line-strong);
+  background:
+    radial-gradient(120% 90% at 50% 0%, var(--paper-raised), transparent 72%),
+    var(--paper);
+}
+
+.canvasLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.tooltip,
+.hint {
+  position: absolute;
+  left: 1rem;
+  bottom: 0.9rem;
+  margin: 0;
+  max-width: min(28rem, calc(100% - 2rem));
+  pointer-events: none;
+}
+
+.hint {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.tooltip {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+}
+
+.tooltip span:first-child {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+.tooltip strong {
+  font-size: 0.98rem;
+  font-weight: 600;
+}
+
+.tooltip span:last-child {
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+/* The record. Always rendered, never hidden. */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(21rem, 100%), 1fr));
+  gap: 1.1rem;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.3rem 1.4rem 1.15rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.category {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.category[data-category="Featured"] {
+  border-color: var(--teal-dark);
+  color: var(--teal-dark);
+}
+
+.category[data-category="Active"] {
+  border-color: var(--orange-text);
+  color: var(--orange-text);
+}
+
+.language {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.repoName {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.description {
+  font-size: 0.9rem;
+}
+
+/* One row per assembly part, in the same order the 3D layer draws them. */
+.parts {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.part {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.part dt {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.part dd {
+  font-size: 0.85rem;
+}
+
+.part[data-kind="boundary"] dd {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.cardFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.updated {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.caseLink {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--teal-dark);
+}
+
+@media (max-width: 520px) {
+  .part {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+}
+
+/*
+ * Shown when the frame budget gives up. The band keeps its height so nothing below it
+ * moves; only the canvas goes away.
+ */
+.degradedNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: 0;
+  padding: 0 2rem;
+  max-width: 44ch;
+  margin-inline: auto;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
