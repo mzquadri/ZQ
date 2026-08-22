@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { notFound } from "next/navigation";
 import { site } from "@/content/portfolio";
 import { getPublishedLearnWriting, getPublishedWritingEntry } from "@/content/writing/repository";
+import { levelLabel, topicLabel } from "@/content/writing/schema";
 
 export const alt = "Technical writing by Mohd Zamin Quadri";
 export const size = { width: 1200, height: 630 };
@@ -21,7 +22,7 @@ export default async function LearnOpenGraphImage({ params }: { params: Promise<
       <div style={{ background: "#d76531", display: "flex", width: 34 }} />
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "64px 72px", width: "100%" }}>
         <div style={{ color: "#006058", display: "flex", fontSize: 24, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>
-          {entry.kind} / {entry.category.label} / {entry.readingTime} min
+          {entry.kind} / {topicLabel(entry.topic)} / {levelLabel(entry.level)} / {entry.readingTime} min
         </div>
         <div style={{ display: "flex", fontFamily: "serif", fontSize: 72, fontWeight: 600, lineHeight: 1.02, maxWidth: 1020 }}>
           {entry.title}

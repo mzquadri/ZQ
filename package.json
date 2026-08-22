@@ -12,7 +12,8 @@
     "test:content": "tsx --test tests/content-foundation.test.ts tests/resume-contract.test.ts tests/ecosystem.test.ts tests/assembly.test.ts",
     "generate:resume": "npm run build && tsx scripts/generate-resume.ts",
     "test:e2e": "npm run build && playwright test",
-    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build"
+    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build",
+    "refresh:research-feed": "tsx scripts/refresh-research-feed.ts"
   },
   "dependencies": {
     "@react-three/drei": "10.7.6",

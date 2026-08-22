@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import researchFeed from "../src/content/research-feed.json";
+import { writingLevels, writingTopics } from "../src/content/writing/schema";
 import {
   calculateReadingTime,
+  getAllWriting,
   getPublishedLearnWriting,
   getPublishedWritingForProject,
   getWritingTaxonomy,
@@ -22,8 +25,49 @@ test("published learning content has stable routing and taxonomy", () => {
   );
 
   const taxonomy = getWritingTaxonomy();
-  assert.deepEqual(taxonomy.categories.map((item) => item.slug), ["reliable-ai"]);
+  assert.deepEqual(taxonomy.topics.map((item) => item.slug), ["uncertainty-quantification"]);
+  assert.deepEqual(taxonomy.levels.map((item) => item.slug), ["applied"]);
   assert.ok(taxonomy.tags.some((item) => item.slug === "selective-prediction"));
+});
+
+test("level and topic come from the closed vocabularies", () => {
+  const topics = new Set(writingTopics.map((topic) => topic.slug));
+  const levels = new Set(writingLevels.map((level) => level.slug));
+
+  // Drafts are included deliberately: an unknown value must fail before it is published.
+  for (const entry of getAllWriting()) {
+    assert.ok(topics.has(entry.topic), `${entry.slug} has an unknown topic`);
+    assert.ok(levels.has(entry.level), `${entry.slug} has an unknown level`);
+  }
+});
+
+test("the taxonomy only offers filters that lead somewhere", () => {
+  const { topics, levels } = getWritingTaxonomy();
+  const published = getPublishedLearnWriting();
+  for (const topic of topics) {
+    assert.ok(published.some((entry) => entry.topic === topic.slug), `${topic.slug} would be empty`);
+  }
+  for (const level of levels) {
+    assert.ok(published.some((entry) => entry.level === level.slug), `${level.slug} would be empty`);
+  }
+});
+
+test("the scaffold stays a draft so it cannot inflate the published count", () => {
+  const scaffold = getAllWriting().find((entry) => entry.slug.includes("scaffold"));
+  assert.ok(scaffold, "the scaffold article is missing");
+  assert.equal(scaffold.status, "draft");
+  assert.equal(getPublishedLearnWriting().length, 1);
+});
+
+test("the research feed publishes metadata only, never a summary", () => {
+  assert.ok(Array.isArray(researchFeed.entries));
+  for (const entry of researchFeed.entries) {
+    assert.ok(entry.authors.length > 0, `${entry.id} has no authors`);
+    assert.match(entry.link, /^https:\/\/arxiv\.org\/abs\//);
+    assert.match(entry.published, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(!("summary" in entry), `${entry.id} carries a summary`);
+    assert.ok(!("abstract" in entry), `${entry.id} carries an abstract`);
+  }
 });
 
 test("reading time ignores fenced code and display equations", () => {
@@ -42,7 +86,8 @@ title: A sufficiently descriptive title
 description: A sufficiently descriptive summary for a test content record.
 publishedAt: "2026-08-20"
 author: Mohd Zamin Quadri
-category: { slug: testing, label: Testing }
+topic: machine-learning
+level: foundations
 tags: [{ slug: validation, label: Validation }]
 ---
 # Duplicate page title`;
@@ -58,7 +103,8 @@ kind: note
 title: A sufficiently descriptive draft title
 description: A sufficiently descriptive summary for a draft content record.
 author: Mohd Zamin Quadri
-category: { slug: testing, label: Testing }
+topic: machine-learning
+level: foundations
 tags: [{ slug: validation, label: Validation }]
 ---`;
   assert.throws(
@@ -116,7 +162,8 @@ kind: tutorial
 title: A sufficiently descriptive component title
 description: A sufficiently descriptive summary for a component content record.
 author: Mohd Zamin Quadri
-category: { slug: testing, label: Testing }
+topic: machine-learning
+level: foundations
 tags: [{ slug: validation, label: Validation }]
 ---`;
   assert.doesNotThrow(() =>
@@ -169,7 +216,8 @@ title: A sufficiently descriptive published title
 description: A sufficiently descriptive summary for a published content record.
 publishedAt: "2026-08-20"
 author: Mohd Zamin Quadri
-category: { slug: testing, label: Testing }
+topic: machine-learning
+level: foundations
 tags: [{ slug: validation, label: Validation }]
 references:
   - id: source
@@ -214,7 +262,8 @@ description: A sufficiently descriptive summary for a dated content record.
 publishedAt: "${publishedAt}"
 updatedAt: "${updatedAt}"
 author: Mohd Zamin Quadri
-category: { slug: testing, label: Testing }
+topic: machine-learning
+level: foundations
 tags: [{ slug: validation, label: Validation }]
 ---
 ## First section
