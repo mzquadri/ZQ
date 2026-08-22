@@ -171,7 +171,7 @@ test("canonical and structured metadata are present", async ({ page }) => {
     ["/learn", "Learn"],
     ["/learn/selective-prediction-when-models-should-abstain", "Selective Prediction: When Models Should Abstain"],
     ["/work/transport-uq", "Reliable GNN Surrogates for Transport Policy Analysis"],
-    ["/work/insureassist-rag", "InsureAssist: Grounded RAG Service"],
+    ["/work/insureassist-rag", "InsureAssist: A Measured RAG Benchmark"],
     ["/work/mlops-reference-pipeline", "A Testable End-to-End MLOps Pipeline"],
     ["/work/hydrology-uq", "Uncertainty Quantification in Hydrology"],
     ["/work/cifar10-cnn", "CIFAR-10 CNN: A Reproducible Baseline"],
