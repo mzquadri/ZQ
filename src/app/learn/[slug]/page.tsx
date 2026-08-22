@@ -10,9 +10,11 @@ import { getProject, site } from "@/content/portfolio";
 import {
   getPublishedLearnWriting,
   getPublishedWritingEntry,
+  getWritingNeighbours,
   getRelatedWriting,
 } from "@/content/writing/repository";
 import { createPageMetadata } from "@/lib/metadata";
+import { levelLabel, topicLabel } from "@/content/writing/schema";
 
 export const dynamicParams = false;
 
@@ -52,6 +54,7 @@ export default async function LearnEntryPage({ params }: { params: Promise<{ slu
 
   const related = getRelatedWriting(entry);
   const relatedProjects = entry.projectSlugs.map((projectSlug) => getProject(projectSlug)!).filter(Boolean);
+  const { previous, next } = getWritingNeighbours(slug);
   const canonicalUrl = `${site.domain}${entry.path}`;
 
   return (
@@ -67,7 +70,8 @@ export default async function LearnEntryPage({ params }: { params: Promise<{ slu
           author: { "@type": "Person", name: entry.author, url: site.domain },
           mainEntityOfPage: canonicalUrl,
           image: `${canonicalUrl}/opengraph-image`,
-          articleSection: entry.category.label,
+          articleSection: topicLabel(entry.topic),
+          educationalLevel: levelLabel(entry.level),
           keywords: entry.tags.map((tag) => tag.label),
           isPartOf: { "@type": "WebSite", name: site.name, url: site.domain },
           citation: entry.references.map((reference) => reference.url ?? reference.title),
@@ -81,9 +85,17 @@ export default async function LearnEntryPage({ params }: { params: Promise<{ slu
 
       <article className="article-shell">
         <header className="article-header section-wrap">
-          <Link className="article-back" href="/learn">Learn / {entry.category.label}</Link>
+          <Link className="article-back" href="/learn">Learn</Link>
           <h1>{entry.title}</h1>
           <p className="article-deck">{entry.description}</p>
+          <ul className="article-chips" aria-label="Topic and level">
+            <li>
+              <Link href={`/learn/topic/${entry.topic}`}>{topicLabel(entry.topic)}</Link>
+            </li>
+            <li data-kind="level">
+              <Link href={`/learn/level/${entry.level}`}>{levelLabel(entry.level)}</Link>
+            </li>
+          </ul>
           <div className="article-byline">
             <span>{entry.author}</span>
             <time dateTime={entry.publishedAt}>{formatDate(entry.publishedAt!)}</time>
@@ -122,6 +134,23 @@ export default async function LearnEntryPage({ params }: { params: Promise<{ slu
             <MdxContent source={entry.body} />
           </div>
         </div>
+
+        {previous || next ? (
+          <nav className="article-pager section-wrap" aria-label="More writing">
+            {previous ? (
+              <Link data-direction="previous" href={previous.path}>
+                <span>Previous</span>
+                <strong>{previous.title}</strong>
+              </Link>
+            ) : <span />}
+            {next ? (
+              <Link data-direction="next" href={next.path}>
+                <span>Next</span>
+                <strong>{next.title}</strong>
+              </Link>
+            ) : <span />}
+          </nav>
+        ) : null}
 
         {entry.references.length > 0 ? (
           <section className="section-wrap article-references" aria-labelledby="references-title">

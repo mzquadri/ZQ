@@ -13,6 +13,8 @@ import {
   getPrivateTextIssue,
   getPublicUrlIssue,
   writingFrontmatterSchema,
+  writingLevels,
+  writingTopics,
 } from "@/content/writing/schema";
 
 const writingDirectory = resolve(process.cwd(), "content", "writing");
@@ -232,7 +234,8 @@ export function getRelatedWriting(entry: WritingEntry, limit = 3) {
       candidate,
       score:
         (explicit.has(candidate.slug) ? 100 : 0) +
-        (candidate.category.slug === entry.category.slug ? 2 : 0) +
+        (candidate.topic === entry.topic ? 2 : 0) +
+        (candidate.level === entry.level ? 1 : 0) +
         candidate.tags.filter((tag) => entry.tags.some((currentTag) => currentTag.slug === tag.slug)).length +
         candidate.projectSlugs.filter((slug) => entry.projectSlugs.includes(slug)).length * 3,
     }))
@@ -250,7 +253,34 @@ export function getRelatedWriting(entry: WritingEntry, limit = 3) {
 export function getWritingTaxonomy() {
   const published = getPublishedWriting();
   return {
-    categories: Array.from(new Map(published.map((entry) => [entry.category.slug, entry.category])).values()),
-    tags: Array.from(new Map(published.flatMap((entry) => entry.tags.map((tag) => [tag.slug, tag]))).values()),
+    // Only vocabulary that something published actually uses, so the interface never
+    // offers a filter that would land on an empty page.
+    topics: writingTopics.filter((topic) => published.some((entry) => entry.topic === topic.slug)),
+    levels: writingLevels.filter((level) => published.some((entry) => entry.level === level.slug)),
+    tags: Array.from(
+      new Map(published.flatMap((entry) => entry.tags).map((tag) => [tag.slug, tag])).values(),
+    ),
+  };
+}
+
+export function getPublishedLearnWritingByTopic(topic: string) {
+  return getPublishedLearnWriting().filter((entry) => entry.topic === topic);
+}
+
+export function getPublishedLearnWritingByLevel(level: string) {
+  return getPublishedLearnWriting().filter((entry) => entry.level === level);
+}
+
+/**
+ * Neighbours in publication order, newest first, for the prev/next control. Returns the
+ * entries either side of `slug` within the published Learn set.
+ */
+export function getWritingNeighbours(slug: string) {
+  const entries = getPublishedLearnWriting();
+  const index = entries.findIndex((entry) => entry.slug === slug);
+  if (index === -1) return { previous: undefined, next: undefined };
+  return {
+    previous: entries[index - 1],
+    next: entries[index + 1],
   };
 }

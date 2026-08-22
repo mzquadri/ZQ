@@ -51,6 +51,52 @@ export const taxonSchema = z.object({
   label: z.string().min(2).max(60),
 });
 
+/**
+ * Level and topic.
+ *
+ * These replaced a free-form `category`. An open vocabulary cannot back generated filter
+ * routes: `generateStaticParams` needs a known, finite set, and validation can only fail a
+ * build on an unknown value if there is something to compare against. Both vocabularies are
+ * therefore closed, and adding a value is a deliberate edit here rather than a side effect
+ * of writing frontmatter.
+ *
+ * `tags` stays free-form for the finer-grained descriptors that do not deserve a route.
+ */
+export const writingLevels = [
+  { slug: "foundations", label: "Foundations" },
+  { slug: "applied", label: "Applied" },
+  { slug: "advanced", label: "Advanced" },
+] as const;
+
+export const writingTopics = [
+  { slug: "machine-learning", label: "Machine Learning" },
+  { slug: "uncertainty-quantification", label: "Uncertainty Quantification" },
+  { slug: "graph-neural-networks", label: "Graph Neural Networks" },
+  { slug: "retrieval-and-grounded-generation", label: "Retrieval and Grounded Generation" },
+  { slug: "mlops", label: "MLOps" },
+  { slug: "scientific-computing", label: "Scientific Computing" },
+] as const;
+
+export type WritingLevelSlug = (typeof writingLevels)[number]["slug"];
+export type WritingTopicSlug = (typeof writingTopics)[number]["slug"];
+
+export const writingLevelSlugs = writingLevels.map((level) => level.slug) as [
+  WritingLevelSlug,
+  ...WritingLevelSlug[],
+];
+export const writingTopicSlugs = writingTopics.map((topic) => topic.slug) as [
+  WritingTopicSlug,
+  ...WritingTopicSlug[],
+];
+
+export function levelLabel(value: WritingLevelSlug) {
+  return writingLevels.find((level) => level.slug === value)!.label;
+}
+
+export function topicLabel(value: WritingTopicSlug) {
+  return writingTopics.find((topic) => topic.slug === value)!.label;
+}
+
 export const referenceSchema = z.object({
   id: slug,
   title: z.string().min(4).max(180),
@@ -73,7 +119,8 @@ export const writingFrontmatterSchema = z.object({
   publishedAt: isoDate.optional(),
   updatedAt: isoDate.optional(),
   author: z.string().min(2).max(80),
-  category: taxonSchema,
+  topic: z.enum(writingTopicSlugs),
+  level: z.enum(writingLevelSlugs),
   tags: z.array(taxonSchema).min(1).max(8),
   coverImage: z
     .object({

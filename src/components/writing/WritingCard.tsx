@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { WritingEntry } from "@/content/writing/schema";
+import { topicLabel } from "@/content/writing/schema";
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(
@@ -18,7 +19,7 @@ export default function WritingCard({ entry }: { entry: WritingEntry }) {
       <p>{entry.description}</p>
       <div className="writing-card-footer">
         <time dateTime={entry.publishedAt}>{formatDate(entry.publishedAt!)}</time>
-        <span>{entry.category.label}</span>
+        <span>{topicLabel(entry.topic)}</span>
       </div>
     </article>
   );
