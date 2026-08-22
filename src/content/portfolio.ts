@@ -84,6 +84,65 @@ export const canonicalMlopsEvidence = {
   actions: `${mlopsRepository}/actions`,
 } as const;
 
+const insureAssistRepository = "https://github.com/mzquadri/insureassist-rag-mlops";
+const insureAssistCommit = "0f7cb63095f35bb02be40058ac4550225c7283a2";
+
+/**
+ * Evidence links for the InsureAssist RAG benchmark, pinned to the released commit.
+ *
+ * Same rule as the MLOps pillar: numbers are backed by files at a fixed commit, not by a
+ * floating branch, so an upstream change cannot silently alter what this site claims.
+ */
+export const canonicalInsureAssistEvidence = {
+  repository: insureAssistRepository,
+  commit: insureAssistCommit,
+  readme: `${insureAssistRepository}/blob/${insureAssistCommit}/README.md`,
+  benchmark: `${insureAssistRepository}/blob/${insureAssistCommit}/docs/BENCHMARK.md`,
+  evaluation: `${insureAssistRepository}/blob/${insureAssistCommit}/docs/EVALUATION.md`,
+  architecture: `${insureAssistRepository}/blob/${insureAssistCommit}/docs/ARCHITECTURE.md`,
+  data: `${insureAssistRepository}/blob/${insureAssistCommit}/docs/DATA.md`,
+  production: `${insureAssistRepository}/blob/${insureAssistCommit}/docs/PRODUCTION.md`,
+  limitations: `${insureAssistRepository}/blob/${insureAssistCommit}/docs/LIMITATIONS.md`,
+  referenceRun: `${insureAssistRepository}/blob/${insureAssistCommit}/eval/reference_run.json`,
+  retrievalConfig: `${insureAssistRepository}/blob/${insureAssistCommit}/eval/retrieval_config.json`,
+  groundTruth: `${insureAssistRepository}/blob/${insureAssistCommit}/eval/ground_truth/nfip_questions.jsonl`,
+  notice: `${insureAssistRepository}/blob/${insureAssistCommit}/NOTICE`,
+  actions: `${insureAssistRepository}/actions`,
+} as const;
+
+/**
+ * The held-out retrieval benchmark published at {@link canonicalInsureAssistEvidence.commit}.
+ *
+ * Every InsureAssist number on this site reads from here. Values are copied from
+ * `eval/reference_run.json` at that commit, which is the repository's own source of truth -
+ * its CI fails if the repository's documentation drifts from it.
+ *
+ * Deliberately absent: per-form metrics (3-8 questions each, no useful signal), latency
+ * (machine-specific), and any abstention threshold (none is validated upstream).
+ */
+export const insureAssistBenchmark = {
+  corpus: {
+    documents: 3,
+    chunks: 314,
+    words: 35_639,
+    source: "NFIP Standard Flood Insurance Policy forms, 44 CFR Part 61",
+    licence: "17 U.S.C. 105 - US Government work, no copyright",
+  },
+  questions: { total: 40, answerable: 32, unanswerable: 8, dev: 18, test: 22 },
+  architecture: "Hybrid: BGE dense + Okapi BM25, reciprocal rank fusion",
+  /** Held-out test split, 18 answerable questions. */
+  selected: { hitRate5: 0.556, mrr: 0.42, topDocumentAccuracy: 0.556 },
+  baselines: {
+    dense: { hitRate5: 0.5, mrr: 0.365, topDocumentAccuracy: 0.556 },
+    bm25: { hitRate5: 0.611, mrr: 0.366, topDocumentAccuracy: 0.333 },
+    /** The pre-selection starting point, at the original 600/100 chunking. */
+    startingPoint: { hitRate5: 0.611, mrr: 0.366, topDocumentAccuracy: 0.167 },
+  },
+  citations: { precision: 0.111, recall: 0.463, unsupportedRate: 0 },
+  abstention: { answerableAcceptance: 1, unanswerableRejection: 0 },
+  tests: 224,
+} as const;
+
 /**
  * The audited reference run published at {@link canonicalMlopsEvidence.commit}.
  *
@@ -235,60 +294,71 @@ export const projects: readonly Project[] = [
   },
   {
     slug: "insureassist-rag",
-    title: "InsureAssist: Grounded RAG Service",
-    eyebrow: "AI application engineering",
-    classification: "Engineering prototype",
+    title: "InsureAssist: A Measured RAG Benchmark",
+    eyebrow: "Retrieval evaluation",
+    classification: "Reference implementation",
     year: "2026",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Project author and engineer",
     summary:
-      "A local-first insurance-policy question-answering prototype that retrieves source clauses and returns cited answers through a FastAPI service.",
+      "A retrieval-augmented question-answering service over real federal flood-insurance policy text, built so its retrieval quality can be measured rather than demonstrated.",
     problem:
-      "Policy documents are difficult to search reliably, and unconstrained generation can produce answers without evidence.",
+      "The three NFIP policy forms are near-duplicates by design: they share a skeleton and much verbatim wording but differ in substance. A retriever matching on topic finds the right provision in the wrong document, and nothing in a demo reveals that.",
     contribution:
-      "Implemented document ingestion, BGE embeddings, Qdrant retrieval, a pluggable local generation layer, FastAPI endpoints, evaluation fixtures, Docker packaging, Kubernetes manifests, and CI configuration.",
+      "Built a licensed corpus with hash-verified provenance, deterministic ingestion with content-derived chunk IDs, a 40-question labelled benchmark with a held-out split, a lexical baseline to compare against, and a machine-readable reference run that the repository's own CI checks its documentation against.",
     workflow: [
-      "Policy documents",
-      "Chunking and BGE embeddings",
-      "Qdrant retrieval",
-      "Local LLM generation",
-      "Cited API response",
+      "Licensed NFIP corpus",
+      "Deterministic chunking and IDs",
+      "Dense and lexical retrieval",
+      "Rank fusion",
+      "Traceable citations",
     ],
-    tools: [
-      "FastAPI",
-      "Qdrant",
-      "Ollama",
-      "Hugging Face",
-      "Docker",
-      "Kubernetes",
-      "GitHub Actions",
-    ],
+    tools: ["FastAPI", "Qdrant", "BGE embeddings", "BM25", "Ollama", "Docker", "Kubernetes", "GitHub Actions"],
+    systemSummary:
+      "Retrieval is dense BGE vectors fused with an in-process BM25 index by reciprocal rank fusion. The architecture was selected on a development split and frozen before the held-out split was run once.",
     evidence: [
       {
-        label: "Service shape",
-        value: "Retrieval + citations",
-        note: "Tracked API, ingestion, health checks, sample policies, and ten-question evaluation fixture.",
+        label: "Form discrimination",
+        value: `${insureAssistBenchmark.selected.topDocumentAccuracy} top-document accuracy`,
+        note: `Up from ${insureAssistBenchmark.baselines.startingPoint.topDocumentAccuracy} at the starting point: the share of questions whose best hit comes from the correct policy form, on the held-out split.`,
       },
       {
-        label: "Deployment scope",
-        value: "Local prototype",
-        note: "Docker verified and Kubernetes authored; no completed GKE deployment is claimed.",
+        label: "Labelled benchmark",
+        value: `${insureAssistBenchmark.questions.total} questions`,
+        note: `${insureAssistBenchmark.questions.answerable} answerable and ${insureAssistBenchmark.questions.unanswerable} unanswerable, each naming exact chunk IDs and character offsets across ${insureAssistBenchmark.corpus.chunks} chunks.`,
+      },
+      {
+        label: "Citation integrity",
+        value: `${insureAssistBenchmark.citations.unsupportedRate} unsupported`,
+        note: "Every citation's offsets reproduce its quoted text from the committed corpus, so no provenance is fabricated.",
       },
     ],
     quality: [
-      "Health endpoint and typed request/response models",
-      "Local sample corpus and evaluation report are versioned",
-      "Configuration is environment-driven and secrets are excluded",
-      "Container and orchestration definitions are kept with the service",
+      "The retrieval architecture was chosen on a development split and frozen in a committed config before the held-out split was run once",
+      "Chunk IDs derive from document, offset and text, so a relevance label still points at its evidence after re-ingestion",
+      "Ground-truth labels resolve from text anchors, so a chunking change regenerates them instead of invalidating the benchmark",
+      "A validator rejects broken references, spans outside a document, and unanswerable questions carrying evidence",
+      `${insureAssistBenchmark.tests} offline tests run with no model, no database and no network`,
+      "CI reproduces the reference run against a real vector database and fails if the repository's documentation drifts from it",
     ],
     limitations: [
-      "Not a live production insurance service and not validated on regulated customer data",
-      "GKE deployment is documented but not completed",
-      "The tracked runtime uses Llama 3.2 through Ollama; Phi-3 is an optional adapter path whose trained artifact is not versioned",
-      "A small local LLM judge is noisy and cannot establish clinical, legal, or insurance correctness",
+      "The lexical baseline alone still retrieves more relevant chunks in the top five than the selected hybrid; the hybrid was chosen for ranking and form discrimination, not raw recall",
+      "Development results did not generalise: the selected architecture scored far higher on the split it was chosen on than on the held-out split",
+      "Unanswerable questions are not detected. No similarity threshold was defensible on this data, so none is claimed",
+      "Answer quality is not measured; only one local model is available and grading its own output would be circular",
+      "One jurisdiction, one peril, three documents. Results do not transfer to insurance documents generally",
+      "Kubernetes manifests are authored and CI-validated but have never been applied to a cluster",
+      "A fine-tuning notebook exists but is archived: its training data was the earlier evaluation set, so no tuned-model result could be honest",
     ],
     learned:
-      "A credible RAG system needs explicit retrieval evidence, failure-aware evaluation, and deployment boundaries—not only a chat interface.",
+      "A benchmark is only worth what its hardest cases are worth. Near-duplicate documents exposed a failure that topic-level retrieval metrics would have hidden entirely.",
+    artifacts: [
+      { label: "Benchmark method and results", note: "Held-out metrics, baselines, failure analysis, and what the numbers do not say.", href: canonicalInsureAssistEvidence.benchmark },
+      { label: "Reference run", note: "Machine-readable artefact every published number derives from.", href: canonicalInsureAssistEvidence.referenceRun },
+      { label: "Frozen retrieval config", note: "The architecture and parameters, with the dev evidence that selected them.", href: canonicalInsureAssistEvidence.retrievalConfig },
+      { label: "Corpus provenance", note: "Source, legal basis, extraction method, and per-document hashes.", href: canonicalInsureAssistEvidence.data },
+      { label: "Limitations", note: "The complete list, including the results that did not improve.", href: canonicalInsureAssistEvidence.limitations },
+    ],
     repository: "https://github.com/mzquadri/insureassist-rag-mlops",
   },
   {
