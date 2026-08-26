@@ -2,10 +2,12 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 
 import {
+  allProjects,
   canonicalMlopsEvidence,
   capabilities,
   getFeaturedProjects,
   getResearchProjects,
+  isEmployerConfidential,
   mlopsReferenceRun,
   navigation,
   projects,
@@ -26,6 +28,13 @@ import {
   repositoryUrl,
 } from "../src/content/ecosystem";
 import { buildingThreads, focusThemes } from "../src/content/focus";
+import {
+  confidenceLadder,
+  convergenceRules,
+  countIllustration,
+  representationFanOut,
+  verificationStates,
+} from "../src/content/legal-kb";
 import { graphEdges, graphNodes, graphStages } from "../src/content/systems-graph";
 import {
   currentPublicFacts,
@@ -34,6 +43,7 @@ import {
   truthRegistry,
   type TruthFact,
 } from "../src/content/truth";
+import { getConfidentialProjectIssues, getDraftPublicationIssue } from "./confidential-content";
 import {
   getResumeSourceSha256,
   hasDeterministicResumePdfMetadata,
@@ -107,7 +117,11 @@ for (const fact of currentPublicFacts) {
   }
 }
 
-for (const project of projects) {
+/*
+ * Every authored project is validated, published or not. A draft that is only checked once
+ * somebody decides to publish it is a draft that gets its first review under deadline.
+ */
+for (const project of allProjects) {
   check(!projectSlugs.has(project.slug), `Duplicate project slug: ${project.slug}`);
   projectSlugs.add(project.slug);
   check(project.evidence.length > 0, `${project.slug} has no evidence`);
@@ -115,12 +129,23 @@ for (const project of projects) {
   check(project.quality.length > 0, `${project.slug} has no quality controls`);
   check(project.authors.length > 0, `${project.slug} has no authorship record`);
   check(project.projectRole.trim().length > 0, `${project.slug} has no project role`);
+  if (isEmployerConfidential(project)) {
+    for (const issue of getConfidentialProjectIssues(project)) check(false, issue);
+    continue;
+  }
   check(project.repository.startsWith("https://github.com/"), `${project.slug} has a non-GitHub repository URL`);
   for (const artifact of project.artifacts ?? []) {
     check(artifact.href.startsWith("https://github.com/"), `${project.slug} has a non-GitHub artifact URL`);
     check(artifact.note.trim().length > 0, `${project.slug} has an undocumented artifact link`);
   }
 }
+
+/*
+ * The gate that has to be fail-closed. `projects` is already filtered for this environment, so
+ * an unapproved confidential draft reaching a production build means the filter did not hold.
+ */
+const draftPublicationIssue = getDraftPublicationIssue(projects, process.env.VERCEL_ENV);
+if (draftPublicationIssue) check(false, draftPublicationIssue);
 
 for (const slug of ["transport-uq", "mlops-reference-pipeline"]) {
   const project = projectBySlug.get(slug);
@@ -173,6 +198,11 @@ for (const path of requiredFiles) {
 const publicContent = JSON.stringify({
   buildingThreads,
   capabilities,
+  confidenceLadder,
+  convergenceRules,
+  countIllustration,
+  representationFanOut,
+  verificationStates,
   canonicalThesisEvidence,
   ecosystemRepositories,
   ecosystemSnapshot,
@@ -181,7 +211,7 @@ const publicContent = JSON.stringify({
   graphNodes,
   graphStages,
   navigation,
-  projects,
+  projects: allProjects,
   researchEvidence,
   researchThemes,
   site,
@@ -466,13 +496,15 @@ check(
 
 const today = new Date().toISOString().slice(0, 10);
 const repositoryNames = new Set<string>();
-const projectRepositoryUrls = new Set(projects.map((project) => project.repository));
+const projectRepositoryUrls = new Set(
+  projects.flatMap((project) => (isEmployerConfidential(project) ? [] : [project.repository])),
+);
 const ecosystemUrls = new Set(ecosystemRepositories.map((repository) => repositoryUrl(repository)));
 
 check(isIsoDate(ecosystemSnapshot.observedAt), "Ecosystem snapshot has an invalid observation date");
 check(ecosystemSnapshot.observedAt <= today, "Ecosystem snapshot claims a future observation date");
 check(ecosystemSnapshot.profile === site.github, "Ecosystem snapshot must use the verified GitHub profile");
-check(ecosystemRepositories.length > projects.length, "The repository index must show more than the case studies alone");
+check(ecosystemRepositories.length > projectRepositoryUrls.size, "The repository index must show more than the case studies alone");
 
 for (const repository of ecosystemRepositories) {
   const label = `Repository ${repository.name}`;

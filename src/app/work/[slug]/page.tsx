@@ -5,7 +5,16 @@ import JsonLd from "@/components/JsonLd";
 import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
-import { getProject, projects, site } from "@/content/portfolio";
+import {
+  ClosingAnnotation,
+  ConfidenceLadder,
+  RepresentationFanOut,
+  SourceChangeConvergence,
+  StoredIsNotCorrect,
+} from "@/components/legal-kb/LegalKbVisuals";
+import GuidedArticle from "@/components/legal-kb/GuidedArticle";
+import WalkthroughLauncher from "@/components/legal-kb/WalkthroughLauncher";
+import { getProject, isEmployerConfidential, projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 import { ArrowLabel, ExternalArrow } from "@/components/Icon";
 
@@ -32,10 +41,20 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   });
 }
 
+
+/** Wraps the article in the walkthrough controller, but only where a walkthrough exists. */
+function ArticleShell({ guided, children }: { guided: boolean; children: React.ReactNode }) {
+  if (!guided) return <article>{children}</article>;
+  return <GuidedArticle>{children}</GuidedArticle>;
+}
+
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) notFound();
+
+  // Only this case study has a guided run, so only it pays for the controller.
+  const guided = project.slug === "legal-knowledge-platform";
 
   return (
     <PageShell current="/work">
@@ -52,11 +71,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             ? { "@type": "Organization", name: project.institution }
             : undefined,
           url: `${site.domain}/work/${project.slug}`,
-          codeRepository: project.repository,
+          // Dropped from the serialized output for confidential work rather than emitted empty:
+          // a case study with no public source must not advertise one in its structured data.
+          codeRepository: isEmployerConfidential(project) ? undefined : project.repository,
           genre: project.classification,
         }}
       />
-      <article>
+      <ArticleShell guided={guided}>
         <header className="case-hero section-wrap">
           <Link className="back-link" href="/work">← All work</Link>
           <div className="case-meta">
@@ -82,10 +103,30 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </div>
             ) : null}
           </dl>
-          <a className="button button-primary" href={project.repository}>
-            <ArrowLabel>Inspect repository</ArrowLabel>
-          </a>
+          {isEmployerConfidential(project) ? (
+            <>
+              <p className="case-confidential">
+                Employer work. The source cannot be shown, so this page describes the architecture
+                and the reasoning in generic terms and publishes no corpus content.
+              </p>
+              {guided ? <WalkthroughLauncher /> : null}
+            </>
+          ) : (
+            <a className="button button-primary" href={project.repository}>
+              <ArrowLabel>Inspect repository</ArrowLabel>
+            </a>
+          )}
         </header>
+
+        {/* The showpiece sits before the prose: the page argues visually first, then explains. */}
+        {project.slug === "legal-knowledge-platform" ? (
+          <section
+            aria-label="What one published document becomes, and who writes each part"
+            className="section-wrap visual-section visual-section-lead"
+          >
+            <RepresentationFanOut />
+          </section>
+        ) : null}
 
         <section className="section-wrap case-section two-column-copy">
           <div>
@@ -99,6 +140,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <p>{project.contribution}</p>
           </div>
         </section>
+
+        {project.slug === "legal-knowledge-platform" ? (
+          <section aria-label="Why a count is not a check" className="section-wrap visual-section">
+            <StoredIsNotCorrect />
+          </section>
+        ) : null}
 
         {project.slug === "transport-uq" ? (
           <section className="section-wrap visual-section" aria-label="Thesis system and result">
@@ -131,6 +178,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             {project.tools.map((tool) => <li key={tool}>{tool}</li>)}
           </ul>
         </section>
+
+        {project.slug === "legal-knowledge-platform" ? (
+          <section className="section-wrap visual-section" aria-label="What an amended source changes, and what each class of evidence establishes">
+            <SourceChangeConvergence />
+            <ConfidenceLadder />
+          </section>
+        ) : null}
 
         <section className="section-wrap case-section evidence-section">
           <p className="section-index"><span>04</span>Evidence</p>
@@ -180,7 +234,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <section className="case-learning section-wrap">
           <p className="kicker">What this changed in my practice</p>
-          <blockquote>{project.learned}</blockquote>
+          {/* A pull-quote that is really a paragraph gets paragraph-sized type. General rule, not
+              a per-project override: the slot is designed for a sentence or two. */}
+          <blockquote data-length={project.learned.trim().split(/\s+/).length > 40 ? "long" : undefined}>
+            {project.learned}
+          </blockquote>
+          {project.slug === "legal-knowledge-platform" ? <ClosingAnnotation /> : null}
           {project.nextStep ? <p className="next-step"><strong>Next evidence milestone:</strong> {project.nextStep}</p> : null}
           <div className="case-actions">
             {project.researchPath ? (
@@ -188,15 +247,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 <ArrowLabel kind="forward">Scientific research record</ArrowLabel>
               </Link>
             ) : null}
-            <a className="text-link" href={project.repository}>
-              <ArrowLabel>Source and documentation</ArrowLabel>
-            </a>
+            {isEmployerConfidential(project) ? null : (
+              <a className="text-link" href={project.repository}>
+                <ArrowLabel>Source and documentation</ArrowLabel>
+              </a>
+            )}
             <Link className="text-link" href="/contact">
 <ArrowLabel kind="forward">Discuss relevant work</ArrowLabel>
             </Link>
           </div>
         </section>
-      </article>
+      </ArticleShell>
     </PageShell>
   );
 }

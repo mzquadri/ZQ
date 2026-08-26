@@ -7,6 +7,7 @@ export const projectClassifications = [
   "Academic research",
   "Group coursework",
   "Engineering prototype",
+  "Employer engineering",
   "Reference implementation",
   "Reproducible experiment",
   "Synthetic demonstration",
@@ -31,7 +32,32 @@ export interface ArtifactLink {
   note: string;
 }
 
-export interface Project {
+/**
+ * How a project's claims can be checked by a reader.
+ *
+ * `public-repository` is the default and the only mode that existed before: every claim is
+ * backed by a public repository the reader can open. `employer-confidential` covers work done
+ * under an employment relationship, where the source cannot be shown at all. The two are kept
+ * as separate shapes rather than one shape with optional fields, so that a confidential project
+ * carrying a repository or an artifact link is a type error rather than something a validator
+ * has to notice.
+ */
+export type EvidenceMode = "public-repository" | "employer-confidential";
+
+/**
+ * Whether a confidential case study may be published.
+ *
+ * A draft is authored, reviewed and rendered like any other page, but it is withheld from a
+ * production build. It becomes publishable only once a real approval is recorded here - an
+ * approval reference, the date it was given, and the date it must be reviewed again. There is
+ * deliberately no way to express "approved" without those three, because the absent-approval
+ * case is the one that has to fail.
+ */
+export type PublicationApproval =
+  | { status: "draft"; reason: string }
+  | { status: "approved"; approval: string; verifiedAt: string; reviewAfter: string };
+
+interface ProjectBase {
   slug: string;
   title: string;
   eyebrow: string;
@@ -49,11 +75,33 @@ export interface Project {
   quality: readonly string[];
   limitations: readonly string[];
   learned: string;
-  repository: string;
   systemSummary?: string;
-  artifacts?: readonly ArtifactLink[];
   nextStep?: string;
   researchPath?: string;
+}
+
+export interface PublicRepositoryProject extends ProjectBase {
+  evidenceMode?: "public-repository";
+  repository: string;
+  artifacts?: readonly ArtifactLink[];
+  publication?: never;
+}
+
+export interface EmployerConfidentialProject extends ProjectBase {
+  evidenceMode: "employer-confidential";
+  repository?: never;
+  artifacts?: never;
+  publication: PublicationApproval;
+}
+
+export type Project = PublicRepositoryProject | EmployerConfidentialProject;
+
+export function isEmployerConfidential(project: Project): project is EmployerConfidentialProject {
+  return project.evidenceMode === "employer-confidential";
+}
+
+export function hasPublicRepository(project: Project): project is PublicRepositoryProject {
+  return !isEmployerConfidential(project);
 }
 
 const halfRetention = researchEvidence.selectiveRisk.points.find((point) => point.retentionPct === 50)!;
@@ -189,7 +237,7 @@ export const mlopsReferenceRun = {
 const mlopsBaselineMargin =
   mlopsReferenceRun.test.accuracy - mlopsReferenceRun.test.baselineAccuracy;
 
-export const projects: readonly Project[] = [
+const authoredProjects: readonly Project[] = [
   {
     slug: "transport-uq",
     title: "Reliable GNN Surrogates for Transport Policy Analysis",
@@ -606,7 +654,140 @@ export const projects: readonly Project[] = [
       "Strong synthetic scores are useful for testing an evaluation pipeline, but they are not evidence of field validity.",
     repository: "https://github.com/mzquadri/Time-Series-Streamflow-Forecasting",
   },
+  {
+    slug: "legal-knowledge-platform",
+    title: "Stored is not the same as correct",
+    eyebrow: "Verification for a multilingual legal corpus",
+    classification: "Employer engineering",
+    evidenceMode: "employer-confidential",
+    publication: {
+      status: "draft",
+      reason:
+        "Employer work. No publication approval has been requested or granted, so this case study is authored and reviewable but withheld from a production build.",
+    },
+    year: "2026",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Engineer on the verification, ingestion and reporting services",
+    institution: "BP-IT Consulting & Solutions GmbH",
+    summary:
+      "Loading a legal document into a database is the straightforward part. Establishing that its structured, vector and graph representations still correspond to the published source, after the source is amended and after the code that reads it is corrected, is the part that needs evidence.",
+    problem:
+      "A corpus rarely fails loudly. It is loaded once, and then the publisher amends the text, an extractor is corrected, a load is replayed, and the stored units, the search vectors and the reference edges drift apart from one another and from the published document. The reassurance normally offered for this is a count: twelve stored units, twelve indexed vectors, therefore correct. It is not. Equal totals agree about quantity and say nothing about content, because one unit removed and another added leaves the total unchanged. Knowing that a corpus still says what its source says needs comparisons on identity and content rather than on size.",
+    contribution:
+      "The platform, its event-driven delivery and its store topology existed before this work. What I own is the layer that decides whether what is served can be trusted: verification gates that measure an already-stored document against the evidence it was built from, and the service boundary that keeps the thing being measured apart from the thing doing the measuring. I also made re-ingestion converge on the new source instead of accumulating around it, and made the projection path refuse a document rather than store a representation it could not describe afterwards. Ownership boundaries between the stores were implied by the existing design; I documented and enforced them for the stores I worked in. The embedding model and the message-delivery pattern predate my work, and I claim neither.",
+    systemSummary:
+      "Described in generic roles rather than internal service names. A published document is captured as immutable source evidence, structured into a relational representation, projected into a vector store and a knowledge graph, and then measured against that evidence by a service whose only write is its own verdict.",
+    workflow: [
+      "Capture the published document and retain its exact bytes as immutable source evidence",
+      "Structure it into ordered units and store one version atomically, or store nothing",
+      "Project the stored version into a vector representation and a reference graph",
+      "Measure the stored result against the captured evidence, recording what was compared",
+      "Report integrity, source currentness and cross-store agreement as separate signals",
+    ],
+    tools: [
+      "Python",
+      "PostgreSQL",
+      "Qdrant",
+      "Neo4j",
+      "Apache Kafka",
+      "S3-compatible object storage",
+      "BGE-M3 embeddings",
+      "Docker",
+    ],
+    evidence: [
+      {
+        label: "Independent representations",
+        value: "Three",
+        note: "Relational, vector and graph. Their agreement is measured rather than assumed from the fact that one load wrote all three.",
+      },
+      {
+        label: "Writers per owned store",
+        value: "One",
+        note: "Each derived store has a single writing service, which makes a divergence attributable. That does not by itself show the stores agree.",
+      },
+      {
+        label: "Measurement and mutation",
+        value: "Separated",
+        note: "The service that measures a document cannot repair it, and writes only its verdicts. This removes self-marking; it does not make a measurement correct.",
+      },
+      {
+        label: "Verdict binding",
+        value: "Bound to a stored version",
+        note: "A verdict names the exact version it measured, so a later version cannot inherit it. It says nothing about versions it never saw.",
+      },
+      {
+        label: "Current state and retained evidence",
+        value: "Reconciled separately",
+        note: "Current representations converge on the new source while captured evidence is retained rather than overwritten. Retention does not show that the capture was right.",
+      },
+      {
+        label: "Evidence classes",
+        value: "Quantity through currentness",
+        note: "Count, identity, content fidelity, reference fidelity, structure, provenance and currentness are recorded as separate results. A pass in one is not evidence for another.",
+      },
+    ],
+    quality: [
+      "A recorded verdict has to carry the value it measured. A check that reports an outcome without reaching the data is rejected by the storage layer rather than caught in review.",
+      "Absent and wrong are different results. A check that cannot run records why, and never records a pass.",
+      "Comparisons are made on ordered identities and content hashes rather than on totals.",
+      "A transient fault leaves earlier verdicts standing rather than downgrading a document that nobody re-measured.",
+      "Elapsed time annotates a measurement as old. It does not rewrite what was recorded.",
+      "The projection path refuses a document outright rather than storing a representation it would not be able to describe afterwards.",
+      "Automated regression tests cover the ingestion, projection and verification services, and run in continuous integration.",
+    ],
+    limitations: [
+      "Fidelity is not authority. The checks can establish that stored text reconstructs the captured source exactly; they cannot establish that this was the right document to capture.",
+      "Currentness is an observation with an age. A pass means the source was unchanged when it was last examined, not that it is unchanged now.",
+      "A provenance check establishes that a processing profile was declared, not that declaring it was the correct one.",
+      "Not every check applies to every source format. Where the evidence a check needs does not exist, it records that it could not run, which is weaker than a pass and must not be read as one.",
+      "Some checks compare the stored representation rather than the exact text served downstream. Those are different questions and are kept as separate results.",
+      "Verification bounds the checks that were written. It cannot establish the absence of a defect nobody thought to measure.",
+      "None of this is legal certification. It is a claim about extraction and preservation, not about legal authority.",
+    ],
+    learned:
+      "The verification layer invalidated an interpretation I had written earlier. The measurement stayed valid as the historical measurement it was; the claim built on top of it no longer described the current system, so I withdrew it and re-measured. A verification instrument has to be allowed to prove its author wrong.",
+  },
 ] as const;
+
+/**
+ * Every case study that exists in this repository, published or not.
+ *
+ * Validation runs over this list, so a draft is held to the same content and privacy rules as
+ * anything already live. Only {@link projects} decides what the site renders.
+ */
+export const allProjects: readonly Project[] = authoredProjects;
+
+/**
+ * Whether an unapproved confidential draft is allowed to render.
+ *
+ * A draft is meant to be authored, reviewed and looked at - locally and on a preview
+ * deployment - without becoming public. Vercel sets `VERCEL_ENV` on every build it runs, so
+ * production is the one environment named explicitly here and the one where a draft is
+ * withheld. Anything that is not a production build shows drafts, which keeps review cheap; the
+ * only environment that can publish is the only environment that is excluded.
+ */
+export const draftsAreVisible = process.env.VERCEL_ENV !== "production";
+
+/**
+ * Whether a project may appear on the site in this environment.
+ *
+ * Projects backed by a public repository are always publishable, which is why nothing about the
+ * existing six changes. A confidential project is publishable once a real approval is recorded
+ * against it, and before then only outside a production build.
+ */
+export function isPublishable(project: Project, draftsVisible: boolean = draftsAreVisible): boolean {
+  if (!isEmployerConfidential(project)) return true;
+  if (project.publication.status === "approved") return true;
+  return draftsVisible;
+}
+
+/**
+ * The case studies this environment renders: routes, indexes, sitemap and metadata.
+ *
+ * The predicate is wrapped rather than passed directly, because `Array.filter` supplies the
+ * index as a second argument and would otherwise satisfy the draft-visibility parameter with it.
+ */
+export const projects: readonly Project[] = allProjects.filter((project) => isPublishable(project));
 
 export const capabilities = [
   {
