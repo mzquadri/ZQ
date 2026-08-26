@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
@@ -97,4 +99,26 @@ test("every category in the highlight set has a theme token", () => {
   for (const kind of ["stack", "category", "boundary"] as const) {
     assert.ok(PART_KIND_LABEL[kind]?.length > 0);
   }
+});
+
+/*
+ * A source-level check, deliberately.
+ *
+ * The showcase island once carried two byte-identical copies of its eligibility effect and its
+ * scroll effect, so it ran two IntersectionObservers and two scroll listeners for the same
+ * element. Nothing rendered differently, which is exactly why it survived review - the only
+ * symptom was double work. A behavioural test cannot see that; counting the registrations can.
+ */
+test("the showcase island registers each of its effects exactly once", () => {
+  const source = readFileSync(
+    resolve("src/components/repo-assembly/ShowcaseCanvas.tsx"),
+    "utf8",
+  );
+  assert.equal(source.match(/new IntersectionObserver/g)?.length, 1, "one observer, not two");
+  assert.equal(
+    source.match(/window\.addEventListener\("scroll"/g)?.length,
+    1,
+    "one scroll listener, not two",
+  );
+  assert.equal(source.match(/useEffect\(/g)?.length, 2, "one eligibility effect and one scroll effect");
 });
