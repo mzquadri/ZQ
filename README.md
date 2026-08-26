@@ -77,6 +77,12 @@ simulation data, row-level predictions, serialized models, confidential files, o
 filesystem paths are included. See `docs/EVIDENCE_AND_PRIVACY.md` for the publication
 boundary.
 
+One case study describes employer work and cannot be backed by a public repository. It is held
+as a draft: a production build excludes it entirely until a real publication approval is recorded
+against it, and the content validator fails the build rather than publish an unapproved one. Its
+figures, its guided walkthrough and its deterministic video export are documented in
+`docs/LEGAL_KB_CASE_STUDY.md`.
+
 The GitHub ecosystem is a reviewed static snapshot, not a live API integration: no route calls
 GitHub at render time, no stars, forks, or contribution counts are published, and every page
 renders identically when GitHub is unavailable. See `docs/GITHUB_ECOSYSTEM.md`.

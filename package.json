@@ -13,7 +13,8 @@
     "generate:resume": "npm run build && tsx scripts/generate-resume.ts",
     "test:e2e": "npm run build && playwright test",
     "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build",
-    "refresh:research-feed": "tsx scripts/refresh-research-feed.ts"
+    "refresh:research-feed": "tsx scripts/refresh-research-feed.ts",
+    "record:video": "node tools/record-legal-kb-video.mjs"
   },
   "dependencies": {
     "@react-three/drei": "10.7.6",
