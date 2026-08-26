@@ -1,0 +1,132 @@
+{
+  "fps": 30,
+  "shots": [
+    {
+      "step": 0,
+      "beat": 0,
+      "hold": 1.6,
+      "settle": 700,
+      "frame": ".legal-count-grid",
+      "caption": "Stored is not the same as correct.",
+      "kicker": "Legal Knowledge Platform"
+    },
+    {
+      "step": 0,
+      "beat": 2,
+      "hold": 4.2,
+      "settle": 900,
+      "frame": ".legal-count-stage",
+      "caption": "Equal totals prove quantity, not identity."
+    },
+    {
+      "step": 1,
+      "beat": 1,
+      "hold": 3.6,
+      "settle": 900,
+      "frame": ".legal-fanout-source",
+      "caption": "A published source is captured before anything is parsed."
+    },
+    {
+      "step": 1,
+      "beat": 2,
+      "hold": 3,
+      "settle": 800,
+      "frame": ".legal-fanout-source",
+      "caption": "Those exact bytes fix what every later claim is measured against."
+    },
+    {
+      "step": 2,
+      "beat": 0,
+      "hold": 6.5,
+      "settle": 2600,
+      "frame": ".legal-fanout-grid",
+      "caption": "One source becomes three independent representations."
+    },
+    {
+      "step": 3,
+      "beat": 0,
+      "hold": 5.5,
+      "settle": 1400,
+      "frame": ".legal-fanout-grid",
+      "caption": "Each is compared against the capture, not against the others."
+    },
+    {
+      "step": 4,
+      "beat": 0,
+      "hold": 3,
+      "settle": 900,
+      "frame": ".legal-generations",
+      "caption": "When the published source changes…"
+    },
+    {
+      "step": 4,
+      "beat": 1,
+      "hold": 3.4,
+      "settle": 900,
+      "frame": ".legal-generations",
+      "caption": "…unchanged is retained, new is added, changed is replaced."
+    },
+    {
+      "step": 4,
+      "beat": 2,
+      "hold": 7,
+      "settle": 1200,
+      "frame": ".legal-generations",
+      "caption": "Current state changes. The captured evidence does not."
+    },
+    {
+      "step": 5,
+      "beat": 1,
+      "hold": 2.6,
+      "settle": 700,
+      "frame": ".legal-ladder",
+      "caption": "Confidence is built in classes of evidence."
+    },
+    {
+      "step": 5,
+      "beat": 3,
+      "hold": 6,
+      "settle": 1200,
+      "frame": ".legal-ladder",
+      "caption": "Each rules out a different failure. None of them becomes proof."
+    },
+    {
+      "step": 6,
+      "beat": 0,
+      "hold": 6.5,
+      "settle": 1200,
+      "frame": ".two-column-copy > div:last-child",
+      "caption": "The platform existed already. My work was verification and convergence."
+    },
+    {
+      "step": 7,
+      "beat": 0,
+      "hold": 4,
+      "settle": 1000,
+      "frame": ".case-learning",
+      "align": "top",
+      "caption": "The layer invalidated an interpretation I had written myself."
+    },
+    {
+      "step": 7,
+      "beat": 1,
+      "hold": 7.5,
+      "settle": 1200,
+      "frame": ".case-learning",
+      "hide": [
+        ".case-learning blockquote"
+      ],
+      "align": "top",
+      "caption": "A verification instrument has to be allowed to prove its author wrong.",
+      "final": true
+    }
+  ],
+  "results": [
+    {
+      "format": "master",
+      "output": "C:\\Users\\MohdZaminQuadri\\zq\\media\\legal-knowledge-platform.mp4",
+      "seconds": 64.4,
+      "bytes": 1631618
+    }
+  ]
+}

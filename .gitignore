@@ -37,3 +37,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Recorded video. The script and shot list are committed; the encode is a generated artifact
+# rebuilt deterministically by `npm run record:video`, so it is not carried in git history.
+/.video-frames/
+/media/*.mp4
