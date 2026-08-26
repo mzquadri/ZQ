@@ -19,6 +19,7 @@ const routes = [
   "/work/hydrology-uq",
   "/work/cifar10-cnn",
   "/work/streamflow-forecasting",
+  "/work/legal-knowledge-platform",
 ];
 
 for (const route of routes) {
@@ -361,7 +362,7 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
 
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  for (const route of ["/", "/work", "/resume", "/work/mlops-reference-pipeline", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
+  for (const route of ["/", "/work", "/resume", "/work/mlops-reference-pipeline", "/work/legal-knowledge-platform", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
     await page.goto(route);
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflows, `${route} must not overflow at 320px`).toBe(false);
@@ -601,4 +602,549 @@ test("research thesis adds no third-party requests", async ({ page }) => {
   });
   await page.goto("/research/thesis");
   expect(remoteRequests).toEqual([]);
+});
+
+test("the confidential case study publishes no source, and says why", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Stored is not the same as correct");
+  await expect(page.getByText("Engineer on the verification, ingestion and reporting services")).toBeVisible();
+
+  // The hero explains the missing repository button rather than leaving a reader to notice it.
+  await expect(page.locator(".case-confidential")).toContainText("The source cannot be shown");
+  await expect(page.getByRole("link", { name: /Inspect repository/ })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Source and documentation/ })).toHaveCount(0);
+
+  // No link anywhere on the page may point at a repository host.
+  const hrefs = await page.locator("main a[href]").evaluateAll((links) =>
+    links.map((link) => link.getAttribute("href") ?? ""),
+  );
+  expect(hrefs.filter((href) => /github\.com|gitea|gitlab/i.test(href))).toEqual([]);
+});
+
+test("the confidential case study omits codeRepository from its structured data", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  // The page also carries the site-wide Person and WebSite blocks; the case study is CreativeWork.
+  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+  const parsed = blocks.map((block) => JSON.parse(block) as Record<string, unknown>);
+  const creativeWork = parsed.find((block) => block["@type"] === "CreativeWork");
+  expect(creativeWork, "the case study must emit CreativeWork structured data").toBeDefined();
+  expect("codeRepository" in creativeWork!).toBe(false);
+  expect(creativeWork!.genre).toBe("Employer engineering");
+  expect(JSON.stringify(parsed)).not.toContain("github.com/mzquadri/legal");
+});
+
+test("the confidential case study keeps the seven-section case-study grammar", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const indexes = await page.locator(".case-section .section-index span").allTextContents();
+  // No inspection-points section, so the template renumbers quality and limitations to 05 and 06.
+  expect(indexes).toEqual(["01", "02", "03", "04", "05", "06"]);
+  await expect(page.getByRole("heading", { name: "Where the evidence stops" })).toBeVisible();
+});
+
+test("the confidential case study renders every static figure without JavaScript state", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  for (const name of [
+    /same total, what has that established/,
+    /who is allowed to write each part/,
+    /what happens to what is already stored/,
+    /what does it leave open/,
+  ]) {
+    await expect(page.getByRole("figure", { name })).toBeVisible();
+  }
+
+  // Terminal states are server-rendered, so every disposition is present before any motion work.
+  for (const disposition of ["retained", "added", "replaced", "pruned"]) {
+    await expect(page.locator(`.legal-convergence li[data-disposition="${disposition}"]`)).toHaveCount(1);
+  }
+  await expect(page.locator(".legal-ladder li")).toHaveCount(7);
+  await expect(page.locator(".legal-states dl > div")).toHaveCount(5);
+});
+
+test("the confidential case study publishes no corpus scale", async ({ page }) => {
+  const caseStudyYear = "2026";
+  await page.goto("/work/legal-knowledge-platform");
+  /*
+   * Read the page as a visitor does, minus the template's own numbering: section indices and
+   * workflow step numbers are chrome that every case study carries. What is left is this
+   * project's words, where illustrative quantities are spelled out, so any remaining numeral
+   * other than the year would be a disclosure of employer scale.
+   */
+  const text = await page.locator("main").evaluate((main) => {
+    const clone = main.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll(".section-index span, .workflow-list > li > span").forEach((el) => el.remove());
+    return clone.innerText ?? clone.textContent ?? "";
+  });
+  // The publication year is the one numeral the template is expected to render.
+  const numerals = (text.match(/\d{2,}/g) ?? []).filter((numeral) => numeral !== caseStudyYear);
+  expect(numerals, `unexpected numerals: ${numerals.join(", ")}`).toEqual([]);
+  // Scoped to its own figure: the showpiece now precedes it, so "first" is a different note.
+  await expect(page.locator(".legal-count-figure .figure-note")).toContainText("Illustrative");
+});
+
+test("the confidential case study appears in the work index alongside the public ones", async ({ page }) => {
+  await page.goto("/work");
+  // Each row links twice - from its heading and from its "Case study" affordance.
+  const rowLinks = page.locator('a[href="/work/legal-knowledge-platform"]');
+  await expect(rowLinks).toHaveCount(2);
+  await expect(rowLinks.first()).toHaveText("Stored is not the same as correct");
+  await expect(
+    page.locator(".project-row", { hasText: "Stored is not the same as correct" }),
+  ).toContainText("Employer engineering");
+});
+
+test("the confidential case study makes no third-party requests", async ({ page }) => {
+  const external: string[] = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.hostname !== "127.0.0.1" && url.hostname !== "localhost") external.push(request.url());
+  });
+  await page.goto("/work/legal-knowledge-platform", { waitUntil: "networkidle" });
+  expect(external).toEqual([]);
+});
+
+/*
+ * Phase 2 - the enhanced visual layer.
+ *
+ * Both Playwright projects run with reducedMotion: "reduce", which is deliberately the hardest
+ * case for these tests: it is the path where no scene ever animates, so anything asserted below
+ * is being read out of server-rendered markup rather than out of a finished animation.
+ */
+
+test("the confidential case study keeps its meaning without motion", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+
+  // Reduced motion must leave every stage at its terminal state, not at its first frame.
+  for (const stage of [".legal-count-stage", ".legal-fanout-stage", ".legal-generations", ".legal-ladder-stage"]) {
+    await expect(page.locator(stage)).toHaveAttribute("data-terminal", "");
+  }
+
+  // The record every scene stands on is present regardless.
+  await expect(page.locator(".legal-ladder li")).toHaveCount(7);
+  await expect(page.locator(".legal-states dl > div")).toHaveCount(5);
+  await expect(page.locator(".legal-convergence li")).toHaveCount(4);
+  for (const disposition of ["retained", "added", "replaced", "pruned"]) {
+    await expect(page.locator(`.legal-convergence li[data-disposition="${disposition}"]`)).toHaveCount(1);
+  }
+});
+
+test("the three generations are named in the accessible tree, not only drawn", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  for (const name of ["Retained source evidence", "Previous current state", "New current state"]) {
+    await expect(page.getByRole("region", { name })).toBeVisible();
+  }
+  // Depth is presentation. Every unit label is real text on every plane.
+  await expect(page.locator(".legal-generation")).toHaveCount(3);
+  await expect(page.locator('.legal-generation[data-generation="current"] li')).toHaveCount(6);
+});
+
+test("the WebGL layer stays off where it should and takes nothing with it", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+
+  // Reduced motion is one of the four gates, so the canvas must not mount in either project.
+  await expect(page.locator(".legal-vector-canvas")).toHaveAttribute("data-mode", "static");
+  await expect(page.locator("canvas")).toHaveCount(0);
+
+  // And three.js must not have been fetched for a card that never rendered.
+  const scripts = await page.locator("script[src]").evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute("src") ?? ""),
+  );
+  const sizes = await Promise.all(
+    scripts.map(async (src) => {
+      const response = await page.request.get(new URL(src, page.url()).toString());
+      return (await response.body()).byteLength;
+    }),
+  );
+  const total = sizes.reduce((sum, size) => sum + size, 0);
+  expect(total, "no route script may be large enough to contain a 3D renderer").toBeLessThan(900_000);
+
+  // The card still says what the points would have said.
+  await expect(page.getByText("One embedded record per active unit", { exact: false })).toBeVisible();
+});
+
+test("every representation card is reachable and operable from the keyboard", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const cards = page.locator(".legal-fanout-grid article");
+  await expect(cards).toHaveCount(3);
+
+  for (const representation of ["relational", "vector", "reference"]) {
+    const card = page.locator(`.legal-fanout-grid article[data-representation="${representation}"]`);
+    await card.focus();
+    await expect(card).toBeFocused();
+    // Focus must not be the only thing that reveals the explanation.
+    await expect(card.locator("dt", { hasText: "Written by" })).toBeVisible();
+    await expect(card.locator("dt", { hasText: "Checked against" })).toBeVisible();
+  }
+});
+
+test("a result is never told apart by colour alone", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  // Each of the five results carries a distinct mark as well as a tone, and its own words.
+  await expect(page.locator(".legal-state-mark")).toHaveCount(5);
+  const tones = await page.locator(".legal-state-mark").evaluateAll((nodes) =>
+    nodes.map((node) => node.getAttribute("data-tone")),
+  );
+  expect(new Set(tones).size).toBeGreaterThan(1);
+  for (const name of ["Measured", "Verified and current", "Unsupported", "Stale", "Failed"]) {
+    await expect(page.locator(".legal-states dt", { hasText: name })).toHaveCount(1);
+  }
+});
+
+test("the enhanced case study still publishes no source and no scale", async ({ page }) => {
+  const caseStudyYear = "2026";
+  await page.goto("/work/legal-knowledge-platform");
+
+  // Canvas hosts must carry no label that could leak content, and must be hidden from the tree
+  // because the DOM beside them already says it.
+  await expect(page.locator(".legal-vector-canvas")).toHaveAttribute("aria-hidden", "true");
+
+  const text = await page.locator("main").evaluate((main) => {
+    const clone = main.cloneNode(true) as HTMLElement;
+    clone.querySelectorAll(".section-index span, .workflow-list > li > span").forEach((el) => el.remove());
+    return clone.innerText ?? clone.textContent ?? "";
+  });
+  const numerals = (text.match(/\d{2,}/g) ?? []).filter((numeral) => numeral !== caseStudyYear);
+  expect(numerals, `unexpected numerals: ${numerals.join(", ")}`).toEqual([]);
+
+  const hrefs = await page.locator("main a[href]").evaluateAll((links) =>
+    links.map((link) => link.getAttribute("href") ?? ""),
+  );
+  expect(hrefs.filter((href) => /github\.com|gitea|gitlab/i.test(href))).toEqual([]);
+});
+
+/*
+ * Phase 3 - the guided walkthrough.
+ *
+ * These assert state transitions and focus, never elapsed time. Both projects run reduced-motion,
+ * so the run here is the stepped one: no smooth scrolling, no animated transitions, and every
+ * scene jumping straight to the state the table names.
+ */
+
+const LAUNCH = "2-minute walkthrough";
+
+/** The driver and state each scene is currently under, keyed by its stage class. */
+async function sceneDrivers(page: import("@playwright/test").Page) {
+  return page.evaluate(() =>
+    Object.fromEntries(
+      [...document.querySelectorAll("[data-driver]")].map((el) => [
+        el.className.split(" ")[0],
+        `${el.getAttribute("data-driver")}:${el.getAttribute("data-step")}`,
+      ]),
+    ),
+  );
+}
+
+test("the walkthrough is offered where the repository link would be", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const launcher = page.getByRole("button", { name: LAUNCH });
+  await expect(launcher).toBeVisible();
+  await expect(page.locator(".legal-launcher")).toContainText("about two minutes");
+  // It is offered, not imposed: nothing runs until it is pressed.
+  await expect(page.locator(".legal-dock")).toHaveCount(0);
+});
+
+test("no other case study carries a walkthrough", async ({ page }) => {
+  await page.goto("/work/insureassist-rag");
+  await expect(page.getByRole("button", { name: LAUNCH })).toHaveCount(0);
+  await expect(page.locator(".legal-dock")).toHaveCount(0);
+});
+
+test("starting hands every scene to the controller and stops when it exits", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+
+  const before = await sceneDrivers(page);
+  for (const value of Object.values(before)) expect(value).toContain("scroll:");
+
+  await page.getByRole("button", { name: LAUNCH }).click();
+  await expect(page.locator(".legal-dock")).toBeVisible();
+  await expect(page.locator(".legal-dock-count")).toHaveText("1 / 8");
+
+  const during = await sceneDrivers(page);
+  for (const value of Object.values(during)) expect(value).toContain("walkthrough:");
+
+  await page.getByRole("button", { name: "Exit" }).click();
+  await expect(page.locator(".legal-dock")).toHaveCount(0);
+
+  // Every scene settles at its terminal state rather than being left part-played.
+  const after = await sceneDrivers(page);
+  expect(after).toEqual(before);
+});
+
+test("next and previous step whole chapters, deterministically", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  await page.getByRole("button", { name: LAUNCH }).click();
+
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.locator(".legal-dock-count")).toHaveText("2 / 8");
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.locator(".legal-dock-count")).toHaveText("4 / 8");
+
+  const atFour = await sceneDrivers(page);
+  expect(atFour[".legal-fanout-stage".slice(1)]).toBe("walkthrough:4");
+
+  await page.getByRole("button", { name: "Previous" }).click();
+  await expect(page.locator(".legal-dock-count")).toHaveText("3 / 8");
+
+  // Returning to step 4 must produce exactly the picture it produced the first time.
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.locator(".legal-dock-count")).toHaveText("4 / 8");
+  expect(await sceneDrivers(page)).toEqual(atFour);
+
+  await page.keyboard.press("Escape");
+});
+
+test("the walkthrough is fully keyboard operable and restores focus on exit", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const launcher = page.getByRole("button", { name: LAUNCH });
+  await launcher.focus();
+  await page.keyboard.press("Enter");
+
+  // Focus moves into the guided region once, on start.
+  await expect(page.locator(".legal-dock")).toBeFocused();
+
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator(".legal-dock-count")).toHaveText("2 / 8");
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.locator(".legal-dock-count")).toHaveText("1 / 8");
+
+  // Space toggles playback rather than scrolling the page. Stepping with the arrows has already
+  // yielded control, so the assertion is that the label flips, not that it starts in one state.
+  const playToggle = page.locator(".legal-dock-controls button").nth(1);
+  const before = await playToggle.innerText();
+  await page.keyboard.press(" ");
+  await expect(playToggle).not.toHaveText(before);
+  await page.keyboard.press(" ");
+  await expect(playToggle).toHaveText(before);
+
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".legal-dock")).toHaveCount(0);
+  await expect(launcher).toBeFocused();
+});
+
+test("the run completes, offers a restart, and never traps the reader", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  await page.getByRole("button", { name: LAUNCH }).click();
+
+  for (let index = 0; index < 8; index += 1) await page.keyboard.press("ArrowRight");
+
+  await expect(page.locator(".legal-dock-caption")).toContainText("Walkthrough complete");
+  await expect(page.getByRole("button", { name: "Restart" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Exit" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Restart" }).click();
+  await expect(page.locator(".legal-dock-count")).toHaveText("1 / 8");
+
+  await page.keyboard.press("Escape");
+});
+
+test("entering and leaving repeatedly leaves no scene stuck", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const settled = await sceneDrivers(page);
+
+  for (let round = 0; round < 3; round += 1) {
+    await page.getByRole("button", { name: LAUNCH }).click();
+    await expect(page.locator(".legal-dock-count")).toHaveText("1 / 8");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".legal-dock")).toHaveCount(0);
+    expect(await sceneDrivers(page), `round ${round}`).toEqual(settled);
+  }
+});
+
+test("guided mode stays accessible and publishes nothing new", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  await page.getByRole("button", { name: LAUNCH }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations).toEqual([]);
+
+  // The dock is a labelled region with real buttons, not a canvas with a keyboard trap.
+  await expect(page.getByRole("region", { name: "Guided walkthrough" })).toBeVisible();
+  await expect(page.locator(".legal-dock-controls button")).toHaveCount(4);
+
+  // Reading is still possible: the page underneath keeps its semantic content.
+  await expect(page.locator(".legal-ladder li")).toHaveCount(7);
+  await expect(page.locator(".legal-states dl > div")).toHaveCount(5);
+
+  const captions = await page.locator(".legal-dock-caption").innerText();
+  expect(captions.replace(/\b[18]\b/g, "").match(/\d{2,}/g)).toBeNull();
+
+  await page.keyboard.press("Escape");
+});
+
+test("guided mode works at mobile width without covering what it explains", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/work/legal-knowledge-platform");
+  await page.getByRole("button", { name: LAUNCH }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  expect(overflows).toBe(false);
+
+  // Controls stay thumb-sized.
+  for (const name of ["Previous", "Next", "Exit"]) {
+    const box = await page.getByRole("button", { name, exact: true }).boundingBox();
+    expect(box!.height, `${name} is too small to tap`).toBeGreaterThanOrEqual(40);
+  }
+
+  // The stage being explained is not hidden behind the dock.
+  const dock = (await page.locator(".legal-dock").boundingBox())!;
+  const stage = (await page.locator(".legal-fanout-stage").boundingBox())!;
+  expect(stage.y, "the explained stage must start above the dock").toBeLessThan(dock.y);
+
+  // Every state of the run, including the closing one, has to stay inside the viewport. The
+  // ending's recede once stepped sideways and put a scrollbar on a 390px screen.
+  for (let index = 0; index < 8; index += 1) await page.keyboard.press("ArrowRight");
+  await expect(page.locator(".legal-dock-caption")).toContainText("Walkthrough complete");
+  const overflowsAtEnd = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  expect(overflowsAtEnd, "the completion state must not overflow at mobile width").toBe(false);
+
+  await page.keyboard.press("Escape");
+});
+
+/*
+ * Phase 3.5 - the ending, the resume behaviour, and the contract a recorder will drive.
+ */
+
+test("the run publishes its position on the document element", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const root = page.locator("html");
+  await expect(root).not.toHaveAttribute("data-walkthrough", /.*/);
+
+  await page.getByRole("button", { name: LAUNCH }).click();
+  await expect(root).toHaveAttribute("data-walkthrough", "running");
+  await expect(root).toHaveAttribute("data-walkthrough-step", "problem");
+  await expect(root).toHaveAttribute("data-walkthrough-beat", "0");
+
+  // Every step id is reachable in order, which is what a recorder will step through.
+  const ids = ["source", "representations", "measurement", "change", "confidence", "contribution", "lesson"];
+  for (const id of ids) {
+    await page.keyboard.press("ArrowRight");
+    await expect(root).toHaveAttribute("data-walkthrough-step", id);
+  }
+
+  await page.keyboard.press("Escape");
+  await expect(root).not.toHaveAttribute("data-walkthrough", /.*/);
+  await expect(root).not.toHaveAttribute("data-walkthrough-step", /.*/);
+});
+
+test("the contribution step marks the column it is talking about", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const column = page.locator(".two-column-copy > div").last();
+  const plain = await column.evaluate((el) => getComputedStyle(el).borderLeftColor);
+
+  await page.getByRole("button", { name: LAUNCH }).click();
+  for (let index = 0; index < 6; index += 1) await page.keyboard.press("ArrowRight");
+  await expect(page.locator("html")).toHaveAttribute("data-walkthrough-step", "contribution");
+
+  // A retrying assertion, because the mark arrives on a transition: reading the computed value
+  // once races the paint rather than testing anything real.
+  await expect(column).toHaveCSS("border-left-color", "rgb(0, 109, 101)");
+
+  // The other column is left alone: this is a mark, not a spotlight that dims the page.
+  const problem = page.locator(".two-column-copy > div").first();
+  await expect(problem).toHaveCSS("border-left-color", plain);
+  await expect(problem).toBeVisible();
+
+  await page.keyboard.press("Escape");
+});
+
+test("the closing annotation is part of the page, not of the walkthrough", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  // It reads correctly with no guided run at all: an ink rule for what was measured, a dashed
+  // rule for what was withdrawn.
+  await expect(page.locator(".legal-closing-row")).toHaveCount(2);
+  await expect(page.locator('.legal-closing-row[data-mark="measurement"]')).toContainText("still valid");
+  await expect(page.locator('.legal-closing-row[data-mark="interpretation"]')).toContainText("Withdrawn");
+
+  const styles = await page.locator(".legal-closing-row").evaluateAll((rows) =>
+    rows.map((row) => getComputedStyle(row).borderLeftStyle),
+  );
+  expect(styles).toEqual(["solid", "dashed"]);
+});
+
+test("the final beat withdraws the interpretation and leaves the measurement where it is", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  await page.getByRole("button", { name: LAUNCH }).click();
+  for (let index = 0; index < 7; index += 1) await page.keyboard.press("ArrowRight");
+  await expect(page.locator("html")).toHaveAttribute("data-walkthrough-step", "lesson");
+
+  const measurement = page.locator('.legal-closing-row[data-mark="measurement"]');
+  const interpretation = page.locator('.legal-closing-row[data-mark="interpretation"]');
+  const before = {
+    measurement: (await measurement.boundingBox())!.x,
+    interpretation: (await interpretation.boundingBox())!.x,
+    interpretationY: (await interpretation.boundingBox())!.y,
+  };
+
+  // Play into the closing beat.
+  await page.keyboard.press(" ");
+  await expect(page.locator("html")).toHaveAttribute("data-walkthrough-beat", "1", { timeout: 15000 });
+
+  const after = {
+    measurement: (await measurement.boundingBox())!.x,
+    interpretation: (await interpretation.boundingBox())!.x,
+    interpretationY: (await interpretation.boundingBox())!.y,
+  };
+  expect(after.measurement, "the measurement must not move").toBe(before.measurement);
+  // The recede steps sideways where there is room and downward where there is not, so the
+  // assertion is that it moved at all - and that the measurement beside it did not.
+  const moved =
+    after.interpretation > before.interpretation || after.interpretationY > before.interpretationY;
+  expect(moved, "the interpretation must step back").toBe(true);
+
+  // Both stay readable: withdrawal is a position and an edge, never a fade.
+  await expect(interpretation).toBeVisible();
+  await expect(interpretation).toContainText("re-measured");
+
+  await page.keyboard.press("Escape");
+});
+
+test("pressing Play after scrolling away brings the step back into view", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  await page.getByRole("button", { name: LAUNCH }).click();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator("html")).toHaveAttribute("data-walkthrough-step", "representations");
+
+  const target = page.locator(".legal-fanout-grid");
+  await page.mouse.wheel(0, 3000);
+  await page.waitForTimeout(300);
+
+  const away = (await target.boundingBox())!;
+  const viewport = page.viewportSize()!;
+  expect(away.y + away.height, "precondition: the target should be off screen").toBeLessThan(0);
+
+  // Autoplay is already stopped by the wheel; pressing Play resumes and re-frames.
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.waitForTimeout(1200);
+
+  const back = (await target.boundingBox())!;
+  expect(back.y, "the step's target must be back in the viewport").toBeGreaterThan(0);
+  expect(back.y).toBeLessThan(viewport.height);
+
+  await page.keyboard.press("Escape");
+});
+
+test("a long reflection is set as a paragraph rather than as display type", async ({ page }) => {
+  await page.goto("/work/legal-knowledge-platform");
+  const quote = page.locator(".case-learning blockquote");
+  await expect(quote).toHaveAttribute("data-length", "long");
+  const size = await quote.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+
+  await page.goto("/work/insureassist-rag");
+  const short = page.locator(".case-learning blockquote");
+  await expect(short).not.toHaveAttribute("data-length", /.*/);
+  const shortSize = await short.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+
+  expect(size, "a paragraph-length quote must not use the display size").toBeLessThan(shortSize);
 });

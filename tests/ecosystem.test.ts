@@ -10,7 +10,7 @@ import {
 } from "../src/content/ecosystem";
 import { buildingThreads, focusThemes, getBuildingThreads } from "../src/content/focus";
 import { graphEdges, graphNodes, graphStages, getStageNodes, projectPoint } from "../src/content/systems-graph";
-import { projects } from "../src/content/portfolio";
+import { isEmployerConfidential, projects } from "../src/content/portfolio";
 import { site } from "../src/content/truth";
 
 test("the repository index is a consistent, deduplicated snapshot", () => {
@@ -32,6 +32,9 @@ test("the repository index is a consistent, deduplicated snapshot", () => {
 
 test("every case study repository is present in the index and agrees on its URL", () => {
   for (const project of projects) {
+    // A confidential case study has no public source to cross-reference; that it publishes none
+    // is asserted in tests/confidential-project.test.ts rather than skipped silently here.
+    if (isEmployerConfidential(project)) continue;
     const match = ecosystemRepositories.find((repository) => repositoryUrl(repository) === project.repository);
     assert.ok(match, `${project.slug} has no matching repository entry`);
     assert.equal(match.caseStudySlug, project.slug);

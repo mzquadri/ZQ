@@ -4265,3 +4265,1647 @@ ol {
   font-size: 0.8rem;
   color: var(--ink-soft);
 }
+
+/* --- Legal knowledge platform case study -------------------------------------------------- */
+
+/* Stands in the hero where a repository button sits on every other case study. It explains the
+   absence rather than leaving a reader to notice it. */
+.case-confidential {
+  max-width: 46rem;
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border-left: 2px solid var(--teal);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+.legal-count-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.legal-count-grid article {
+  display: grid;
+  min-height: 11rem;
+  align-content: space-between;
+  padding: 1.5rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.legal-count-grid span {
+  color: var(--teal-dark);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.legal-count-grid strong {
+  font-family: var(--serif);
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.legal-count-grid p {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.legal-count-steps {
+  display: grid;
+  gap: 0;
+  margin-top: 1.75rem;
+  list-style: none;
+  border-left: 2px solid var(--line);
+}
+
+.legal-count-steps li {
+  padding: 0.85rem 0 0.85rem 1.25rem;
+}
+
+.legal-count-steps li + li {
+  border-top: 1px solid var(--line);
+}
+
+.legal-count-steps span {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-count-steps li[data-outcome="unresolved"] span {
+  color: var(--orange-text);
+}
+
+.legal-count-steps p {
+  margin-top: 0.3rem;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+}
+
+.legal-fanout-source {
+  padding: 1.5rem;
+  border-top: 1px solid var(--line);
+  border-left: 2px solid var(--ink);
+  background: var(--paper-raised);
+}
+
+.legal-fanout-source span {
+  color: var(--orange-text);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-fanout-source h3 {
+  margin-top: 0.4rem;
+  font-family: var(--serif);
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+
+.legal-fanout-source p {
+  max-width: 52rem;
+  margin-top: 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.legal-fanout-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.legal-fanout-grid article {
+  min-width: 0;
+  padding: 1.35rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.legal-fanout-grid article > span {
+  color: var(--teal-dark);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-fanout-grid h3 {
+  margin-top: 0.45rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.legal-fanout-grid article > p {
+  margin-top: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.83rem;
+}
+
+.legal-fanout-grid dl,
+.legal-ladder dl {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+
+.legal-fanout-grid dt,
+.legal-ladder dt,
+.legal-states dt {
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.legal-fanout-grid dd,
+.legal-ladder dd {
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+}
+
+.legal-convergence {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  list-style: none;
+}
+
+.legal-convergence li {
+  min-width: 0;
+  min-height: 12rem;
+  padding: 1.35rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-top: 3px solid var(--line-strong);
+}
+
+.legal-convergence li[data-disposition="retained"] {
+  border-top-color: var(--ink-soft);
+}
+
+.legal-convergence li[data-disposition="added"] {
+  border-top-color: var(--teal);
+}
+
+.legal-convergence li[data-disposition="replaced"] {
+  border-top-color: var(--yellow);
+}
+
+.legal-convergence li[data-disposition="pruned"] {
+  border-top-color: var(--orange-text);
+}
+
+.legal-convergence span {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-convergence strong {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.28rem;
+  font-weight: 500;
+}
+
+.legal-convergence p {
+  margin-top: 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.legal-convergence-retained {
+  margin-top: 1.5rem;
+  padding: 1.35rem;
+  border-left: 2px solid var(--teal);
+  background: var(--paper-raised);
+}
+
+.legal-convergence-retained span {
+  color: var(--teal-dark);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-convergence-retained h3 {
+  margin-top: 0.4rem;
+  font-family: var(--serif);
+  font-size: 1.28rem;
+  font-weight: 500;
+}
+
+.legal-convergence-retained p {
+  max-width: 52rem;
+  margin-top: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+}
+
+.legal-ladder {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  list-style: none;
+  counter-reset: rung;
+}
+
+.legal-ladder li {
+  min-width: 0;
+  padding: 1.35rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  counter-increment: rung;
+}
+
+/* Seven rungs in a two-column grid leave one empty cell, which reads as a missing entry rather
+   than as the end of the list. The final odd rung takes the full width instead. */
+.legal-ladder li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.legal-ladder h3 {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.legal-ladder h3::before {
+  content: counter(rung, decimal-leading-zero) " ";
+  color: var(--orange-text);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 400;
+}
+
+.legal-states {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--ink);
+}
+
+.legal-states h3 {
+  font-family: var(--serif);
+  font-size: 1.28rem;
+  font-weight: 500;
+}
+
+.legal-states dl {
+  display: grid;
+  gap: 0;
+  margin-top: 1rem;
+}
+
+.legal-states dl > div {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.7rem 0 0.7rem 1rem;
+  border-left: 3px solid var(--line-strong);
+}
+
+.legal-states dl > div + div {
+  border-top: 1px solid var(--line);
+}
+
+.legal-states dl > div[data-tone="current"] {
+  border-left-color: var(--teal);
+}
+
+.legal-states dl > div[data-tone="unsupported"],
+.legal-states dl > div[data-tone="stale"] {
+  border-left-color: var(--yellow);
+}
+
+.legal-states dl > div[data-tone="failed"] {
+  border-left-color: var(--orange-text);
+}
+
+.legal-states dd {
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+}
+
+@media (max-width: 900px) {
+  .legal-fanout-grid,
+  .legal-convergence,
+  .legal-ladder {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legal-convergence li {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .legal-count-grid,
+  .legal-fanout-grid,
+  .legal-convergence,
+  .legal-ladder {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .legal-count-grid article {
+    min-height: 0;
+    gap: 0.5rem;
+  }
+
+  .legal-count-grid strong {
+    font-size: 2.4rem;
+  }
+
+  .legal-states dl > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+}
+
+/* --- Legal knowledge platform: motion ------------------------------------------------------
+ *
+ * Every transition below is keyed off a `data-step` number that SceneReveal writes onto a
+ * wrapper. The site already neutralises transition durations under prefers-reduced-motion, and
+ * SceneReveal additionally never leaves the terminal state in that case, so these rules describe
+ * the enhanced path only. The unenhanced path is the markup itself.
+ *
+ * The motion vocabulary is fixed and each verb means one thing: capture snaps, structure lifts,
+ * representations arrive in depth, verification travels back towards the source, superseded
+ * state recedes, and retained evidence never moves at all.
+ */
+
+.legal-count-stage,
+.legal-fanout-stage,
+.legal-ladder-stage,
+.legal-generations {
+  --reveal: 520ms cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+
+/* --- Count: the total that survives a substitution ---------------------------------------- */
+
+.legal-count-grid {
+  position: relative;
+}
+
+.legal-count-verdict {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: -50% 50%;
+  z-index: 1;
+  padding: 0.3rem 0.7rem;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0;
+  scale: 0.9;
+  transition: opacity 300ms ease, scale 300ms ease;
+}
+
+.legal-count-stage[data-step="1"] .legal-count-verdict[data-verdict="agree"],
+.legal-count-stage[data-step="3"] .legal-count-verdict[data-verdict="unresolved"] {
+  opacity: 1;
+  scale: 1;
+}
+
+.legal-count-verdict[data-verdict="unresolved"] {
+  border-color: var(--orange-text);
+  color: var(--orange-text);
+}
+
+/* The substituted unit: one row leaves and one arrives while the total is untouched. */
+.legal-count-grid article:first-of-type p::after,
+.legal-count-grid article:last-of-type p::after {
+  content: "";
+  display: block;
+  height: 2px;
+  margin-top: 0.5rem;
+  background: var(--orange-text);
+  transform-origin: left;
+  scale: 0 1;
+  transition: scale 420ms var(--reveal);
+}
+
+.legal-count-stage[data-step="2"] .legal-count-grid article:first-of-type p::after,
+.legal-count-stage[data-step="3"] .legal-count-grid article:first-of-type p::after,
+.legal-count-stage[data-step="2"] .legal-count-grid article:last-of-type p::after,
+.legal-count-stage[data-step="3"] .legal-count-grid article:last-of-type p::after {
+  scale: 1 1;
+}
+
+.legal-count-steps li > * {
+  transition: visibility 0s;
+}
+
+/* A beat that has not happened yet leaves its row blank rather than showing faint text. */
+.legal-count-stage[data-step="0"] .legal-count-steps li > *,
+.legal-count-stage[data-step="1"] .legal-count-steps li[data-phase="2"] > *,
+.legal-count-stage[data-step="1"] .legal-count-steps li[data-phase="3"] > *,
+.legal-count-stage[data-step="2"] .legal-count-steps li[data-phase="3"] > * {
+  visibility: hidden;
+}
+
+
+
+/* --- Fan-out: one source, three representations in depth ----------------------------------
+ *
+ * The showpiece. Composition is a centred source object, a bracket, and three planes: canonical
+ * forward, derived behind. Depth is semantic here and everywhere else on the page - forward is
+ * what is current and being examined, behind is what is derived from it, furthest back is what is
+ * retained and never rewritten.
+ *
+ * Motion vocabulary, one verb per idea and one duration per verb:
+ *   capture      120ms  decisive snap, slight over-shoot        (a discrete event)
+ *   structure    460ms  controlled extension, left to right      (order being read off)
+ *   arrival      680ms  smooth travel out of depth               (a plane taking its place)
+ *   measurement  520ms  precise settle, no over-shoot            (a comparison, not a fix)
+ */
+
+.legal-fanout-stage {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --capture: 120ms cubic-bezier(0.2, 1.5, 0.35, 1);
+  --extend: 460ms cubic-bezier(0.16, 0.84, 0.28, 1);
+  --arrive: 680ms cubic-bezier(0.18, 0.82, 0.24, 1);
+  --settle: 520ms cubic-bezier(0.33, 0.9, 0.3, 1);
+  perspective: 1700px;
+  perspective-origin: 50% 38%;
+  padding-block: 0.5rem 0;
+}
+
+@media (min-width: 901px) {
+  .legal-fanout-stage {
+    padding-inline: 2.75rem;
+  }
+}
+
+/* --- The source object -------------------------------------------------------------------- */
+
+.legal-fanout-source {
+  display: grid;
+  grid-template-columns: 12.5rem minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+  max-width: 52rem;
+  margin-inline: auto;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform 900ms cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+/* Thickness: two leaves behind one face, offset so the stack reads as paper rather than a card. */
+.legal-fanout-sheet {
+  position: relative;
+  aspect-ratio: 5 / 6.4;
+  transform-style: preserve-3d;
+}
+
+.legal-fanout-leaf,
+.legal-fanout-face {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+}
+
+.legal-fanout-leaf:nth-child(1) {
+  translate: 7px 7px;
+  background: var(--paper-deep);
+  border-color: var(--line);
+}
+
+.legal-fanout-leaf:nth-child(2) {
+  translate: 3.5px 3.5px;
+  background: var(--paper);
+  border-color: var(--line);
+}
+
+.legal-fanout-face {
+  display: grid;
+  align-content: start;
+  gap: 0;
+  padding: 1rem 0.85rem;
+  /* The source rule: one ink edge, the mark that this sheet is the origin of everything below. */
+  border-left: 3px solid var(--ink);
+  box-shadow: 0 10px 26px -20px rgb(17 24 32 / 55%);
+}
+
+.legal-fanout-units {
+  display: grid;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.legal-fanout-units li {
+  height: 0.3rem;
+  background: var(--paper-deep);
+  transform-origin: left;
+  scale: 1 1;
+  transition: scale var(--extend), background-color var(--extend);
+}
+
+.legal-fanout-units li:nth-child(3n) {
+  width: 68%;
+}
+
+/* Structure: the bands extend left to right, in order, as the units are read off the sheet. */
+.legal-fanout-stage[data-step="0"] .legal-fanout-units li,
+.legal-fanout-stage[data-step="1"] .legal-fanout-units li {
+  scale: 0 1;
+}
+
+/* Capture: a seal that snaps onto the sheet. Discrete, so it is the only over-shoot on the page. */
+.legal-fanout-seal {
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: 0.9rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  /* A registration mark, not a slashed circle: the sheet is aligned and recorded, not forbidden. */
+  background:
+    linear-gradient(var(--ink), var(--ink)) center / 1.5px 100% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) center / 100% 1.5px no-repeat;
+  scale: 1;
+  opacity: 1;
+  transition: scale var(--capture), opacity 90ms linear;
+}
+
+.legal-fanout-stage[data-step="0"] .legal-fanout-seal {
+  scale: 0.2;
+  opacity: 0;
+}
+
+.legal-fanout-source-copy > span {
+  color: var(--orange-text);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.legal-fanout-source-copy .legal-fanout-name {
+  margin-top: 0.4rem;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.legal-fanout-source-copy > p {
+  max-width: 34rem;
+  margin-top: 0.7rem;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.legal-fanout-source .legal-fanout-chip {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.24rem 0.6rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  scale: 1;
+  opacity: 1;
+  transition: scale var(--capture), opacity 90ms linear;
+}
+
+.legal-fanout-stage[data-step="0"] .legal-fanout-source .legal-fanout-chip {
+  scale: 0.8;
+  opacity: 0;
+}
+
+/* --- The bracket -------------------------------------------------------------------------- */
+
+.legal-fanout-links {
+  position: relative;
+  height: 3.6rem;
+  margin-top: 1.9rem;
+}
+
+.legal-fanout-stem,
+.legal-fanout-rule,
+.legal-fanout-drop {
+  position: absolute;
+  background: var(--line-strong);
+  transition: scale var(--extend);
+}
+
+.legal-fanout-stem {
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 1.4rem;
+  transform-origin: top;
+}
+
+.legal-fanout-rule {
+  left: 16.66%;
+  right: 16.66%;
+  top: 1.4rem;
+  height: 1px;
+  transform-origin: center;
+}
+
+.legal-fanout-drop {
+  top: 1.4rem;
+  width: 1px;
+  height: 2.2rem;
+  transform-origin: top;
+}
+
+.legal-fanout-drop:nth-of-type(3) { left: 16.66%; }
+.legal-fanout-drop:nth-of-type(4) { left: 50%; }
+.legal-fanout-drop:nth-of-type(5) { left: 83.33%; }
+
+.legal-fanout-stage[data-step="0"] .legal-fanout-stem,
+.legal-fanout-stage[data-step="1"] .legal-fanout-stem { scale: 1 0; }
+
+.legal-fanout-stage[data-step="0"] .legal-fanout-rule,
+.legal-fanout-stage[data-step="1"] .legal-fanout-rule { scale: 0 1; }
+
+.legal-fanout-stage[data-step="0"] .legal-fanout-drop,
+.legal-fanout-stage[data-step="1"] .legal-fanout-drop,
+.legal-fanout-stage[data-step="2"] .legal-fanout-drop { scale: 1 0; }
+
+/* --- The three planes --------------------------------------------------------------------- */
+
+.legal-fanout-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+  /* No shared table borders: an empty grid frame standing where invisible cards will be reads as
+     a broken layout while the scene plays. Each plane carries its own edge instead. */
+  border: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transition: transform 900ms cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+.legal-fanout-grid article {
+  min-width: 0;
+  padding: 1.3rem;
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--line-strong);
+  background: var(--paper-raised);
+  opacity: 1;
+  transition:
+    opacity var(--arrive),
+    transform var(--arrive),
+    border-top-color var(--settle),
+    box-shadow var(--arrive),
+    background-color var(--settle);
+}
+
+.legal-fanout-grid article .legal-fanout-name {
+  margin-top: 0.4rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.legal-fanout-grid article[data-representation="relational"] { border-top-color: var(--teal); }
+.legal-fanout-grid article[data-representation="vector"] { border-top-color: var(--teal-dark); }
+.legal-fanout-grid article[data-representation="reference"] { border-top-color: var(--ink-soft); }
+
+@media (min-width: 901px) {
+  /* Semantic depth: the canonical record sits forward because everything else is checked against
+     it; the two derived representations sit behind it, at the same depth as each other, because
+     neither is derived from the other. */
+  .legal-fanout-grid article[data-representation="relational"] {
+    transform: translateZ(46px);
+    box-shadow: 0 24px 44px -34px rgb(17 24 32 / 45%);
+  }
+
+  .legal-fanout-grid article[data-representation="vector"] {
+    transform: translateZ(-30px) rotateY(4deg);
+  }
+
+  .legal-fanout-grid article[data-representation="reference"] {
+    transform: translateZ(-30px) rotateY(-4deg);
+  }
+
+  /* Arrival: the planes travel out of depth rather than fading in place. */
+  .legal-fanout-stage[data-step="0"] .legal-fanout-grid article,
+  .legal-fanout-stage[data-step="1"] .legal-fanout-grid article,
+  .legal-fanout-stage[data-step="2"] .legal-fanout-grid article {
+    opacity: 0;
+    transform: translateZ(-190px) translateY(26px);
+    box-shadow: none;
+  }
+
+  /* Examining one plane brings it level with the reader; the others stay where they are. */
+  .legal-fanout-grid article:hover,
+  .legal-fanout-grid article:focus-visible {
+    transform: translateZ(66px) rotateY(0deg);
+    background: var(--paper);
+  }
+}
+
+@media (max-width: 900px) {
+  .legal-fanout-stage[data-step="0"] .legal-fanout-grid article,
+  .legal-fanout-stage[data-step="1"] .legal-fanout-grid article,
+  .legal-fanout-stage[data-step="2"] .legal-fanout-grid article {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+.legal-fanout-grid article:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+/* --- Verification: a measurement drawn back towards the capture --------------------------- */
+
+.legal-fanout-measure {
+  position: absolute;
+  inset: -3.4rem 0 auto;
+  height: 3.4rem;
+  pointer-events: none;
+}
+
+.legal-fanout-measure span {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 100%;
+  background: var(--teal);
+  transform-origin: bottom;
+  scale: 1 0;
+  transition: scale var(--settle);
+}
+
+.legal-fanout-measure span:nth-child(1) { left: calc(16.66% + 7px); }
+.legal-fanout-measure span:nth-child(2) { left: calc(50% + 7px); transition-delay: 90ms; }
+.legal-fanout-measure span:nth-child(3) { left: calc(83.33% + 7px); transition-delay: 180ms; }
+
+/* A caliper tick at the top of each measurement, so it reads as a comparison being taken rather
+   than as another connector being drawn. */
+.legal-fanout-measure span::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 7px;
+  height: 1px;
+  background: var(--teal);
+}
+
+/* The measurement is only drawn at the verification state, and it stays: the page is claiming
+   that the comparison happened, not that it is still happening. */
+.legal-fanout-stage[data-step="4"] .legal-fanout-measure span { scale: 1 1; }
+
+.legal-fanout-stage[data-step="4"] .legal-fanout-grid article {
+  border-top-color: var(--teal);
+}
+
+/* --- Card marks --------------------------------------------------------------------------- */
+
+.legal-fanout-mark {
+  height: 7.4rem;
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.legal-fanout-rows {
+  display: grid;
+  align-content: center;
+  gap: 0.44rem;
+  padding: 0 0.4rem;
+}
+
+.legal-fanout-rows span {
+  height: 0.42rem;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  transform-origin: left;
+  transition: scale var(--extend);
+}
+
+.legal-fanout-rows span:first-child {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.legal-fanout-stage[data-step="0"] .legal-fanout-rows span,
+.legal-fanout-stage[data-step="1"] .legal-fanout-rows span,
+.legal-fanout-stage[data-step="2"] .legal-fanout-rows span { scale: 0.08 1; }
+
+.legal-fanout-graph {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.legal-fanout-graph line {
+  stroke: var(--ink-soft);
+  stroke-width: 1.4;
+}
+
+.legal-fanout-graph line[data-kind="unresolved"] {
+  stroke: var(--yellow);
+  stroke-dasharray: 4 3;
+}
+
+.legal-fanout-graph circle { fill: var(--ink-soft); }
+
+.legal-fanout-graph circle[data-kind="external"] {
+  fill: var(--paper-raised);
+  stroke: var(--ink-soft);
+  stroke-width: 1.8;
+}
+
+.legal-fanout-graph circle[data-kind="unresolved"] {
+  fill: none;
+  stroke: var(--yellow);
+  stroke-width: 2.2;
+  stroke-dasharray: 4 3;
+}
+
+.legal-vector-canvas {
+  height: 7.4rem;
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+/* The flat mark the card keeps when WebGL does not run. Same sixteen points, projected. */
+.legal-vector-canvas {
+  position: relative;
+}
+
+.legal-vector-flat {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.legal-vector-flat circle {
+  fill: var(--teal-dark);
+}
+
+.legal-vector-flat circle:nth-child(5n + 1) {
+  fill: var(--teal);
+}
+
+/* When the renderer is running it owns the space, so the flat reading steps aside. */
+.legal-vector-canvas[data-mode="webgl"] .legal-vector-flat {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .legal-fanout-source {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    gap: 1.4rem;
+    max-width: none;
+  }
+
+  .legal-fanout-source-copy .legal-fanout-name { font-size: 1.35rem; }
+
+  .legal-fanout-links { display: none; }
+
+  .legal-fanout-measure { display: none; }
+
+  /* A mark stretched across a full-width tablet card reads as an empty band. Hold them to a
+     legible measure and centre them instead. */
+  .legal-fanout-mark,
+  .legal-vector-canvas {
+    max-width: 24rem;
+    margin-inline: auto;
+  }
+}
+
+/* Tablet: three narrow columns crush the labels and one column lets them sprawl. The canonical
+   record takes the full width and the two derived representations sit beside each other, which
+   is also what the depth said on desktop. */
+@media (min-width: 601px) and (max-width: 900px) {
+  .legal-fanout-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legal-fanout-grid article[data-representation="relational"] {
+    grid-column: 1 / -1;
+  }
+
+  .legal-fanout-grid article {
+    padding: 1.1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .legal-fanout-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Below this the sheet and the copy stop being columns: a 6rem sheet beside a 12rem measure of
+   text is two cramped things, not a composition. The sheet leads, the copy follows. */
+@media (max-width: 560px) {
+  .legal-fanout-source {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.15rem;
+  }
+
+  .legal-fanout-sheet {
+    width: 8.5rem;
+    aspect-ratio: 5 / 6;
+  }
+
+  .legal-fanout-source-copy .legal-fanout-name {
+    font-size: 1.5rem;
+  }
+}
+
+/* --- Generations: current state moves, retained evidence does not -------------------------
+ *
+ * The technical set piece. Three planes, and the whole point is which of them is allowed to
+ * change. Depth follows the same convention as the fan-out: forward is current, behind is
+ * superseded, furthest back is retained.
+ *
+ * The retained plane carries the same ink spine as the source object in the first figure. That
+ * is the motif that ties the page together: an ink edge means captured evidence, wherever it
+ * appears. It is also the only plane with no transition on transform at all - it cannot move,
+ * even by accident.
+ */
+
+.legal-generations {
+  --arrive: 680ms cubic-bezier(0.18, 0.82, 0.24, 1);
+  --recede: 760ms cubic-bezier(0.32, 0.06, 0.24, 1);
+  --strike: 420ms cubic-bezier(0.4, 0, 0.6, 1);
+  display: grid;
+  gap: 1.15rem;
+  margin-bottom: 2rem;
+  perspective: 1700px;
+  perspective-origin: 50% 42%;
+}
+
+.legal-generation {
+  position: relative;
+  transform-style: preserve-3d;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+
+/* Retained evidence: archived, pinned, and pointedly styled unlike the two states above it. */
+.legal-generation[data-generation="evidence"] {
+  border-left: 3px solid var(--ink);
+  background: var(--paper-deep);
+  /* No transform transition. This plane does not move. */
+}
+
+.legal-generation[data-generation="previous"] {
+  transition: transform var(--recede), border-color var(--recede);
+}
+
+.legal-generation[data-generation="current"] {
+  transition: transform var(--arrive), opacity var(--arrive), box-shadow var(--arrive);
+}
+
+.legal-generation header span {
+  color: var(--teal-dark);
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-generation[data-generation="evidence"] header span {
+  color: var(--ink);
+}
+
+.legal-generation header p {
+  max-width: 48rem;
+  margin-top: 0.25rem;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+.legal-generation ol {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  list-style: none;
+}
+
+.legal-generation li {
+  min-height: 2.5rem;
+  padding: 0.42rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--line-strong);
+  background: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  transition: transform var(--arrive), border-top-color var(--strike), background-color var(--strike);
+}
+
+.legal-generation[data-generation="evidence"] li {
+  border-top-color: var(--ink);
+  background: var(--paper-raised);
+}
+
+.legal-generation li[data-disposition="retained"] { border-top-color: var(--ink-soft); }
+.legal-generation li[data-disposition="added"] { border-top-color: var(--teal); }
+.legal-generation li[data-disposition="replaced"] { border-top-color: var(--yellow); }
+.legal-generation li[data-disposition="pruned"] { border-top-color: var(--orange-text); }
+
+@media (min-width: 901px) {
+  /* Depth separation is wide enough to read at a glance rather than on inspection. */
+  .legal-generation[data-generation="evidence"] {
+    transform: translateZ(-120px) scale(0.94);
+  }
+
+  .legal-generation[data-generation="previous"] {
+    transform: translateZ(-52px) scale(0.975);
+  }
+
+  .legal-generation[data-generation="current"] {
+    transform: translateZ(0);
+    box-shadow: 0 26px 50px -38px rgb(17 24 32 / 50%);
+  }
+
+  /* The amended source arrives: the new plane travels in from below and the superseded one
+     steps back. The retained plane is absent from this rule, and from every other one. */
+  .legal-generations[data-step="3"] .legal-generation[data-generation="previous"] {
+    transform: translateZ(-84px) translateY(-10px) scale(0.955);
+  }
+
+  .legal-generations[data-step="0"] .legal-generation[data-generation="current"],
+  .legal-generations[data-step="1"] .legal-generation[data-generation="current"] {
+    opacity: 0;
+    transform: translateZ(-150px) translateY(34px);
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .legal-generations[data-step="0"] .legal-generation[data-generation="current"],
+  .legal-generations[data-step="1"] .legal-generation[data-generation="current"] {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+}
+
+/* Superseded, stated as an edge rather than as a fade. */
+.legal-generations[data-step="3"] .legal-generation[data-generation="previous"] {
+  border-style: dashed;
+  border-color: var(--line-strong);
+}
+
+.legal-generations[data-step="3"] .legal-generation[data-generation="previous"] li {
+  border-style: dashed;
+}
+
+/* Dispositions resolve on the front plane only, one state at a time. */
+.legal-generations[data-step="2"] .legal-generation[data-generation="current"] li[data-disposition="added"],
+.legal-generations[data-step="2"] .legal-generation[data-generation="current"] li[data-disposition="replaced"] {
+  transform: translateY(12px) scale(0.96);
+  border-top-color: var(--line);
+}
+
+.legal-generations .legal-generation[data-generation="current"] li[data-disposition="pruned"] {
+  transition-delay: 300ms;
+}
+
+/* Pruned, at full contrast. A struck label, an orange edge and a deeper ground say "no longer
+   served"; fading it would have said that only to readers who can see it. */
+.legal-generations[data-step="3"] .legal-generation[data-generation="current"] li[data-disposition="pruned"] {
+  transform: translateY(7px);
+  border-style: dashed;
+  border-top-style: solid;
+  background: var(--paper-deep);
+  text-decoration: line-through;
+}
+
+/* The stillness of the retained plane, said in words as well as in motion. */
+.legal-generation[data-generation="evidence"]::after {
+  content: "does not change";
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.legal-generation-unit-label {
+  display: block;
+}
+
+/* --- Convergence ordering ----------------------------------------------------------------- */
+
+.legal-orders {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line-strong);
+}
+
+.legal-orders h3 {
+  font-family: var(--serif);
+  font-size: 1.16rem;
+  font-weight: 500;
+}
+
+.legal-orders dl {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.legal-orders dt {
+  color: var(--teal-dark);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.legal-orders dd {
+  margin-top: 0.5rem;
+}
+
+.legal-order-steps {
+  display: grid;
+  gap: 0.3rem;
+  list-style: none;
+  counter-reset: order;
+}
+
+.legal-order-steps li {
+  position: relative;
+  padding-left: 1.6rem;
+  font-size: 0.84rem;
+  counter-increment: order;
+}
+
+.legal-order-steps li::before {
+  content: counter(order, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  color: var(--orange-text);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+}
+
+.legal-orders dd > p {
+  margin-top: 0.55rem;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+}
+
+.legal-orders em {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* --- Ladder: each class of evidence arrives in turn --------------------------------------- */
+
+.legal-ladder li {
+  transform: none;
+  transition: transform 360ms var(--reveal);
+}
+
+/* A rung that has not arrived yet shows an empty cell, not faint text. Unreadable type is worse
+   than absent type: it fails contrast and it invites squinting at something not yet explained.
+   The per-state selector lists below decide which rungs those are. */
+
+.legal-ladder-stage[data-step="0"] .legal-ladder li,
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="2"],
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="3"],
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="4"],
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="5"],
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="6"],
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="7"],
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="3"],
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="4"],
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="5"],
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="6"],
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="7"],
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="4"],
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="5"],
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="6"],
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="7"],
+.legal-ladder-stage[data-step="4"] .legal-ladder li[data-rung="5"],
+.legal-ladder-stage[data-step="4"] .legal-ladder li[data-rung="6"],
+.legal-ladder-stage[data-step="4"] .legal-ladder li[data-rung="7"],
+.legal-ladder-stage[data-step="5"] .legal-ladder li[data-rung="6"],
+.legal-ladder-stage[data-step="5"] .legal-ladder li[data-rung="7"],
+.legal-ladder-stage[data-step="6"] .legal-ladder li[data-rung="7"] {
+  transform: translateY(6px);
+}
+
+.legal-ladder-stage[data-step="0"] .legal-ladder li > *,
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="2"] > *,
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="3"] > *,
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="4"] > *,
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="5"] > *,
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="6"] > *,
+.legal-ladder-stage[data-step="1"] .legal-ladder li[data-rung="7"] > *,
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="3"] > *,
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="4"] > *,
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="5"] > *,
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="6"] > *,
+.legal-ladder-stage[data-step="2"] .legal-ladder li[data-rung="7"] > *,
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="4"] > *,
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="5"] > *,
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="6"] > *,
+.legal-ladder-stage[data-step="3"] .legal-ladder li[data-rung="7"] > *,
+.legal-ladder-stage[data-step="4"] .legal-ladder li[data-rung="5"] > *,
+.legal-ladder-stage[data-step="4"] .legal-ladder li[data-rung="6"] > *,
+.legal-ladder-stage[data-step="4"] .legal-ladder li[data-rung="7"] > *,
+.legal-ladder-stage[data-step="5"] .legal-ladder li[data-rung="6"] > *,
+.legal-ladder-stage[data-step="5"] .legal-ladder li[data-rung="7"] > *,
+.legal-ladder-stage[data-step="6"] .legal-ladder li[data-rung="7"] > * {
+  visibility: hidden;
+}
+
+/* Each result keeps a shape as well as a colour, so the five are told apart without it. */
+.legal-state-mark {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-right: 0.45rem;
+  vertical-align: baseline;
+  border: 1.5px solid var(--line-strong);
+}
+
+.legal-state-mark[data-tone="measured"] {
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+}
+
+.legal-state-mark[data-tone="current"] {
+  background: var(--teal);
+  border-color: var(--teal);
+  border-radius: 50%;
+}
+
+/* Absence and age are different claims, so they get different shapes as well as the same colour:
+   a dashed ring for "never measured", a dashed square for "measured, but a while ago". */
+.legal-state-mark[data-tone="unsupported"] {
+  background: none;
+  border-color: var(--yellow);
+  border-style: dashed;
+  border-radius: 50%;
+}
+
+.legal-state-mark[data-tone="stale"] {
+  background: none;
+  border-color: var(--yellow);
+  border-style: dashed;
+}
+
+.legal-state-mark[data-tone="failed"] {
+  background: var(--orange-text);
+  border-color: var(--orange-text);
+  rotate: 45deg;
+}
+
+@media (max-width: 900px) {
+  .legal-generation ol {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .legal-orders dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .legal-fanout-links {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .legal-generation ol {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .legal-count-verdict {
+    position: static;
+    translate: none;
+    display: block;
+    width: fit-content;
+    margin: 0.75rem 0 0;
+  }
+}
+
+/* --- Guided walkthrough -------------------------------------------------------------------
+ *
+ * A quiet reading aid, not a video player. It borrows the page's own furniture - an ink ground,
+ * a mono counter, hairline buttons - so that pressing the button feels like turning on a mode of
+ * this page rather than opening a different product.
+ */
+
+.legal-launcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1rem;
+  margin-top: 1.35rem;
+}
+
+.legal-launcher > span {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+/* While guided, a scroll target has to clear the dock or the thing being explained sits under
+   the caption that explains it. */
+:root[data-walkthrough] .legal-count-stage,
+:root[data-walkthrough] .legal-fanout-stage,
+:root[data-walkthrough] .legal-fanout-grid,
+:root[data-walkthrough] .legal-generations,
+:root[data-walkthrough] .legal-ladder-stage,
+:root[data-walkthrough] .two-column-copy > div,
+:root[data-walkthrough] .case-learning {
+  scroll-margin-block: 7.5rem 15rem;
+}
+
+/* The closing mark is deliberately framed low, so the sentence it annotates stays on screen
+   above it rather than being scrolled past to reach it. */
+:root[data-walkthrough] .legal-closing {
+  scroll-margin-block: 15rem 15rem;
+}
+
+.legal-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  z-index: 40;
+  width: min(56rem, calc(100vw - 2rem));
+  translate: -50% 0;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  box-shadow: 0 22px 50px -30px rgb(17 24 32 / 60%);
+}
+
+.legal-dock:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+.legal-dock-rail {
+  height: 2px;
+  background: var(--line);
+}
+
+.legal-dock-rail > span {
+  display: block;
+  height: 100%;
+  background: var(--teal);
+  transform-origin: left;
+  transition: scale 420ms cubic-bezier(0.33, 0.9, 0.3, 1);
+}
+
+.legal-dock[data-complete] .legal-dock-rail > span {
+  background: var(--ink);
+}
+
+.legal-dock-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 0.9rem 1.1rem;
+}
+
+.legal-dock-caption {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.legal-dock-count {
+  color: var(--orange-text);
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.08em;
+}
+
+.legal-dock-caption strong {
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.legal-dock-caption > span:last-child {
+  color: var(--ink-soft);
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.legal-dock-controls {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.legal-dock-controls button {
+  padding: 0.42rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.legal-dock-controls button:hover:not(:disabled) {
+  background: var(--paper-deep);
+}
+
+/* Unavailable, without fading the label under the contrast floor. The disabled attribute, the
+   cursor and the hairline border carry the state; the text stays readable. */
+.legal-dock-controls button:disabled {
+  border-color: var(--line);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  cursor: default;
+}
+
+.legal-dock-controls button:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.legal-dock-controls .legal-dock-exit {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+@media (max-width: 720px) {
+  .legal-dock {
+    bottom: 0;
+    width: 100%;
+    border-inline: 0;
+    border-bottom: 0;
+  }
+
+  .legal-dock-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: 0.8rem 0.9rem calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .legal-dock-caption > span:last-child {
+    font-size: 0.8rem;
+  }
+
+  .legal-dock-controls button {
+    /* Thumb-sized, and the row divides the width evenly rather than crowding one edge. */
+    flex: 1;
+    min-height: 2.75rem;
+    text-align: center;
+  }
+
+  :root[data-walkthrough] .legal-count-stage,
+  :root[data-walkthrough] .legal-fanout-stage,
+  :root[data-walkthrough] .legal-fanout-grid,
+  :root[data-walkthrough] .legal-generations,
+  :root[data-walkthrough] .legal-ladder-stage,
+  :root[data-walkthrough] .two-column-copy > div,
+  :root[data-walkthrough] .case-learning {
+    scroll-margin-block: 5rem 17rem;
+  }
+
+  :root[data-walkthrough] .legal-closing {
+    scroll-margin-block: 17rem 18rem;
+  }
+}
+
+/* The pull-quote display size is tuned for a sentence or two. Past roughly that, it stops reading
+   as a quote and starts reading as a wall, so a longer reflection is set as a paragraph. */
+.case-learning blockquote[data-length="long"] {
+  font-size: clamp(1.5rem, 2.4vw, 2.15rem);
+  line-height: 1.32;
+  max-width: 44rem;
+}
+
+/* --- The last two steps -------------------------------------------------------------------
+ *
+ * Neither has a scene, so both borrow the language the scenes established rather than inventing
+ * a finale. Step seven marks the contribution column as the thing currently being examined -
+ * forward, on a teal rule, exactly as a plane under measurement is marked. Step eight lets the
+ * interpretation recede from a measurement that does not move.
+ *
+ * Both treatments are keyed off `data-walkthrough-step` on the document, so a step with no scene
+ * of its own still gets a state without needing a component to own it.
+ */
+
+.two-column-copy > div {
+  padding-left: 0;
+  border-left: 3px solid transparent;
+  transition:
+    background-color 520ms cubic-bezier(0.22, 0.9, 0.3, 1),
+    border-left-color 520ms cubic-bezier(0.22, 0.9, 0.3, 1),
+    padding-left 520ms cubic-bezier(0.22, 0.9, 0.3, 1),
+    box-shadow 520ms cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+
+:root[data-walkthrough-step="contribution"] .two-column-copy > div:last-child {
+  padding-left: 1.15rem;
+  border-left-color: var(--teal);
+  background: var(--paper-raised);
+  box-shadow: 0 22px 46px -34px rgb(17 24 32 / 40%);
+}
+
+/* --- Closing annotation --------------------------------------------------------------------- */
+
+.legal-closing {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 46rem;
+  margin-top: 1.6rem;
+}
+
+.legal-closing-row {
+  display: grid;
+  grid-template-columns: 9.5rem minmax(0, 1fr);
+  gap: 0.35rem 1.1rem;
+  padding: 0.6rem 0 0.6rem 1rem;
+  transition:
+    transform 760ms cubic-bezier(0.32, 0.06, 0.24, 1),
+    border-color 760ms ease;
+}
+
+.legal-closing-row > span {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.legal-closing-row > strong {
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  font-weight: 400;
+}
+
+/* An ink rule is captured evidence, here as everywhere else on the page. It does not move. */
+.legal-closing-row[data-mark="measurement"] {
+  border-left: 3px solid var(--ink);
+}
+
+/* A dashed rule is superseded, here as everywhere else. */
+.legal-closing-row[data-mark="interpretation"] {
+  border-left: 3px dashed var(--line-strong);
+}
+
+/* The final beat: the interpretation steps back, the measurement is untouched by this rule and by
+   every other one. No fading - the text stays at full contrast, as it does in the generations. */
+:root[data-walkthrough-step="lesson"][data-walkthrough-beat="1"] .legal-closing-row[data-mark="interpretation"] {
+  transform: translateX(1.4rem) scale(0.985);
+  border-left-color: var(--line);
+}
+
+@media (max-width: 640px) {
+  .legal-closing-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem;
+  }
+
+  /* The withdrawal recedes downward on a narrow screen. Stepping it sideways pushed the row past
+     the viewport, and a figure about restraint should not introduce a horizontal scrollbar. */
+  :root[data-walkthrough-step="lesson"][data-walkthrough-beat="1"] .legal-closing-row[data-mark="interpretation"] {
+    transform: translateY(0.45rem) scale(0.985);
+    transform-origin: left center;
+  }
+}

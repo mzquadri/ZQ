@@ -94,3 +94,62 @@ future re-export that reintroduces metadata fails the build.
 
 Nothing else about the privacy boundary changes: no email, phone number, address, or
 other personal identifier is published, and the site still collects nothing.
+
+**2026-08-26 — employer-confidential case study authored as a draft, not approved for publication.**
+
+A case study about professional work at BP-IT Consulting & Solutions GmbH exists in this
+repository at `/work/legal-knowledge-platform`. It is the first project on this site whose
+claims cannot be checked against a public repository, and it is **not approved for
+publication**. No approval has been requested or granted. It renders locally and on a preview
+deployment so it can be reviewed; a Vercel production build drops it from the route list, the
+work index, the sitemap and the generated metadata.
+
+What the page does publish:
+
+- the architecture in generic role names — publisher source, ingestion, structure processing,
+  projection, verification, relational store, vector store, knowledge graph, source evidence;
+- reasoning about correctness: why equal counts are not agreement, why measurement is separated
+  from mutation, what each class of evidence rules out and what it leaves open;
+- a contribution statement that separates work personally implemented from work materially
+  extended and from patterns that pre-existed the author on the platform;
+- structural facts in place of scale — how many independent representations exist, how many
+  services may write each one, what a verdict is bound to;
+- limitations, including the checks the system cannot perform at all.
+
+What is deliberately excluded, and enforced rather than remembered:
+
+- **No employer source code.** Nothing was copied into this repository. The employer
+  repositories were read only to reconstruct the architecture and to establish, from commit
+  authorship, which contributions are the author's to claim.
+- **No corpus scale.** Not the number of documents, verification gates, schema migrations,
+  automated tests, services, or records in any store. Illustrative quantities in the figures are
+  spelled as words so a reader cannot mistake an example for a measurement.
+- **No corpus content.** No document text, no citation, no identifier of any published
+  instrument. All figure data is synthetic.
+- **No internal identifiers.** No service names, repository names, topic names, bucket names,
+  table or column names, file paths, migration numbers, finding identifiers, or commit hashes.
+- **No infrastructure.** No hostnames, internal domains, IP addresses, registries, or endpoints.
+- **No screenshots.** Every operator view of that system displays live corpus state, so no
+  screenshot of it appears here. All figures were drawn for this site.
+- **No colleagues.** Authorship is the site owner alone; no other person is named.
+
+Checked on every build by `scripts/validate-content.ts` and
+`scripts/confidential-content.ts`, and exercised against deliberately invalid content in
+`tests/confidential-project.test.ts`:
+
+- a confidential project publishes no repository link and no artifact links, in the page, in the
+  work index, and in the `CreativeWork` structured data;
+- no rendered field contains a URL, bare scheme, IPv4 address, `localhost`, or a private domain
+  suffix;
+- no rendered field contains a number of two digits or more, which is how scale disclosure would
+  most plausibly arrive;
+- a draft states why it is a draft, and an approved project carries an approval reference, the
+  date it was given, and the date it must be reviewed again;
+- a production build fails if an unapproved confidential project would be published.
+
+Drafts are validated on the same terms as published content, so approval is the only thing
+outstanding rather than the point at which review begins.
+
+**Approval status at the time of this work: none.** Publication requires an employer approval
+recorded against the project as `publication: { status: "approved", … }`. Until that exists, the
+page cannot reach production, and this note should not be read as suggesting that it may.
