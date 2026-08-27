@@ -277,3 +277,28 @@
     transform: none;
   }
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * Route transitions.
+ *
+ * Deliberately small. A route change is something the reader asked for, and the worst thing an
+ * animation can do here is make the site feel slower than it is - so this is a short settle on
+ * the incoming page rather than a curtain over the outgoing one. There is no exit animation for
+ * that reason: blocking navigation on an animation is how "designed" starts costing usability.
+ *
+ * It runs on `main`, which App Router remounts per route, so it replays on navigation and never
+ * on in-page interaction. No JavaScript is involved.
+ * ------------------------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: mz-route-in var(--dur-base) var(--ease-exit) both;
+  }
+
+  @keyframes mz-route-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.6rem, 0);
+    }
+  }
+}

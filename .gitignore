@@ -51,3 +51,8 @@ next-env.d.ts
 /media/mob-*/
 /media/case-01/
 /media/final/
+# Generated showreel: 2.8MB, re-recordable from tools/record-showreel.mjs.
+/media/showreel.webm
+/media/eng-*/
+/media/routes-*/
+/media/story-*/

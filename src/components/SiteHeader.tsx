@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
-import { site } from "@/content/portfolio";
 
 /*
  * The global rail.
@@ -30,7 +29,20 @@ const NAV = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-export default function SiteHeader({ current }: { current?: string }) {
+/*
+ * Identity arrives as props, deliberately.
+ *
+ * This is a client component, so anything it imports is bundled and shipped. Importing the
+ * content module for three strings pulled the entire project list into a chunk loaded by every
+ * page - confidential draft included. The privacy boundary is not only about what is rendered.
+ */
+export interface SiteIdentity {
+  name: string;
+  github: string;
+  linkedin: string;
+}
+
+export default function SiteHeader({ current, identity }: { current?: string; identity: SiteIdentity }) {
   const pathname = usePathname();
   /*
    * The sheet remembers which route it was opened on, and is open only while the reader is still
@@ -94,7 +106,7 @@ export default function SiteHeader({ current }: { current?: string }) {
       <span aria-hidden="true" className="rail-progress" />
 
       <div className="rail-inner">
-        <Link className="rail-mark" href="/" aria-label={`${site.name}, home`}>
+        <Link className="rail-mark" href="/" aria-label={`${identity.name}, home`}>
           <span aria-hidden="true">MZQ</span>
           <span className="rail-name">Mohd Zamin Quadri</span>
         </Link>
@@ -150,8 +162,8 @@ export default function SiteHeader({ current }: { current?: string }) {
           ))}
         </ul>
         <p className="rail-sheet-foot">
-          <a href={site.github}>GitHub</a>
-          <a href={site.linkedin}>LinkedIn</a>
+          <a href={identity.github}>GitHub</a>
+          <a href={identity.linkedin}>LinkedIn</a>
         </p>
       </div>
     </header>

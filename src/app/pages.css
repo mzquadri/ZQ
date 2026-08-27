@@ -529,3 +529,32 @@
 .ending .contact-links a:focus-visible strong {
   color: inherit;
 }
+
+/* The work page's jump links, on the stage. */
+.page-stage .work-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--stage-line);
+}
+
+.page-stage .work-jump a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.page-stage .work-jump a:hover,
+.page-stage .work-jump a:focus-visible {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}

@@ -53,6 +53,19 @@ export default function AboutPage() {
         <div>
           <p className="section-index"><span>01</span>Current focus</p>
           <h2>Applied ML with research depth</h2>
+          {/*
+           * The portrait belongs here rather than in the stage. The stage makes a structural
+           * claim about where the work sits; this section is the personal context, which is the
+           * right place for a face - and it is the only one on the site.
+           */}
+          <div className="about-identity">
+            <ProfilePortrait variant="feature" />
+            <p className="portrait-caption">
+              <strong>{site.name}</strong>
+              <span>{site.role}</span>
+              <span>{site.location}</span>
+            </p>
+          </div>
         </div>
         <div className="prose-large">
           <p>
