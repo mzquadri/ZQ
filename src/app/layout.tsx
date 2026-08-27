@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import JsonLd from "@/components/JsonLd";
 import { site } from "@/content/portfolio";
 import "./globals.css";
+import "./motion.css";
+import "./cinema.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

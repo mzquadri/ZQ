@@ -1,0 +1,279 @@
+/*
+ * The motion system.
+ *
+ * One idea runs through this file: scroll is a scrub head, not a trigger. A trigger fires once and
+ * plays a canned animation at its own speed; a scrub head means the reader's scroll position *is*
+ * the animation's time axis, so the motion is theirs to drive, pause, and reverse. That is what
+ * makes a pinned product sequence feel expensive, and it is also the honest way to animate an
+ * engineering argument: the reader controls the rate at which a claim is built up in front of them.
+ *
+ * It is implemented with native CSS scroll-driven timelines (`animation-timeline: view()` and
+ * `scroll()`) rather than a scroll library. Three reasons, in order of weight:
+ *
+ *   1. It runs off the main thread. A scroll listener that writes transforms every frame competes
+ *      with React, and on a page carrying a WebGL canvas that competition is visible.
+ *   2. It costs nothing to download. This site argues that engineering claims should be checkable;
+ *      shipping ~70KB of animation runtime to move some text would be a poor opening argument.
+ *   3. It degrades to the right place. Where the feature is missing the element simply renders in
+ *      its final state - which is exactly the composed terminal state reduced motion also wants.
+ *      The fallback is not a broken page, it is the same page without the choreography.
+ *
+ * Every animation here therefore obeys one rule: the element's *resting* CSS is its finished state,
+ * and the keyframes only ever describe where it comes *from*. Nothing is animated into existence.
+ */
+
+:root {
+  /*
+   * Duration. Named for intent rather than milliseconds, so a change of pace is one edit.
+   * These apply to discrete transitions (hover, focus, state). Scrubbed motion has no duration -
+   * its length is however far the reader scrolls.
+   */
+  --dur-instant: 90ms;
+  --dur-quick: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 560ms;
+  --dur-cinematic: 900ms;
+
+  /*
+   * Easing. Two families, used consistently:
+   *   -exit  eases out hard - things leaving or settling should decelerate and stop.
+   *   -enter eases in and out - things arriving should feel weighted, not shot from a cannon.
+   * `--ease-precise` is deliberately close to linear, for anything that represents a measurement.
+   * A calibration curve that overshoots is lying about the data.
+   */
+  --ease-exit: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-enter: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-precise: cubic-bezier(0.4, 0, 0.6, 1);
+  --ease-weighted: cubic-bezier(0.34, 1.24, 0.64, 1);
+
+  /* Distance. Small numbers: motion that travels far reads as decoration. */
+  --lift-sm: 0.5rem;
+  --lift-md: 1.25rem;
+  --lift-lg: 2.5rem;
+  --depth-near: 42px;
+  --depth-far: -80px;
+
+  /* Stagger. One unit, multiplied by index, so rhythm is consistent across every sequence. */
+  --stagger: 65ms;
+}
+
+/*
+ * The stage palette.
+ *
+ * The reading surfaces of this site stay warm paper - long-form technical text belongs on paper.
+ * But motion and depth do not read on a light ground; a graph propagating across #f2f0e8 looks
+ * like a diagram, and the same graph on a dark ground looks like an instrument. So the cinematic
+ * sections invert: near-black ground, paper-coloured type, and one accent per project world.
+ *
+ * These are additive. Nothing that already exists changes colour.
+ */
+:root {
+  --stage: #0b0f14;
+  --stage-raised: #131a22;
+  --stage-deep: #060909;
+  --stage-ink: #f2f0e8;
+  --stage-ink-soft: #9aa7b2;
+  --stage-line: rgb(242 240 232 / 16%);
+  --stage-line-strong: rgb(242 240 232 / 38%);
+
+  /*
+   * Accent worlds. Each flagship project owns one hue so that a reader who has scrolled past four
+   * projects can still tell which one they are looking at from a single frame. `--accent` is
+   * rebound per-section rather than used directly, so a scene never hard-codes its own colour.
+   */
+  --accent-graph: #4cc4b0;
+  --accent-retrieval: #f0a03c;
+  --accent-pipeline: #7aa7f0;
+  --accent-flow: #5fb0d8;
+  --accent-vision: #d081c8;
+  --accent-systems: #8fd05a;
+
+  --accent: var(--accent-graph);
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * The motion vocabulary.
+ *
+ * Eight verbs. Each one means something specific about the information it is applied to, and the
+ * meanings do not overlap - which is the only reason a vocabulary is worth having. If a new scene
+ * needs a ninth, that is a sign the scene is doing something genuinely new, not that this list
+ * should grow for convenience.
+ * ------------------------------------------------------------------------------------------- */
+
+/* REVEAL - this exists and you had not seen it yet. The default arrival. */
+@keyframes mz-reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--lift-md), 0);
+  }
+}
+
+/* EXPAND - this had extent all along; you are now seeing how much. */
+@keyframes mz-expand {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* CONNECT - these two things are related, and the relation has a direction. */
+@keyframes mz-connect {
+  from {
+    stroke-dashoffset: var(--path-length, 100);
+  }
+}
+
+/* PROPAGATE - information moved along a structure. Used for graphs, never for layout. */
+@keyframes mz-propagate {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    opacity: 1;
+  }
+}
+
+/* CONVERGE - many candidates became one answer. */
+@keyframes mz-converge {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--converge-x, 0), var(--converge-y, 0), 0) scale(0.92);
+  }
+}
+
+/* CALIBRATE - the shape was already correct; its scale was not. Deliberately precise easing. */
+@keyframes mz-calibrate {
+  from {
+    transform: scaleY(var(--calibrate-from, 2.4));
+  }
+}
+
+/* VERIFY - a claim was checked and held. The only verb allowed to settle with weight. */
+@keyframes mz-verify {
+  from {
+    opacity: 0;
+    transform: translate3d(0, calc(var(--lift-sm) * -1), 0);
+  }
+}
+
+/* SETTLE - depth resolving. A plane arriving at its resting Z. */
+@keyframes mz-settle {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0, var(--depth-far));
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * Scrub utilities.
+ *
+ * `.mz-scrub` binds an animation to the element's own progress through the viewport, so the
+ * reader scrubs it. `.mz-once` plays on entry instead, for small things where giving the reader a
+ * scrub head would be pretentious - a label does not need to be draggable.
+ *
+ * Both are wrapped in @supports. Without support, neither class does anything at all, and the
+ * element stays in its resting state, which is its finished state.
+ * ------------------------------------------------------------------------------------------- */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .mz-scrub {
+      animation: var(--mz-anim, mz-reveal) linear both;
+      animation-timeline: view();
+      /* Finish well before the element leaves, or the reader never sees the resting state. */
+      animation-range: entry 8% cover 42%;
+    }
+
+    .mz-once {
+      animation: var(--mz-anim, mz-reveal) var(--dur-slow) var(--ease-exit) both;
+      animation-timeline: view();
+      animation-range: entry 12% entry 62%;
+    }
+
+    /*
+     * A pinned stage. The track is deliberately several viewports tall and carries the timeline;
+     * the child sticks inside it. The timeline has to sit on the *track* rather than on the
+     * sticky child, because a sticky element does not move relative to the viewport once it
+     * pins - its own view progress would stall exactly when the sequence needs to run.
+     *
+     * The `contain` range covers the span during which the track fully covers the viewport,
+     * which is the part of the scroll where the reader is looking at a pinned stage and nothing
+     * else. That is the scrub head.
+     */
+    .mz-pin-track {
+      view-timeline-name: --pin;
+      view-timeline-axis: block;
+    }
+
+    .mz-pin {
+      position: sticky;
+      top: var(--pin-top, 0);
+    }
+
+    .mz-pin-track [data-pinned] {
+      animation-timeline: --pin;
+      animation-range: contain 0% contain 100%;
+    }
+
+    /* Stagger. Set --i on the child; the delay is negative so it offsets scrub position. */
+    .mz-stagger > * {
+      animation-delay: calc(var(--i, 0) * var(--stagger) * -1);
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * Discrete transitions.
+ *
+ * Everything that is not scrubbed. Hover, focus, and state changes still need to feel consistent
+ * with the scrubbed motion, which means the same easing family and restrained distance.
+ * ------------------------------------------------------------------------------------------- */
+
+.mz-interactive {
+  transition:
+    transform var(--dur-base) var(--ease-exit),
+    border-color var(--dur-quick) var(--ease-exit),
+    background-color var(--dur-quick) var(--ease-exit),
+    color var(--dur-quick) var(--ease-exit);
+}
+
+.mz-interactive:hover {
+  transform: translate3d(0, calc(var(--lift-sm) * -1), 0);
+}
+
+/*
+ * Focus is not a lesser state than hover. It gets the same movement, so keyboard use feels like
+ * the same website rather than an accessibility compatibility mode.
+ */
+.mz-interactive:focus-visible {
+  transform: translate3d(0, calc(var(--lift-sm) * -1), 0);
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/*
+ * The one global brake. The site already neutralises transition durations under reduced motion;
+ * this adds the scroll-driven half. Note it removes the *timeline*, not just the duration -
+ * a scrubbed animation with a zero duration would still jump between keyframes as you scroll.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .mz-scrub,
+  .mz-once,
+  .mz-pin-track > * {
+    animation: none !important;
+    animation-timeline: none !important;
+  }
+
+  .mz-pin {
+    position: static;
+  }
+
+  .mz-interactive {
+    transition-duration: 0.01ms;
+  }
+
+  .mz-interactive:hover,
+  .mz-interactive:focus-visible {
+    transform: none;
+  }
+}
