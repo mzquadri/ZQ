@@ -1,15 +1,7 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 
-import {
-  EnsembleScene,
-  FeatureMapScene,
-  GraphSurrogateScene,
-  HorizonScene,
-  PipelineScene,
-  RetrievalScene,
-} from "@/components/cinema/scenes";
-import { getProject, type Project } from "@/content/portfolio";
+import { PROJECT_WORLDS, WORLD_ORDER } from "@/components/cinema/project-worlds";
+import { getProject } from "@/content/portfolio";
 
 /*
  * The selected-work sequence.
@@ -25,72 +17,10 @@ import { getProject, type Project } from "@/content/portfolio";
  * would flatten exactly the distinction a reader is trying to make.
  */
 
-interface Chapter {
-  slug: string;
-  /** The accent world this project owns, so a single frame identifies it. */
-  accent: string;
-  /** One line naming what the figure is doing - not a repeat of the project summary. */
-  figureNote: string;
-  scale: "flagship" | "compact";
-  scene: (project: Project) => ReactNode;
-}
-
-/* CIFAR-10's label set is public and fixed; naming four of them is a fact about the dataset. */
-const CIFAR_CLASSES = ["airplane", "automobile", "bird", "cat"] as const;
-
-const CHAPTERS: readonly Chapter[] = [
-  {
-    slug: "transport-uq",
-    accent: "var(--accent-graph)",
-    figureNote:
-      "A breadth-first wavefront over a fixed road network, then a ring per junction standing for how far the information had to travel to reach it.",
-    scale: "flagship",
-    scene: () => <GraphSurrogateScene />,
-  },
-  {
-    slug: "insureassist-rag",
-    accent: "var(--accent-retrieval)",
-    figureNote:
-      "Retrieval and generation kept on opposite sides of the frame, with the answer physically tethered to the passages it was built from.",
-    scale: "flagship",
-    scene: () => <RetrievalScene />,
-  },
-  {
-    slug: "mlops-reference-pipeline",
-    accent: "var(--accent-pipeline)",
-    figureNote:
-      "Each stage is a gate rather than a conveyor: the artifact stops until something lets it through.",
-    scale: "flagship",
-    scene: (project) => <PipelineScene stages={project.workflow} />,
-  },
-  {
-    slug: "hydrology-uq",
-    accent: "var(--accent-flow)",
-    figureNote:
-      "Where an interval comes from: members disagreeing, and the disagreement summarised into a band.",
-    scale: "compact",
-    scene: () => <EnsembleScene />,
-  },
-  {
-    slug: "streamflow-forecasting",
-    accent: "var(--accent-flow)",
-    figureNote:
-      "A forecast is nearly tight at the moment of issue and necessarily loose far out, so the horizon opens.",
-    scale: "compact",
-    scene: () => <HorizonScene />,
-  },
-  {
-    slug: "cifar10-cnn",
-    accent: "var(--accent-vision)",
-    figureNote: "Detail traded for meaning, one layer at a time.",
-    scale: "compact",
-    scene: () => <FeatureMapScene classes={CIFAR_CLASSES} />,
-  },
-];
-
-function WorkChapter({ chapter, index }: { chapter: Chapter; index: number }) {
-  const project = getProject(chapter.slug);
-  if (!project) return null;
+function WorkChapter({ slug, index }: { slug: string; index: number }) {
+  const project = getProject(slug);
+  const world = PROJECT_WORLDS[slug];
+  if (!project || !world) return null;
 
   /* One headline result, taken from the evidence registry rather than written here. */
   const headline = project.evidence[0];
@@ -98,9 +28,9 @@ function WorkChapter({ chapter, index }: { chapter: Chapter; index: number }) {
   return (
     <article
       className="chapter"
-      data-scale={chapter.scale}
+      data-scale={world.scale}
       id={`work-${project.slug}`}
-      style={{ "--accent": chapter.accent } as React.CSSProperties}
+      style={{ "--accent": world.accent } as React.CSSProperties}
     >
       <div className="chapter-inner">
         <header className="chapter-head">
@@ -112,8 +42,8 @@ function WorkChapter({ chapter, index }: { chapter: Chapter; index: number }) {
         </header>
 
         <figure className="chapter-figure">
-          {chapter.scene(project)}
-          <figcaption>{chapter.figureNote}</figcaption>
+          {world.scene(project)}
+          <figcaption>{world.figureNote}</figcaption>
         </figure>
 
         <div className="chapter-copy">
@@ -143,8 +73,8 @@ function WorkChapter({ chapter, index }: { chapter: Chapter; index: number }) {
 export default function WorkChapters() {
   return (
     <div className="chapters">
-      {CHAPTERS.map((chapter, i) => (
-        <WorkChapter chapter={chapter} index={i} key={chapter.slug} />
+      {WORLD_ORDER.map((slug, i) => (
+        <WorkChapter index={i} key={slug} slug={slug} />
       ))}
     </div>
   );

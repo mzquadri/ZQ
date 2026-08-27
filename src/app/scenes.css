@@ -521,7 +521,8 @@
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .chapter {
+    .chapter,
+    .case-stage {
       view-timeline-name: --chapter;
       view-timeline-axis: block;
     }
@@ -531,26 +532,26 @@
      * which is what lets a scene sequence itself; the fallback range covers the whole chapter so
      * an element that forgets to set one still behaves.
      */
-    .chapter .scene-edge,
-    .chapter .scene-node,
-    .chapter .scene-ring,
-    .chapter .scene-doc,
-    .chapter .scene-chunk,
-    .chapter .scene-query,
-    .chapter .scene-query-radius,
-    .chapter .scene-tether,
-    .chapter .scene-answer,
-    .chapter .scene-rail,
-    .chapter .scene-stage,
-    .chapter .scene-artifact,
-    .chapter .scene-member,
-    .chapter .scene-envelope,
-    .chapter .scene-history,
-    .chapter .scene-issue,
-    .chapter .scene-cone,
-    .chapter .scene-lead,
-    .chapter .scene-plane,
-    .chapter .scene-class {
+    :is(.chapter, .case-stage) .scene-edge,
+    :is(.chapter, .case-stage) .scene-node,
+    :is(.chapter, .case-stage) .scene-ring,
+    :is(.chapter, .case-stage) .scene-doc,
+    :is(.chapter, .case-stage) .scene-chunk,
+    :is(.chapter, .case-stage) .scene-query,
+    :is(.chapter, .case-stage) .scene-query-radius,
+    :is(.chapter, .case-stage) .scene-tether,
+    :is(.chapter, .case-stage) .scene-answer,
+    :is(.chapter, .case-stage) .scene-rail,
+    :is(.chapter, .case-stage) .scene-stage,
+    :is(.chapter, .case-stage) .scene-artifact,
+    :is(.chapter, .case-stage) .scene-member,
+    :is(.chapter, .case-stage) .scene-envelope,
+    :is(.chapter, .case-stage) .scene-history,
+    :is(.chapter, .case-stage) .scene-issue,
+    :is(.chapter, .case-stage) .scene-cone,
+    :is(.chapter, .case-stage) .scene-lead,
+    :is(.chapter, .case-stage) .scene-plane,
+    :is(.chapter, .case-stage) .scene-class {
       animation-timeline: --chapter;
       animation-range: var(--range, contain 0% contain 100%);
       animation-fill-mode: both;
@@ -558,36 +559,36 @@
       animation-duration: 1s;
     }
 
-    .chapter .scene-node,
-    .chapter .scene-chunk,
-    .chapter .scene-query { animation-name: mz-propagate; }
+    :is(.chapter, .case-stage) .scene-node,
+    :is(.chapter, .case-stage) .scene-chunk,
+    :is(.chapter, .case-stage) .scene-query { animation-name: mz-propagate; }
 
-    .chapter .scene-edge,
-    .chapter .scene-tether,
-    .chapter .scene-member,
-    .chapter .scene-history { animation-name: mz-connect; --path-length: 100; stroke-dasharray: 100; }
+    :is(.chapter, .case-stage) .scene-edge,
+    :is(.chapter, .case-stage) .scene-tether,
+    :is(.chapter, .case-stage) .scene-member,
+    :is(.chapter, .case-stage) .scene-history { animation-name: mz-connect; --path-length: 100; stroke-dasharray: 100; }
 
-    .chapter .scene-ring,
-    .chapter .scene-query-radius,
-    .chapter .scene-lead,
-    .chapter .scene-issue { animation-name: mz-verify; }
+    :is(.chapter, .case-stage) .scene-ring,
+    :is(.chapter, .case-stage) .scene-query-radius,
+    :is(.chapter, .case-stage) .scene-lead,
+    :is(.chapter, .case-stage) .scene-issue { animation-name: mz-verify; }
 
-    .chapter .scene-doc,
-    .chapter .scene-answer,
-    .chapter .scene-stage { animation-name: mz-reveal; }
+    :is(.chapter, .case-stage) .scene-doc,
+    :is(.chapter, .case-stage) .scene-answer,
+    :is(.chapter, .case-stage) .scene-stage { animation-name: mz-reveal; }
 
-    .chapter .scene-envelope,
-    .chapter .scene-cone { animation-name: mz-converge; }
+    :is(.chapter, .case-stage) .scene-envelope,
+    :is(.chapter, .case-stage) .scene-cone { animation-name: mz-converge; }
 
-    .chapter .scene-rail,
-    .chapter .scene-class i { animation-name: mz-expand; }
+    :is(.chapter, .case-stage) .scene-rail,
+    :is(.chapter, .case-stage) .scene-class i { animation-name: mz-expand; }
 
-    .chapter .scene-plane { animation-name: mz-settle; }
+    :is(.chapter, .case-stage) .scene-plane { animation-name: mz-settle; }
 
-    .chapter .scene-class { animation-name: mz-reveal; }
+    :is(.chapter, .case-stage) .scene-class { animation-name: mz-reveal; }
 
     /* The artifact crosses the rail rather than appearing on it. */
-    .chapter .scene-artifact { animation-name: scene-cross; }
+    :is(.chapter, .case-stage) .scene-artifact { animation-name: scene-cross; }
 
     @keyframes scene-cross {
       from { left: 5%; }
@@ -595,7 +596,7 @@
     }
 
     /* Chunks travel from the document into the space, so their origin is meaningful. */
-    .chapter .scene-chunk {
+    :is(.chapter, .case-stage) .scene-chunk {
       animation-name: scene-chunk-fly;
     }
 
@@ -609,7 +610,8 @@
     /* Chapter heads and copy arrive as the chapter enters, not on the chapter's own scrub. */
     .chapter-head,
     .chapter-copy,
-    .chapter-figure figcaption {
+    .chapter-figure figcaption,
+    .case-stage-figure figcaption {
       animation: mz-reveal var(--dur-slow) var(--ease-exit) both;
       animation-timeline: view();
       animation-range: entry 10% entry 60%;
@@ -675,4 +677,163 @@
 
 @media (prefers-reduced-motion: reduce) {
   .scene-artifact { left: calc(95% - 10px); }
+}
+
+/* ============================================================================================
+ * 5. The case-study stage
+ *
+ * Only the hero is staged. Everything below it stays on paper, because the rest of a case study
+ * is evidence tables and limitations - long-form technical reading, which a dark ground with
+ * oversized type is the wrong surface for. The visual budget goes where a reader is still
+ * deciding whether to read on.
+ * ========================================================================================== */
+
+.case-stage {
+  background: var(--stage);
+  color: var(--stage-ink);
+  padding: clamp(3rem, 8vh, 5.5rem) 0 clamp(3.5rem, 9vh, 6rem);
+  --accent: var(--accent-graph);
+}
+
+.case-stage-inner {
+  width: min(100% - 3rem, var(--content));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: center;
+}
+
+/* A project with no figure gets the full width for its copy rather than a gap where one would be. */
+.case-stage-inner:has(> .case-stage-copy:only-child) {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 58rem;
+}
+
+.case-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+  text-decoration: none;
+}
+
+.case-back::before { content: "←"; }
+
+.case-back:hover,
+.case-back:focus-visible { color: var(--accent); }
+
+.case-stage-eyebrow {
+  margin: 0 0 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.case-stage-title {
+  margin: 0 0 1.1rem;
+  font-family: var(--sans);
+  font-size: clamp(1.9rem, 4.4vw, 3.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+.case-stage-summary {
+  margin: 0 0 1.75rem;
+  max-width: 52ch;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--stage-ink) 86%, transparent);
+}
+
+.case-stage-facts {
+  margin: 0 0 1.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.case-stage-facts dt {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+  margin-bottom: 0.28rem;
+}
+
+.case-stage-facts dd {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.case-stage .case-confidential {
+  margin: 0 0 1.5rem;
+  max-width: 52ch;
+  /* The paper-era rule sets a light background; without overriding it the stage's light ink
+   * lands on --paper-raised at about 1.07:1. */
+  background: color-mix(in oklab, var(--stage-raised) 70%, transparent);
+  padding: 0.85rem 1.1rem;
+  border-left: 2px solid var(--orange);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--stage-ink) 84%, transparent);
+}
+
+.case-stage-figure {
+  margin: 0;
+}
+
+.case-stage-figure figcaption {
+  margin-top: 0.9rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--stage-ink-soft);
+}
+
+.case-stage .scene-svg { max-height: 46vh; }
+
+@media (max-width: 900px) {
+  .case-stage-inner { grid-template-columns: minmax(0, 1fr); }
+  .case-stage .scene-svg { max-height: none; }
+}
+
+@media (max-width: 640px) {
+  .case-stage { padding: 2.25rem 0 3rem; }
+  .case-stage-inner { width: min(100% - 2rem, var(--content)); }
+}
+
+/*
+ * Paper-era components that now appear on the stage.
+ *
+ * The walkthrough launcher was styled for a light hero. On the dark stage its supporting line
+ * inherited --ink-soft and measured 1.83:1. Rebinding the colours here rather than editing the
+ * component keeps it usable on either ground.
+ */
+.case-stage .legal-launcher {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+  margin: 0;
+}
+
+.case-stage .legal-launcher span {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--stage-ink) 82%, transparent);
+}
+
+.case-stage .legal-launcher .button {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--stage-deep);
 }
