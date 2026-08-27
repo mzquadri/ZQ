@@ -14,17 +14,36 @@ const out = process.argv[2] ?? "media/final";
 const origin = process.argv[3] ?? "http://127.0.0.1:3400";
 mkdirSync(out, { recursive: true });
 
-const ROUTES = [
-  ["home", "/"],
-  ["work", "/work"],
-  ["case-transport-uq", "/work/transport-uq"],
-  ["case-insureassist", "/work/insureassist-rag"],
-];
-
-const WIDTHS = [
+/*
+ * Everything a reader judges the site by. Home and work get all three widths because they carry
+ * the most layout; the rest are checked at desktop and phone, which is where the compositions
+ * genuinely differ.
+ */
+const ALL_WIDTHS = [
   ["1440", 1440, 900],
   ["768", 768, 1024],
   ["390", 390, 844],
+];
+
+const DESKTOP_PHONE = [
+  ["1440", 1440, 900],
+  ["390", 390, 844],
+];
+
+const ROUTES = [
+  ["home", "/", ALL_WIDTHS],
+  ["work", "/work", ALL_WIDTHS],
+  ["research", "/research", DESKTOP_PHONE],
+  ["about", "/about", DESKTOP_PHONE],
+  ["contact", "/contact", DESKTOP_PHONE],
+  ["resume", "/resume", DESKTOP_PHONE],
+  ["learn", "/learn", DESKTOP_PHONE],
+  ["case-transport-uq", "/work/transport-uq", DESKTOP_PHONE],
+  ["case-insureassist", "/work/insureassist-rag", DESKTOP_PHONE],
+  ["case-mlops", "/work/mlops-reference-pipeline", DESKTOP_PHONE],
+  ["case-hydrology", "/work/hydrology-uq", DESKTOP_PHONE],
+  ["case-streamflow", "/work/streamflow-forecasting", DESKTOP_PHONE],
+  ["case-cifar10", "/work/cifar10-cnn", DESKTOP_PHONE],
 ];
 
 const browser = await chromium.launch({
@@ -33,8 +52,8 @@ const browser = await chromium.launch({
 
 const problems = [];
 
-for (const [name, route] of ROUTES) {
-  for (const [label, width, height] of WIDTHS) {
+for (const [name, route, widths] of ROUTES) {
+  for (const [label, width, height] of widths) {
     const context = await browser.newContext({
       viewport: { width, height },
       deviceScaleFactor: 2,

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EcosystemGroups, SnapshotNote } from "@/components/EcosystemGrid";
+import { StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import RepoShowcase from "@/components/repo-assembly/RepoShowcase";
 import ProjectList from "@/components/ProjectList";
@@ -26,23 +27,23 @@ export default function WorkPage() {
 
   return (
     <PageShell current="/work">
-      <header className="page-hero section-wrap">
-        <p className="kicker">
-          Selected work / {caseStudyCount} case studies / {ecosystemRepositories.length} public repositories
-        </p>
-        <h1>Engineering claims that can be inspected.</h1>
-        <p>
-          Research, coursework, prototypes, reference implementations, and synthetic
-          demonstrations are labelled separately. Every case study includes evidence and
-          limitations, not only a tool list, and every repository states what it does not establish.
-        </p>
+      <StageHero
+        accent="var(--accent-graph)"
+        eyebrow="Selected work"
+        title="Engineering claims that can be inspected."
+        standfirst="Research, coursework, prototypes, reference implementations, and synthetic demonstrations are labelled separately. Every case study includes evidence and limitations, not only a tool list, and every repository states what it does not establish."
+        meta={[
+          { label: "Case studies", value: caseStudyCount },
+          { label: "Public repositories", value: ecosystemRepositories.length.toString() },
+        ]}
+      >
         <div className="work-jump">
           <a href="#systems">Systems model</a>
           <a href="#connections">How the work connects</a>
           <a href="#case-studies">Case studies</a>
           <a href="#ecosystem">Repository index</a>
         </div>
-      </header>
+      </StageHero>
 
       <section className="section-wrap systems-showcase-section" id="systems">
         <SectionHeading

@@ -1273,3 +1273,35 @@ test("the showcase is keyboard operable and stays inside a mobile viewport", asy
   );
   expect(overflows).toBe(false);
 });
+
+/*
+ * The privacy boundary is not only about what is rendered.
+ *
+ * A client component that imports the content module ships the whole module, so a draft can reach
+ * the browser in a JavaScript chunk while never appearing in any HTML. That happened once, when
+ * the navigation became a client component and pulled the project list in for three strings. This
+ * asserts the boundary where it actually failed: every script the browser is told to download.
+ */
+test("no script the browser loads contains confidential content", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    const type = response.headers()["content-type"] ?? "";
+    if (type.includes("javascript")) scripts.push(response.url());
+  });
+
+  for (const route of ["/", "/work", "/about", "/research", "/contact", "/resume"]) {
+    await page.goto(route, { waitUntil: "networkidle" });
+  }
+
+  expect(scripts.length, "no scripts were observed, so this test proves nothing").toBeGreaterThan(0);
+
+  const offenders: string[] = [];
+  for (const url of [...new Set(scripts)]) {
+    const body = await (await page.request.get(url)).text();
+    for (const marker of ["legal-knowledge-platform", "Stored is not the same as correct"]) {
+      if (body.includes(marker)) offenders.push(`${marker} in ${url.split("/").pop()}`);
+    }
+  }
+
+  expect(offenders, "confidential content reached a client bundle").toEqual([]);
+});
