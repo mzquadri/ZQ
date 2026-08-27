@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
+import CaseHero from "@/components/cinema/CaseHero";
 import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
@@ -78,31 +79,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         }}
       />
       <ArticleShell guided={guided}>
-        <header className="case-hero section-wrap">
-          <Link className="back-link" href="/work">← All work</Link>
-          <div className="case-meta">
-            <span className="classification">{project.classification}</span>
-            <span>{project.year}</span>
-          </div>
-          <p className="kicker">{project.eyebrow}</p>
-          <h1>{project.title}</h1>
-          <p className="case-summary">{project.summary}</p>
-          <dl className="case-facts">
-            <div>
-              <dt>Role</dt>
-              <dd>{project.projectRole}</dd>
-            </div>
-            <div>
-              <dt>Authorship</dt>
-              <dd>{project.authors.map((author) => author.name).join(", ")}</dd>
-            </div>
-            {project.institution ? (
-              <div>
-                <dt>Institution</dt>
-                <dd>{project.institution}</dd>
-              </div>
-            ) : null}
-          </dl>
+        <CaseHero project={project}>
           {isEmployerConfidential(project) ? (
             <>
               <p className="case-confidential">
@@ -112,11 +89,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               {guided ? <WalkthroughLauncher /> : null}
             </>
           ) : (
-            <a className="button button-primary" href={project.repository}>
-              <ArrowLabel>Inspect repository</ArrowLabel>
+            <a className="cine-cta mz-interactive" href={project.repository}>
+              Inspect repository
             </a>
           )}
-        </header>
+        </CaseHero>
 
         {/* The showpiece sits before the prose: the page argues visually first, then explains. */}
         {project.slug === "legal-knowledge-platform" ? (

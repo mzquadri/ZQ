@@ -522,8 +522,28 @@
 }
 
 @media (max-width: 640px) {
+  /*
+   * The phone composition is a different design, not the desktop one shrunk.
+   *
+   * There is no pinned track here - a three-viewport pin on a phone mostly reads as "the page has
+   * stopped responding" - which means the `contain` range the whole sequence is timed against has
+   * nothing to resolve against and every scrubbed element would sit frozen at its `from` state,
+   * i.e. invisible. So the scrub is switched off outright and the figure rests composed, which is
+   * the state it was always designed to fall back to.
+   *
+   * Order changes too: identity first, then the finished figure, then the five beats as a list.
+   * On desktop the figure is the ground the name sits on; at this width they have to take turns,
+   * and the name goes first.
+   */
   .cine-hero {
     min-height: 0;
+  }
+
+  .cine-hero *,
+  .cine-hero *::before,
+  .cine-hero *::after {
+    animation: none !important;
+    animation-timeline: none !important;
   }
 
   .cine-hero-pin {
@@ -532,13 +552,19 @@
   }
 
   .cine-hero-inner {
+    display: flex;
+    flex-direction: column;
     width: min(100% - 2rem, var(--content));
     gap: 2.5rem;
   }
 
+  .cine-identity { order: 1; }
+  .cine-instrument { order: 2; }
+
   .cine-instrument {
     position: static;
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
     gap: 1.25rem;
   }
 
@@ -604,4 +630,16 @@ body:has(.cine-hero) .wordmark > span[aria-hidden="true"] {
 body:has(.cine-hero) .skip-link:focus {
   background: var(--accent);
   color: var(--stage-deep);
+}
+
+/* ============================================================================================
+ * 6. Anchors under a sticky header
+ *
+ * Every in-page link on this site lands under the sticky header without this. The header is
+ * 4.8rem, plus a little air so the heading is not flush against it.
+ * ========================================================================================== */
+
+html:has(.cine-hero),
+html:has(.chapter) {
+  scroll-padding-top: 6.5rem;
 }

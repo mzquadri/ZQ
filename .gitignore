@@ -45,3 +45,5 @@ next-env.d.ts
 
 # Working captures from the visual review harness. The final set is committed deliberately.
 /media/review-*/
+/media/chapters-*/
+/media/sections-*/
