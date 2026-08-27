@@ -388,12 +388,87 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
   await expect(main).not.toContainText("99 tests");
 });
 
+/**
+ * Names the elements that cross the viewport edge, for the assertion message.
+ *
+ * A boolean tells you a page overflows and nothing about why, which turns a narrow-viewport
+ * regression into an archaeology exercise - especially when it only reproduces on CI. This runs in
+ * the page and returns enough to identify and explain each offender: where its box actually is,
+ * whether its own contents are what will not fit, and the grid track and min-width that are the
+ * usual causes.
+ *
+ * Deliberately defensive: it is a diagnostic, and a diagnostic that throws replaces a useful
+ * failure with a useless one.
+ */
+async function describeOverflow(page: import("@playwright/test").Page) {
+  try {
+    return await page.evaluate(() => {
+      const docEl = document.documentElement;
+      const viewport = docEl.clientWidth;
+      const name = (el: Element) => {
+        const id = el.id ? `#${el.id}` : "";
+        const cls =
+          typeof el.className === "string" && el.className.trim()
+            ? `.${el.className.trim().split(/\s+/).slice(0, 2).join(".")}`
+            : "";
+        return `${el.tagName.toLowerCase()}${id}${cls}`;
+      };
+
+      const rows: string[] = [];
+      for (const el of Array.from(document.querySelectorAll("*"))) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width === 0 && rect.height === 0) continue;
+
+        const overhang = rect.right - viewport;
+        const contents = el.scrollWidth - el.clientWidth;
+        if (overhang <= 0.5 && rect.left >= -0.5 && contents <= 1) continue;
+
+        const style = getComputedStyle(el);
+        const parentStyle = el.parentElement ? getComputedStyle(el.parentElement) : null;
+        const path: string[] = [];
+        for (let n: Element | null = el; n && n !== document.body; n = n.parentElement) path.push(name(n));
+
+        const detail = [
+          `left=${Math.round(rect.left)}`,
+          `right=${Math.round(rect.right)}`,
+          `w=${Math.round(rect.width)}`,
+          `overhang=${Math.round(overhang)}px`,
+          contents > 1 ? `contentsExceedBoxBy=${contents}px` : "",
+          style.position !== "static" ? `position=${style.position}` : "",
+          style.minWidth !== "0px" && style.minWidth !== "auto" ? `min-width=${style.minWidth}` : "",
+          style.transform !== "none" ? `transform=${style.transform}` : "",
+          parentStyle?.display.includes("grid") ? `parentCols=${parentStyle.gridTemplateColumns}` : "",
+        ].filter(Boolean);
+
+        rows.push(`${path.slice(0, 4).join(" < ")}\n        ${detail.join(" ")}`);
+      }
+
+      return {
+        viewport,
+        scrollWidth: docEl.scrollWidth,
+        offenders: rows.slice(0, 10),
+      };
+    });
+  } catch (error) {
+    return { viewport: -1, scrollWidth: -1, offenders: [`diagnostic failed: ${String(error)}`] };
+  }
+}
+
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   for (const route of ["/", "/work", "/resume", "/work/mlops-reference-pipeline", "/work/legal-knowledge-platform", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
     await page.goto(route);
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-    expect(overflows, `${route} must not overflow at 320px`).toBe(false);
+
+    // Only measured when it has already gone wrong, so the passing path stays fast.
+    const report = overflows ? await describeOverflow(page) : null;
+    const message = report
+      ? `${route} must not overflow at 320px\n` +
+        `      viewport=${report.viewport} scrollWidth=${report.scrollWidth}\n` +
+        `      offending elements (widest overhang first):\n      - ${report.offenders.join("\n      - ")}`
+      : `${route} must not overflow at 320px`;
+
+    expect(overflows, message).toBe(false);
   }
 });
 
