@@ -48,8 +48,8 @@ export function useWalkthrough() {
  * Returning null rather than a number is what hands control back: a scene that sees null keeps
  * using its own reveal, so there is no moment where both drivers are writing.
  */
-export function useWalkthroughScene(scene: WalkthroughScene | undefined): number | null {
+export function useWalkthroughScene(scene: string | undefined): number | null {
   const value = useContext(WalkthroughContext);
   if (!value || !scene || !value.sceneStates) return null;
-  return value.sceneStates[scene];
+  return value.sceneStates[scene as WalkthroughScene] ?? null;
 }

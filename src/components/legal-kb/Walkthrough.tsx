@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { sceneStatesAt, walkthroughSteps } from "@/content/legal-kb-walkthrough";
-import { WalkthroughContext, useWalkthrough, type WalkthroughValue } from "./walkthrough-context";
+import { WalkthroughContext, useWalkthrough, type WalkthroughValue } from "@/components/scene/walkthrough-context";
 
 /**
  * The one scene driver the guided walkthrough uses.

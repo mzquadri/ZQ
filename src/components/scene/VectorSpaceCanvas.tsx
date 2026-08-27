@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { vectorPoints } from "@/content/legal-kb-scene";
+import { FLAT_VECTOR as FLAT, vectorPoints } from "@/content/scene-geometry";
 
 /**
  * The client island that decides whether the vector card's WebGL layer runs at all.
@@ -24,9 +24,6 @@ const VectorSpaceScene = dynamic(() => import("./VectorSpaceScene"), {
 });
 
 const MIN_WIDTH = 720;
-
-/** Projection bounds for the flat mark. Named so a run of coordinates never reaches the file. */
-const FLAT = { half: 100, spread: 78, near: 2.1, depth: 2.6 } as const;
 
 function webglAvailable() {
   try {
@@ -94,7 +91,7 @@ export default function VectorSpaceCanvas() {
   return (
     <div
       aria-hidden="true"
-      className="legal-vector-canvas"
+      className="vector-space-canvas"
       data-mode={enabled ? "webgl" : degraded ? "degraded" : "static"}
       ref={hostRef}
     >
@@ -105,7 +102,7 @@ export default function VectorSpaceCanvas() {
        * one dataset rather than two different pictures.
        */}
       <svg
-        className="legal-vector-flat"
+        className="vector-space-flat"
         role="presentation"
         viewBox={`${-FLAT.half} ${-FLAT.half} ${FLAT.half * 2} ${FLAT.half * 2}`}
       >
