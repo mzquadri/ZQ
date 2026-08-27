@@ -355,7 +355,7 @@ ol {
 
 .confidence-protocol > li {
   display: grid;
-  grid-template-columns: 2.4rem 1fr;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
   gap: 0 1rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.2rem;
@@ -393,7 +393,7 @@ ol {
 
 .proof-strip {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   background: var(--ink);
   color: var(--paper-raised);
 }
@@ -510,7 +510,7 @@ ol {
 
 .pipeline-figure ol {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), minmax(0, 1fr)));
   gap: 0.6rem;
   list-style: none;
 }
@@ -555,7 +555,7 @@ ol {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), minmax(0, 1fr)));
   gap: 0.75rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
@@ -609,7 +609,7 @@ ol {
 
 .project-row {
   display: grid;
-  grid-template-columns: 4.5rem 1fr auto;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
   align-items: start;
   gap: 1.5rem;
   padding: 2rem 0;
@@ -686,7 +686,7 @@ ol {
 
 .capability-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   border-top: 2px solid var(--ink);
 }
 
@@ -845,7 +845,7 @@ ol {
 
 .two-column-copy {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(3rem, 8vw, 8rem);
 }
 
@@ -931,7 +931,7 @@ ol {
 
 .workflow-list {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   margin-top: 3rem;
   border-top: 2px solid var(--ink);
   list-style: none;
@@ -965,7 +965,7 @@ ol {
 
 .quality-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0;
   padding-block: 0;
 }
@@ -1027,7 +1027,7 @@ ol {
 
 .research-meta {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 3rem;
   border-top: 1px solid var(--line-strong);
 }
@@ -1084,7 +1084,7 @@ ol {
 }
 
 .research-metrics {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .protocol-section {
@@ -1172,7 +1172,7 @@ ol {
 
 .principle-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 3rem;
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
@@ -1211,7 +1211,7 @@ ol {
 
 .capability-table > div {
   display: grid;
-  grid-template-columns: 1fr 1.3fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
   gap: 2rem;
   padding: 1.5rem 0;
   border-bottom: 1px solid var(--line);
@@ -1250,7 +1250,7 @@ ol {
 .contact-links a {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 2fr auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
   align-items: center;
   gap: 1rem;
   padding: 1.5rem 0;
@@ -1289,7 +1289,7 @@ ol {
 
 @media (max-width: 900px) {
   .hero {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding-top: 5rem;
   }
 
@@ -1311,7 +1311,7 @@ ol {
   .pipeline-figure ol,
   .metric-grid,
   .research-metrics {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .capability-grid article,
@@ -1321,15 +1321,15 @@ ol {
   }
 
   .workflow-list {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .research-meta {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .research-question {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .research-question > p:not(.section-index),
@@ -1386,11 +1386,11 @@ ol {
   .contact-note,
   .about-profile,
   .contact-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .capability-table > div {
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
   }
 
   .capability-table ul {
@@ -1457,7 +1457,7 @@ ol {
   }
 
   .proof-strip {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .proof-strip div {
@@ -1468,7 +1468,7 @@ ol {
   .metric-grid,
   .research-metrics,
   .principle-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .pipeline-figure li {
@@ -1481,7 +1481,7 @@ ol {
   }
 
   .project-row {
-    grid-template-columns: 2rem 1fr;
+    grid-template-columns: 2rem minmax(0, 1fr);
     gap: 0.75rem;
   }
 
@@ -1517,7 +1517,7 @@ ol {
 
   .two-column-copy,
   .quality-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .quality-grid > div:first-child {
@@ -1531,11 +1531,11 @@ ol {
    * entirely; the fixed row height goes with it, since stacked cards have nothing to align.
    */
   .workflow-list {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .research-meta {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .chart-scroll {
@@ -1571,7 +1571,7 @@ ol {
 
   .capability-table > div,
   .contact-links a {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.65rem;
   }
 
@@ -1685,7 +1685,7 @@ ol {
 
 .research-audience {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 3rem;
   border-top: 1px solid var(--line-strong);
   border-left: 1px solid var(--line);
@@ -1738,7 +1738,7 @@ ol {
 
 .research-theme-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 0.8fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr);
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
 }
@@ -1827,7 +1827,7 @@ ol {
 
 .research-record-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--line);
 }
 
@@ -1863,7 +1863,7 @@ ol {
 
 .supporting-research-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
 }
@@ -1928,7 +1928,7 @@ ol {
 
 .method-matrix-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -1988,7 +1988,7 @@ ol {
 
 .method-inventory ul {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem 2rem;
   padding: 0 0 1.2rem 1.25rem;
 }
@@ -2009,7 +2009,7 @@ ol {
 
 .retention-options {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.5rem;
 }
 
@@ -2086,7 +2086,7 @@ ol {
 
 .selective-output dl {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .selective-output dl > div {
@@ -2149,12 +2149,21 @@ ol {
 
 .calibration-visual-stack {
   display: grid;
+  /*
+   * An explicit shrinkable track, not the implicit `auto` one.
+   *
+   * With no declared column the implicit track is `auto`, whose minimum is the *widest* item's
+   * min-content contribution - so the broadest figure in the stack silently set the width of every
+   * other figure in it, and none of them could shrink below it however narrow the viewport got.
+   * That is how a stack of figures ends up wider than the page it sits on.
+   */
+  grid-template-columns: minmax(0, 1fr);
   gap: 4rem;
 }
 
 .calibration-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -2194,7 +2203,7 @@ ol {
 
 .calibration-grid dl {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   margin-top: 1.5rem;
 }
@@ -2207,7 +2216,7 @@ ol {
 
 .coverage-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -2215,7 +2224,7 @@ ol {
 .coverage-grid article {
   display: grid;
   min-height: 12rem;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-content: space-between;
   padding: 1.5rem;
   border-right: 1px solid var(--line);
@@ -2232,8 +2241,10 @@ ol {
 
 .coverage-grid strong {
   font-family: var(--sans);
-  font-size: 3.4rem;
+  font-size: clamp(2.1rem, 9vw, 3.4rem);
   font-weight: 500;
+  /* Display type in an `auto` track sets that track's floor; let it shrink with the viewport. */
+  min-width: 0;
 }
 
 .coverage-grid p {
@@ -2245,7 +2256,7 @@ ol {
 .research-finding-grid,
 .evidence-boundary-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
 }
@@ -2301,13 +2312,13 @@ ol {
   .research-theme-grid,
   .supporting-research-grid,
   .method-matrix-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .research-record-heading,
   .research-section-copy,
   .thesis-next-section {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .research-section-copy > p:last-child,
@@ -2331,7 +2342,7 @@ ol {
   .research-finding-grid,
   .evidence-boundary-grid,
   .selective-output dl {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .research-theme-grid article,
@@ -2342,7 +2353,7 @@ ol {
   }
 
   .research-record-heading {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .research-record-actions {
@@ -2351,11 +2362,11 @@ ol {
   }
 
   .research-figure > figcaption {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .retention-options {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .decision-bar span {
@@ -2369,7 +2380,7 @@ ol {
 
   .method-inventory ul,
   .calibration-grid dl {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .research-table-wrap {
@@ -2448,7 +2459,7 @@ ol {
 
 .writing-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
 }
@@ -2502,7 +2513,7 @@ ol {
 
 .topic-columns {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 3rem;
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
@@ -2775,7 +2786,7 @@ ol {
 
 .article-related-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 2.5rem;
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
@@ -2811,7 +2822,7 @@ ol {
 
 @media (max-width: 800px) {
   .article-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .article-toc {
@@ -2828,7 +2839,7 @@ ol {
   .writing-grid,
   .topic-columns,
   .article-related-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .writing-card {
@@ -2859,7 +2870,7 @@ ol {
   }
 
   .workflow-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .workflow-list li {
@@ -2938,7 +2949,7 @@ ol {
 
 .education-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-left: 1px solid var(--line);
 }
 
@@ -2956,7 +2967,7 @@ ol {
 .case-facts {
   display: grid;
   max-width: 64rem;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 2.5rem;
   border-top: 1px solid var(--line-strong);
   border-left: 1px solid var(--line);
@@ -2997,7 +3008,7 @@ ol {
 
 .system-flow ol {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(10.5rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(10.5rem, 100%), minmax(0, 1fr)));
   gap: 0.6rem;
   list-style: none;
 }
@@ -3031,7 +3042,7 @@ ol {
 
 .artifact-links {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), minmax(0, 1fr)));
   gap: 0.75rem;
   margin-top: 2.5rem;
   padding-top: 1.5rem;
@@ -3041,7 +3052,7 @@ ol {
 .artifact-links a {
   display: grid;
   min-height: 10rem;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-content: space-between;
   gap: 0.85rem;
   padding: 1.2rem;
@@ -3131,7 +3142,7 @@ ol {
 .resume-projects,
 .resume-capabilities {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 2rem;
   border-top: 1px solid var(--line-strong);
   border-left: 1px solid var(--line);
@@ -3160,20 +3171,20 @@ ol {
 
 @media (max-width: 900px) {
   .system-flow ol {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .artifact-links,
   .resume-projects,
   .resume-capabilities {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 640px) {
   .career-list li,
   .resume-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .career-number {
@@ -3190,7 +3201,7 @@ ol {
   .artifact-links,
   .resume-projects,
   .resume-capabilities {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .resume-contact {
@@ -3218,7 +3229,7 @@ ol {
   }
 
   .resume-header {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 1rem;
   }
 
@@ -3251,7 +3262,7 @@ ol {
   }
 
   .resume .career-list li {
-    grid-template-columns: 20pt 1fr auto;
+    grid-template-columns: 20pt minmax(0, 1fr) auto;
     gap: 8pt;
     padding: 6pt 0;
   }
@@ -3429,7 +3440,7 @@ ol {
 /* Featured work cards: each flagship carries a visual, not only prose. */
 .featured-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(27rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(27rem, 100%), minmax(0, 1fr)));
   gap: 1.25rem;
   margin-top: 2rem;
 }
@@ -3518,7 +3529,7 @@ ol {
 /* Metric strip used inside a featured card: real audited numbers, nothing decorative. */
 .card-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(7rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(7rem, 100%), minmax(0, 1fr)));
   gap: 0.85rem;
 }
 
@@ -3666,7 +3677,7 @@ ol {
 
 .result-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), minmax(0, 1fr)));
   gap: 1.75rem;
 }
 
@@ -3875,7 +3886,7 @@ ol {
 
 .writing-feature-toc ol {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), minmax(0, 1fr)));
   gap: 0.35rem 1.5rem;
   margin-top: 0.6rem;
   list-style: none;
@@ -4236,7 +4247,7 @@ ol {
 
 .article-pager {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), minmax(0, 1fr)));
   gap: 1rem;
   padding-top: 2rem;
   border-top: 1px solid var(--line);
@@ -4376,7 +4387,7 @@ ol {
 
 .legal-count-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -4475,7 +4486,7 @@ ol {
 
 .legal-fanout-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 1.5rem;
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
@@ -4533,7 +4544,7 @@ ol {
 
 .legal-convergence {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
   list-style: none;
@@ -4617,7 +4628,7 @@ ol {
 
 .legal-ladder {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
   list-style: none;
@@ -4703,7 +4714,7 @@ ol {
   .legal-fanout-grid,
   .legal-convergence,
   .legal-ladder {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .legal-convergence li {
@@ -5053,7 +5064,7 @@ ol {
 .legal-fanout-grid {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.1rem;
   /* No shared table borders: an empty grid frame standing where invisible cards will be reads as
      a broken layout while the scene plays. Each plane carries its own edge instead. */
@@ -5302,7 +5313,7 @@ ol {
    is also what the depth said on desktop. */
 @media (min-width: 601px) and (max-width: 900px) {
   .legal-fanout-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .legal-fanout-grid article[data-representation="relational"] {
@@ -5403,7 +5414,7 @@ ol {
 
 .legal-generation ol {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.45rem;
   margin-top: 0.85rem;
   list-style: none;
@@ -5534,7 +5545,7 @@ ol {
 
 .legal-orders dl {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   margin-top: 1rem;
 }
@@ -5694,7 +5705,7 @@ ol {
 
 @media (max-width: 900px) {
   .legal-generation ol {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .legal-orders dl {
@@ -5708,7 +5719,7 @@ ol {
 
 @media (max-width: 640px) {
   .legal-generation ol {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .legal-count-verdict {
@@ -6216,7 +6227,7 @@ ol {
 .systems-grid {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.1rem;
   transform-style: preserve-3d;
   transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
@@ -6370,7 +6381,7 @@ ol {
 .systems-count-grid {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -6495,7 +6506,7 @@ ol {
 
 .systems-generation ol {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.45rem;
   margin-top: 0.85rem;
   list-style: none;
@@ -6584,7 +6595,7 @@ ol {
 
 .systems-dispositions {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
   list-style: none;
@@ -6619,7 +6630,7 @@ ol {
 
 .systems-ladder {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
   list-style: none;
@@ -6686,16 +6697,16 @@ ol {
   .systems-source-copy .systems-name { font-size: 1.35rem; }
   .systems-links, .systems-measure { display: none; }
   .systems-mark, .systems-showcase .vector-space-canvas { max-width: 24rem; margin-inline: auto; }
-  .systems-generation ol { grid-template-columns: repeat(3, 1fr); }
-  .systems-dispositions { grid-template-columns: repeat(2, 1fr); }
+  .systems-generation ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .systems-dispositions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .systems-dispositions li { min-height: 0; }
-  .systems-ladder { grid-template-columns: repeat(2, 1fr); }
+  .systems-ladder { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Tablet: three narrow columns crush the labels, one column lets them sprawl. The canonical view
    takes the full width and the two derived views sit beside each other. */
 @media (min-width: 601px) and (max-width: 900px) {
-  .systems-grid { grid-template-columns: repeat(2, 1fr); }
+  .systems-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .systems-grid article[data-representation="records"] { grid-column: 1 / -1; }
   .systems-grid article { padding: 1.1rem; }
 }
@@ -6710,7 +6721,7 @@ ol {
   .systems-count-grid article { min-height: 0; gap: 0.5rem; }
   .systems-count-grid strong { font-size: 2.4rem; }
   .systems-verdict { position: static; translate: none; display: block; width: fit-content; margin: 0.75rem 0 0; }
-  .systems-generation ol { grid-template-columns: repeat(2, 1fr); }
+  .systems-generation ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .systems-dispositions { grid-template-columns: minmax(0, 1fr); }
 }
 
