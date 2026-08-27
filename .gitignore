@@ -50,6 +50,12 @@ next-env.d.ts
 # Full-page 2x captures: ~26MB, kept local rather than committed to the history.
 /media/mob-*/
 /media/case-01/
+/media/g3/
+/media/g4/
+/media/g5/
+/media/g6/
+/media/r3/
+/media/e3/
 /media/final/
 # Generated showreel: 2.8MB, re-recordable from tools/record-showreel.mjs.
 /media/showreel.webm

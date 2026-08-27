@@ -1016,3 +1016,36 @@
   .case-story-beat,
   .case-story-caveat { min-height: 0; }
 }
+
+/* ============================================================================================
+ * 7. Spatial layers
+ *
+ * A 3D scene is drawn over its flat figure rather than instead of it. The flat one keeps its box
+ * - which is what keeps layout identical whether WebGL runs or not, and why these stages
+ * contribute no layout shift.
+ * ========================================================================================== */
+
+.graph-city {
+  position: relative;
+  display: block;
+}
+
+.graph-city-canvas {
+  position: absolute;
+  inset: 0;
+  /* The canvas is decoration over a described figure; the description lives on the host. */
+  pointer-events: none;
+}
+
+/*
+ * Once the spatial layer is up the flat drawing hides completely.
+ *
+ * Leaving it as a faint ghost was tried and rejected on review: the two are the same network but
+ * they are not the same projection, so the plan sat at a different angle behind the field and
+ * read as noise rather than as continuity. It keeps its box - that is what holds the layout
+ * identical either way - and only its ink goes.
+ */
+.graph-city[data-mode="webgl"] > .scene-svg {
+  opacity: 0;
+  transition: opacity var(--dur-cinematic) var(--ease-exit);
+}
