@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
+import { ProfileSpine, StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import { EducationList, ExperienceList } from "@/components/CareerProfile";
+import { problemClasses } from "@/content/cinema";
 import { capabilities, getProject, resumeProjectSlugs, site, thesis } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -29,28 +31,30 @@ export default function ResumePage() {
           },
         }}
       />
-      <article className="resume section-wrap">
-        <header className="resume-header">
-          <div>
-            <p className="kicker">Resume / Verified public record</p>
-            <h1>{site.name}</h1>
-            <p className="resume-positioning">{site.positioning}</p>
-            <p className="resume-focus">{capabilities.map((capability) => capability.title).join(" / ")}</p>
-          </div>
-          <div className="resume-contact" aria-label="Public profile links">
-            <span>{site.location}</span>
-            <a href={site.domain}>mzquadri.de</a>
-            <a href={site.github}>github.com/mzquadri</a>
-            <a href={site.linkedin}>LinkedIn</a>
-          </div>
-        </header>
-
-        <div className="resume-download">
-          <a className="button button-primary" href={site.resume.pdfPath} download>
-            Download PDF resume
+      <StageHero
+        accent="var(--accent-pipeline)"
+        eyebrow="Resume / Verified public record"
+        title={site.name}
+        standfirst={site.positioning}
+        meta={[
+          { label: "Based in", value: site.location },
+          { label: "Focus", value: capabilities.map((capability) => capability.title).join(" / ") },
+        ]}
+        figure={<ProfileSpine stages={[...problemClasses].reverse()} />}
+      >
+        <p className="page-stage-actions">
+          <a className="cine-cta mz-interactive" href={site.resume.pdfPath} download>
+            Download PDF
           </a>
-          <p>No email, phone number, street address, or disputed employment dates are published.</p>
-        </div>
+          <a className="cine-cta cine-cta-quiet mz-interactive" href={site.github}>GitHub</a>
+          <a className="cine-cta cine-cta-quiet mz-interactive" href={site.linkedin}>LinkedIn</a>
+        </p>
+        <p className="page-stage-note">
+          No email, phone number, street address, or disputed employment dates are published.
+        </p>
+      </StageHero>
+
+      <article className="resume section-wrap">
 
         <section className="resume-section" aria-labelledby="resume-experience">
           <h2 id="resume-experience">Experience</h2>

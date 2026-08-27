@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EducationList, ExperienceList } from "@/components/CareerProfile";
+import { DomainsScene, StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import ProfilePortrait from "@/components/ProfilePortrait";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
@@ -36,23 +37,17 @@ const principles = [
 export default function AboutPage() {
   return (
     <PageShell current="/about">
-      <header className="page-hero section-wrap">
-        <div className="about-identity">
-          <ProfilePortrait variant="feature" />
-          <p className="portrait-caption">
-            <strong>{site.name}</strong>
-            <span>{site.role}</span>
-            <span>{site.location}</span>
-          </p>
-        </div>
-        <p className="kicker">About / Working approach</p>
-        <h1>Mathematical care, practical engineering.</h1>
-        <p>
-          I work at the boundary between modelling and systems: understanding what a model
-          can support, then building the data, evaluation, and software path that makes that
-          evidence useful.
-        </p>
-      </header>
+      <StageHero
+        eyebrow="About / Working approach"
+        title="Mathematical care, practical engineering."
+        standfirst="I work at the boundary between modelling and systems: understanding what a model can support, then building the data, evaluation, and software path that makes that evidence useful."
+        meta={[
+          { label: "Based in", value: site.location },
+          { label: "Role", value: site.role },
+          { label: "Studying", value: thesis.program },
+        ]}
+        figure={<DomainsScene />}
+      />
 
       <section className="section-wrap about-profile">
         <div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLabel } from "@/components/Icon";
+import { StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedLearnWriting, getWritingTaxonomy } from "@/content/writing/repository";
@@ -39,14 +40,12 @@ export default function LearnPage() {
 
   return (
     <PageShell current="/learn">
-      <header className="page-hero learn-hero section-wrap">
-        <p className="kicker">Learn / technical field notes</p>
-        <h1>Build the system. Explain the reasoning.</h1>
-        <p>
-          Tutorials and notes connecting mathematical ideas, model evaluation, and production
-          engineering. Each piece is written to make a technical decision easier to understand and use.
-        </p>
-      </header>
+      <StageHero
+        accent="var(--accent-systems)"
+        eyebrow="Learn / technical field notes"
+        title="Build the system. Explain the reasoning."
+        standfirst="Tutorials and notes connecting mathematical ideas, model evaluation, and production engineering. Each piece is written to make a technical decision easier to understand and use."
+      />
 
       <section className="section-wrap writing-index" aria-labelledby="latest-writing">
         <div className="writing-index-header">
