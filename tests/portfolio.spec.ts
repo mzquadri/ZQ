@@ -1149,3 +1149,90 @@ test("a long reflection is set as a paragraph rather than as display type", asyn
   expect(size, "a paragraph-length quote must not use the display size").toBeLessThan(shortSize);
 });
 
+/*
+ * The public systems showcase, and the line between it and the confidential case study.
+ */
+
+test("the public systems showcase renders on the work page", async ({ page }) => {
+  await page.goto("/work");
+
+  await expect(page.getByRole("heading", { name: /One source\. Several representations/ })).toBeVisible();
+  await expect(page.locator(".systems-badge")).toContainText("Illustrative system model");
+
+  // Three parallel views, each named and each stating what it is checked by.
+  const cards = page.locator(".systems-grid article");
+  await expect(cards).toHaveCount(3);
+  for (const name of ["Structured data", "Vector space", "Knowledge graph"]) {
+    await expect(page.locator(".systems-grid .systems-name", { hasText: name })).toHaveCount(1);
+  }
+
+  // The three generations, and the four dispositions.
+  for (const name of ["Retained history", "Previous state", "Current state"]) {
+    await expect(page.getByRole("region", { name })).toBeVisible();
+  }
+  for (const disposition of ["retained", "added", "replaced", "pruned"]) {
+    await expect(page.locator(`.systems-dispositions li[data-disposition="${disposition}"]`)).toHaveCount(1);
+  }
+
+  // Every figure is complete at rest, which is what reduced motion leaves it at.
+  for (const stage of [".systems-stage", ".systems-count-stage", ".systems-generations", ".systems-ladder-stage"]) {
+    await expect(page.locator(stage)).toHaveAttribute("data-terminal", "");
+  }
+});
+
+test("the showcase itself names no employer, domain, or private system", async ({ page }) => {
+  await page.goto("/work");
+
+  /*
+   * Scoped to the showcase. The work index legitimately lists the confidential draft in a local
+   * build - that is how it gets reviewed - and its absence from a production build is asserted
+   * separately, against a production build, in the confidential suite.
+   */
+  const text = (await page.locator(".systems-showcase").innerText()).toLowerCase();
+  for (const term of ["legal", "statute", "corpus", "bp-it", "bp-itcs", "gesetze", "celex", "verification gate"]) {
+    expect(text, `the showcase mentions "${term}"`).not.toContain(term);
+  }
+
+  // And nothing inside it links to the draft, whatever the index happens to list.
+  const hrefs = await page.locator(".systems-showcase a[href]").evaluateAll((links) =>
+    links.map((link) => link.getAttribute("href") ?? ""),
+  );
+  expect(hrefs.filter((href) => href.includes("legal-knowledge"))).toEqual([]);
+});
+
+test("the showcase keeps WebGL gated and asks nothing of a third party", async ({ page }) => {
+  const external: string[] = [];
+  page.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.hostname !== "127.0.0.1" && url.hostname !== "localhost") external.push(request.url());
+  });
+
+  await page.goto("/work", { waitUntil: "networkidle" });
+
+  // Both projects run reduced-motion, which is one of the four gates, so no canvas may mount.
+  await expect(page.locator(".systems-showcase .vector-space-canvas")).toHaveAttribute("data-mode", "static");
+  await expect(page.locator(".systems-showcase canvas")).toHaveCount(0);
+  // The card still says what the points would have shown.
+  await expect(
+    page.locator(".systems-grid article[data-representation='vectors']"),
+  ).toContainText("One embedding per record");
+
+  expect(external).toEqual([]);
+});
+
+test("the showcase is keyboard operable and stays inside a mobile viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/work");
+
+  for (const representation of ["records", "vectors", "graph"]) {
+    const card = page.locator(`.systems-grid article[data-representation="${representation}"]`);
+    await card.focus();
+    await expect(card).toBeFocused();
+    await expect(card.locator("dt", { hasText: "Checked by" })).toBeVisible();
+  }
+
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  expect(overflows).toBe(false);
+});

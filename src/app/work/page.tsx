@@ -5,7 +5,9 @@ import PageShell from "@/components/PageShell";
 import RepoShowcase from "@/components/repo-assembly/RepoShowcase";
 import ProjectList from "@/components/ProjectList";
 import SectionHeading from "@/components/SectionHeading";
+import SystemsShowcase from "@/components/systems-showcase/SystemsShowcase";
 import { ecosystemRepositories, getPopulatedCategories } from "@/content/ecosystem";
+import { showcase } from "@/content/systems-showcase";
 import { projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 import { ArrowLabel } from "@/components/Icon";
@@ -34,14 +36,25 @@ export default function WorkPage() {
           limitations, not only a tool list, and every repository states what it does not establish.
         </p>
         <div className="work-jump">
+          <a href="#systems">Systems model</a>
           <a href="#case-studies">Case studies</a>
           <a href="#ecosystem">Repository index</a>
         </div>
       </header>
 
-      <section className="section-wrap work-index" id="case-studies">
+      <section className="section-wrap systems-showcase-section" id="systems">
         <SectionHeading
           index="01"
+          eyebrow={showcase.eyebrow}
+          title={showcase.title}
+          introduction={showcase.introduction}
+        />
+        <SystemsShowcase />
+      </section>
+
+      <section className="section-wrap work-index" id="case-studies">
+        <SectionHeading
+          index="02"
           eyebrow="Featured case studies"
           title="The work written up in full"
           introduction="Each case study states the problem, my contribution, the versioned evidence, the quality controls, and the limitations that bound the claim."
@@ -51,7 +64,7 @@ export default function WorkPage() {
 
       <section className="section-wrap ecosystem-index" id="ecosystem">
         <SectionHeading
-          index="02"
+          index="03"
           eyebrow="Repository index"
           title="The repositories, taken apart"
           introduction="The flagship repositories are shown as assemblies: one part for each focus area the registry records, plus its portfolio status and its evidence boundary. Categories describe status, not technical quality, and experiments are never presented as production systems."
