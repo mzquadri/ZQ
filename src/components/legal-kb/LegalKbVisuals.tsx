@@ -5,15 +5,10 @@ import {
   representationFanOut,
   verificationStates,
 } from "@/content/legal-kb";
-import {
-  convergenceOrders,
-  generationPlanes,
-  generationUnits,
-  graphEdges as sceneGraphEdges,
-  graphNodes as sceneGraphNodes,
-} from "@/content/legal-kb-scene";
-import SceneReveal from "./SceneReveal";
-import VectorSpaceCanvas from "./VectorSpaceCanvas";
+import { convergenceOrders, generationPlanes, generationUnits } from "@/content/legal-kb-scene";
+import { GRAPH_MARK, sceneGraphEdges, sceneGraphNodes } from "@/content/scene-geometry";
+import SceneReveal from "@/components/scene/SceneReveal";
+import VectorSpaceCanvas from "@/components/scene/VectorSpaceCanvas";
 
 /*
  * Figures for the legal knowledge platform case study.
@@ -82,16 +77,6 @@ export function StoredIsNotCorrect() {
     </figure>
   );
 }
-
-/**
- * Drawing bounds for the reference-graph mark.
- *
- * Named rather than written into the `viewBox` string because the privacy validator reads this
- * file as text, and a run of coordinates separated by spaces and minus signs looks exactly like a
- * telephone number to it. `SystemGraph` builds its own viewBox from constants for the same
- * reason. The check is right to be blunt; the drawing can be the thing that adapts.
- */
-const GRAPH_MARK = { halfWidth: 100, halfHeight: 62, spreadX: 82, spreadY: 56 } as const;
 
 /**
  * The visual band each representation card carries.

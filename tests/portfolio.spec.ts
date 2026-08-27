@@ -742,7 +742,7 @@ test("the WebGL layer stays off where it should and takes nothing with it", asyn
   await page.goto("/work/legal-knowledge-platform");
 
   // Reduced motion is one of the four gates, so the canvas must not mount in either project.
-  await expect(page.locator(".legal-vector-canvas")).toHaveAttribute("data-mode", "static");
+  await expect(page.locator(".vector-space-canvas")).toHaveAttribute("data-mode", "static");
   await expect(page.locator("canvas")).toHaveCount(0);
 
   // And three.js must not have been fetched for a card that never rendered.
@@ -796,7 +796,7 @@ test("the enhanced case study still publishes no source and no scale", async ({ 
 
   // Canvas hosts must carry no label that could leak content, and must be hidden from the tree
   // because the DOM beside them already says it.
-  await expect(page.locator(".legal-vector-canvas")).toHaveAttribute("aria-hidden", "true");
+  await expect(page.locator(".vector-space-canvas")).toHaveAttribute("aria-hidden", "true");
 
   const text = await page.locator("main").evaluate((main) => {
     const clone = main.cloneNode(true) as HTMLElement;
@@ -1148,3 +1148,4 @@ test("a long reflection is set as a paragraph rather than as display type", asyn
 
   expect(size, "a paragraph-length quote must not use the display size").toBeLessThan(shortSize);
 });
+

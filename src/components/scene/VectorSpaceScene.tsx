@@ -3,7 +3,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { vectorPoints } from "@/content/legal-kb-scene";
+import { vectorPoints } from "@/content/scene-geometry";
 
 /**
  * The vector space, drawn.

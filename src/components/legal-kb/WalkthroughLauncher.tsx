@@ -1,6 +1,6 @@
 "use client";
 
-import { useWalkthrough } from "./walkthrough-context";
+import { useWalkthrough } from "@/components/scene/walkthrough-context";
 
 /**
  * The one way in.

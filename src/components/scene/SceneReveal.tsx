@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { WalkthroughScene } from "@/content/legal-kb-walkthrough";
-import { useWalkthroughScene } from "./walkthrough-context";
+import { useWalkthroughScene } from "@/components/scene/walkthrough-context";
 
 /**
  * Steps server-rendered children through named scene states as they come into view.
@@ -43,12 +42,14 @@ interface SceneRevealProps {
    */
   parallax?: boolean;
   /**
-   * Which walkthrough scene this figure is, if the guided run drives it.
+   * The scene name a guided run uses to address this figure, where one exists.
    *
-   * While the walkthrough is active this component stops scheduling anything and simply renders
-   * the state it is handed. That is what keeps the two drivers from writing at once.
+   * A figure with no name - a public diagram with no walkthrough over it - simply never sees a
+   * driver and keeps using its own reveal. While a run is active the named figure stops
+   * scheduling anything and renders the state it is handed, which is what keeps two drivers from
+   * writing at once.
    */
-  scene?: WalkthroughScene;
+  scene?: string;
 }
 
 /** Degrees at the far edge of the figure. Small enough that type never skews out of legibility. */

@@ -5150,7 +5150,7 @@ ol {
   stroke-dasharray: 4 3;
 }
 
-.legal-vector-canvas {
+.vector-space-canvas {
   height: 7.4rem;
   margin-top: 0.9rem;
   border-top: 1px solid var(--line);
@@ -5158,26 +5158,26 @@ ol {
 }
 
 /* The flat mark the card keeps when WebGL does not run. Same sixteen points, projected. */
-.legal-vector-canvas {
+.vector-space-canvas {
   position: relative;
 }
 
-.legal-vector-flat {
+.vector-space-flat {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-.legal-vector-flat circle {
+.vector-space-flat circle {
   fill: var(--teal-dark);
 }
 
-.legal-vector-flat circle:nth-child(5n + 1) {
+.vector-space-flat circle:nth-child(5n + 1) {
   fill: var(--teal);
 }
 
 /* When the renderer is running it owns the space, so the flat reading steps aside. */
-.legal-vector-canvas[data-mode="webgl"] .legal-vector-flat {
+.vector-space-canvas[data-mode="webgl"] .vector-space-flat {
   display: none;
 }
 
@@ -5197,7 +5197,7 @@ ol {
   /* A mark stretched across a full-width tablet card reads as an empty band. Hold them to a
      legible measure and centre them instead. */
   .legal-fanout-mark,
-  .legal-vector-canvas {
+  .vector-space-canvas {
     max-width: 24rem;
     margin-inline: auto;
   }
