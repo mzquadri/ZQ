@@ -5,6 +5,8 @@ import { site } from "@/content/portfolio";
 import "./globals.css";
 import "./motion.css";
 import "./cinema.css";
+import "./scenes.css";
+import "./home.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

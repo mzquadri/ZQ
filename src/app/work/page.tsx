@@ -5,6 +5,7 @@ import PageShell from "@/components/PageShell";
 import RepoShowcase from "@/components/repo-assembly/RepoShowcase";
 import ProjectList from "@/components/ProjectList";
 import SectionHeading from "@/components/SectionHeading";
+import SystemGraph from "@/components/SystemGraph";
 import SystemsShowcase from "@/components/systems-showcase/SystemsShowcase";
 import { ecosystemRepositories, getPopulatedCategories } from "@/content/ecosystem";
 import { showcase } from "@/content/systems-showcase";
@@ -37,6 +38,7 @@ export default function WorkPage() {
         </p>
         <div className="work-jump">
           <a href="#systems">Systems model</a>
+          <a href="#connections">How the work connects</a>
           <a href="#case-studies">Case studies</a>
           <a href="#ecosystem">Repository index</a>
         </div>
@@ -52,9 +54,21 @@ export default function WorkPage() {
         <SystemsShowcase />
       </section>
 
-      <section className="section-wrap work-index" id="case-studies">
+      {/* No reveal animation here: a transform on the section would become the containing
+          block for the sticky graph viewport inside it. */}
+      <section className="section-wrap systems-section" id="connections">
         <SectionHeading
           index="02"
+          eyebrow="How the work connects"
+          title="From data to a decision someone can act on"
+          introduction="Select any node to see what it means here and which public artifact backs it. Dashed nodes are directions of study with no public project yet."
+        />
+        <SystemGraph />
+      </section>
+
+      <section className="section-wrap work-index" id="case-studies">
+        <SectionHeading
+          index="03"
           eyebrow="Featured case studies"
           title="The work written up in full"
           introduction="Each case study states the problem, my contribution, the versioned evidence, the quality controls, and the limitations that bound the claim."
@@ -64,7 +78,7 @@ export default function WorkPage() {
 
       <section className="section-wrap ecosystem-index" id="ecosystem">
         <SectionHeading
-          index="03"
+          index="04"
           eyebrow="Repository index"
           title="The repositories, taken apart"
           introduction="The flagship repositories are shown as assemblies: one part for each focus area the registry records, plus its portfolio status and its evidence boundary. Categories describe status, not technical quality, and experiments are never presented as production systems."
