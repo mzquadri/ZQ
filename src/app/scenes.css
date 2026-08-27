@@ -1,0 +1,678 @@
+/*
+ * Project chapters and their figures.
+ *
+ * Same contract as the rest of the cinematic layer: resting state is the finished state, and the
+ * scrub only ever describes where an element came from. Each `.chapter` carries its own view
+ * timeline, so a figure stages itself across its own chapter's scroll span - descendants resolve
+ * `--chapter` to their nearest chapter ancestor, which means six chapters can share one rule set
+ * without interfering with each other.
+ */
+
+/* ============================================================================================
+ * 1. Chapter layout
+ * ========================================================================================== */
+
+.chapters {
+  background: var(--stage);
+  color: var(--stage-ink);
+}
+
+.chapter {
+  border-top: 1px solid var(--stage-line);
+  padding: clamp(4rem, 9vh, 7.5rem) 0;
+}
+
+.chapter-inner {
+  width: min(100% - 3rem, var(--content));
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3rem);
+}
+
+/* A flagship gets the figure at full width above the copy; a compact project puts the figure and
+ * its copy side by side, which is the layout equivalent of a smaller budget. */
+.chapter[data-scale="flagship"] .chapter-inner {
+  grid-template-areas: "head" "figure" "copy";
+}
+
+.chapter[data-scale="compact"] .chapter-inner {
+  grid-template-areas: "head head" "figure copy";
+  grid-template-columns: 1.35fr 1fr;
+  align-items: center;
+}
+
+.chapter-head { grid-area: head; }
+.chapter-figure { grid-area: figure; margin: 0; }
+.chapter-copy { grid-area: copy; }
+
+.chapter-index {
+  margin: 0 0 0.5rem;
+  font-family: var(--mono);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 1;
+  font-weight: 700;
+  /*
+   * Mixed toward the stage rather than toward transparent, and far enough to clear the 3:1 large
+   * text threshold on every accent. Mixing to transparent was producing ratios around 1.7, which
+   * is decorative-looking and unreadable - and these numerals are the chapter's position in the
+   * sequence, which is information.
+   */
+  color: color-mix(in oklab, var(--accent) 62%, var(--stage));
+}
+
+.chapter-eyebrow {
+  margin: 0 0 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.chapter-title {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(1.7rem, 4.2vw, 3.1rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  max-width: 22ch;
+}
+
+.chapter-link {
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0% 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size var(--dur-base) var(--ease-exit);
+}
+
+.chapter-link:hover,
+.chapter-link:focus-visible {
+  background-size: 100% 2px;
+}
+
+/* ---- Figures ------------------------------------------------------------------------------- */
+
+.chapter-figure figcaption {
+  margin-top: 1rem;
+  max-width: 62ch;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--stage-ink-soft);
+}
+
+.scene-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: color-mix(in oklab, var(--stage-raised) 70%, transparent);
+  border: 1px solid var(--stage-line);
+  border-radius: 4px;
+}
+
+.chapter[data-scale="flagship"] .scene-svg { max-height: 58vh; }
+.chapter[data-scale="compact"] .scene-svg { max-height: 34vh; }
+
+/* ---- Copy ---------------------------------------------------------------------------------- */
+
+.chapter-summary {
+  margin: 0 0 1.4rem;
+  max-width: 58ch;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.6;
+}
+
+.chapter-metric {
+  margin: 0 0 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 0.95rem;
+  border-left: 2px solid var(--accent);
+}
+
+.chapter-metric span {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+}
+
+.chapter-metric strong {
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+  font-weight: 700;
+}
+
+.chapter-meta {
+  margin: 0 0 1.4rem;
+  display: flex;
+  gap: 1.2rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+}
+
+.chapter-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.62rem 1.15rem;
+  border: 1px solid var(--stage-line-strong);
+  border-radius: 999px;
+  color: var(--stage-ink);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.chapter-more::after { content: "→"; }
+
+.chapter-more:hover,
+.chapter-more:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---- Chapter set intro / outro -------------------------------------------------------------- */
+
+.chapter-intro {
+  background: var(--stage);
+  color: var(--stage-ink);
+  padding: clamp(5rem, 12vh, 9rem) 0 clamp(1rem, 3vh, 2rem);
+}
+
+.chapter-intro-inner {
+  width: min(100% - 3rem, var(--content));
+  margin: 0 auto;
+  max-width: 54rem;
+}
+
+.chapter-intro-index {
+  margin: 0 0 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  color: var(--stage-ink-soft);
+}
+
+.chapter-intro-eyebrow {
+  margin: 0 0 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.chapter-intro-title {
+  margin: 0 0 1.1rem;
+  font-family: var(--sans);
+  font-size: clamp(2rem, 5.2vw, 3.9rem);
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+.chapter-intro-lede {
+  margin: 0;
+  max-width: 58ch;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--stage-ink) 84%, transparent);
+}
+
+.chapter-outro {
+  background: var(--stage);
+  padding: 0 0 clamp(4rem, 10vh, 7rem);
+  display: grid;
+  justify-items: center;
+  border-top: 1px solid var(--stage-line);
+  padding-top: clamp(3rem, 7vh, 5rem);
+}
+
+@media (max-width: 640px) {
+  .chapter-intro { padding-top: 3.5rem; }
+  .chapter-intro-inner { width: min(100% - 2rem, var(--content)); }
+}
+
+/* ============================================================================================
+ * 2. Scene internals
+ * ========================================================================================== */
+
+/* -- Graph surrogate ------------------------------------------------------------------------- */
+.scene-graph-base line {
+  stroke: var(--stage-line);
+  stroke-width: 1;
+}
+
+.scene-edge {
+  stroke: var(--accent);
+  stroke-width: 2;
+  opacity: 0.75;
+}
+
+.scene-node {
+  fill: var(--stage);
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.scene-node[data-source] {
+  fill: var(--accent);
+}
+
+.scene-ring {
+  fill: none;
+  stroke: var(--stage-ink-soft);
+  stroke-width: 1;
+  opacity: 0.5;
+}
+
+/* The junctions the wavefront reached last are the ones with least to go on. Marked with a
+ * dashed ring at full opacity rather than a faded one, so the distinction survives low vision. */
+.scene-ring[data-low] {
+  stroke: var(--orange);
+  stroke-dasharray: 3 4;
+  opacity: 1;
+}
+
+/* -- Retrieval -------------------------------------------------------------------------------- */
+.scene-doc rect {
+  fill: var(--stage-raised);
+  stroke: var(--stage-line-strong);
+}
+
+.scene-doc-line {
+  fill: var(--stage-ink-soft);
+  stroke: none;
+  opacity: 0.55;
+}
+
+.scene-chunk {
+  fill: var(--stage-raised);
+  stroke: var(--stage-ink-soft);
+  stroke-width: 1.5;
+}
+
+.scene-chunk[data-hit] {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.scene-query {
+  fill: var(--stage-ink);
+  stroke: none;
+}
+
+.scene-query-radius {
+  fill: none;
+  stroke: var(--stage-ink);
+  stroke-width: 1;
+  stroke-dasharray: 4 5;
+  opacity: 0.6;
+}
+
+.scene-tether {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.scene-answer rect {
+  fill: var(--stage-raised);
+  stroke: var(--accent);
+}
+
+.scene-cite {
+  fill: var(--accent);
+  stroke: none;
+  opacity: 0.75;
+}
+
+/* -- Pipeline --------------------------------------------------------------------------------- */
+.scene-pipeline {
+  position: relative;
+  padding: 2.5rem 0 1.5rem;
+  background: color-mix(in oklab, var(--stage-raised) 70%, transparent);
+  border: 1px solid var(--stage-line);
+  border-radius: 4px;
+}
+
+.scene-rail {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 3.4rem;
+  height: 2px;
+  background: var(--stage-line-strong);
+  transform-origin: left center;
+}
+
+.scene-stages {
+  position: relative;
+  margin: 0;
+  padding: 0 5%;
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.scene-stage {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.scene-gate {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent);
+  background: var(--stage);
+  transform: rotate(45deg);
+}
+
+.scene-stage-index {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+.scene-stage-name {
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: var(--stage-ink);
+  max-width: 14ch;
+}
+
+.scene-artifact {
+  position: absolute;
+  top: calc(3.4rem - 4px);
+  left: 5%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+
+/* -- Ensemble --------------------------------------------------------------------------------- */
+.scene-member {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.25;
+  opacity: 0.55;
+}
+
+.scene-envelope {
+  fill: color-mix(in oklab, var(--accent) 20%, transparent);
+  stroke: color-mix(in oklab, var(--accent) 60%, transparent);
+  stroke-width: 1.5;
+}
+
+/* -- Horizon ---------------------------------------------------------------------------------- */
+.scene-history {
+  fill: none;
+  stroke: var(--stage-ink);
+  stroke-width: 2.25;
+}
+
+.scene-issue {
+  stroke: var(--stage-ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.scene-cone {
+  fill: color-mix(in oklab, var(--accent) 20%, transparent);
+  stroke: color-mix(in oklab, var(--accent) 62%, transparent);
+  stroke-width: 1.5;
+}
+
+.scene-lead {
+  stroke: var(--stage-ink-soft);
+  stroke-width: 1.5;
+}
+
+/* -- Feature maps ----------------------------------------------------------------------------- */
+.scene-featuremap {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem;
+  background: color-mix(in oklab, var(--stage-raised) 70%, transparent);
+  border: 1px solid var(--stage-line);
+  border-radius: 4px;
+}
+
+.scene-planes {
+  position: relative;
+  height: 12rem;
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+
+.scene-plane {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 8rem;
+  height: 8rem;
+  display: grid;
+  gap: 2px;
+  border: 1px solid var(--stage-line-strong);
+  background: var(--stage);
+  transform: translateZ(calc(var(--z, 0) * 1px)) translateX(calc(var(--x, 0) * 1px)) rotateY(-22deg);
+}
+
+.scene-plane[data-layer="0"] { --z: 0;   --x: -70; grid-template-columns: repeat(8, 1fr); }
+.scene-plane[data-layer="1"] { --z: 40;  --x: 0;   grid-template-columns: repeat(6, 1fr); }
+.scene-plane[data-layer="2"] { --z: 80;  --x: 70;  grid-template-columns: repeat(4, 1fr); }
+
+.scene-plane > span {
+  background: color-mix(in oklab, var(--accent) 32%, transparent);
+}
+
+.scene-plane[data-layer="1"] > span { background: color-mix(in oklab, var(--accent) 52%, transparent); }
+.scene-plane[data-layer="2"] > span { background: color-mix(in oklab, var(--accent) 78%, transparent); }
+
+.scene-classes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.scene-class {
+  display: grid;
+  gap: 0.3rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--stage-ink-soft);
+}
+
+.scene-class[data-top] { color: var(--stage-ink); }
+
+.scene-class i {
+  display: block;
+  height: 6px;
+  width: var(--w);
+  background: color-mix(in oklab, var(--accent) 40%, transparent);
+  transform-origin: left center;
+}
+
+.scene-class[data-top] i { background: var(--accent); }
+
+/* ============================================================================================
+ * 3. The scrub
+ * ========================================================================================== */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .chapter {
+      view-timeline-name: --chapter;
+      view-timeline-axis: block;
+    }
+
+    /*
+     * One binding for every staged element in every scene. `--range` is set inline per element,
+     * which is what lets a scene sequence itself; the fallback range covers the whole chapter so
+     * an element that forgets to set one still behaves.
+     */
+    .chapter .scene-edge,
+    .chapter .scene-node,
+    .chapter .scene-ring,
+    .chapter .scene-doc,
+    .chapter .scene-chunk,
+    .chapter .scene-query,
+    .chapter .scene-query-radius,
+    .chapter .scene-tether,
+    .chapter .scene-answer,
+    .chapter .scene-rail,
+    .chapter .scene-stage,
+    .chapter .scene-artifact,
+    .chapter .scene-member,
+    .chapter .scene-envelope,
+    .chapter .scene-history,
+    .chapter .scene-issue,
+    .chapter .scene-cone,
+    .chapter .scene-lead,
+    .chapter .scene-plane,
+    .chapter .scene-class {
+      animation-timeline: --chapter;
+      animation-range: var(--range, contain 0% contain 100%);
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-duration: 1s;
+    }
+
+    .chapter .scene-node,
+    .chapter .scene-chunk,
+    .chapter .scene-query { animation-name: mz-propagate; }
+
+    .chapter .scene-edge,
+    .chapter .scene-tether,
+    .chapter .scene-member,
+    .chapter .scene-history { animation-name: mz-connect; --path-length: 100; stroke-dasharray: 100; }
+
+    .chapter .scene-ring,
+    .chapter .scene-query-radius,
+    .chapter .scene-lead,
+    .chapter .scene-issue { animation-name: mz-verify; }
+
+    .chapter .scene-doc,
+    .chapter .scene-answer,
+    .chapter .scene-stage { animation-name: mz-reveal; }
+
+    .chapter .scene-envelope,
+    .chapter .scene-cone { animation-name: mz-converge; }
+
+    .chapter .scene-rail,
+    .chapter .scene-class i { animation-name: mz-expand; }
+
+    .chapter .scene-plane { animation-name: mz-settle; }
+
+    .chapter .scene-class { animation-name: mz-reveal; }
+
+    /* The artifact crosses the rail rather than appearing on it. */
+    .chapter .scene-artifact { animation-name: scene-cross; }
+
+    @keyframes scene-cross {
+      from { left: 5%; }
+      to { left: calc(95% - 10px); }
+    }
+
+    /* Chunks travel from the document into the space, so their origin is meaningful. */
+    .chapter .scene-chunk {
+      animation-name: scene-chunk-fly;
+    }
+
+    @keyframes scene-chunk-fly {
+      from {
+        opacity: 0;
+        transform: translate(var(--from-x, 0), var(--from-y, 0));
+      }
+    }
+
+    /* Chapter heads and copy arrive as the chapter enters, not on the chapter's own scrub. */
+    .chapter-head,
+    .chapter-copy,
+    .chapter-figure figcaption {
+      animation: mz-reveal var(--dur-slow) var(--ease-exit) both;
+      animation-timeline: view();
+      animation-range: entry 10% entry 60%;
+    }
+  }
+}
+
+/* ============================================================================================
+ * 4. Responsive
+ * ========================================================================================== */
+
+@media (max-width: 900px) {
+  .chapter[data-scale="compact"] .chapter-inner {
+    grid-template-areas: "head" "figure" "copy";
+    grid-template-columns: 1fr;
+  }
+
+  .chapter[data-scale="flagship"] .scene-svg,
+  .chapter[data-scale="compact"] .scene-svg { max-height: none; }
+
+  .scene-featuremap { grid-template-columns: 1fr; }
+  .scene-planes { height: 10rem; }
+}
+
+@media (max-width: 640px) {
+  .chapter { padding: 3.25rem 0; }
+  .chapter-inner { width: min(100% - 2rem, var(--content)); }
+
+  /* Six stages across a phone is unreadable, so the pipeline becomes a vertical list of gates. */
+  .scene-stages {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    gap: 1.1rem;
+    padding: 0 1.25rem;
+  }
+
+  .scene-stage {
+    grid-template-columns: auto auto 1fr;
+    justify-items: start;
+    align-items: center;
+    gap: 0.7rem;
+    text-align: left;
+  }
+
+  .scene-stage-name { max-width: none; }
+
+  .scene-rail {
+    top: 3.4rem;
+    bottom: 1.5rem;
+    left: calc(1.25rem + 6px);
+    right: auto;
+    width: 2px;
+    height: auto;
+  }
+
+  .scene-artifact { display: none; }
+
+  .scene-planes { height: 8.5rem; perspective: 600px; }
+  .scene-plane { width: 6rem; height: 6rem; }
+  .scene-plane[data-layer="0"] { --x: -46; }
+  .scene-plane[data-layer="2"] { --x: 46; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-artifact { left: calc(95% - 10px); }
+}

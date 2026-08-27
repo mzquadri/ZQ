@@ -348,7 +348,12 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
 
   await page.goto("/");
   const main = page.locator("main");
-  await expect(main).toContainText("Slice-aware evaluation");
+  // The homepage presents MLOps as its own chapter rather than as a card of evidence rows.
+  // "Slice-aware evaluation" was a phrase on the old card and is deliberately no longer
+  // anywhere on this page; what has to stay true is the boundary asserted below.
+  await expect(main.locator("#work-mlops-reference-pipeline")).toContainText(
+    "A Testable End-to-End MLOps Pipeline",
+  );
   await expect(main).not.toContainText(/licensed-data run/i);
 
   // A featured card may lead with the project's headline number - that is the point of
@@ -391,12 +396,13 @@ test("homepage makes no third-party requests", async ({ page }) => {
     if (url.origin !== "http://127.0.0.1:3100") remoteRequests.push(url.origin);
   });
   await page.goto("/");
-  await expect(page.locator("#systems-graph")).toBeVisible();
+  // Anchored on the closing section so the check runs against a fully rendered page.
+  await expect(page.locator(".cine-closing")).toBeVisible();
   expect(remoteRequests).toEqual([]);
 });
 
 test("the systems graph paints in 3D on desktop and falls back below it", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/work");
   const graph = page.locator("#systems-graph");
   const canvas = graph.locator("canvas");
   const isDesktop = (page.viewportSize()?.width ?? 0) >= 760;
@@ -427,7 +433,7 @@ test("the systems graph paints in 3D on desktop and falls back below it", async 
 });
 
 test("systems graph selection is keyboard operable and never overclaims", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/work");
   const detail = page.locator("#systems-graph [aria-live='polite']");
   await expect(detail).toContainText("Reliable AI");
 
