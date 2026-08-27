@@ -45,9 +45,16 @@ for (const route of routes) {
   });
 }
 
+/** At phone width the rail's links live in the sheet, which is the mobile navigation. */
+async function openNavIfCollapsed(page: import("@playwright/test").Page) {
+  const toggle = page.getByRole("button", { name: /Menu|Close/ });
+  if (await toggle.isVisible()) await toggle.click();
+}
+
 test("primary navigation and project routes work", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "Work", exact: true }).click();
+  await openNavIfCollapsed(page);
+  await page.getByRole("link", { name: "Work", exact: true }).first().click();
   await expect(page).toHaveURL(/\/work$/);
   await page.getByRole("link", { name: "Reliable GNN Surrogates for Transport Policy Analysis", exact: true }).click();
   await expect(page).toHaveURL(/\/work\/transport-uq$/);
@@ -61,7 +68,19 @@ test("keyboard users can skip navigation and reach the primary links", async ({ 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Mohd Zamin Quadri, home" })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("link", { name: "Work", exact: true })).toBeFocused();
+
+  const toggle = page.getByRole("button", { name: /Menu|Close/ });
+  if (await toggle.isVisible()) {
+    // Phone width: the third stop is the sheet toggle, and opening it must move focus inside.
+    await expect(toggle).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".rail-sheet a").first()).toBeFocused();
+    // Escape must close it and hand focus back to the control that opened it.
+    await page.keyboard.press("Escape");
+    await expect(toggle).toBeFocused();
+  } else {
+    await expect(page.getByRole("link", { name: "Work", exact: true })).toBeFocused();
+  }
 
   await page.getByRole("link", { name: "Skip to main content" }).focus();
   await page.keyboard.press("Enter");
@@ -72,7 +91,11 @@ test("mobile primary navigation meets minimum target sizing", async ({ page }) =
   test.skip((page.viewportSize()?.width ?? 0) > 640, "Mobile viewport only");
   await page.goto("/");
 
-  for (const link of await page.locator(".nav-list a").all()) {
+  // The rail collapses into a sheet at this width; that is where the targets have to be big.
+  await page.getByRole("button", { name: "Menu" }).click();
+  const links = await page.locator(".rail-sheet a").all();
+  expect(links.length).toBeGreaterThan(0);
+  for (const link of links) {
     const box = await link.boundingBox();
     expect(box?.height).toBeGreaterThanOrEqual(44);
   }
@@ -577,8 +600,16 @@ test("/learn makes no third-party requests", async ({ page }) => {
 
 test("resume is reachable but is not a conversion call to action", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/resume"]')).toHaveCount(0);
-  await expect(page.locator('main a[href="/resume"]')).toHaveCount(0);
+  /*
+   * The resume is now a peer destination in the rail, which is a deliberate change: it is one of
+   * the six places a visitor may want to go, and hiding it made them hunt. What must stay true is
+   * the original point of this test - the resume is not *pushed*. It is not a button, it is not a
+   * call to action in the page body, and the site does not try to convert a reader into a
+   * download instead of into reading the work.
+   */
+  await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/resume"]')).toHaveCount(1);
+  await expect(page.locator('main a.cine-cta[href="/resume"]')).toHaveCount(0);
+  await expect(page.locator('main a.button[href="/resume"]')).toHaveCount(0);
   await expect(page.locator('main a[href="/mohd-zamin-quadri-resume.pdf"]')).toHaveCount(0);
   await expect(page.locator('footer a[href="/resume"]')).toHaveCount(1);
 

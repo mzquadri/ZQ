@@ -1,0 +1,531 @@
+/*
+ * Page stages and their figures.
+ *
+ * The shared opening for every non-home route, plus the three page-specific figures. Same
+ * contract as everywhere else: resting state is the finished state, `--range` is set inline and
+ * read by `animation-range`, and the whole thing is inert without scroll timelines.
+ */
+
+/* ============================================================================================
+ * 1. The shared stage
+ * ========================================================================================== */
+
+.page-stage {
+  background: var(--stage);
+  color: var(--stage-ink);
+  padding: clamp(3rem, 9vh, 6rem) 0 clamp(3.5rem, 10vh, 6.5rem);
+  --accent: var(--accent-graph);
+}
+
+.page-stage-inner {
+  width: min(100% - 3rem, var(--content));
+  margin: 0 auto;
+}
+
+.page-stage[data-has-figure] .page-stage-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: center;
+}
+
+.page-stage-copy {
+  max-width: 40rem;
+}
+
+.page-stage-eyebrow {
+  margin: 0 0 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.page-stage-title {
+  margin: 0 0 1.15rem;
+  font-family: var(--sans);
+  font-size: clamp(2.1rem, 5.4vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.page-stage-standfirst {
+  margin: 0;
+  font-size: clamp(1.02rem, 1.7vw, 1.22rem);
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--stage-ink) 86%, transparent);
+}
+
+.page-stage-meta {
+  margin: 1.9rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1.1rem 1.6rem;
+}
+
+.page-stage-meta dt {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+  margin-bottom: 0.3rem;
+}
+
+.page-stage-meta dd {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.page-stage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 2rem 0 0;
+}
+
+.page-stage-figure {
+  margin: 0;
+}
+
+.page-stage-figure .scene-svg {
+  background: transparent;
+  border: none;
+  max-height: 46vh;
+}
+
+/* ============================================================================================
+ * 2. About - overlapping domains
+ * ========================================================================================== */
+
+.domain-set {
+  fill: color-mix(in oklab, var(--accent) 12%, transparent);
+  stroke: color-mix(in oklab, var(--accent) 55%, transparent);
+  stroke-width: 1.5;
+}
+
+.domain-label {
+  fill: var(--stage-ink);
+  font-family: var(--mono);
+  font-size: 21px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.domain-centre {
+  fill: var(--accent);
+}
+
+.domain-centre-label {
+  fill: var(--stage-deep);
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* ============================================================================================
+ * 3. Research - the staircase
+ * ========================================================================================== */
+
+.ladder-riser,
+.ladder-tread {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.ladder-riser {
+  stroke: color-mix(in oklab, var(--accent) 55%, transparent);
+}
+
+.ladder-label {
+  fill: var(--stage-ink);
+  font-family: var(--sans);
+  font-size: 21px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================================================
+ * 4. Contact - the closing mark
+ * ========================================================================================== */
+
+.closing-mark {
+  width: min(100%, 15rem);
+  height: auto;
+}
+
+.closing-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 100;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.closing-dot {
+  fill: var(--accent);
+}
+
+/* ============================================================================================
+ * 5. Scrub
+ * ========================================================================================== */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .page-stage {
+      view-timeline-name: --chapter;
+      view-timeline-axis: block;
+    }
+
+    .page-stage .domain-set,
+    .page-stage .domain-label,
+    .page-stage .domain-centre,
+    .page-stage .domain-centre-label,
+    .page-stage .ladder-step {
+      animation-timeline: --chapter;
+      animation-range: var(--range, contain 0% contain 100%);
+      animation-fill-mode: both;
+      animation-timing-function: linear;
+      animation-duration: 1s;
+    }
+
+    .page-stage .domain-set { animation-name: mz-converge; }
+    .page-stage .domain-label,
+    .page-stage .domain-centre-label { animation-name: mz-verify; }
+    .page-stage .domain-centre { animation-name: mz-propagate; }
+    .page-stage .ladder-step { animation-name: mz-reveal; }
+
+    .page-stage-copy > *,
+    .page-stage-figure {
+      animation: mz-reveal var(--dur-slow) var(--ease-exit) both;
+      animation-timeline: view();
+      animation-range: entry 8% entry 55%;
+    }
+
+    /* The closing ring draws itself once, slowly, when the ending comes into view. */
+    .closing-ring {
+      animation: mz-connect var(--dur-cinematic) var(--ease-precise) both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 40%;
+      --path-length: 100;
+    }
+  }
+}
+
+/* ============================================================================================
+ * 6. Responsive
+ * ========================================================================================== */
+
+@media (max-width: 900px) {
+  .page-stage[data-has-figure] .page-stage-inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .page-stage-figure .scene-svg { max-height: none; }
+}
+
+@media (max-width: 640px) {
+  .page-stage { padding: 2.25rem 0 3rem; }
+  .page-stage-inner { width: min(100% - 2rem, var(--content)); }
+
+  /* The figure follows the words at this width, the same way the hero does. */
+  .page-stage[data-has-figure] .page-stage-inner {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-stage-copy { order: 1; }
+  .page-stage-figure { order: 2; }
+}
+
+/* ============================================================================================
+ * 7. Contact - the ending scene
+ * ========================================================================================== */
+
+.ending {
+  background: var(--stage-deep);
+  color: var(--stage-ink);
+  min-height: calc(100vh - 4.2rem);
+  display: grid;
+  align-items: center;
+  padding: clamp(3.5rem, 10vh, 7rem) 0;
+  --accent: var(--accent-graph);
+}
+
+.ending-inner {
+  width: min(100% - 3rem, var(--content));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+}
+
+.ending-copy { max-width: 46rem; }
+
+.ending-eyebrow {
+  margin: 0 0 1rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ending-line {
+  margin: 0 0 1.35rem;
+  font-family: var(--sans);
+  font-size: clamp(2.1rem, 6vw, 4.4rem);
+  line-height: 1.01;
+  letter-spacing: -0.042em;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.ending-support {
+  margin: 0 0 1.5rem;
+  max-width: 52ch;
+  font-size: clamp(1rem, 1.6vw, 1.14rem);
+  line-height: 1.6;
+  color: color-mix(in oklab, var(--stage-ink) 84%, transparent);
+}
+
+.ending-availability {
+  margin: 0 0 2.25rem;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.ending-channels {
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  border-top: 1px solid var(--stage-line);
+}
+
+.ending-channels a {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 1.05rem 0;
+  border-bottom: 1px solid var(--stage-line);
+  text-decoration: none;
+  color: var(--stage-ink);
+  transition: padding-left var(--dur-base) var(--ease-exit), color var(--dur-quick) var(--ease-exit);
+}
+
+.ending-channels a:hover,
+.ending-channels a:focus-visible {
+  padding-left: 0.75rem;
+  color: var(--accent);
+}
+
+.ending-channels span {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+}
+
+.ending-channels strong {
+  font-size: 0.98rem;
+  font-weight: 550;
+}
+
+.ending-note {
+  margin: 0;
+  max-width: 56ch;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--stage-ink-soft);
+}
+
+.ending-note a { color: var(--stage-ink); }
+
+.ending-mark { display: grid; place-items: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ending-channels a { transition: none; }
+  .ending-channels a:hover,
+  .ending-channels a:focus-visible { padding-left: 0; }
+}
+
+/* ============================================================================================
+ * 8. Resume - the spine
+ * ========================================================================================== */
+
+.spine {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 1.6rem;
+  list-style: none;
+  display: grid;
+  gap: 1.75rem;
+}
+
+/* The through-line. Drawn behind the nodes so it reads as one continuous run. */
+.spine::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 0.55rem;
+  bottom: 0.55rem;
+  width: 1px;
+  background: var(--stage-line-strong);
+}
+
+.spine-step { position: relative; }
+
+.spine-node {
+  position: absolute;
+  left: -1.6rem;
+  top: 0.4rem;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--stage);
+  border: 2px solid var(--accent);
+}
+
+/* The most recent stage is filled - the arc has a direction and its end is the point. */
+.spine-step:last-child .spine-node { background: var(--accent); }
+
+.spine-stage {
+  margin: 0 0 0.2rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.spine-problem {
+  margin: 0 0 0.35rem;
+  font-size: 1.02rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.spine-detail {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--stage-ink-soft);
+}
+
+.page-stage-note {
+  margin: 1.1rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--stage-ink-soft);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .spine-step {
+      animation: mz-reveal var(--dur-slow) var(--ease-exit) both;
+      animation-timeline: view();
+      animation-range: entry 6% entry 50%;
+      animation-delay: calc(var(--i, 0) * var(--stagger));
+    }
+  }
+}
+
+/* ============================================================================================
+ * 9. Responsive
+ * ========================================================================================== */
+
+@media (max-width: 860px) {
+  .ending-inner { grid-template-columns: minmax(0, 1fr); }
+  .ending-mark { display: none; }
+}
+
+@media (max-width: 640px) {
+  .ending { min-height: 0; padding: 3rem 0 4rem; }
+  .ending-inner { width: min(100% - 2rem, var(--content)); }
+  .ending-channels a { grid-template-columns: 1fr auto; row-gap: 0.15rem; }
+  .ending-channels span { grid-column: 1 / -1; }
+}
+
+/*
+ * Paper-era blocks that now sit on a stage.
+ *
+ * The research page's audience strip was written for the light hero; on the stage its emphasis
+ * colour (--teal-dark) measured 1.94:1. Rebinding here rather than editing the block keeps it
+ * usable on either ground, which is the same approach taken for the walkthrough launcher.
+ */
+.page-stage .research-audience {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.25rem;
+  border-top: 1px solid var(--stage-line);
+  padding-top: 1.5rem;
+}
+
+.page-stage .research-audience > div {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.page-stage .research-audience span {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.page-stage .research-audience strong {
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--stage-ink);
+}
+
+/*
+ * The ending reuses .contact-links as a hook so the approved-channel test still has something to
+ * assert on, but that class also carries paper-era colours. Scoped overrides here rather than
+ * dropping the hook: the contract is worth keeping, the colours are not.
+ */
+.ending .contact-links span,
+.ending .contact-links strong,
+.ending .contact-links a {
+  color: inherit;
+  background: none;
+}
+
+/* The paper rule is `.contact-links a > span:first-child` (0,3,1); a shorter selector loses. */
+.ending .contact-links a > span:first-child {
+  color: var(--stage-ink-soft);
+}
+
+.ending .contact-links strong {
+  color: var(--stage-ink);
+}
+
+.ending .contact-links a:hover,
+.ending .contact-links a:focus-visible {
+  color: var(--accent);
+}
+
+.ending .contact-links a:hover > span:first-child,
+.ending .contact-links a:focus-visible > span:first-child,
+.ending .contact-links a:hover strong,
+.ending .contact-links a:focus-visible strong {
+  color: inherit;
+}

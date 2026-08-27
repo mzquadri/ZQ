@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
+import { ResearchLadderScene, StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import SectionHeading from "@/components/SectionHeading";
 import WritingCard from "@/components/writing/WritingCard";
@@ -56,20 +57,23 @@ export default function ResearchPage() {
         }}
       />
 
-      <header className="page-hero research-index-hero section-wrap">
-        <p className="kicker">Research / Reliable ML / Scientific modelling</p>
-        <h1>From fast predictions to decisions that expose uncertainty.</h1>
-        <p>
-          My primary research asks how an ML surrogate can report more than a point estimate:
-          where error is likely, whether uncertainty is calibrated, and when a prediction should
-          enter a review queue.
-        </p>
+      <StageHero
+        accent="var(--accent-graph)"
+        eyebrow="Research / Reliable ML / Scientific modelling"
+        title="From fast predictions to decisions that expose uncertainty."
+        standfirst="My primary research asks how an ML surrogate can report more than a point estimate: where error is likely, whether uncertainty is calibrated, and when a prediction should enter a review queue."
+        figure={
+          <ResearchLadderScene
+            steps={["Approximate", "Quantify", "Calibrate", "Verify", "Decline"]}
+          />
+        }
+      >
         <div className="research-audience" aria-label="Ways into the research">
           <div><span>Recruiter</span><strong>What did the work establish?</strong></div>
           <div><span>Engineer</span><strong>How does uncertainty change a system decision?</strong></div>
           <div><span>Researcher / student</span><strong>Which protocol supports each claim?</strong></div>
         </div>
-      </header>
+      </StageHero>
 
       <section className="section-wrap research-focus-section">
         <SectionHeading

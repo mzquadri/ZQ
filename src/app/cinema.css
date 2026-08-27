@@ -599,40 +599,6 @@
 }
 
 /* ============================================================================================
- * 5. The header over a dark stage
- *
- * Scoped with :has() rather than a page-level class, so any route that opens on a cinematic
- * stage gets the treatment without having to remember to pass a prop down to the shell. The
- * header keeps its sticky behaviour and its blur; only its ground and its ink change.
- * ========================================================================================== */
-
-body:has(.cine-hero) .site-header {
-  background: color-mix(in oklab, var(--stage) 72%, transparent);
-  border-bottom-color: var(--stage-line);
-  color: var(--stage-ink);
-}
-
-body:has(.cine-hero) .site-header a {
-  color: var(--stage-ink);
-}
-
-body:has(.cine-hero) .nav-list a:hover,
-body:has(.cine-hero) .nav-list a[aria-current="page"] {
-  border-color: var(--accent);
-}
-
-/* The wordmark's initials sit in a dark chip, which disappears against a dark header. */
-body:has(.cine-hero) .wordmark > span[aria-hidden="true"] {
-  background: var(--accent);
-  color: var(--stage-deep);
-}
-
-body:has(.cine-hero) .skip-link:focus {
-  background: var(--accent);
-  color: var(--stage-deep);
-}
-
-/* ============================================================================================
  * 6. Anchors under a sticky header
  *
  * Every in-page link on this site lands under the sticky header without this. The header is

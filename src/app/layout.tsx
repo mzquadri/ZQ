@@ -7,6 +7,8 @@ import "./motion.css";
 import "./cinema.css";
 import "./scenes.css";
 import "./home.css";
+import "./rail.css";
+import "./pages.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

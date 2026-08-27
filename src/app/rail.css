@@ -1,0 +1,286 @@
+/*
+ * The global navigation rail.
+ *
+ * Deliberately the same dark rail on every route, including the paper reading pages. The
+ * alternative - a rail that changes with the page under it - was tried and it made the site feel
+ * like several sites sharing a domain. One constant bar is the strongest single cue that these
+ * pages belong together, which is exactly what the rest of this redesign is trying to establish.
+ */
+
+.rail {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: color-mix(in oklab, var(--stage) 88%, transparent);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--stage-line);
+  color: var(--stage-ink);
+}
+
+/* ---- Reading progress ----------------------------------------------------------------------- */
+
+.rail-progress {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  transform-origin: left center;
+  transform: scaleX(0);
+  background: var(--accent, var(--accent-graph));
+}
+
+/* ---- The bar --------------------------------------------------------------------------------- */
+
+.rail-inner {
+  width: min(100% - 2.5rem, var(--content));
+  margin: 0 auto;
+  min-height: 4.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.rail-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--stage-ink);
+}
+
+.rail-mark > span[aria-hidden] {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  background: var(--accent, var(--accent-graph));
+  color: var(--stage-deep);
+  border-radius: 3px;
+}
+
+.rail-name {
+  white-space: nowrap;
+}
+
+.rail-nav ul {
+  display: flex;
+  align-items: center;
+  gap: 1.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail-link {
+  position: relative;
+  display: inline-block;
+  padding: 0.35rem 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  color: color-mix(in oklab, var(--stage-ink) 76%, transparent);
+  transition: color var(--dur-quick) var(--ease-exit);
+}
+
+/*
+ * The active rule grows from the centre rather than fading in. A fade reads as "this label is a
+ * bit different"; a rule that draws itself reads as "you are here".
+ */
+.rail-link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent, var(--accent-graph));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--dur-base) var(--ease-exit);
+}
+
+.rail-link:hover,
+.rail-link:focus-visible {
+  color: var(--stage-ink);
+}
+
+.rail-link:hover::after,
+.rail-link:focus-visible::after {
+  transform: scaleX(0.55);
+}
+
+.rail-link[aria-current="page"] {
+  color: var(--stage-ink);
+}
+
+.rail-link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* ---- Sheet toggle ---------------------------------------------------------------------------- */
+
+.rail-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--stage-line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--stage-ink);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.rail-toggle-mark {
+  width: 14px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transition: transform var(--dur-base) var(--ease-exit);
+}
+
+.rail[data-open] .rail-toggle-mark {
+  transform: rotate(90deg);
+}
+
+/* ---- The sheet ------------------------------------------------------------------------------- */
+
+.rail-sheet {
+  position: fixed;
+  inset: 4.2rem 0 0;
+  z-index: 55;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(2rem, 7vh, 4rem) 1.25rem 2.5rem;
+  background: var(--stage-deep);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rail-sheet[data-open] {
+  display: flex;
+}
+
+.rail-sheet ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.rail-sheet a {
+  display: block;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--stage-line);
+  font-family: var(--sans);
+  font-size: clamp(1.6rem, 8vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  color: var(--stage-ink);
+}
+
+.rail-sheet a[aria-current="page"] {
+  color: var(--accent, var(--accent-graph));
+}
+
+.rail-sheet-foot {
+  display: flex;
+  gap: 1.5rem;
+  margin: 2rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.rail-sheet-foot a {
+  all: unset;
+  cursor: pointer;
+  color: var(--stage-ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  /* These are tap targets in the same sheet as the main destinations and are held to the same
+   * minimum. `all: unset` drops the display, so it has to be restored to make the box exist. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.1rem;
+}
+
+/* ---- Skip link ------------------------------------------------------------------------------- */
+
+.rail .skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.6rem;
+  z-index: 70;
+  padding: 0.5rem 0.9rem;
+  background: var(--accent, var(--accent-graph));
+  color: var(--stage-deep);
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: 650;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.rail .skip-link:focus-visible {
+  transform: none;
+}
+
+/* ---- Motion ---------------------------------------------------------------------------------- */
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /*
+     * The progress line is driven by the document's own scroll timeline. No listener, no rAF, and
+     * it cannot drift out of sync with the page because it is not tracking the page - it is the
+     * same timeline the page scrolls on.
+     */
+    .rail-progress {
+      animation: rail-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+
+    @keyframes rail-progress {
+      to { transform: scaleX(1); }
+    }
+
+    .rail-sheet[data-open] li {
+      animation: mz-reveal var(--dur-base) var(--ease-exit) both;
+      animation-delay: calc(var(--i, 0) * 45ms);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-progress { display: none; }
+  .rail-link::after { transition: none; }
+  .rail-toggle-mark { transition: none; }
+}
+
+/* ---- Responsive ------------------------------------------------------------------------------ */
+
+@media (max-width: 860px) {
+  .rail-nav { display: none; }
+  .rail-toggle { display: inline-flex; }
+  .rail-name { display: none; }
+}
+
+@media (min-width: 861px) {
+  /* The sheet is a phone affordance; it must never appear on a pointer-and-keyboard layout. */
+  .rail-sheet { display: none !important; }
+}
