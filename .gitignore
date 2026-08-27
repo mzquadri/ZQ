@@ -42,3 +42,6 @@ next-env.d.ts
 # rebuilt deterministically by `npm run record:video`, so it is not carried in git history.
 /.video-frames/
 /media/*.mp4
+
+# Working captures from the visual review harness. The final set is committed deliberately.
+/media/review-*/

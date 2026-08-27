@@ -4,9 +4,9 @@ import CurrentFocus from "@/components/CurrentFocus";
 import { RepositoryCardGrid, SnapshotNote } from "@/components/EcosystemGrid";
 import FeaturedWork from "@/components/FeaturedWork";
 import { ArrowLabel } from "@/components/Icon";
+import HeroStage from "@/components/cinema/HeroStage";
 import PageShell from "@/components/PageShell";
-import ProfilePortrait from "@/components/ProfilePortrait";
-import { ConfidenceProtocol, ThesisPipeline } from "@/components/ResearchVisuals";
+import { ThesisPipeline } from "@/components/ResearchVisuals";
 import SectionHeading from "@/components/SectionHeading";
 import SystemGraph from "@/components/SystemGraph";
 import { ecosystemRepositories, getEcosystemHighlights } from "@/content/ecosystem";
@@ -19,35 +19,7 @@ export default function Home() {
 
   return (
     <PageShell>
-      <section className="hero recruiter-hero section-wrap" aria-labelledby="hero-title">
-        <div className="hero-copy">
-          <div className="hero-identity">
-            <ProfilePortrait priority variant="hero" />
-            <div className="hero-identity-copy">
-              <p className="kicker">AI/ML engineering / Munich</p>
-              <h1 id="hero-title">Reliable models. <em>Usable systems.</em></h1>
-              <p className="hero-intro">{site.positioning}</p>
-              <p className="supporting-identity">{site.supportingIdentity}</p>
-              <div className="hero-actions">
-                <Link className="button button-primary" href="/work">
-                  <ArrowLabel kind="forward">Examine selected work</ArrowLabel>
-                </Link>
-                <Link className="button button-secondary" href="/research/thesis">
-                  Read the research
-                </Link>
-                <Link className="text-link" href="/contact">
-                  <ArrowLabel kind="forward">Contact</ArrowLabel>
-                </Link>
-              </div>
-              <p className="availability"><span aria-hidden="true" />{site.availability}</p>
-            </div>
-          </div>
-        </div>
-        <div className="hero-visual">
-          <div className="hero-visual-label">How I turn model output into a decision</div>
-          <ConfidenceProtocol />
-        </div>
-      </section>
+      <HeroStage />
 
       <section className="proof-strip" aria-label="What I build">
         <div>Reliable ML systems</div>

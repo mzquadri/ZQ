@@ -1,0 +1,607 @@
+/*
+ * The cinematic layer.
+ *
+ * Dark stage, oversized type, and one scrubbed figure per idea. Everything in here is opt-in by
+ * class name, so no existing page changes appearance unless it asks to.
+ *
+ * The resting state of every rule below is the *finished* state. Keyframes only ever describe
+ * where something came from. That is what makes the no-JS, no-scroll-timeline, and reduced-motion
+ * paths all land on the same composed figure instead of on a blank stage.
+ */
+
+/* ============================================================================================
+ * 1. The hero stage
+ * ========================================================================================== */
+
+.cine-hero {
+  /*
+   * The scroll distance the sequence runs over. Three and a bit viewports is enough for five
+   * beats to breathe without the reader feeling trapped - they can flick past it in one gesture.
+   */
+  min-height: 340vh;
+  position: relative;
+  background: var(--stage);
+  color: var(--stage-ink);
+}
+
+.cine-hero-pin {
+  height: 100vh;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: clip;
+}
+
+.cine-hero-inner {
+  position: relative;
+  width: min(100% - 3rem, var(--content));
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* ---- The instrument ------------------------------------------------------------------------ */
+
+.cine-instrument {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  pointer-events: none;
+}
+
+.cine-instrument-svg {
+  width: 100%;
+  height: min(58vh, 30rem);
+  overflow: visible;
+}
+
+/* Envelopes. The uncorrected one is a hairline outline; the calibrated one is filled, because
+ * the calibrated interval is the one you are meant to trust and read at a glance. */
+.cine-band {
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.cine-band-raw {
+  stroke: var(--stage-line-strong);
+  stroke-dasharray: 5 7;
+}
+
+.cine-band-cal {
+  fill: color-mix(in oklab, var(--accent) 22%, transparent);
+  stroke: color-mix(in oklab, var(--accent) 62%, transparent);
+}
+
+.cine-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cine-line-pred {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.cine-line-obs {
+  stroke: var(--stage-ink);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 5;
+  opacity: 0.62;
+}
+
+.cine-mark {
+  fill: var(--stage);
+  stroke: var(--stage-ink);
+  stroke-width: 1.75;
+}
+
+/* An observation outside the calibrated interval is the interesting one, so it is marked, not hidden. */
+.cine-mark:not([data-covered]) {
+  stroke: var(--orange);
+  fill: var(--orange);
+}
+
+/* Points the confidence floor declines to answer for. Struck through rather than faded, so they
+ * stay at full contrast - a dimmed element is unreadable to some readers and merely decorative
+ * to the rest. */
+.cine-mark:not([data-kept]) {
+  stroke-dasharray: 2 2;
+}
+
+.cine-decline {
+  fill: color-mix(in oklab, var(--orange) 9%, transparent);
+  stroke: color-mix(in oklab, var(--orange) 34%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+/* ---- The running caption ------------------------------------------------------------------- */
+
+.cine-caption {
+  position: relative;
+  min-height: 5.5rem;
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  text-align: center;
+  padding-bottom: 3.5rem;
+}
+
+.cine-beat {
+  grid-area: 1 / 1;
+  max-width: 46rem;
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  line-height: 1.5;
+  color: var(--stage-ink-soft);
+}
+
+.cine-beat b {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.6rem;
+}
+
+/*
+ * Without scroll timelines every beat would stack on top of the others in the same grid cell.
+ * The resting presentation therefore shows only the last beat - the finished state of the
+ * argument - and the scrubbed version reveals them in turn.
+ */
+.cine-beat:not(:last-child) {
+  visibility: hidden;
+}
+
+/* ---- Identity ------------------------------------------------------------------------------ */
+
+.cine-identity {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  padding-bottom: 6rem;
+}
+
+.cine-name {
+  margin: 0;
+  display: grid;
+  gap: 0.02em;
+  font-family: var(--sans);
+  font-size: clamp(3.2rem, 13vw, 11rem);
+  line-height: 0.84;
+  letter-spacing: -0.055em;
+  font-weight: 700;
+  text-transform: uppercase;
+  /* The type sits over the figure, so it needs its own ground without becoming a solid box. */
+  text-shadow: 0 0 42px color-mix(in oklab, var(--stage) 88%, transparent);
+}
+
+.cine-name-line {
+  display: block;
+}
+
+.cine-name-line > span {
+  display: inline-block;
+  will-change: transform;
+}
+
+.cine-role {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.35rem;
+  font-family: var(--mono);
+  font-size: clamp(0.68rem, 1.15vw, 0.82rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+}
+
+.cine-role > span + span::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin-right: 1.35rem;
+  vertical-align: 0.28em;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+
+.cine-positioning {
+  margin: 0;
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--stage-ink) 82%, transparent);
+}
+
+.cine-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.cine-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.6rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--stage-deep);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.cine-cta::after {
+  content: "→";
+  transition: transform var(--dur-base) var(--ease-exit);
+}
+
+.cine-cta:hover::after,
+.cine-cta:focus-visible::after {
+  transform: translateX(0.28rem);
+}
+
+.cine-cta-quiet {
+  background: transparent;
+  border-color: var(--stage-line-strong);
+  color: var(--stage-ink);
+}
+
+.cine-scroll-hint {
+  position: absolute;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+}
+
+/* ============================================================================================
+ * 2. The scrub choreography
+ *
+ * Only inside @supports, only outside reduced motion. Ranges are expressed against the pinned
+ * track's `contain` phase, so 0% is "the stage has just filled the viewport" and 100% is "the
+ * stage is about to leave it".
+ * ========================================================================================== */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cine-hero {
+      view-timeline-name: --hero;
+      view-timeline-axis: block;
+    }
+
+    /* The identity holds the first beat, then clears the stage for the figure. */
+    .cine-identity {
+      animation: cine-identity-recede 1s linear both;
+      animation-timeline: --hero;
+      animation-range: contain 4% contain 26%;
+    }
+
+    @keyframes cine-identity-recede {
+      to {
+        opacity: 0;
+        transform: translate3d(0, -3vh, 0) scale(0.965);
+        filter: blur(3px);
+      }
+    }
+
+    /* Letters arrive in sequence on load - this one is a duration animation, not a scrub, because
+     * it happens before the reader has scrolled at all. */
+    .cine-name-line > span {
+      animation: cine-letter var(--dur-cinematic) var(--ease-exit) both;
+      animation-delay: calc(var(--i) * 42ms);
+    }
+
+    @keyframes cine-letter {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 0.42em, 0) rotate(4deg);
+      }
+    }
+
+    .cine-scroll-hint {
+      animation: cine-hint-out 1s linear both;
+      animation-timeline: --hero;
+      animation-range: contain 2% contain 14%;
+    }
+
+    @keyframes cine-hint-out {
+      to { opacity: 0; }
+    }
+
+    /* -- The figure, beat by beat ---------------------------------------------------------- */
+
+    .cine-instrument-svg {
+      animation: cine-figure-focus 1s linear both;
+      animation-timeline: --hero;
+      animation-range: contain 6% contain 30%;
+    }
+
+    @keyframes cine-figure-focus {
+      from { opacity: 0.45; transform: scale(1.06); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* CONNECT - the prediction draws itself left to right. */
+    .cine-line-pred {
+      stroke-dasharray: 100;
+      animation: mz-connect 1s linear both;
+      animation-timeline: --hero;
+      animation-range: contain 10% contain 30%;
+      --path-length: 100;
+    }
+
+    /* CALIBRATE - the corrected envelope takes over and the uncorrected one steps back. */
+    .cine-band-cal {
+      animation: cine-band-calibrate 1s var(--ease-precise) both;
+      animation-timeline: --hero;
+      animation-range: contain 44% contain 62%;
+    }
+
+    @keyframes cine-band-calibrate {
+      from { opacity: 0; }
+    }
+
+    /* EXPAND then step back - the uncorrected envelope opens uniformly, and once the calibrated
+     * one has taken over it recedes rather than disappearing, so the comparison stays on screen. */
+    @keyframes cine-band-open {
+      from { opacity: 0; }
+    }
+
+    .cine-band-raw {
+      animation:
+        cine-band-open 1s linear both,
+        cine-band-recede 1s linear both;
+      animation-timeline: --hero, --hero;
+      animation-range: contain 26% contain 44%, contain 46% contain 60%;
+    }
+
+    @keyframes cine-band-recede {
+      to { opacity: 0.3; }
+    }
+
+    /* VERIFY - the observations land against the interval. */
+    .cine-line-obs,
+    .cine-marks {
+      animation: cine-observe 1s linear both;
+      animation-timeline: --hero;
+      animation-range: contain 60% contain 78%;
+    }
+
+    @keyframes cine-observe {
+      from { opacity: 0; }
+    }
+
+    /* DECLINE - the region the system abstains in. */
+    .cine-decline {
+      transform-origin: center;
+      animation: cine-decline-in 1s linear both;
+      animation-timeline: --hero;
+      animation-range: contain 80% contain 96%;
+    }
+
+    @keyframes cine-decline-in {
+      from { opacity: 0; transform: scaleX(0.2); }
+    }
+
+    /* -- The caption ----------------------------------------------------------------------- */
+
+    /* (0,2,0) to match `.cine-beat:not(:last-child)` above - a bare class would lose to it. */
+    .cine-caption .cine-beat {
+      visibility: visible;
+      animation: cine-beat-cycle 1s linear both;
+      animation-timeline: --hero;
+    }
+
+    @keyframes cine-beat-cycle {
+      0%, 4% { opacity: 0; transform: translate3d(0, 0.6rem, 0); }
+      10%, 74% { opacity: 1; transform: none; }
+      86%, 100% { opacity: 0; transform: translate3d(0, -0.6rem, 0); }
+    }
+
+    .cine-beat[data-beat="0"] { animation-range: contain 4% contain 26%; }
+    .cine-beat[data-beat="1"] { animation-range: contain 26% contain 46%; }
+    .cine-beat[data-beat="2"] { animation-range: contain 46% contain 62%; }
+    .cine-beat[data-beat="3"] { animation-range: contain 62% contain 80%; }
+    .cine-beat[data-beat="4"] {
+      animation-name: cine-beat-last;
+      animation-range: contain 80% contain 100%;
+    }
+
+    @keyframes cine-beat-last {
+      0%, 4% { opacity: 0; transform: translate3d(0, 0.6rem, 0); }
+      14%, 100% { opacity: 1; transform: none; }
+    }
+  }
+}
+
+/* ============================================================================================
+ * 3. Reduced motion and no-support
+ *
+ * The stage collapses to one screen showing the composed figure. Nothing is hidden, nothing is
+ * mid-animation, and the caption becomes a short ordered list so the argument survives in text.
+ * ========================================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-hero { min-height: 0; }
+  .cine-hero-pin { height: auto; padding: 5rem 0 4rem; }
+  .cine-instrument { position: static; }
+  .cine-identity { padding-bottom: 3rem; }
+  .cine-scroll-hint { display: none; }
+}
+
+/*
+ * The composed fallback.
+ *
+ * Two separate conditions with the same body, because they are different kinds of test and
+ * CSS will not let them share a block: reduced motion is a media feature, while the presence
+ * of scroll-driven timelines is a support query. Both land the caption in the same place -
+ * a readable list of the five beats rather than five lines stacked in one grid cell.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .cine-caption {
+    min-height: 0;
+    padding-bottom: 1.5rem;
+  }
+
+  .cine-caption .cine-beat {
+    grid-area: auto;
+    visibility: visible;
+    max-width: 60rem;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--stage-line);
+  }
+
+  .cine-beat b {
+    margin: 0;
+  }
+}
+
+@supports not (animation-timeline: view()) {
+  .cine-caption {
+    min-height: 0;
+    padding-bottom: 1.5rem;
+  }
+
+  .cine-caption .cine-beat {
+    grid-area: auto;
+    visibility: visible;
+    max-width: 60rem;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--stage-line);
+  }
+
+  .cine-beat b {
+    margin: 0;
+  }
+}
+
+
+/* ============================================================================================
+ * 4. Responsive
+ *
+ * Tablet and phone are not the desktop stage scaled down. The pinned sequence needs vertical
+ * room to read; on a phone it becomes a short stack that the reader scrolls normally, because a
+ * three-viewport pin on a small screen mostly reads as "the page has stopped responding".
+ * ========================================================================================== */
+
+@media (max-width: 900px) {
+  .cine-hero { min-height: 260vh; }
+  .cine-instrument-svg { height: min(42vh, 20rem); }
+  .cine-identity { padding-bottom: 4rem; }
+}
+
+@media (max-width: 640px) {
+  .cine-hero {
+    min-height: 0;
+  }
+
+  .cine-hero-pin {
+    height: auto;
+    padding: 4.5rem 0 3rem;
+  }
+
+  .cine-hero-inner {
+    width: min(100% - 2rem, var(--content));
+    gap: 2.5rem;
+  }
+
+  .cine-instrument {
+    position: static;
+    grid-template-rows: auto auto;
+    gap: 1.25rem;
+  }
+
+  .cine-instrument-svg {
+    height: 14rem;
+  }
+
+  .cine-identity {
+    padding-bottom: 0;
+  }
+
+  .cine-name {
+    font-size: clamp(2.6rem, 16vw, 4.5rem);
+    text-shadow: none;
+  }
+
+  .cine-scroll-hint { display: none; }
+
+  /* On a phone the caption is a list, always. There is no room to stage five beats in one cell. */
+  .cine-caption { min-height: 0; padding-bottom: 0; }
+
+  .cine-caption .cine-beat {
+    grid-area: auto;
+    visibility: visible;
+    text-align: left;
+    max-width: none;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--stage-line);
+    animation: none !important;
+    animation-timeline: none !important;
+  }
+}
+
+/* ============================================================================================
+ * 5. The header over a dark stage
+ *
+ * Scoped with :has() rather than a page-level class, so any route that opens on a cinematic
+ * stage gets the treatment without having to remember to pass a prop down to the shell. The
+ * header keeps its sticky behaviour and its blur; only its ground and its ink change.
+ * ========================================================================================== */
+
+body:has(.cine-hero) .site-header {
+  background: color-mix(in oklab, var(--stage) 72%, transparent);
+  border-bottom-color: var(--stage-line);
+  color: var(--stage-ink);
+}
+
+body:has(.cine-hero) .site-header a {
+  color: var(--stage-ink);
+}
+
+body:has(.cine-hero) .nav-list a:hover,
+body:has(.cine-hero) .nav-list a[aria-current="page"] {
+  border-color: var(--accent);
+}
+
+/* The wordmark's initials sit in a dark chip, which disappears against a dark header. */
+body:has(.cine-hero) .wordmark > span[aria-hidden="true"] {
+  background: var(--accent);
+  color: var(--stage-deep);
+}
+
+body:has(.cine-hero) .skip-link:focus {
+  background: var(--accent);
+  color: var(--stage-deep);
+}
