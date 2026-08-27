@@ -1,3 +1,5 @@
+import GraphCityCanvas from "@/components/scene/GraphCityCanvas";
+import RetrievalSpaceCanvas from "@/components/scene/RetrievalSpaceCanvas";
 import { graphEdges, graphMaxHop, graphNodes, GRAPH } from "@/content/cinema-geometry";
 
 /*
@@ -36,7 +38,7 @@ function at(from: number, to: number, extra: React.CSSProperties = {}): Ranged {
  * about which nodes look good lighting up next. Uncertainty then appears as a ring per node, and
  * the nodes the model is least sure about are marked rather than hidden.
  * ========================================================================================== */
-export function GraphSurrogateScene() {
+function GraphSurrogateFlat() {
   const hopStart = 18;
   const hopSpan = 44;
   const perHop = hopSpan / (graphMaxHop + 1);
@@ -113,6 +115,14 @@ export function GraphSurrogateScene() {
   );
 }
 
+/**
+ * The transport figure: flat drawing plus, where the gates allow it, the spatial field over it.
+ * The flat version is always rendered - it is the complete figure on its own.
+ */
+export function GraphSurrogateScene() {
+  return <GraphCityCanvas flat={<GraphSurrogateFlat />} />;
+}
+
 /* ============================================================================================
  * InsureAssist - retrieval is not generation
  *
@@ -131,7 +141,7 @@ export function GraphSurrogateScene() {
  */
 const RETRIEVAL = { width: 1000, height: 380 } as const;
 
-export function RetrievalScene() {
+function RetrievalFlat() {
   const chunks = [0, 1, 2, 3, 4, 5, 6, 7];
   /* Fixed scatter - deterministic, so the same passage lands in the same place every build. */
   const placed = chunks.map((c) => ({
@@ -211,6 +221,11 @@ export function RetrievalScene() {
       </g>
     </svg>
   );
+}
+
+/** The retrieval figure, with the vector volume over it where the gates allow. */
+export function RetrievalScene() {
+  return <RetrievalSpaceCanvas flat={<RetrievalFlat />} />;
 }
 
 /* ============================================================================================

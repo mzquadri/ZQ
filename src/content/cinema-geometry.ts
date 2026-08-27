@@ -164,3 +164,51 @@ const graph = buildGraph();
 export const graphNodes: readonly GraphNode[] = graph.nodes;
 export const graphEdges: readonly { a: number; b: number; hop: number }[] = graph.edges;
 export const graphMaxHop = Math.max(...graph.nodes.map((n) => n.hop));
+
+/* ------------------------------------------------------------------------------------------- *
+ * The network in three dimensions.
+ *
+ * The 2D figure lays the graph out as a diagram. The spatial version makes a further claim, and
+ * the axes are chosen so that claim is the only thing depth can mean here:
+ *
+ *   x, z   the road network as a plan, the same fixed layout the flat figure uses
+ *   y      how uncertain the surrogate is at that junction
+ *
+ * So the surface a reader sees is not decoration - it is the uncertainty field over the network,
+ * and the ridges are where a fast approximation should not be trusted without review. Height is
+ * a function of hop distance from the source, which is a property of this drawing's construction
+ * rather than a measured result; the measured relationship lives in the evidence table.
+ * ------------------------------------------------------------------------------------------- */
+
+export interface GraphNode3D {
+  id: number;
+  /** Plan position, centred on the origin. */
+  x: number;
+  z: number;
+  /** Uncertainty height before calibration - uniformly tall, knowing nothing about difficulty. */
+  rawHeight: number;
+  /** After calibration: tall only where the information had furthest to travel. */
+  calHeight: number;
+  hop: number;
+}
+
+const PLAN = { spread: 3.1, lift: 0.62 } as const;
+
+export const graphNodes3D: readonly GraphNode3D[] = graphNodes.map((node) => {
+  const t = graphMaxHop > 0 ? node.hop / graphMaxHop : 0;
+  return {
+    id: node.id,
+    x: r((node.x / GRAPH.width - 0.5) * 2 * PLAN.spread),
+    z: r((node.y / GRAPH.height - 0.5) * 2 * PLAN.spread),
+    rawHeight: PLAN.lift,
+    // Squared so the far edge of the network rises sharply rather than linearly - the point is
+    // that confidence does not decay evenly, it falls away.
+    calHeight: r(0.06 + t * t * PLAN.lift * 2.2),
+    hop: node.hop,
+  };
+});
+
+/** Edge list as index pairs, for a single LineSegments draw rather than one object per edge. */
+export const graphEdges3D: readonly (readonly [number, number, number])[] = graphEdges.map(
+  (edge) => [edge.a, edge.b, edge.hop] as const,
+);

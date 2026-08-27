@@ -74,11 +74,16 @@ for (const [route, motion] of ROUTES) {
   // Scroll the whole page: a shift that only happens once something is revealed still counts.
   await page.evaluate(async () => {
     const step = window.innerHeight;
+    /*
+     * `behavior: "instant"` matters: the site sets scroll-behavior: smooth globally, so a plain
+     * scrollTo animates and a loop of them never lands. A measurement that never reaches the
+     * lazy scenes reports a bundle size the site does not actually have.
+     */
     for (let y = 0; y < document.body.scrollHeight; y += step) {
-      window.scrollTo(0, y);
-      await new Promise((r) => setTimeout(r, 90));
+      window.scrollTo({ top: y, behavior: "instant" });
+      await new Promise((r) => setTimeout(r, 140));
     }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
   });
   await page.waitForTimeout(700);
 
