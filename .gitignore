@@ -47,3 +47,5 @@ next-env.d.ts
 /media/review-*/
 /media/chapters-*/
 /media/sections-*/
+# Full-page 2x captures: ~26MB, kept local rather than committed to the history.
+/media/final/
