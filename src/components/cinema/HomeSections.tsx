@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { VerbScene } from "@/components/cinema/scenes";
 import { chapters, closing, problemClasses } from "@/content/cinema";
 import { site, thesis } from "@/content/portfolio";
 import { getProject } from "@/content/portfolio";
@@ -42,24 +43,7 @@ export function EngineeringSection() {
           {verbs.map((verb, i) => (
             <li className="verb" key={verb} style={{ "--i": i } as React.CSSProperties}>
               <span className="verb-mark" aria-hidden="true">
-                {/* Each mark is a different shape, so the four steps are distinguishable without
-                    relying on the words - and without depicting any particular system. */}
-                <svg viewBox="0 0 48 48" role="presentation">
-                  {i === 0 ? <path d="M24 6 L24 34 M14 26 L24 36 L34 26" /> : null}
-                  {i === 1 ? (
-                    <>
-                      <circle cx={16} cy={18} r={7} />
-                      <circle cx={32} cy={18} r={7} />
-                      <circle cx={24} cy={33} r={7} />
-                    </>
-                  ) : null}
-                  {i === 2 ? <path d="M10 25 L20 35 L38 13" /> : null}
-                  {i === 3 ? (
-                    <>
-                      <path d="M6 30 L16 30 L21 18 L27 38 L32 26 L42 26" />
-                    </>
-                  ) : null}
-                </svg>
+                <VerbScene verb={verb} />
               </span>
               <p className="verb-name">{verb}</p>
             </li>

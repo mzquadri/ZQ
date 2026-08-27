@@ -388,3 +388,68 @@ export function FeatureMapScene({ classes }: { classes: readonly string[] }) {
     </div>
   );
 }
+
+/* ============================================================================================
+ * The four verbs of the public engineering section.
+ *
+ * Each is a small synthetic figure with its own movement, because four identical marks made the
+ * four steps look interchangeable when the whole point is that they are different kinds of work.
+ *
+ * Everything here is generic by construction. There is no service, store, topic, dataset or
+ * identifier in any of them - they are shapes describing a class of problem that any organisation
+ * holding a large document corpus has, and they would be equally true of a system that does not
+ * exist. That is the standard this section is held to.
+ * ========================================================================================== */
+
+const VERB_BOX = { size: 96 } as const;
+
+export function VerbScene({ verb }: { verb: string }) {
+  const s = VERB_BOX.size;
+  const box = `0 0 ${s} ${s}`;
+
+  /* INGEST - something arrives and is then held still. */
+  if (verb === "Ingest") {
+    return (
+      <svg className="verb-svg" role="presentation" viewBox={box}>
+        <path className="verb-arrive" d="M48 10 L48 56" pathLength={100} />
+        <path className="verb-arrive-head" d="M36 46 L48 58 L60 46" pathLength={100} />
+        <rect className="verb-hold" height={16} rx={2} width={56} x={20} y={66} />
+      </svg>
+    );
+  }
+
+  /* REPRESENT - one thing becomes several, without ceasing to be one thing. */
+  if (verb === "Represent") {
+    return (
+      <svg className="verb-svg" role="presentation" viewBox={box}>
+        <circle className="verb-source" cx={48} cy={20} r={9} />
+        {[22, 48, 74].map((x, i) => (
+          <g key={x} style={{ "--i": i } as React.CSSProperties}>
+            <path className="verb-branch" d={`M48 29 C48 48, ${x} 48, ${x} 66`} pathLength={100} />
+            <circle className="verb-form" cx={x} cy={75} r={7} />
+          </g>
+        ))}
+      </svg>
+    );
+  }
+
+  /* VERIFY - the comparison travels back to what it is checked against. */
+  if (verb === "Verify") {
+    return (
+      <svg className="verb-svg" role="presentation" viewBox={box}>
+        <rect className="verb-hold" height={14} rx={2} width={30} x={8} y={41} />
+        <rect className="verb-derived" height={14} rx={2} width={30} x={58} y={41} />
+        <path className="verb-return" d="M56 48 L42 48" pathLength={100} />
+        <path className="verb-tick" d="M40 62 L46 68 L58 54" pathLength={100} />
+      </svg>
+    );
+  }
+
+  /* OBSERVE - a state that was already true becomes visible. */
+  return (
+    <svg className="verb-svg" role="presentation" viewBox={box}>
+      <path className="verb-trace" d="M8 62 L24 62 L32 40 L42 76 L50 52 L62 52 L74 34 L88 34" pathLength={100} />
+      <circle className="verb-reading" cx={74} cy={34} r={6} />
+    </svg>
+  );
+}

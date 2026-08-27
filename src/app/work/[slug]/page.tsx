@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import CaseHero from "@/components/cinema/CaseHero";
+import CaseStory from "@/components/cinema/CaseStory";
 import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
@@ -138,6 +139,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <HeldOutResultFigure />
           </section>
         ) : null}
+
+        <CaseStory project={project} />
 
         <section className="section-wrap case-section">
           <p className="section-index"><span>03</span>System</p>

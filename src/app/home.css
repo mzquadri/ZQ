@@ -114,14 +114,38 @@
   background: var(--stage-line-strong);
 }
 
-.verb-mark svg {
-  width: 2.6rem;
-  height: 2.6rem;
+.verb-svg {
+  width: 3.1rem;
+  height: 3.1rem;
   fill: none;
   stroke: var(--accent);
-  stroke-width: 2.5;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
+  overflow: visible;
+}
+
+/* Filled parts of each mark: the thing being held, and the reading taken. */
+.verb-hold,
+.verb-source,
+.verb-reading {
+  fill: var(--accent);
+  stroke: none;
+}
+
+.verb-derived,
+.verb-form {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.verb-derived {
+  stroke-dasharray: 4 4;
+}
+
+.verb-tick {
+  stroke: var(--accent-systems);
 }
 
 .verb-name {
@@ -365,11 +389,41 @@
       animation-delay: calc(var(--i, 0) * var(--stagger));
     }
 
-    .verb-mark svg {
-      animation: mz-verify var(--dur-cinematic) var(--ease-exit) both;
+    /*
+     * Each verb moves in its own way, because four identical marks made four different kinds of
+     * work look interchangeable. The movements are named for what they describe: something
+     * arriving and being held, one thing becoming several, a check travelling back to its
+     * source, and a state that was already true becoming visible.
+     */
+    .verb-arrive,
+    .verb-arrive-head,
+    .verb-branch,
+    .verb-return,
+    .verb-tick,
+    .verb-trace {
+      stroke-dasharray: 100;
+      animation: mz-connect var(--dur-cinematic) var(--ease-exit) both;
       animation-timeline: view();
-      animation-range: entry 14% entry 62%;
-      animation-delay: calc(var(--i, 0) * var(--stagger));
+      animation-range: entry 14% entry 66%;
+      animation-delay: calc((var(--i, 0) * var(--stagger)) + 120ms);
+      --path-length: 100;
+    }
+
+    .verb-hold,
+    .verb-derived {
+      animation: mz-expand var(--dur-slow) var(--ease-exit) both;
+      transform-origin: left center;
+      animation-timeline: view();
+      animation-range: entry 20% entry 70%;
+    }
+
+    .verb-source,
+    .verb-form,
+    .verb-reading {
+      animation: mz-propagate var(--dur-slow) var(--ease-weighted) both;
+      animation-timeline: view();
+      animation-range: entry 22% entry 72%;
+      animation-delay: calc(var(--i, 0) * 90ms);
     }
   }
 }
