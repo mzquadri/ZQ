@@ -10,10 +10,8 @@ import {
 } from "../scripts/confidential-content";
 import {
   allProjects,
-  getProject,
   isEmployerConfidential,
   isPublishable,
-  projects,
   type EmployerConfidentialProject,
   type Project,
 } from "../src/content/portfolio";
@@ -306,40 +304,65 @@ test("the legal knowledge platform case study is confidential, draft, and source
   assert.deepEqual(getConfidentialProjectIssues(project), []);
 });
 
-test("the confidential case study is reviewable in this environment", () => {
-  assert.ok(
-    projects.some((project) => project.slug === CONFIDENTIAL_SLUG),
-    "a draft must remain visible outside a production build so it can be reviewed",
-  );
-  assert.ok(getProject(CONFIDENTIAL_SLUG), "getProject must resolve the draft outside a production build");
-});
-
-test("a production build drops the unapproved draft from the rendered site", () => {
-  /*
-   * The environment gate is read once when the content module loads, so the only honest way to
-   * test it is to load that module in a production environment. This asserts the guarantee that
-   * actually matters: the route does not exist in a Vercel production build.
-   */
+/*
+ * The draft-visibility gate is read once, when the content module loads, so it cannot be
+ * meaningfully asserted from inside a test process that has already loaded it. Loading the module
+ * in a child process under a chosen VERCEL_ENV is the only way to observe the gate it actually
+ * shipped with.
+ */
+function loadPortfolioUnder(vercelEnv: string) {
   const script = [
-    'import { projects, allProjects, draftsAreVisible } from "./src/content/portfolio";',
+    'import { projects, allProjects, draftsAreVisible, getProject } from "./src/content/portfolio";',
     'process.stdout.write(JSON.stringify({',
     '  draftsAreVisible,',
     '  rendered: projects.map((project) => project.slug),',
     '  authored: allProjects.map((project) => project.slug),',
+    '  resolvesDraft: Boolean(getProject("legal-knowledge-platform")),',
     '}));',
   ].join("\n");
 
   const output = execFileSync(
     process.execPath,
     [resolve("node_modules/tsx/dist/cli.mjs"), "--eval", script],
-    { env: { ...process.env, VERCEL_ENV: "production" }, encoding: "utf8", cwd: resolve(".") },
+    { env: { ...process.env, VERCEL_ENV: vercelEnv }, encoding: "utf8", cwd: resolve(".") },
   );
 
-  const result = JSON.parse(output) as {
+  return JSON.parse(output) as {
     draftsAreVisible: boolean;
     rendered: string[];
     authored: string[];
+    resolvesDraft: boolean;
   };
+}
+
+test("an unapproved draft is publishable only where drafts are visible", () => {
+  const project = allProjects.find((candidate) => candidate.slug === CONFIDENTIAL_SLUG);
+  assert.ok(project, "the confidential case study is missing from the authored projects");
+
+  /*
+   * Both directions of the rule, stated independently of the environment running the test. The
+   * earlier version of this asserted visibility against the ambient environment, which made it
+   * agree with whatever happened to run it: green locally, and red inside the Vercel production
+   * build where VERCEL_ENV=production is set for the whole `npm run check`.
+   */
+  assert.equal(isPublishable(project, true), true, "a draft must be reviewable outside production");
+  assert.equal(isPublishable(project, false), false, "a draft must never publish in production");
+});
+
+test("a preview build keeps the unapproved draft reviewable", () => {
+  const result = loadPortfolioUnder("preview");
+
+  assert.equal(result.draftsAreVisible, true);
+  assert.ok(
+    result.rendered.includes(CONFIDENTIAL_SLUG),
+    "a draft must remain visible outside a production build so it can be reviewed",
+  );
+  assert.ok(result.resolvesDraft, "getProject must resolve the draft outside a production build");
+});
+
+test("a production build drops the unapproved draft from the rendered site", () => {
+  const result = loadPortfolioUnder("production");
+
   assert.equal(result.draftsAreVisible, false);
   assert.ok(result.authored.includes(CONFIDENTIAL_SLUG), "the draft must still be authored and validated");
   assert.ok(
