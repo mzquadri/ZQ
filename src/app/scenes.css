@@ -837,3 +837,182 @@
   border-color: var(--accent);
   color: var(--stage-deep);
 }
+
+/* ============================================================================================
+ * 6. The case-study narrative
+ *
+ * A sticky figure beside a scrolling argument. The track's height comes from the beats, so a
+ * project with more to say holds its figure longer - which is the right relationship, and it
+ * needs no magic numbers.
+ * ========================================================================================== */
+
+.case-story {
+  background: var(--stage);
+  color: var(--stage-ink);
+  padding: clamp(3.5rem, 9vh, 6rem) 0;
+  border-block: 1px solid var(--stage-line);
+}
+
+.case-story-inner {
+  width: min(100% - 3rem, var(--content));
+  margin: 0 auto;
+}
+
+.case-story-head {
+  max-width: 52rem;
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+}
+
+.case-story-eyebrow {
+  margin: 0 0 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.case-story-title {
+  margin: 0 0 1rem;
+  font-family: var(--sans);
+  font-size: clamp(1.7rem, 3.6vw, 2.7rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.case-story-intro {
+  margin: 0;
+  max-width: 58ch;
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
+  line-height: 1.62;
+  color: color-mix(in oklab, var(--stage-ink) 84%, transparent);
+}
+
+.case-story-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.case-story-stage {
+  position: sticky;
+  /* Clears the rail with air to spare, so the figure is never tucked under it. */
+  top: 6rem;
+}
+
+.case-story-figure .scene-svg,
+.case-story-figure .scene-pipeline,
+.case-story-figure .scene-featuremap {
+  max-height: 68vh;
+}
+
+.case-story-beats {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+.case-story-beat,
+.case-story-caveat {
+  display: grid;
+  gap: 0.55rem;
+  /*
+   * Each beat needs enough travel for the figure to change between them, and no more. At 40vh
+   * plus a large gap this read as dead space rather than pacing; a third of a screen is enough
+   * for one short paragraph to hold the frame on its own.
+   */
+  min-height: 30vh;
+  align-content: center;
+}
+
+.case-story-verb {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.case-story-text {
+  margin: 0;
+  max-width: 46ch;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.62;
+}
+
+/* The caveat is part of the argument, and is marked as the turn it is. */
+.case-story-caveat {
+  border-top: 1px solid var(--stage-line-strong);
+  padding-top: 1.5rem;
+  min-height: 0;
+}
+
+.case-story-caveat .case-story-verb { color: var(--orange); }
+
+.case-story-caveat .case-story-text {
+  color: var(--stage-ink-soft);
+}
+
+/* ---- Scrub ----------------------------------------------------------------------------------- */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .case-story-beat,
+    .case-story-caveat {
+      animation: mz-reveal var(--dur-slow) var(--ease-exit) both;
+      animation-timeline: view();
+      animation-range: entry 14% entry 68%;
+    }
+
+    /*
+     * The figure stages across the whole narrative rather than its own box, so the scene's
+     * `--range` values map onto the reader's progress through the argument beside it.
+     */
+    .case-story-body {
+      view-timeline-name: --chapter;
+      view-timeline-axis: block;
+    }
+  }
+}
+
+/* ---- Responsive -------------------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .case-story-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /*
+   * A sticky figure above a column of text works on a phone only if it leaves room for the text.
+   * It does not, so the figure sits once at the top and the beats read as a normal list.
+   */
+  .case-story-stage {
+    position: static;
+    margin-bottom: 2rem;
+  }
+
+  .case-story-beat,
+  .case-story-caveat {
+    min-height: 0;
+  }
+
+  .case-story-beats {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .case-story { padding: 2.5rem 0; }
+  .case-story-inner { width: min(100% - 2rem, var(--content)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-story-stage { position: static; }
+  .case-story-beat,
+  .case-story-caveat { min-height: 0; }
+}
