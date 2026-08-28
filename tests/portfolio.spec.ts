@@ -1380,3 +1380,107 @@ test("no script the browser loads contains confidential content", async ({ page 
 
   expect(offenders, "confidential content reached a client bundle").toEqual([]);
 });
+
+/* ============================================================================================
+ * The medico world
+ *
+ * This project has no trained weights and no published metrics, so the tests that matter most are
+ * the ones that check the site has not quietly invented either. The rest guard the same contract
+ * every world has: the renderer stays behind its gates, the meaning stays in the DOM, and the
+ * page never overflows a narrow phone.
+ * ========================================================================================== */
+
+test("the medico route renders and states what it is", async ({ page }) => {
+  const response = await page.goto("/work/medico");
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Uncertain is not negative/i);
+  await expect(page.locator(".world-stage")).toHaveCount(1);
+});
+
+test("the four boundaries are on the page, not buried in a footer", async ({ page }) => {
+  await page.goto("/work/medico");
+  for (const boundary of [
+    "No trained weights",
+    "No patient data",
+    "No held-out metrics",
+    "No clinical validation",
+  ]) {
+    await expect(page.getByText(boundary, { exact: false }).first()).toBeVisible();
+  }
+  /* The prohibition itself, in the repository's own terms. */
+  await expect(page.getByText(/must not be used for diagnosis/i)).toBeVisible();
+});
+
+test("medico makes no clinical claim and publishes no accuracy", async ({ page }) => {
+  await page.goto("/work/medico");
+  const text = (await page.locator("main, article").first().innerText()).toLowerCase();
+
+  /* Marketing language this project has no standing to use. */
+  for (const forbidden of ["ai doctor", "ai radiologist", "diagnoses", "clinically validated", "fda"]) {
+    expect(text, `medico must not claim "${forbidden}"`).not.toContain(forbidden);
+  }
+
+  /*
+   * No metric may appear, because none exists in the repository. Catches "AUC 0.84", "94%
+   * accuracy" and the like rather than banning digits outright - the page legitimately carries
+   * label counts, hyperparameters and dataset sizes.
+   */
+  const fabricated = text.match(/\b(auc|auroc|accuracy|f1|sensitivity|specificity|precision|recall)\b[^.]{0,24}?\d/g);
+  expect(fabricated ?? [], "medico must not publish a metric it does not have").toEqual([]);
+});
+
+test("the fourteen findings and the coverage matrix are real DOM, not canvas", async ({ page }) => {
+  await page.goto("/work/medico");
+  /* The matrix is an accessible image with a described coverage claim. */
+  const figure = page.locator(".medico-flat-figure svg");
+  await expect(figure).toHaveAttribute("aria-label", /supplies 7 of 14/i);
+  await expect(figure).toHaveAttribute("aria-label", /masked out of the loss/i);
+  /* Every canvas on the page is decorative; none of it carries unique meaning. */
+  for (const canvas of await page.locator(".world-canvas").all()) {
+    await expect(canvas).toHaveAttribute("aria-hidden", "true");
+  }
+});
+
+test("medico keeps its renderer behind the gates", async ({ page, isMobile }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().endsWith(".js")) scripts.push(response.url());
+  });
+  await page.goto("/work/medico", { waitUntil: "networkidle" });
+
+  /*
+   * Both projects run with reducedMotion: "reduce", and mobile is below the width gate, so no
+   * configuration in this suite may pull three.js. Arrival must never pull it on any of them.
+   */
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the renderer must not load behind the motion or width gate").toBe(false);
+
+  /* And the static state must still be the whole explanation. */
+  await expect(page.locator(".world-stage")).toHaveAttribute("data-mode", "static");
+  await expect(page.locator(".medico-flat-figure")).toBeVisible();
+  expect(isMobile !== undefined).toBe(true);
+});
+
+test("medico fits a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/work/medico");
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  const report = overflows ? await describeOverflow(page) : null;
+  expect(overflows, `/work/medico overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
+});
+
+test("no patient identifier or private path reaches the medico page", async ({ page }) => {
+  await page.goto("/work/medico");
+  const html = await page.content();
+  /* The training script reads local corpora; none of those locations may be published. */
+  for (const marker of ["CheXpert-v1.0-small", "Data_Entry_2017", "MEDICO_DATA_DIR", "patient0", "C:\\\\"]) {
+    expect(html, `medico page must not publish ${marker}`).not.toContain(marker);
+  }
+});
