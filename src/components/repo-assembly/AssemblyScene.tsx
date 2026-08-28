@@ -21,6 +21,29 @@ import {
  * It is scroll-driven and otherwise idle: `frameloop="demand"` means nothing renders
  * unless scroll or hover invalidates the frame, so an assembly sitting still costs
  * nothing. There is no ambient animation anywhere in here.
+ *
+ * Why this one is still WebGL
+ * ---------------------------
+ * Five other scenes were moved off three.js and onto the Canvas 2D projector, because they were
+ * flat-shaded geometry that a perspective transform and a depth sort reproduce exactly. This one
+ * was measured against the same question and kept, for two reasons that the projector cannot meet:
+ * it is lit - `meshStandardMaterial` against an ambient and two directional lights, so a part's
+ * shape is read from its shading - and it is picked, with `onPointerOver`/`onClick` raycasting into
+ * real geometry, occlusion included, driving the hover readout and click-through. A painter's-
+ * algorithm sort has no notion of either.
+ *
+ * The bytes are already deferred, which is what makes keeping it defensible. Measured on /work:
+ *
+ *   reader                       on arrival   after scrolling to this band
+ *   wide desktop, motion on         567k                 +888k
+ *   reduced motion                  567k                  +27k
+ *   phone at 390px                  506k                  +20k
+ *
+ * Nobody pays for three.js to open the page, and the two audiences most likely to care - a reader
+ * who asked for less motion, and a phone - never pay for it at all. The one reader who does has a
+ * wide viewport, motion enabled, and has scrolled to the thing the renderer draws. Trading the
+ * interaction away to save bytes that are already gated behind all three of those would make the
+ * page worse for the only person it charges.
  */
 
 const MIN_FPS = 30;
