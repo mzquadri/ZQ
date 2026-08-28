@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ClosingMark } from "@/components/cinema/PageStages";
 import { ClosingCanvas } from "@/components/scene/PersonalCanvases";
 import PageShell from "@/components/PageShell";
-import { closing } from "@/content/cinema";
 import { site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 import { ExternalArrow } from "@/components/Icon";
@@ -35,12 +34,10 @@ export default function ContactPage() {
         <div className="ending-inner">
           <div className="ending-copy">
             <p className="ending-eyebrow">Contact / Full-time opportunities</p>
-            <h1 className="ending-line">{closing.line}</h1>
+            <h1 className="ending-line">Open to work where the result has to hold up.</h1>
             <p className="ending-support">
-              I work at the boundary between modelling and systems, and I am most useful where a
-              result has to survive being checked. If that is the kind of engineering you need, the
-              case studies and the research record are the fastest way to judge whether it is any
-              good.
+              I work at the boundary between modelling and systems. The fastest way to judge
+              whether that is useful to you is the evidence itself.
             </p>
 
             <p className="ending-availability">
@@ -68,13 +65,18 @@ export default function ContactPage() {
                   <strong>What was built, checked, and where it stops</strong>
                 </Link>
               </li>
+              <li>
+                <a href={site.resume.pdfPath} download>
+                  <span>Resume</span>
+                  <strong>One page, as a PDF</strong>
+                </a>
+              </li>
             </ul>
 
             <p className="ending-note resume-footnote">
-              No form, no tracking, no cookies, and no contact-form data. A condensed record is
-              available as an <Link href={site.resume.htmlPath}>HTML resume</Link> or a{" "}
-              <a href={site.resume.pdfPath} download>PDF export</a>; both are generated from the
-              same approved facts and publish no email, phone number, street address, private
+              No form, no tracking, no cookies, and no contact-form data. The PDF above and the{" "}
+              <Link href={site.resume.htmlPath}>HTML resume</Link> are generated from the same
+              approved facts, and publish no email, phone number, street address, private
               identifier, or disputed employment date.
             </p>
           </div>

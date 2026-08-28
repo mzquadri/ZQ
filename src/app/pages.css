@@ -210,11 +210,19 @@
       animation-range: entry 8% entry 55%;
     }
 
-    /* The closing ring draws itself once, slowly, when the ending comes into view. */
+    /*
+     * The closing ring draws itself once as it comes into view.
+     *
+     * The range ends on `entry`, not on `cover`. Contact is barely taller than a viewport, so the
+     * mark never travelled far enough to reach a `cover` percentage and the page came to rest on a
+     * three-quarter-drawn circle - an unfinished gesture as the last thing on the site. Ending the
+     * scrub while the element is still arriving means it is closed by the time it is fully in view,
+     * however short the page is.
+     */
     .closing-ring {
       animation: mz-connect var(--dur-cinematic) var(--ease-precise) both;
       animation-timeline: view();
-      animation-range: entry 15% cover 40%;
+      animation-range: entry 20% entry 92%;
       --path-length: 100;
     }
   }
@@ -451,7 +459,13 @@
 
 @media (max-width: 860px) {
   .ending-inner { grid-template-columns: minmax(0, 1fr); }
-  .ending-mark { display: none; }
+  /*
+   * The mark stays on a phone, smaller and below the copy.
+   *
+   * Hiding it meant the last thing on the site at 390px was a grey paragraph about what is not
+   * collected - true, and a weak place to stop. The ring is the ending; it just needs less room.
+   */
+  .ending-mark { margin: 0 auto; width: min(100%, 11rem); }
 }
 
 @media (max-width: 640px) {

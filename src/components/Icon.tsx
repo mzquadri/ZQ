@@ -52,14 +52,23 @@ export function ArrowLabel({ children, kind = "external" }: { children: string; 
   const last = words.pop() ?? "";
   const Arrow = kind === "forward" ? ForwardArrow : ExternalArrow;
 
+  /*
+   * One element, not a fragment.
+   *
+   * Every `.button` is a flex row with a 1rem gap, meant to separate a label from a trailing
+   * icon. A fragment made the leading words an anonymous flex item of their own, so that gap
+   * was inserted into the middle of the phrase instead - "Canonical    repository", with the
+   * label visibly broken in two. Wrapping the whole thing keeps it a single item, and the
+   * inner span still holds the last word to the arrow so it can never orphan on a wrap.
+   */
   return (
-    <>
+    <span className="arrow-label-line">
       {words.length > 0 ? `${words.join(" ")} ` : null}
       <span className="arrow-label">
         {last}
         <Arrow />
       </span>
-    </>
+    </span>
   );
 }
 
