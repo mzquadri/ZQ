@@ -30,11 +30,21 @@ import * as focus from "../src/content/focus";
 import * as portfolio from "../src/content/portfolio";
 import * as research from "../src/content/research";
 import * as truth from "../src/content/truth";
+import * as hydrologyWorld from "../src/content/hydrology-world";
+import * as mlopsWorld from "../src/content/mlops-world";
 
 const QUIET = process.argv.includes("--quiet");
 
 /** Every module whose exported strings can end up as an href on a page. */
-const MODULES: Record<string, unknown> = { ecosystem, focus, portfolio, research, truth };
+const MODULES: Record<string, unknown> = {
+  ecosystem,
+  focus,
+  hydrologyWorld,
+  mlopsWorld,
+  portfolio,
+  research,
+  truth,
+};
 
 /**
  * Walk exported values and collect every absolute URL, remembering where it came from.

@@ -1,10 +1,10 @@
 import {
-  EnsembleCanvas,
   GraphCityCanvas,
   HorizonCanvas,
   RetrievalCanvas,
 } from "@/components/scene/ProjectedCanvases";
 import { graphEdges, graphMaxHop, graphNodes, GRAPH } from "@/content/cinema-geometry";
+import { chapter, chapterEvent, chapterMaxQ } from "@/content/hydrology-chapter";
 
 /*
  * One scene per project.
@@ -285,52 +285,91 @@ export function PipelineScene({ stages }: { stages: readonly string[] }) {
 }
 
 /* ============================================================================================
- * Hydrology - an ensemble is a spread before it is an interval
+ * Hydrology - two perturbations, one of which matters
  *
- * Deliberately not the hero's figure. The hero calibrates one interval; this one shows where an
- * interval comes from: many members disagreeing, and their disagreement collapsing into a band.
- * The visual claim is about spread, not about calibration.
+ * The previous figure here showed ensemble members fanning into a horizon, which is a forecasting
+ * picture. This project does no forecasting: it takes one calibrated historical event and asks
+ * where its uncertainty actually comes from. The honest compressed story is a comparison, so the
+ * chapter is a comparison - two panels on one shared discharge scale, both bands drawn at their
+ * measured widths.
+ *
+ * The left panel looks like it is missing its band. It is not: the precipitation band is there,
+ * 356 times narrower than the one beside it, which is the finding rather than a rendering fault.
  * ========================================================================================== */
-function EnsembleFlat() {
-  const members = 11;
-  const width = 1000;
-  const height = 300;
 
-  const trace = (seed: number) => {
-    const pts: string[] = [];
-    for (let i = 0; i <= 60; i += 1) {
-      const t = i / 60;
-      const spread = Math.sin(t * Math.PI) * (seed - members / 2) * 7.4;
-      const y =
-        height * 0.5 -
-        Math.sin(t * Math.PI * 2.2) * 52 +
-        Math.sin(t * 9 + seed) * 6 +
-        spread;
-      pts.push(`${i === 0 ? "M" : "L"}${Math.round(t * width * 100) / 100} ${Math.round(y * 100) / 100}`);
-    }
-    return pts.join(" ");
-  };
+/*
+ * The chapter reads a module generated just for it. Importing the full hydrology world here
+ * pulled the rating curve and every metric into the homepage bundle for a thumbnail.
+ */
+const HYDRO_POINTS = chapterEvent;
+const HYDRO_W = 460;
+const HYDRO_H = 132;
+const HYDRO_QMAX = chapterMaxQ;
 
+const hydroX = (t: number) => 8 + t * (HYDRO_W - 16);
+const hydroY = (q: number) => HYDRO_H - 10 - (q / HYDRO_QMAX) * (HYDRO_H - 22);
+
+const HYDRO_RAIN_RATIO = chapter.rainRatio;
+
+function hydroBand(scale: number) {
+  const top = HYDRO_POINTS.map((p) => `${hydroX(p[0])},${hydroY(p[1] + (p[3] - p[1]) * scale)}`);
+  const bottom = [...HYDRO_POINTS]
+    .reverse()
+    .map((p) => `${hydroX(p[0])},${hydroY(p[1] - (p[1] - p[2]) * scale)}`);
+  return [...top, ...bottom].join(" ");
+}
+
+const hydroLine = HYDRO_POINTS.map((p) => `${hydroX(p[0])},${hydroY(p[1])}`).join(" ");
+
+function HydrologyPanel({
+  band,
+  count,
+  label,
+  tone,
+}: {
+  band: string;
+  count: string;
+  label: string;
+  tone: "rain" | "stage";
+}) {
   return (
-    <svg
-      className="scene-svg scene-ensemble"
+    <div className="scene-hydro-panel" data-tone={tone}>
+      <svg
+        aria-hidden="true"
+        preserveAspectRatio="xMidYMid meet"
+        viewBox={`0 0 ${HYDRO_W} ${HYDRO_H}`}
+      >
+        <polygon className="scene-hydro-band" points={band} {...at(24, 70)} />
+        <polyline className="scene-hydro-line" points={hydroLine} pathLength={100} {...at(6, 46)} />
+      </svg>
+      <p className="scene-hydro-label">
+        <strong>{label}</strong>
+        <span>{count}</span>
+      </p>
+    </div>
+  );
+}
+
+function EnsembleFlat() {
+  return (
+    <div
+      className="scene-hydro"
       role="img"
-      aria-label="Several ensemble members trace different futures from the same starting point. Their disagreement widens through the middle of the horizon and is then summarised as a single band."
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="xMidYMid meet"
+      aria-label={`Two panels on one discharge scale. Perturbing the precipitation of a calibrated hydrological event leaves a band too narrow to see and ${chapter.rainBetter} of ${chapter.series} corrupted series still beat the reference by chance. Perturbing the measured water level by 25 cm instead opens a wide band around the flood peak, and ${chapter.stageBetter} of ${chapter.series} beat the reference.`}
     >
-      <g className="scene-members">
-        {Array.from({ length: members }, (_, m) => (
-          <path className="scene-member" d={trace(m)} key={m} pathLength={100} {...at(10 + m * 2.6, 34 + m * 2.6)} />
-        ))}
-      </g>
-      {/* The summary the members collapse into. */}
-      <path
-        className="scene-envelope"
-        d={`${trace(members - 0.6)} L${width} ${height} L0 ${height} Z`}
-        {...at(58, 82)}
+      <HydrologyPanel
+        band={hydroBand(HYDRO_RAIN_RATIO)}
+        count={`${chapter.rainBetter} of ${chapter.series.toLocaleString("en-GB")} still beat the reference`}
+        label="Perturb the rain"
+        tone="rain"
       />
-    </svg>
+      <HydrologyPanel
+        band={hydroBand(1)}
+        count={`${chapter.stageBetter} of ${chapter.series.toLocaleString("en-GB")} beat the reference`}
+        label="Perturb the ruler"
+        tone="stage"
+      />
+    </div>
   );
 }
 
@@ -401,7 +440,7 @@ function HorizonFlat() {
  * it. Each flat version is the complete figure on its own.
  */
 export function EnsembleScene() {
-  return <EnsembleCanvas flat={<EnsembleFlat />} />;
+  return <EnsembleFlat />;
 }
 
 export function HorizonScene() {

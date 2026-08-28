@@ -3,7 +3,7 @@
 import { useMemo, type ReactNode } from "react";
 
 import CanvasStage from "@/components/scene/CanvasStage";
-import { drawBranch, drawEnsemble, drawHorizon } from "@/components/scene/project-scenes";
+import { drawBranch, drawHorizon } from "@/components/scene/project-scenes";
 import { drawGraphCity, drawRetrieval } from "@/components/scene/migrated-scenes";
 import type { Camera } from "@/components/scene/projector";
 
@@ -40,21 +40,6 @@ const MIN_WIDTH = 900;
 
 function useCamera(overrides?: Partial<Camera>) {
   return useMemo<Camera>(() => ({ ...SHARED_CAMERA, ...overrides }), [overrides]);
-}
-
-export function EnsembleCanvas({ flat }: { flat: ReactNode }) {
-  const camera = useCamera({ focal: 1050 });
-  return (
-    <CanvasStage
-      camera={camera}
-      className="projected projected-ensemble"
-      draw={drawEnsemble}
-      fallback={flat}
-      minWidth={MIN_WIDTH}
-      trackSelector=".case-story-body"
-      label="Ensemble members run into the horizon, agreeing near the start and separating through the middle. Their spread is then summarised as a band, with what actually happened cutting across it."
-    />
-  );
 }
 
 export function HorizonCanvas({ flat }: { flat: ReactNode }) {

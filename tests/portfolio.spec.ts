@@ -1862,3 +1862,132 @@ test("mlops fits a narrow phone", async ({ page }) => {
   const report = overflows ? await describeOverflow(page) : null;
   expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
 });
+
+/* ============================================================================================
+ * Hydrology: uncertainty quantification on a calibrated HBV event.
+ *
+ * The guards that matter most here are the negative ones. This seminar computes no coverage, no
+ * nominal interval and no calibration curve, and it does not forecast anything - so a page about
+ * it must not drift into the vocabulary of a forecasting project just because that vocabulary is
+ * close to hand. Three of the tests below exist only to keep it out.
+ * ========================================================================================== */
+
+test("hydrology renders the world and its measurements", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  await expect(page.locator(".world-stage.hydrology-world")).toBeVisible();
+  const text = await page.locator("main").innerText();
+  /* Both experiments, and the comparison between them, must be on the page. */
+  expect(text).toContain("0.907715");
+  expect(text).toContain("0.759226");
+  expect(text).toContain("356.1");
+});
+
+test("hydrology numbers come from the seminar's own artifacts", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const text = await page.locator("main").innerText();
+  /* Each of these is transcribed by the generator from a named results file. */
+  for (const value of ["0.907298", "0.998705", "5.76", "2,000"]) {
+    expect(text, `expected the generated value ${value}`).toContain(value);
+  }
+});
+
+test("hydrology names the methods the repository actually implements", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const text = await page.locator("main").innerText();
+  expect(text).toContain("HBV001a");
+  expect(text).toContain("Differential Evolution");
+  expect(text).toContain("Sobol");
+});
+
+test("hydrology claims no uncertainty method the seminar does not use", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  /*
+   * The thesis calibrates intervals; this project does not, and borrowing its vocabulary here
+   * would be the easiest way to overstate a piece of group coursework.
+   */
+  for (const absent of [
+    "conformal",
+    "temperature scaling",
+    "quantile regression",
+    "deep ensemble",
+    "monte carlo dropout",
+  ]) {
+    expect(text, `${absent} is not in this repository`).not.toContain(absent);
+  }
+});
+
+test("hydrology reports no coverage, because none was computed", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  /*
+   * No nominal level is evaluated anywhere in the seminar. A "90% interval" or an "empirical
+   * coverage" on this page would be an invented result, so the page may not contain one.
+   */
+  expect(text).not.toMatch(/\b(90|95|99)\s*%\s*(prediction\s+)?interval\b/);
+  expect(text).not.toContain("empirical coverage");
+  expect(text).not.toContain("nominal coverage");
+});
+
+test("hydrology does not present itself as a forecast", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const text = await page.locator("main").innerText();
+  /* Every mention of a forecast horizon or issue time would be a different project. */
+  for (const absent of ["forecast horizon", "lead time", "issue time"]) {
+    expect(text.toLowerCase(), `${absent} belongs to the streamflow project`).not.toContain(absent);
+  }
+});
+
+test("hydrology states its limitations, including that the event shape is schematic", async ({
+  page,
+}) => {
+  await page.goto("/work/hydrology-uq");
+  const text = await page.locator("main").innerText();
+  expect(text).toContain("schematic");
+  expect(text).toContain("not redistributable");
+  expect(text.toLowerCase()).toContain("group coursework");
+});
+
+test("hydrology keeps its renderer behind the gates", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().endsWith(".js")) scripts.push(response.url());
+  });
+  await page.goto("/work/hydrology-uq", { waitUntil: "networkidle" });
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the renderer must not load behind the gates").toBe(false);
+  await expect(page.locator(".world-stage.hydrology-world")).toHaveAttribute("data-mode", "static");
+});
+
+test("hydrology gives a reduced-motion reader the whole comparison", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/work/hydrology-uq");
+  /* Both panels, the shared-scale note, and the limitations - nothing withheld behind motion. */
+  await expect(page.locator(".hydrology-flat-panel")).toHaveCount(2);
+  await expect(page.locator(".hydrology-flat-note")).toBeVisible();
+  const limits = await page.locator(".hydrology-flat-limits li").count();
+  expect(limits).toBeGreaterThanOrEqual(5);
+});
+
+test("hydrology figures carry text alternatives", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  for (const svg of await page.locator(".hydrology-flat-panel svg").all()) {
+    const label = await svg.getAttribute("aria-label");
+    expect(label?.length ?? 0, "each panel needs its own description").toBeGreaterThan(60);
+  }
+});
+
+test("hydrology fits a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/work/hydrology-uq");
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  const report = overflows ? await describeOverflow(page) : null;
+  expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
+});
