@@ -1,5 +1,9 @@
-import GraphCityCanvas from "@/components/scene/GraphCityCanvas";
-import RetrievalSpaceCanvas from "@/components/scene/RetrievalSpaceCanvas";
+import {
+  EnsembleCanvas,
+  GraphCityCanvas,
+  HorizonCanvas,
+  RetrievalCanvas,
+} from "@/components/scene/ProjectedCanvases";
 import { graphEdges, graphMaxHop, graphNodes, GRAPH } from "@/content/cinema-geometry";
 
 /*
@@ -225,7 +229,7 @@ function RetrievalFlat() {
 
 /** The retrieval figure, with the vector volume over it where the gates allow. */
 export function RetrievalScene() {
-  return <RetrievalSpaceCanvas flat={<RetrievalFlat />} />;
+  return <RetrievalCanvas flat={<RetrievalFlat />} />;
 }
 
 /* ============================================================================================
@@ -264,7 +268,7 @@ export function PipelineScene({ stages }: { stages: readonly string[] }) {
  * interval comes from: many members disagreeing, and their disagreement collapsing into a band.
  * The visual claim is about spread, not about calibration.
  * ========================================================================================== */
-export function EnsembleScene() {
+function EnsembleFlat() {
   const members = 11;
   const width = 1000;
   const height = 300;
@@ -314,7 +318,7 @@ export function EnsembleScene() {
  * uniformly uncertain - it is nearly tight at the moment of issue and necessarily loose far out,
  * and the honest way to draw a horizon is to let it open.
  * ========================================================================================== */
-export function HorizonScene() {
+function HorizonFlat() {
   const width = 1000;
   const height = 300;
   const issue = 300;
@@ -367,6 +371,18 @@ export function HorizonScene() {
       </g>
     </svg>
   );
+}
+
+/*
+ * The three projected figures: flat drawing plus, where the gates allow, the spatial layer over
+ * it. Each flat version is the complete figure on its own.
+ */
+export function EnsembleScene() {
+  return <EnsembleCanvas flat={<EnsembleFlat />} />;
+}
+
+export function HorizonScene() {
+  return <HorizonCanvas flat={<HorizonFlat />} />;
 }
 
 /* ============================================================================================

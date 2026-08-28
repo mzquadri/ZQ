@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import HeroFieldCanvas from "@/components/scene/HeroFieldCanvas";
+
 import { bandPath, CONFIDENCE_FLOOR, linePath, SERIES, series, seriesMarks } from "@/content/cinema-geometry";
 import { heroStage } from "@/content/cinema";
 import { site } from "@/content/portfolio";
@@ -39,7 +41,7 @@ export default function HeroStage() {
         <div className="cine-hero-inner">
           {/* ---- The instrument ------------------------------------------------------------ */}
           <figure className="cine-instrument" aria-labelledby="cine-instrument-caption">
-            <svg
+            <HeroFieldCanvas flat={<svg
               className="cine-instrument-svg"
               role="img"
               aria-labelledby="cine-instrument-title cine-instrument-desc"
@@ -84,7 +86,7 @@ export default function HeroStage() {
                   />
                 ))}
               </g>
-            </svg>
+            </svg>} />
 
             {/*
              * The running caption. Each line owns a slice of the scroll range, so the words are

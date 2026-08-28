@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { VerbScene } from "@/components/cinema/scenes";
-import RepresentationBranchCanvas from "@/components/scene/RepresentationBranchCanvas";
+import { BranchCanvas } from "@/components/scene/ProjectedCanvases";
+import BranchFlat from "@/components/scene/BranchFlat";
 import { chapters, closing, problemClasses } from "@/content/cinema";
 import { site, thesis } from "@/content/portfolio";
 import { getProject } from "@/content/portfolio";
@@ -40,7 +41,7 @@ export function EngineeringSection() {
       <div className="cine-section-inner">
         <SectionHead chapter={chapters.engineering} />
 
-        <RepresentationBranchCanvas />
+        <BranchCanvas flat={<BranchFlat />} />
 
         <ol className="verb-track" aria-label="Four things a data platform has to do">
           {verbs.map((verb, i) => (

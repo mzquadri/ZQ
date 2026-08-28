@@ -609,3 +609,47 @@ html:has(.cine-hero),
 html:has(.chapter) {
   scroll-padding-top: 6.5rem;
 }
+
+/* ============================================================================================
+ * 7. The hero's spatial layer
+ *
+ * Canvas over the SVG, both sized by the same box, so the layout is identical whether the layer
+ * runs or not. The flat figure is the complete hero on its own.
+ * ========================================================================================== */
+
+.hero-field {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.hero-field .canvas-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/*
+ * Once the surface is drawn the flat curve hides completely.
+ *
+ * A faint trace was tried and it read as a second, brighter ribbon behind the real one - same
+ * data, different projection, so the two never line up. It keeps its box, which is what holds
+ * the layout identical either way; only its ink goes.
+ *
+ * `animation: none` is load-bearing, not tidying. The scrub gives this element a
+ * `cine-figure-focus` animation that ends at opacity 1, and an animated value wins over a plain
+ * declaration in the cascade - so setting opacity alone here did nothing at all and the two
+ * ribbons sat on top of each other. Cancelling the animation is what lets the declaration apply.
+ */
+.hero-field[data-mode="canvas"] > .cine-instrument-svg {
+  animation: none !important;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-exit);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-field .canvas-layer { display: none; }
+  .hero-field[data-mode="canvas"] > .cine-instrument-svg { opacity: 1; }
+}

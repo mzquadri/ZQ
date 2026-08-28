@@ -148,17 +148,21 @@ export default function ShowcaseCanvas({ assemblies }: { assemblies: readonly Re
             </p>
           )}
         </>
-      ) : degraded ? (
+      ) : (
         /*
-         * The band keeps the height it already occupied. Collapsing it would slide the
-         * cards below up under the reader's eye, which is a worse outcome than a quiet
-         * notice - and the strip beneath already carries everything the layer showed.
+         * The reserved band always has something in it.
+         *
+         * Before the layer mounts, and wherever it never will, this note occupies the space the
+         * stylesheet has already set aside. Collapsing the box instead would slide the cards
+         * below up under the reader's eye - which is exactly the shift this route used to have.
+         * The strip beneath carries everything the layer would have shown either way.
          */
-        <p className={styles.degradedNote}>
-          The 3D view was switched off to keep this page responsive. Everything it showed is
-          listed below.
+        <p className={styles.bandNote}>
+          {degraded
+            ? "The 3D view was switched off to keep this page responsive. Everything it showed is listed below."
+            : "Every part below is also drawn as an assembly you can scroll through and open."}
         </p>
-      ) : null}
+      )}
     </div>
   );
 }

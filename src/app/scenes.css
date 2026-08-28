@@ -1049,3 +1049,61 @@
   opacity: 0;
   transition: opacity var(--dur-cinematic) var(--ease-exit);
 }
+
+/* ============================================================================================
+ * 8. Projected canvas stages
+ *
+ * The Canvas 2D scenes. Same contract as the WebGL ones - the flat figure keeps its box so the
+ * layout is identical whether the layer runs or not - and the same reason for hiding the flat
+ * ink once the surface is up: the two are the same data but not the same projection, so leaving
+ * a ghost behind reads as noise rather than continuity.
+ * ========================================================================================== */
+
+.projected {
+  position: relative;
+  display: block;
+}
+
+.projected .canvas-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/*
+ * `animation: none` is load-bearing. These flat figures are given scrubbed animations that end
+ * at opacity 1, and an animated value beats a plain declaration in the cascade - so hiding them
+ * needs the animation cancelled, not just the opacity set.
+ */
+.projected[data-mode="canvas"] > .scene-svg,
+.projected[data-mode="canvas"] > .scene-pipeline,
+.projected[data-mode="canvas"] > .branch-flat {
+  animation: none !important;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-exit);
+}
+
+/* The pipeline's stage names are real text and stay legible; only its drawn rail gives way. */
+.projected-pipeline[data-mode="canvas"] > .scene-pipeline {
+  opacity: 1;
+  background: transparent;
+  border-color: transparent;
+}
+
+.projected-pipeline[data-mode="canvas"] > .scene-pipeline .scene-rail,
+.projected-pipeline[data-mode="canvas"] > .scene-pipeline .scene-gate,
+.projected-pipeline[data-mode="canvas"] > .scene-pipeline .scene-artifact {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projected .canvas-layer { display: none; }
+  .projected[data-mode="canvas"] > .scene-svg,
+  .projected[data-mode="canvas"] > .scene-pipeline,
+  .projected[data-mode="canvas"] > .branch-flat {
+    animation: revert !important;
+    opacity: 1;
+  }
+}
