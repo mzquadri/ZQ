@@ -1540,13 +1540,13 @@ test("insureassist claims no capability the repository lacks", async ({ page }) 
    * inside "Redistributable", failing on a sentence about the corpus licence.
    */
   for (const absent of [
-    /postgres/,
-    /minio/,
-    /redis/,
-    /recommendation engine/,
-    /financial advice/,
-    /insurance advice/,
-    /underwriting decision/,
+    /\bpostgres\b/,
+    /\bminio\b/,
+    /\bredis\b/,
+    /\brecommendation engine\b/,
+    /\bfinancial advice\b/,
+    /\binsurance advice\b/,
+    /\bunderwriting decision\b/,
   ]) {
     expect(text, `insureassist must not claim ${absent}`).not.toMatch(absent);
   }
@@ -1746,4 +1746,119 @@ test("the public-safe world keeps its renderer behind the gates", async ({ page 
   );
   expect(heavy.some(Boolean), "the renderer must not load behind the gates").toBe(false);
   await expect(page.locator(".world-stage.reliable-world")).toHaveAttribute("data-mode", "static");
+});
+
+/* ============================================================================================
+ * The MLOps release machine
+ *
+ * This project's subject is a gate that refuses to promote a model on insufficient evidence, so
+ * the tests hold the page to the same standard: every threshold has to match the repository's
+ * config, the refusal has to be present rather than smoothed away, and no capability may be
+ * claimed that the repository does not have.
+ * ========================================================================================== */
+
+test("the mlops route renders its world", async ({ page }) => {
+  const response = await page.goto("/work/mlops-reference-pipeline");
+  expect(response?.status()).toBe(200);
+  await expect(page.locator(".world-stage.mlops-world")).toHaveCount(1);
+  await expect(page.locator(".mlops-flat-figure")).toBeVisible();
+});
+
+test("published gate thresholds match the evidence module", async ({ page }) => {
+  const { gate, results } = await import("../src/content/mlops-world");
+  await page.goto("/work/mlops-reference-pipeline");
+  const text = await page.locator("main, article").first().innerText();
+
+  /* Every check, its threshold and its measured value, exactly as generated from the repository. */
+  for (const check of gate) {
+    expect(text, `${check.label} threshold`).toContain(String(check.threshold));
+    expect(text, `${check.label} measured value`).toContain(String(check.value));
+  }
+  expect(text, "held-out accuracy").toContain(String(results.accuracy));
+  expect(text, "majority-class baseline").toContain(String(results.baselineAccuracy));
+});
+
+test("the refusal is part of the story, not smoothed away", async ({ page }) => {
+  await page.goto("/work/mlops-reference-pipeline");
+  const text = (await page.locator("main, article").first().innerText()).toLowerCase();
+
+  /* The gate is a conjunction, production is not directly registrable, and a candidate can fail. */
+  expect(text).toContain("all()");
+  expect(text).toMatch(/not directly registrable/);
+  expect(text).toMatch(/cannot be registered/);
+  /* The margin over the baseline is the check the repository says carries the meaning. */
+  expect(text).toContain("margin");
+});
+
+test("mlops claims no capability the repository lacks", async ({ page }) => {
+  await page.goto("/work/mlops-reference-pipeline");
+  const text = (await page.locator("main, article").first().innerText()).toLowerCase();
+
+  /*
+   * The repository is a reference implementation: FastAPI, Docker, GitHub Actions, an optional
+   * MLflow that is off by default, and a counter endpoint. There is no cluster, no cloud, no
+   * autoscaling and no drift detection, and none of it may appear.
+   */
+  for (const absent of [
+    /\bkubernetes\b/,
+    /\bhelm\b/,
+    /\bsagemaker\b/,
+    /\bvertex ai\b/,
+    /\bairflow\b/,
+    /\bkubeflow\b/,
+    /\bautoscal/,
+    /\bdrift detection\b/,
+    /\bservice level agreement\b/,
+  ]) {
+    expect(text, `mlops must not claim ${absent}`).not.toMatch(absent);
+  }
+
+  /*
+   * "Production traffic" may appear, but only inside a denial. Forbidding the phrase outright
+   * failed on the two places the page legitimately uses it - the repository's own limitation
+   * ("No production traffic has ever hit it") and the case study's "never carried production
+   * traffic" - which are exactly the sentences it should be carrying. What is checked is that a
+   * negation appears close before every occurrence.
+   */
+  for (const match of text.matchAll(/production traffic/g)) {
+    const before = text.slice(Math.max(0, match.index - 30), match.index);
+    const denied = /\b(no|not|never)\b/.test(before);
+    expect(denied, `production traffic without a denial: ${JSON.stringify(before)}`).toBe(true);
+  }
+});
+
+test("mlops states its limitations, including having no production traffic", async ({ page }) => {
+  const { limits } = await import("../src/content/mlops-world");
+  await page.goto("/work/mlops-reference-pipeline");
+  const text = await page.locator("main, article").first().innerText();
+  for (const limit of limits) {
+    expect(text, `${limit.label} must be stated`).toContain(limit.label);
+  }
+  expect(text).toMatch(/No production traffic has ever hit it/i);
+});
+
+test("mlops keeps its renderer behind the gates", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().endsWith(".js")) scripts.push(response.url());
+  });
+  await page.goto("/work/mlops-reference-pipeline", { waitUntil: "networkidle" });
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the renderer must not load behind the gates").toBe(false);
+  await expect(page.locator(".world-stage.mlops-world")).toHaveAttribute("data-mode", "static");
+});
+
+test("mlops fits a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/work/mlops-reference-pipeline");
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  const report = overflows ? await describeOverflow(page) : null;
+  expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
 });

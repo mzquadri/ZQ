@@ -51,7 +51,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "mlops-reference-pipeline": {
     accent: "var(--accent-pipeline)",
     figureNote:
-      "Each stage is a gate rather than a conveyor: the artifact stops until something lets it through.",
+      "Promotion is a conjunction of four checks, not the next box along. One short check and the candidate stops here.",
     scale: "flagship",
     scene: (project) => <PipelineScene stages={project.workflow} />,
   },
