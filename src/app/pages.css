@@ -1327,3 +1327,64 @@
 .reliable-list span,
 .reliable-invariants span { font-size: 0.9rem; line-height: 1.55; }
 .reliable-invariants em { font-size: 0.82rem; font-style: normal; opacity: 0.7; }
+
+/* ---- mlops: the promotion gate ---- */
+
+.mlops-flat {
+  --world-muted: #7c8892;
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+}
+
+.mlops-flat-figure { margin: 0; }
+.mlops-flat-figure svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.mlops-flat-track { fill: rgb(255 255 255 / 0.05); }
+.mlops-flat-bar { fill: #4cc4b0; }
+/* The check that would refuse a weaker candidate is the one worth marking. */
+.mlops-flat-figure g[data-failing] .mlops-flat-bar { fill: #6f9dc4; }
+.mlops-flat-threshold { stroke: #f0a03c; stroke-width: 1.6; }
+.mlops-flat-name { fill: #dfe6ea; font-size: 12px; text-anchor: end; }
+.mlops-flat-value { fill: #4cc4b0; font-size: 11px; }
+.mlops-flat-rule {
+  fill: var(--world-muted);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 9px;
+}
+
+.mlops-flat-figure figcaption {
+  margin-top: 0.9rem;
+  max-width: 64ch;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #9aa7b2;
+}
+
+.mlops-flat-figure figcaption code {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.85em;
+  color: #dfe6ea;
+}
+
+.mlops-flat-stages,
+.mlops-flat-limits {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.mlops-flat-stages li { display: grid; gap: 0.1rem; padding-left: 0.85rem; border-left: 2px solid #4cc4b0; }
+.mlops-flat-limits li { display: grid; gap: 0.1rem; padding-left: 0.85rem; border-left: 2px solid #f0a03c; }
+.mlops-flat-stages strong,
+.mlops-flat-limits strong { font-size: 0.88rem; color: #f2f0e8; }
+.mlops-flat-stages span,
+.mlops-flat-limits span { font-size: 0.8rem; line-height: 1.45; color: var(--world-muted); }
+
+.world-note code {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.85em;
+  color: #dfe6ea;
+}

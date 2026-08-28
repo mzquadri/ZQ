@@ -5,6 +5,8 @@ import JsonLd from "@/components/JsonLd";
 import CaseHero from "@/components/cinema/CaseHero";
 import CaseStory from "@/components/cinema/CaseStory";
 import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld";
+import MlopsWorld from "@/components/mlops-world/MlopsWorld";
+import MlopsWorldFlat from "@/components/mlops-world/MlopsWorldFlat";
 import InsureAssistWorldFlat from "@/components/insureassist-world/InsureAssistWorldFlat";
 import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
@@ -106,6 +108,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "insureassist-rag" ? (
           <InsureAssistWorld flat={<InsureAssistWorldFlat />} />
+        ) : null}
+
+        {/*
+          The release machine, before the prose. Every threshold it shows is generated from the
+          repository's own config, and the gate it draws is the one the code composes.
+        */}
+        {project.slug === "mlops-reference-pipeline" ? (
+          <MlopsWorld flat={<MlopsWorldFlat />} />
         ) : null}
 
         {/* The showpiece sits before the prose: the page argues visually first, then explains. */}
