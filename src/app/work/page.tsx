@@ -38,16 +38,34 @@ export default function WorkPage() {
         ]}
       >
         <div className="work-jump">
+          <a href="#case-studies">Case studies</a>
           <a href="#systems">Systems model</a>
           <a href="#connections">How the work connects</a>
-          <a href="#case-studies">Case studies</a>
           <a href="#ecosystem">Repository index</a>
         </div>
       </StageHero>
 
-      <section className="section-wrap systems-showcase-section" id="systems">
+      {/*
+        * Case studies first, deliberately.
+        *
+        * The systems model and the connection graph are context for this work, and having them
+        * ahead of it meant a reader met two long abstract sections before a single real project.
+        * Whoever opens this page came to see what was built; the framing is worth more once they
+        * have something to attach it to.
+        */}
+      <section className="section-wrap work-index" id="case-studies">
         <SectionHeading
           index="01"
+          eyebrow="Featured case studies"
+          title="The work written up in full"
+          introduction="Each case study states the problem, my contribution, the versioned evidence, the quality controls, and the limitations that bound the claim."
+        />
+        <ProjectList projects={projects} />
+      </section>
+
+      <section className="section-wrap systems-showcase-section" id="systems">
+        <SectionHeading
+          index="02"
           eyebrow={showcase.eyebrow}
           title={showcase.title}
           introduction={showcase.introduction}
@@ -59,22 +77,12 @@ export default function WorkPage() {
           block for the sticky graph viewport inside it. */}
       <section className="section-wrap systems-section" id="connections">
         <SectionHeading
-          index="02"
+          index="03"
           eyebrow="How the work connects"
           title="From data to a decision someone can act on"
           introduction="Select any node to see what it means here and which public artifact backs it. Dashed nodes are directions of study with no public project yet."
         />
         <SystemGraph />
-      </section>
-
-      <section className="section-wrap work-index" id="case-studies">
-        <SectionHeading
-          index="03"
-          eyebrow="Featured case studies"
-          title="The work written up in full"
-          introduction="Each case study states the problem, my contribution, the versioned evidence, the quality controls, and the limitations that bound the claim."
-        />
-        <ProjectList projects={projects} />
       </section>
 
       <section className="section-wrap ecosystem-index" id="ecosystem">
@@ -86,7 +94,7 @@ export default function WorkPage() {
         />
         <RepoShowcase />
         <div className="ecosystem-index-rest" data-showcase="index">
-          <p className="section-index"><span>03</span>Every public repository</p>
+          <p className="section-index"><span>05</span>Every public repository</p>
           <EcosystemGroups groups={groups} />
           <SnapshotNote />
         </div>

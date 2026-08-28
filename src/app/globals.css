@@ -1025,6 +1025,20 @@ ol {
   font-size: clamp(3.25rem, 7vw, 6.7rem);
 }
 
+/*
+ * The thesis title is eleven words, and at the display size the research index uses it filled the
+ * entire first screen and still ran past the fold - so the opening view of the page carried a
+ * title and nothing else. Anyone arriving here wants the standfirst, the submission record and the
+ * repository link, which now fit alongside it. The index hero keeps the larger setting; its
+ * headline is short enough to earn it.
+ */
+.thesis-research-hero h1 {
+  max-width: 22ch;
+  /* Room for the descenders; at the smaller size the standfirst sat against them. */
+  margin-bottom: 0.6rem;
+  font-size: clamp(2.4rem, 4.4vw, 4rem);
+}
+
 .research-meta {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3429,8 +3443,19 @@ ol {
 }
 
 /* Holds the final word and its arrow on one line. See `ArrowLabel` for why. */
+/* The whole label, as one flex item - see ArrowLabel for why that matters. */
+.arrow-label-line {
+  display: inline;
+}
+
+/* The last word and its arrow, held together so the arrow never wraps alone. */
 .arrow-label {
   white-space: nowrap;
+}
+
+.arrow-label .icon {
+  margin-left: 0.4em;
+  vertical-align: -0.05em;
 }
 
 .external-marker {
