@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+
+import ThesisWorld from "@/components/thesis-world/ThesisWorld";
+import ThesisWorldFlat from "@/components/thesis-world/ThesisWorldFlat";
 import JsonLd from "@/components/JsonLd";
 import PageShell from "@/components/PageShell";
 import {
@@ -80,6 +83,17 @@ export default function ThesisResearchPage() {
             <a className="button button-secondary" href={canonicalThesisEvidence.corrigendum}><ArrowLabel>Read the corrigendum</ArrowLabel></a>
           </div>
         </header>
+
+        {/*
+          The system, before the prose.
+          
+          A reader arriving here can already see the whole pipeline come apart and reassemble
+          before being asked to read a word of it, and every quantity the sequence shows is read
+          from the aggregate evidence bundle published in the thesis repository. On a phone, on a
+          narrow window, or for a reader who declined motion, the same two measured curves are
+          drawn once and completely instead.
+        */}
+        <ThesisWorld flat={<ThesisWorldFlat />} />
 
         <section className="section-wrap research-question">
           <p className="section-index"><span>01</span>Research question</p>
