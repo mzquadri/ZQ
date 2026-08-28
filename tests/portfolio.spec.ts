@@ -352,7 +352,7 @@ test("the MLOps case study publishes the released reference run, not the retired
   await expect(body).toContainText("never carried production traffic");
 
   // Evidence links are pinned to the released commit, not to a floating branch.
-  const pinned = page.locator('a[href*="226ef7f1ec3d02d19f51327689e4c736854473cc"]');
+  const pinned = page.locator('a[href*="ada5465993295a9dd4d995846b77852d1fc4de5e"]');
   expect(await pinned.count()).toBeGreaterThanOrEqual(4);
   await expect(
     page.locator('main a[href*="MLOps-End-to-End-Pipeline/tree/main"], main a[href*="MLOps-End-to-End-Pipeline/blob/main"]'),
