@@ -919,3 +919,228 @@
   .thesis-rel-curve,
   .thesis-reliability-key strong { transition: none; }
 }
+
+/* ============================================================================================
+ * 11. Exploded worlds - shared stage
+ *
+ * The generic chrome every world uses: a tall track with a sticky viewport, a caption in the
+ * lower-left over a gradient scrim, and a flat figure that is the page until the surface is up.
+ * Two of the three mount gates - wide enough, motion allowed - are knowable to CSS, so the tall
+ * track is reserved from first paint for exactly the readers who will get the sequence and the
+ * section never grows under anyone.
+ * ========================================================================================== */
+
+/*
+ * One muted tone, defined once.
+ *
+ * The first value here was #6d7b86, carried over from a world with a slightly darker ground, and
+ * on this background it measured 4.48:1 against a 4.5:1 threshold - ten axe violations for two
+ * hundredths of a ratio. Lightened until it clears with margin rather than sitting on the line,
+ * and kept as a token so the next world cannot reintroduce it by copying a hex.
+ */
+.world-stage {
+  --world-ground: #0a0d0f;
+  --world-muted: #7c8892;
+  position: relative;
+  margin: 0;
+  background: var(--world-ground);
+  color: #f2f0e8;
+}
+
+.world-track { position: relative; height: auto; }
+
+.world-viewport {
+  display: grid;
+  overflow: hidden;
+  padding: clamp(2.5rem, 8vh, 5rem) 0;
+  place-items: center;
+}
+
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .world-track { height: 760vh; }
+  .world-viewport { position: sticky; top: 0; height: 100vh; padding: 0; }
+}
+
+.world-canvas { position: absolute; inset: 0; }
+.world-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+
+.world-caption {
+  position: absolute;
+  inset: auto auto 0 0;
+  width: min(46rem, 64%);
+  padding: 6rem clamp(1.5rem, 5vw, 4rem) clamp(1.5rem, 5vh, 3.5rem);
+  background: linear-gradient(to top, rgb(10 13 15 / 0.94) 0%, rgb(10 13 15 / 0.8) 45%, rgb(10 13 15 / 0) 100%);
+  pointer-events: none;
+}
+
+.world-stage-line { display: grid; margin: 0; gap: 0.35rem; }
+
+.world-index {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: #6f9dc4;
+}
+
+.world-stage-line strong {
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  font-weight: 680;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+}
+
+.world-line { max-width: 44ch; font-size: 0.95rem; line-height: 1.5; color: #9aa7b2; }
+
+.world-readout, .world-readout-list {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  max-width: 32rem;
+}
+
+.world-readout-row { display: grid; gap: 0.1rem; }
+
+.world-readout dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+
+.world-readout dd { margin: 0; display: flex; align-items: baseline; gap: 0.55rem; flex-wrap: wrap; }
+.world-readout dd strong { font-size: 1.1rem; font-weight: 680; color: #f2f0e8; }
+.world-readout dd span { font-size: 0.82rem; color: var(--world-muted); }
+
+.world-readout-list li {
+  display: grid;
+  gap: 0.05rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid rgb(255 255 255 / 0.12);
+}
+
+.world-readout-list li[data-on] { border-left-color: #6f9dc4; }
+/* One warm accent, reserved for "not known". */
+.world-readout-list li[data-tone="uncertain"] { border-left-color: #f0a03c; }
+.world-readout-list li[data-tone="unsupported"] { border-left-color: #4a565f; }
+.world-readout-list li[data-tone="positive"] { border-left-color: #4cc4b0; }
+
+.world-readout-list code {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.8rem;
+  color: #f2f0e8;
+}
+
+.world-readout-list span { font-size: 0.82rem; line-height: 1.45; color: var(--world-muted); }
+
+/* The fourteen findings, named. */
+.world-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 34rem;
+}
+
+.world-chips li {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 3px;
+  font-size: 0.76rem;
+  color: #cfd6da;
+}
+
+/* The loss, as a product a reader can see collapse. */
+.world-formula {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1.1rem 0 0;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.82rem;
+  color: #cfd6da;
+}
+
+.world-formula span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.world-formula span[data-mask] { color: #f0a03c; }
+.world-formula em { font-style: normal; color: #4a565f; }
+
+.world-flat { width: min(100% - 3rem, 70rem); padding: clamp(2rem, 6vh, 4rem) 0; }
+.world-stage[data-mode="scene"] .world-flat { visibility: hidden; }
+
+.world-stage[data-mode="static"] .world-caption {
+  position: static;
+  max-width: none;
+  width: min(100% - 3rem, 70rem);
+  margin: 0 auto clamp(1.5rem, 4vh, 2.5rem);
+  padding: 0;
+  background: none;
+}
+
+/* ---- medico: the coverage matrix ---- */
+
+/*
+ * The matrix carries its own tokens.
+ *
+ * It is used inside a world stage on the project route and inside a homepage chapter, and the
+ * chapter is not a world - so depending on variables defined on `.world-stage` left every muted
+ * tone and every rule undefined there. Declaring them here makes the figure portable.
+ */
+.medico-flat,
+.medico-matrix {
+  --world-muted: #7c8892;
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+}
+.medico-flat-figure { margin: 0; }
+.medico-matrix .medico-flat-figure figcaption { max-width: 58ch; }
+
+.medico-flat-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.medico-flat-cell {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.16);
+  stroke-width: 1;
+}
+
+.medico-flat-cell[data-on] { fill: #6f9dc4; stroke: none; }
+
+.medico-flat-source { fill: #cfd6da; font-size: 12px; text-anchor: end; }
+.medico-flat-count { fill: var(--world-muted); font-size: 11px; }
+.medico-flat-axis { fill: var(--world-muted); font-size: 11px; }
+
+.medico-flat-figure figcaption {
+  margin-top: 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #9aa7b2;
+  max-width: 62ch;
+}
+
+.medico-flat-limits {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.medico-flat-limits li {
+  display: grid;
+  gap: 0.15rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid #f0a03c;
+}
+
+.medico-flat-limits strong { font-size: 0.9rem; color: #f2f0e8; }
+.medico-flat-limits span { font-size: 0.82rem; line-height: 1.45; color: var(--world-muted); }

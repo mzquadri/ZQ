@@ -8,6 +8,7 @@ import {
   ResearchSection,
 } from "@/components/cinema/HomeSections";
 import WorkChapters from "@/components/cinema/WorkChapters";
+import MedicoChapter from "@/components/cinema/MedicoChapter";
 import PageShell from "@/components/PageShell";
 import { chapters } from "@/content/cinema";
 
@@ -42,6 +43,9 @@ export default function Home() {
       </section>
 
       <WorkChapters />
+
+      {/* Filed after the case studies and labelled as what it is: a prototype with no results. */}
+      <MedicoChapter />
 
       <section className="chapter-outro">
         <Link className="cine-cta cine-cta-quiet mz-interactive" href="/work">
