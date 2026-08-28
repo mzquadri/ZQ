@@ -44,7 +44,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "insureassist-rag": {
     accent: "var(--accent-retrieval)",
     figureNote:
-      "A question lands among the passages, selects its nearest neighbours, and stays tied to the ones the answer was built from.",
+      "The nearest passage can be the right provision from the wrong policy form. Three near-duplicate forms make that the whole problem.",
     scale: "flagship",
     scene: () => <RetrievalScene />,
   },

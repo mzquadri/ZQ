@@ -1144,3 +1144,112 @@
 
 .medico-flat-limits strong { font-size: 0.9rem; color: #f2f0e8; }
 .medico-flat-limits span { font-size: 0.82rem; line-height: 1.45; color: var(--world-muted); }
+
+/* ---- insureassist: the retriever comparison ---- */
+
+.insure-flat {
+  --world-muted: #7c8892;
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+}
+
+.insure-flat-figure { margin: 0; }
+.insure-flat-figure svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.insure-flat-track { fill: rgb(255 255 255 / 0.05); }
+.insure-flat-hit { fill: #7aa7f0; }
+.insure-flat-doc { fill: #4cc4b0; }
+
+/* The selected architecture is the only one at full strength. */
+.insure-flat-figure g:not([data-selected]) .insure-flat-hit,
+.insure-flat-figure g:not([data-selected]) .insure-flat-doc { opacity: 0.45; }
+
+.insure-flat-name { fill: #e8e0d2; font-size: 12px; text-anchor: end; }
+.insure-flat-value { fill: #7aa7f0; font-size: 11px; }
+.insure-flat-value[data-doc] { fill: #4cc4b0; }
+.insure-flat-key { fill: #7aa7f0; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+.insure-flat-key[data-doc] { fill: #4cc4b0; }
+
+.insure-flat-figure figcaption {
+  margin-top: 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #9aa7b2;
+  max-width: 64ch;
+}
+
+.insure-flat-forms,
+.insure-flat-limits {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.insure-flat-forms li { display: grid; gap: 0.1rem; padding-left: 0.85rem; border-left: 2px solid #e8e0d2; }
+.insure-flat-limits li { display: grid; gap: 0.1rem; padding-left: 0.85rem; border-left: 2px solid #f0a03c; }
+.insure-flat-forms strong,
+.insure-flat-limits strong { font-size: 0.88rem; color: #f2f0e8; }
+.insure-flat-forms span,
+.insure-flat-limits span { font-size: 0.8rem; line-height: 1.45; color: var(--world-muted); }
+
+.insure-flat-scope { margin: 0; font-size: 0.82rem; color: var(--world-muted); }
+
+/* A note under a readout, used where a state needs one sentence more than a row can carry. */
+.world-note {
+  margin: 0.9rem 0 0;
+  max-width: 40rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--world-muted);
+}
+
+/* The retriever panel: two metrics that point in opposite directions, pinned to the viewport. */
+.insure-panel {
+  position: absolute;
+  top: clamp(5rem, 12vh, 8rem);
+  right: clamp(1.5rem, 5vw, 4rem);
+  width: min(19rem, 34vw);
+  padding: 0.9rem 1rem 0.8rem;
+  border-radius: 6px;
+  background: rgb(11 14 17 / 0.78);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 18px 40px rgb(0 0 0 / 0.45);
+  pointer-events: none;
+  transition: opacity var(--dur-base, 220ms) linear;
+}
+
+.insure-panel svg { display: block; width: 100%; height: auto; overflow: visible; }
+.insure-panel-track { fill: rgb(255 255 255 / 0.06); }
+.insure-panel-hit { fill: #7aa7f0; }
+.insure-panel-doc { fill: #4cc4b0; }
+.insure-panel g:not([data-selected]) .insure-panel-hit,
+.insure-panel g:not([data-selected]) .insure-panel-doc { opacity: 0.45; }
+.insure-panel-name { fill: #e8e0d2; font-size: 9px; letter-spacing: 0.06em; }
+.insure-panel-value { fill: #7aa7f0; font-size: 9px; }
+.insure-panel-value[data-doc] { fill: #4cc4b0; }
+
+.insure-panel-key {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.insure-panel-key span { color: #7aa7f0; }
+.insure-panel-key strong { color: #4cc4b0; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .insure-panel { transition: none; }
+}
+
+.insure-flat-licence {
+  margin: 0;
+  max-width: 64ch;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--world-muted);
+}

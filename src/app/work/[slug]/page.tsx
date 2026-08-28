@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import CaseHero from "@/components/cinema/CaseHero";
 import CaseStory from "@/components/cinema/CaseStory";
+import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld";
+import InsureAssistWorldFlat from "@/components/insureassist-world/InsureAssistWorldFlat";
 import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
@@ -95,6 +97,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </a>
           )}
         </CaseHero>
+
+        {/*
+          The InsureAssist world runs full-bleed, before the prose and before the hero copy has
+          been read. Its eleven states are driven entirely by the repository's frozen reference
+          run, so a reader who scrolls it has seen the real held-out result before reaching a
+          paragraph about it.
+        */}
+        {project.slug === "insureassist-rag" ? (
+          <InsureAssistWorld flat={<InsureAssistWorldFlat />} />
+        ) : null}
 
         {/* The showpiece sits before the prose: the page argues visually first, then explains. */}
         {project.slug === "legal-knowledge-platform" ? (
