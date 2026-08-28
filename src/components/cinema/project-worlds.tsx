@@ -37,14 +37,14 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "transport-uq": {
     accent: "var(--accent-graph)",
     figureNote:
-      "A breadth-first wavefront over a fixed road network, then a ring per junction standing for how far the information had to travel to reach it.",
+      "Information spreads through a fixed road network, then each junction carries how unsure the surrogate is there.",
     scale: "flagship",
     scene: () => <GraphSurrogateScene />,
   },
   "insureassist-rag": {
     accent: "var(--accent-retrieval)",
     figureNote:
-      "Retrieval and generation kept on opposite sides of the frame, with the answer physically tethered to the passages it was built from.",
+      "A question lands among the passages, selects its nearest neighbours, and stays tied to the ones the answer was built from.",
     scale: "flagship",
     scene: () => <RetrievalScene />,
   },

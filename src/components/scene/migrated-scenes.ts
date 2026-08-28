@@ -44,10 +44,18 @@ export const drawGraphCity: DrawFn = (context, { progress, width, height, camera
   const dim = token("--stage-ink-soft", "#9aa7b2");
   const cam = settle(base, progress, width);
 
-  const drawn = ease(ramp(progress, 0.04, 0.26));
-  const wave = ramp(progress, 0.22, 0.52) * (graphMaxHop + 1);
-  const rise = ease(ramp(progress, 0.48, 0.72));
-  const calibrate = ease(ramp(progress, 0.7, 0.94));
+  /*
+   * Paced so the argument finishes while the figure is still on screen.
+   *
+   * These four beats used to run to 94% of the view range, which meant the thing the chapter is
+   * actually about - the junctions the model has least to go on turning over to the warning
+   * colour - only appeared as the figure was leaving the viewport. At a normal scrolling speed
+   * nobody saw it. Everything now completes inside the first three quarters.
+   */
+  const drawn = ease(ramp(progress, 0.03, 0.18));
+  const wave = ramp(progress, 0.15, 0.38) * (graphMaxHop + 1);
+  const rise = ease(ramp(progress, 0.34, 0.54));
+  const calibrate = ease(ramp(progress, 0.52, 0.74));
 
   /* The plan first, so the pillars have something to stand on. */
   for (const [a, b] of graphEdges3D) {
@@ -80,7 +88,13 @@ export const drawGraphCity: DrawFn = (context, { progress, width, height, camera
      * through mud at every intermediate value, so the junctions the model had least to go on
      * switch rather than fade.
      */
-    const declined = node.hop >= graphMaxHop - 1 ? ease(ramp(calibrate, 0.55, 0.8)) : 0;
+    /*
+     * The outermost ring only - twenty of twenty-five junctions sit at `maxHop - 1` or beyond, so
+     * that threshold turned four fifths of the network orange and the figure stopped saying
+     * "these are the ones to check" and started saying "none of this can be trusted". Ten of
+     * twenty-five is the claim the work actually supports.
+     */
+    const declined = node.hop >= graphMaxHop ? ease(ramp(calibrate, 0.55, 0.8)) : 0;
     const colour = declined > 0.5 ? warn : node.hop === 0 ? ink : accent;
     const cap = node.hop === 0 ? 0.22 : 0.15;
 
@@ -141,10 +155,15 @@ export const drawRetrieval: DrawFn = (context, { progress, width, height, camera
   const dim = token("--stage-ink-soft", "#9aa7b2");
   const cam = settle(base, progress, width);
 
-  const arrive = ramp(progress, 0.05, 0.34);
-  const queryIn = ease(ramp(progress, 0.32, 0.5));
-  const search = ease(ramp(progress, 0.46, 0.68));
-  const tether = ease(ramp(progress, 0.66, 0.92));
+  /*
+   * The arrival was taking a third of the track on its own, so most of this chapter was a cloud
+   * of unselected grey boxes - a figure that could belong to any project. The selection and the
+   * tether are what make it retrieval, so they now start early and finish well before the end.
+   */
+  const arrive = ramp(progress, 0.03, 0.22);
+  const queryIn = ease(ramp(progress, 0.2, 0.32));
+  const search = ease(ramp(progress, 0.3, 0.46));
+  const tether = ease(ramp(progress, 0.44, 0.62));
 
   const faces: Face[] = [];
   for (let i = 0; i < CHUNKS; i += 1) {
