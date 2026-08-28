@@ -155,8 +155,9 @@
  * 4. Contact - the closing mark
  * ========================================================================================== */
 
+/* The last mark on the site, sized to hold the column it sits in rather than float inside it. */
 .closing-mark {
-  width: min(100%, 15rem);
+  width: min(100%, 22rem);
   height: auto;
 }
 
@@ -557,4 +558,39 @@
 .page-stage .work-jump a:focus-visible {
   color: var(--accent);
   border-bottom-color: var(--accent);
+}
+
+/* ============================================================================================
+ * 7. Personal routes - the projected layer
+ *
+ * About, Resume and Contact get one surface each, over the flat figure that is already there.
+ * The flat figure keeps its box in every case, so the canvas mounting changes nothing about
+ * layout - these pages sit above the fold on a laptop and cannot afford to shift.
+ *
+ * The generic `.projected[data-mode="canvas"] > .scene-svg` rule in scenes.css already hides the
+ * about and resume figures. The closing mark is not a `.scene-svg`, so it needs its own line -
+ * with `animation: none`, because the ring is scrubbed to opacity 1 and an animated value beats
+ * a plain declaration.
+ * ========================================================================================== */
+
+.projected-domains {
+  width: 100%;
+}
+
+.projected-closing[data-mode="canvas"] > .closing-mark {
+  animation: none !important;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-exit);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projected-closing[data-mode="canvas"] > .closing-mark {
+    animation: revert !important;
+    opacity: 1;
+  }
+}
+
+/* The surface matches the mark exactly, so the two modes occupy the same box. */
+.projected-closing {
+  width: min(100%, 22rem);
 }

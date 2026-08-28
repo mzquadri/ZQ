@@ -40,6 +40,15 @@ export default function ResumePage() {
           { label: "Based in", value: site.location },
           { label: "Focus", value: capabilities.map((capability) => capability.title).join(" / ") },
         ]}
+        /*
+         * No projected layer here, deliberately.
+         *
+         * The spine already is the trajectory: a rail with one marker per problem class, earliest
+         * to latest, with the current one filled. Drawing a second path over it was tried and the
+         * line ran straight through the body copy - a figure that says the same thing as the text
+         * beneath it, less clearly, while making the text harder to read. Depth is worth adding
+         * where it says something the flat figure cannot. Here it did not.
+         */
         figure={<ProfileSpine stages={[...problemClasses].reverse()} />}
       >
         <p className="page-stage-actions">
