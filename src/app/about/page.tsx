@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EducationList, ExperienceList } from "@/components/CareerProfile";
 import { DomainsScene, StageHero } from "@/components/cinema/PageStages";
+import { DomainsCanvas } from "@/components/scene/PersonalCanvases";
 import PageShell from "@/components/PageShell";
 import ProfilePortrait from "@/components/ProfilePortrait";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
@@ -46,7 +47,7 @@ export default function AboutPage() {
           { label: "Role", value: site.role },
           { label: "Studying", value: thesis.program },
         ]}
-        figure={<DomainsScene />}
+        figure={<DomainsCanvas flat={<DomainsScene />} />}
       />
 
       <section className="section-wrap about-profile">
