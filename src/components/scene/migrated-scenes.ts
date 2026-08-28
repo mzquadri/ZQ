@@ -118,7 +118,13 @@ export const drawGraphCity: DrawFn = (context, { progress, width, height, camera
 };
 
 /* ============================================================================================
- * Retrieval - passages in a space, and the neighbourhood a question selects
+ * Retrieval - passages in a space, and which document the nearest one came from
+ *
+ * The homepage chapter used to stop at "a question selects its nearest neighbours", which is true
+ * of every retrieval system ever built and says nothing about this one. The corpus here is three
+ * near-duplicate federal forms that share word-for-word wording, so the interesting fact is not
+ * that a neighbourhood forms - it is that the nearest passage can be the right provision from the
+ * wrong form. Passages now carry which form they came from, and the top result is drawn as one.
  * ========================================================================================== */
 
 const CHUNKS = 48;
@@ -133,6 +139,9 @@ const QUERY = { x: 0.35, y: -0.1, z: 0.2 };
  */
 const HASH = { a: 43758.545, b: 12345.678, c: 24634.634 } as const;
 
+/** Three forms, so a passage can be right about the topic and wrong about the document. */
+const FORMS = 3;
+
 const PASSAGES = Array.from({ length: CHUNKS }, (_, i) => {
   const frac = (n: number) => n - Math.floor(n);
   const p = {
@@ -140,7 +149,7 @@ const PASSAGES = Array.from({ length: CHUNKS }, (_, i) => {
     y: (frac(Math.sin(i * 78.233) * HASH.b) - 0.5) * 3,
     z: (frac(Math.sin(i * 39.425) * HASH.c) - 0.5) * 4.6,
   };
-  return { ...p, d: Math.hypot(p.x - QUERY.x, p.y - QUERY.y, p.z - QUERY.z) };
+  return { ...p, form: i % FORMS, d: Math.hypot(p.x - QUERY.x, p.y - QUERY.y, p.z - QUERY.z) };
 });
 
 /** The selected set is genuinely the nearest four, computed from the positions above. */
@@ -151,6 +160,8 @@ const NEAREST = PASSAGES.map((p, i) => ({ i, d: p.d }))
 
 export const drawRetrieval: DrawFn = (context, { progress, width, height, camera: base }) => {
   const accent = token("--accent-retrieval", "#f0a03c");
+  const warn = token("--orange", "#f15a35");
+  const right = token("--accent-graph", "#4cc4b0");
   const ink = token("--stage-ink", "#f2f0e8");
   const dim = token("--stage-ink-soft", "#9aa7b2");
   const cam = settle(base, progress, width);
@@ -164,6 +175,8 @@ export const drawRetrieval: DrawFn = (context, { progress, width, height, camera
   const queryIn = ease(ramp(progress, 0.2, 0.32));
   const search = ease(ramp(progress, 0.3, 0.46));
   const tether = ease(ramp(progress, 0.44, 0.62));
+  /* Late in the chapter, provenance is revealed on the set that was already selected. */
+  const provenance = ease(ramp(progress, 0.62, 0.84));
 
   const faces: Face[] = [];
   for (let i = 0; i < CHUNKS; i += 1) {
@@ -171,14 +184,27 @@ export const drawRetrieval: DrawFn = (context, { progress, width, height, camera
     // Passages travel out of the document rather than appearing where they belong.
     const t = ease(Math.max(0, Math.min(1, arrive * CHUNKS - i * 0.55)));
     if (t <= 0.01) continue;
-    const selected = NEAREST.includes(i) ? search : 0;
+    const rank = NEAREST.indexOf(i);
+    const selected = rank >= 0 ? search : 0;
     const size = 0.12 + selected * 0.11;
+
+    /*
+     * Once provenance is revealed the nearest passage turns over to the warning colour: it is a
+     * good match for the question and it belongs to a different form from the one that answers it.
+     * The correct passage is already in the set, one rank below.
+     */
+    let tone = dim;
+    if (selected > 0.5) {
+      const wrongForm = rank === 0;
+      tone = provenance > 0.4 ? (wrongForm ? warn : right) : accent;
+    }
+
     faces.push(
       ...box(
         { x: mix(-3.8, p.x, t), y: mix(0, p.y, t), z: mix(0, p.z, t) },
         { x: size, y: size, z: size },
-        rgba(selected > 0.5 ? accent : dim, 0.45 + selected * 0.5),
-        rgba(selected > 0.5 ? accent : dim, 0.85),
+        rgba(tone, 0.45 + selected * 0.5),
+        rgba(tone, 0.85),
       ),
     );
   }

@@ -1484,3 +1484,114 @@ test("no patient identifier or private path reaches the medico page", async ({ p
     expect(html, `medico page must not publish ${marker}`).not.toContain(marker);
   }
 });
+
+/* ============================================================================================
+ * The InsureAssist world
+ *
+ * The repository ships `eval/verify_artifacts.py`, which fails its CI if its own documentation
+ * drifts from the frozen reference run. These tests are the same idea applied to the site: every
+ * published figure has to match the evidence module, the failure the project is about has to be
+ * on the page rather than softened away, and no number may appear that the run does not contain.
+ * ========================================================================================== */
+
+test("the insureassist route renders its world", async ({ page }) => {
+  const response = await page.goto("/work/insureassist-rag");
+  expect(response?.status()).toBe(200);
+  await expect(page.locator(".world-stage.insureassist-world")).toHaveCount(1);
+  await expect(page.locator(".insure-flat-figure")).toBeVisible();
+});
+
+test("published retrieval metrics match the evidence module", async ({ page }) => {
+  const { results, retrievers } = await import("../src/content/insureassist-world");
+  await page.goto("/work/insureassist-rag");
+  const text = await page.locator("main, article").first().innerText();
+
+  /* The three headline figures, and every baseline row, exactly as the reference run has them. */
+  for (const value of [results.mrr, results.hitAt5, results.topDocument]) {
+    expect(text, `held-out ${value} must appear`).toContain(String(value));
+  }
+  for (const retriever of retrievers) {
+    expect(text, `${retriever.label} hit@5`).toContain(String(retriever.hitAt5));
+    expect(text, `${retriever.label} top-document`).toContain(String(retriever.topDocument));
+  }
+});
+
+test("the wrong-document story is on the page, not softened", async ({ page }) => {
+  await page.goto("/work/insureassist-rag");
+  const text = (await page.locator("main, article").first().innerText()).toLowerCase();
+
+  /* The failure, the honest comparison, and the boundary that the service never abstains. */
+  expect(text).toContain("wrong form");
+  expect(text).toMatch(/bm25 alone retrieves the most relevant chunks/);
+  expect(text).toMatch(/never abstains|rejection rate is 0/);
+  expect(text).toContain("16.7%");
+});
+
+test("insureassist claims no capability the repository lacks", async ({ page }) => {
+  await page.goto("/work/insureassist-rag");
+  const text = (await page.locator("main, article").first().innerText()).toLowerCase();
+
+  /*
+   * The repository has no structured field extraction, no recommendation engine, and no
+   * relational or object storage. It also gives no financial advice. None of that may appear.
+   */
+  /*
+   * Word boundaries, not substrings. The first version used `toContain` and matched "redis"
+   * inside "Redistributable", failing on a sentence about the corpus licence.
+   */
+  for (const absent of [
+    /postgres/,
+    /minio/,
+    /redis/,
+    /recommendation engine/,
+    /financial advice/,
+    /insurance advice/,
+    /underwriting decision/,
+  ]) {
+    expect(text, `insureassist must not claim ${absent}`).not.toMatch(absent);
+  }
+});
+
+test("the corpus is attributed and its licence basis stated", async ({ page }) => {
+  await page.goto("/work/insureassist-rag");
+  const text = await page.locator("main, article").first().innerText();
+  expect(text).toContain("17 U.S.C. 105");
+  for (const citation of ["Appendix A(1)", "Appendix A(2)", "Appendix A(3)"]) {
+    expect(text, `${citation} must be cited`).toContain(citation);
+  }
+});
+
+test("insureassist keeps its renderer behind the gates", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().endsWith(".js")) scripts.push(response.url());
+  });
+  await page.goto("/work/insureassist-rag", { waitUntil: "networkidle" });
+
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the renderer must not load behind the motion or width gate").toBe(false);
+  await expect(page.locator(".world-stage.insureassist-world")).toHaveAttribute("data-mode", "static");
+});
+
+test("insureassist fits a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/work/insureassist-rag");
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  const report = overflows ? await describeOverflow(page) : null;
+  expect(overflows, `/work/insureassist-rag overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
+});
+
+test("no local corpus path or employer content reaches insureassist", async ({ page }) => {
+  await page.goto("/work/insureassist-rag");
+  const html = await page.content();
+  for (const marker of ["data/corpus/", "MEDICO_DATA_DIR", "C:\\\\", "/home/", "qa_testset"]) {
+    expect(html, `insureassist must not publish ${marker}`).not.toContain(marker);
+  }
+});
