@@ -472,7 +472,7 @@
 
 /* ---- Engineering: the branching figure --------------------------------------------------------- */
 
-.branch-stage {
+.projected-branch {
   position: relative;
   display: block;
   margin-bottom: clamp(2rem, 5vh, 3rem);
@@ -486,17 +486,6 @@
   background: color-mix(in oklab, var(--stage-raised) 62%, transparent);
   border: 1px solid var(--stage-line);
   border-radius: 4px;
-}
-
-.branch-canvas {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.branch-stage[data-mode="webgl"] > .branch-flat {
-  opacity: 0;
-  transition: opacity var(--dur-cinematic) var(--ease-exit);
 }
 
 .branch-source { fill: var(--stage-ink); }

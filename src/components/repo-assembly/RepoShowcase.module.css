@@ -11,6 +11,18 @@
 /* Zero height rather than display:none. A display:none element is out of layout, so an
    IntersectionObserver can never report it as visible - which would leave the layer
    waiting for a signal that cannot arrive. */
+/*
+ * The band reserves its height before JavaScript runs.
+ *
+ * It used to be `height: 0` until the client decided the 3D layer was eligible, and then jumped
+ * to 34rem - which pushed the entire repository index down the page after hydration and was this
+ * route's whole layout shift.
+ *
+ * Two of the four eligibility gates are knowable to CSS alone: the viewport is wide enough, and
+ * the reader has not asked for reduced motion. Those are exactly the readers who will get the
+ * layer, so the space is reserved for them up front. The remaining two gates - in viewport, WebGL
+ * present - only decide what goes in the reserved box, never how tall it is.
+ */
 .canvasHost {
   position: relative;
   display: block;
@@ -18,14 +30,32 @@
   overflow: hidden;
 }
 
-.canvasHost[data-mode="webgl"],
-.canvasHost[data-mode="degraded"] {
-  height: min(66vh, 34rem);
-  margin-bottom: 0.5rem;
-  border: 1px solid var(--line-strong);
-  background:
-    radial-gradient(120% 90% at 50% 0%, var(--paper-raised), transparent 72%),
-    var(--paper);
+@media (min-width: 60rem) and (prefers-reduced-motion: no-preference) {
+  .canvasHost {
+    height: min(66vh, 34rem);
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--line-strong);
+    background:
+      radial-gradient(120% 90% at 50% 0%, var(--paper-raised), transparent 72%),
+      var(--paper);
+  }
+}
+
+/*
+ * What occupies the reserved band before - or instead of - the canvas, so the box is never empty
+ * and never collapses.
+ */
+.bandNote {
+  display: grid;
+  place-content: center;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  max-width: 46rem;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 .canvasLayer {

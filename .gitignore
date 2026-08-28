@@ -56,6 +56,11 @@ next-env.d.ts
 /media/g6/
 /media/r3/
 /media/e3/
+/media/hero*/
+/media/v2/
+/media/v3/
+/media/v4/
+/media/mob/
 /media/final/
 # Generated showreel: 2.8MB, re-recordable from tools/record-showreel.mjs.
 /media/showreel.webm
