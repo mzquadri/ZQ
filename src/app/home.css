@@ -513,3 +513,30 @@
 @media (max-width: 640px) {
   .branch-flat { max-height: none; }
 }
+
+/*
+ * The four invariants on the homepage engineering chapter.
+ *
+ * Four short questions rather than four icons: the point of this work is that health is a
+ * conjunction, and a row of symbols would say the opposite.
+ */
+.invariant-track {
+  display: grid;
+  gap: 0.9rem;
+  margin: clamp(2rem, 5vh, 3rem) 0 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+}
+
+.invariant-track li {
+  display: grid;
+  gap: 0.2rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--accent-graph, #4cc4b0);
+}
+
+.invariant-track strong { font-size: 0.9rem; letter-spacing: -0.005em; }
+.invariant-track span { font-size: 0.85rem; line-height: 1.5; color: var(--stage-ink-soft, #9aa7b2); }
+
+.cine-section-action { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; }

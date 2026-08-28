@@ -1595,3 +1595,155 @@ test("no local corpus path or employer content reaches insureassist", async ({ p
     expect(html, `insureassist must not publish ${marker}`).not.toContain(marker);
   }
 });
+
+/* ============================================================================================
+ * The public-safe reliable-knowledge world
+ *
+ * This route exists because the employer case study cannot be published. The tests that matter
+ * most are therefore negative ones: that the abstraction leaks nothing, that the confidential
+ * route stays excluded, and that what remains is still a description of real engineering rather
+ * than four generic boxes.
+ * ========================================================================================== */
+
+test("the public-safe route renders its world", async ({ page }) => {
+  const response = await page.goto("/work/reliable-knowledge-systems");
+  expect(response?.status()).toBe(200);
+  await expect(page.locator(".world-stage.reliable-world")).toHaveCount(1);
+  await expect(page.locator(".reliable-flat-figure")).toBeVisible();
+});
+
+test("the public-safe route names nothing internal", async ({ page }) => {
+  await page.goto("/work/reliable-knowledge-systems");
+  const html = await page.content();
+
+  /*
+   * Internal repository names, the internal host, internal service and table names, store
+   * technologies used internally, and the domain vocabulary that would identify the subject.
+   * None of it may appear in the markup, in any attribute, or in any inlined script.
+   */
+  for (const forbidden of [
+    /bp-itcs-ibp/i,
+    /lab-gitea/i,
+    /\bglaux\b/i,
+    /currency_observations/i,
+    /law_verification_state/i,
+    /entity[-\s]producer/i,
+    /knowledge-db-ingestion/i,
+    /\bneo4j\b/i,
+    /\bminio\b/i,
+    /\bpostgres/i,
+    /\bqdrant\b/i,
+    /\bstatute\b/i,
+    /\bgesetze\b/i,
+    /\bCELEX\b/,
+    /C:[\/]Users/i,
+  ]) {
+    expect(html, `public-safe route must not contain ${forbidden}`).not.toMatch(forbidden);
+  }
+});
+
+test("the public-safe route discloses that it is synthetic", async ({ page }) => {
+  await page.goto("/work/reliable-knowledge-systems");
+  const text = await page.locator("main, article").first().innerText();
+  expect(text).toMatch(/illustrative model/i);
+  expect(text).toMatch(/synthetic/i);
+  /* The boundaries are a section of the page, not a footnote. */
+  for (const boundary of ["Not a deployment topology", "No production scale", "No internal data"]) {
+    expect(text, `${boundary} must be stated`).toContain(boundary);
+  }
+});
+
+test("the public-safe route still describes real engineering", async ({ page }) => {
+  await page.goto("/work/reliable-knowledge-systems");
+  const text = (await page.locator("main, article").first().innerText()).toLowerCase();
+
+  /*
+   * The quality test for the abstraction: with every internal name removed, a reader should still
+   * meet provenance, several representations, verification, consistency, rebuilding derived state
+   * and operational visibility. If these are gone it has collapsed into generic icons.
+   */
+  for (const idea of [
+    "captured evidence",
+    "derived",
+    "verif",
+    "consistent",
+    "rebuild",
+    "one writer per piece of state",
+  ]) {
+    expect(text, `the abstraction must still convey "${idea}"`).toContain(idea);
+  }
+});
+
+test("the public-safe route imports nothing from the confidential case study", async () => {
+  const { readFile } = await import("node:fs/promises");
+  for (const file of [
+    "src/content/reliable-knowledge-world.ts",
+    "src/app/work/reliable-knowledge-systems/page.tsx",
+  ]) {
+    const source = await readFile(file, "utf8");
+    expect(source, `${file} must not import case-study content`).not.toMatch(
+      /legal-kb|legal_kb|legalKb|content\/legal/i,
+    );
+  }
+});
+
+test("the confidential route is still a draft and is not linked from anywhere public", async ({ page }) => {
+  /*
+   * The production guarantee is that this slug is never emitted, and `npm run check` with
+   * VERCEL_ENV=production is what enforces it. This suite runs against a build where drafts are
+   * visible on purpose, so asserting a 404 here would be asserting the wrong thing and would pass
+   * for the wrong reason. What is checked instead is the contract behind the exclusion: the
+   * project is still marked draft, and no public surface links to it.
+   */
+  const { getProject } = await import("../src/content/portfolio");
+  const project = getProject("legal-knowledge-platform");
+  expect(project, "the confidential project must still exist in the registry").toBeTruthy();
+  expect(
+    project?.publication?.status,
+    "the confidential project must still be a draft",
+  ).toBe("draft");
+
+  /*
+   * The link check only means anything where drafts are hidden. This suite runs against a build
+   * that shows them on purpose, and asserting their absence there would fail for the right reason
+   * at the wrong time - so the assertion is gated on the same flag the build uses.
+   */
+  const { draftsAreVisible } = await import("../src/content/portfolio");
+  for (const route of ["/", "/work", "/work/reliable-knowledge-systems"]) {
+    await page.goto(route);
+    const html = await page.content();
+    if (draftsAreVisible) {
+      /* Drafts visible: the public-safe route must still never point at the confidential one. */
+      if (route !== "/work/reliable-knowledge-systems") continue;
+    }
+    expect(html, `${route} must not link to the confidential slug`).not.toContain(
+      "/work/legal-knowledge-platform",
+    );
+  }
+});
+
+test("the public-safe route fits a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/work/reliable-knowledge-systems");
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  const report = overflows ? await describeOverflow(page) : null;
+  expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
+});
+
+test("the public-safe world keeps its renderer behind the gates", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().endsWith(".js")) scripts.push(response.url());
+  });
+  await page.goto("/work/reliable-knowledge-systems", { waitUntil: "networkidle" });
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the renderer must not load behind the gates").toBe(false);
+  await expect(page.locator(".world-stage.reliable-world")).toHaveAttribute("data-mode", "static");
+});

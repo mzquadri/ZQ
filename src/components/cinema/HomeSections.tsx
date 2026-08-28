@@ -6,6 +6,7 @@ import BranchFlat from "@/components/scene/BranchFlat";
 import { chapters, closing, problemClasses } from "@/content/cinema";
 import { site, thesis } from "@/content/portfolio";
 import { getProject } from "@/content/portfolio";
+import { invariants } from "@/content/reliable-knowledge-world";
 
 /*
  * The sections after the work sequence.
@@ -31,7 +32,13 @@ function SectionHead({ chapter }: { chapter: { index: string; eyebrow: string; t
 }
 
 /* -------------------------------------------------------------------------------------------
- * Current engineering. Four verbs, each with a small synthetic mark.
+ * Current engineering.
+ *
+ * The four verbs are kept - they are a fair summary of what a platform like this has to do - but
+ * they are no longer the whole chapter. What the work is actually about is the return direction:
+ * every derived representation gets asked whether it still agrees with the evidence it came from,
+ * and the four invariants below are what that question decomposes into. The compressed version of
+ * that argument lives here; the machine is one click away.
  * ----------------------------------------------------------------------------------------- */
 export function EngineeringSection() {
   const verbs = problemClasses[0].verbs;
@@ -54,12 +61,29 @@ export function EngineeringSection() {
           ))}
         </ol>
 
+        {/*
+          The four questions the verification has to answer. This is the part of the work that is
+          not obvious from the verbs: a single indicator answers none of them, and the useful
+          output names which one failed.
+        */}
+        <ol className="invariant-track" aria-label="What a check on this kind of system has to answer">
+          {invariants.map((invariant) => (
+            <li key={invariant.key}>
+              <strong>{invariant.label}</strong>
+              <span>{invariant.question}</span>
+            </li>
+          ))}
+        </ol>
+
         <p className="cine-note">
           Illustrative model. Synthetic throughout; it describes a class of problem rather than any
           particular system.
         </p>
 
         <p className="cine-section-action">
+          <Link className="chapter-more mz-interactive" href="/work/reliable-knowledge-systems">
+            Open the machine
+          </Link>
           <Link className="chapter-more mz-interactive" href="/work#systems">
             See the systems showcase
           </Link>

@@ -1253,3 +1253,77 @@
   line-height: 1.55;
   color: var(--world-muted);
 }
+
+/* ---- reliable knowledge: the inward-pointing schematic ---- */
+
+.reliable-flat {
+  --world-muted: #7c8892;
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+}
+
+.reliable-flat-figure { margin: 0; }
+.reliable-flat-figure svg { display: block; width: 100%; height: auto; }
+
+.reliable-flat-module { fill: rgb(111 157 196 / 0.14); stroke: #6f9dc4; stroke-width: 1.2; }
+.reliable-flat-core { fill: rgb(232 217 184 / 0.2); stroke: #e8d9b8; stroke-width: 1.6; }
+.reliable-flat-ring { fill: none; stroke: #e8d9b8; stroke-dasharray: 3 4; stroke-width: 1; opacity: 0.55; }
+.reliable-flat-path { fill: none; stroke: #4cc4b0; stroke-width: 1.4; }
+.reliable-flat-head { fill: #4cc4b0; }
+.reliable-flat-label { fill: #cfd6da; font-size: 10px; }
+.reliable-flat-core-label { fill: #e8d9b8; font-size: 10px; letter-spacing: 0.04em; }
+.reliable-flat-note { fill: var(--world-muted); font-size: 10px; letter-spacing: 0.06em; }
+
+.reliable-flat-figure figcaption {
+  margin-top: 0.9rem;
+  max-width: 64ch;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #9aa7b2;
+}
+
+.reliable-flat-invariants,
+.reliable-flat-boundaries {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.reliable-flat-invariants li { display: grid; gap: 0.1rem; padding-left: 0.85rem; border-left: 2px solid #4cc4b0; }
+.reliable-flat-boundaries li { display: grid; gap: 0.1rem; padding-left: 0.85rem; border-left: 2px solid #f0a03c; }
+.reliable-flat-invariants strong,
+.reliable-flat-boundaries strong { font-size: 0.88rem; color: #f2f0e8; }
+.reliable-flat-invariants span,
+.reliable-flat-boundaries span { font-size: 0.8rem; line-height: 1.45; color: var(--world-muted); }
+
+/* ---- reliable knowledge: the article ---- */
+
+.reliable-list,
+.reliable-invariants {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reliable-list li,
+.reliable-invariants li {
+  display: grid;
+  gap: 0.15rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--line-strong, currentColor);
+}
+
+.reliable-list li[data-immutable] { border-left-color: #b08a3c; }
+.reliable-list li[data-fault] { border-left-color: #c07a1e; }
+.reliable-actions { margin-top: 1.5rem; }
+
+.reliable-list strong,
+.reliable-invariants strong { font-size: 0.95rem; }
+.reliable-list span,
+.reliable-invariants span { font-size: 0.9rem; line-height: 1.55; }
+.reliable-invariants em { font-size: 0.82rem; font-style: normal; opacity: 0.7; }
