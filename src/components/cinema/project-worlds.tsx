@@ -58,7 +58,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "hydrology-uq": {
     accent: "var(--accent-flow)",
     figureNote:
-      "Where an interval comes from: members disagreeing, and the disagreement summarised into a band.",
+      "Two perturbations of one calibrated event, on one scale. The rain barely moves it; the ruler the discharge was measured with moves it 356 times as far.",
     scale: "compact",
     scene: () => <EnsembleScene />,
   },

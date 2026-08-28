@@ -5,6 +5,8 @@ import JsonLd from "@/components/JsonLd";
 import CaseHero from "@/components/cinema/CaseHero";
 import CaseStory from "@/components/cinema/CaseStory";
 import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld";
+import HydrologyWorld from "@/components/hydrology-world/HydrologyWorld";
+import HydrologyWorldFlat from "@/components/hydrology-world/HydrologyWorldFlat";
 import MlopsWorld from "@/components/mlops-world/MlopsWorld";
 import MlopsWorldFlat from "@/components/mlops-world/MlopsWorldFlat";
 import InsureAssistWorldFlat from "@/components/insureassist-world/InsureAssistWorldFlat";
@@ -116,6 +118,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "mlops-reference-pipeline" ? (
           <MlopsWorld flat={<MlopsWorldFlat />} />
+        ) : null}
+
+        {/*
+          Two perturbations of one calibrated event. The bands are the seminar's own fitted rating
+          curve evaluated either side of the gauge reading, so the comparison is measured, not drawn.
+        */}
+        {project.slug === "hydrology-uq" ? (
+          <HydrologyWorld flat={<HydrologyWorldFlat />} />
         ) : null}
 
         {/* The showpiece sits before the prose: the page argues visually first, then explains. */}
