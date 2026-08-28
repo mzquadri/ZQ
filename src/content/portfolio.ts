@@ -108,7 +108,7 @@ const halfRetention = researchEvidence.selectiveRisk.points.find((point) => poin
 const [coverage90, coverage95] = researchEvidence.marginalCoverage;
 
 const mlopsRepository = "https://github.com/mzquadri/MLOps-End-to-End-Pipeline";
-const mlopsCommit = "226ef7f1ec3d02d19f51327689e4c736854473cc";
+const mlopsCommit = "ada5465993295a9dd4d995846b77852d1fc4de5e";
 
 /**
  * Evidence links for the MLOps reference pipeline, pinned to the released commit.

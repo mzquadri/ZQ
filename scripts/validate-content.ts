@@ -431,7 +431,7 @@ check(
   "MLOps evidence commit must be a full 40-character SHA",
 );
 check(
-  canonicalMlopsEvidence.commit === "226ef7f1ec3d02d19f51327689e4c736854473cc",
+  canonicalMlopsEvidence.commit === "ada5465993295a9dd4d995846b77852d1fc4de5e",
   "MLOps evidence commit changed unexpectedly",
 );
 check(
