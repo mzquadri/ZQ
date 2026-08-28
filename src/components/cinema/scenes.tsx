@@ -33,6 +33,21 @@ function at(from: number, to: number, extra: React.CSSProperties = {}): Ranged {
   };
 }
 
+/**
+ * The same thing, measured while the element is arriving rather than after it has arrived.
+ *
+ * `contain` does not begin until the subject is completely inside the scrollport, so a short
+ * figure sitting in the middle of the viewport can still be at zero progress - which is how the
+ * pipeline came to show an empty bordered box directly beneath its own headline. `entry` runs
+ * across the approach instead, so the figure is finished by the time it is fully on screen.
+ */
+function entering(from: number, to: number, extra: React.CSSProperties = {}): Ranged {
+  const round = (n: number) => Math.round(n * 100) / 100;
+  return {
+    style: { "--range": `entry ${round(from)}% entry ${round(to)}%`, ...extra } as React.CSSProperties,
+  };
+}
+
 /* ============================================================================================
  * Transport UQ - a graph surrogate, and where it stops being trustworthy
  *
@@ -241,14 +256,22 @@ export function RetrievalScene() {
  * the stages carry text and text in SVG is a worse citizen for screen readers and selection.
  * ========================================================================================== */
 export function PipelineScene({ stages }: { stages: readonly string[] }) {
-  const span = 78 / Math.max(1, stages.length);
+  /*
+   * The stages are the apparatus, not the reveal.
+   *
+   * Spread over most of the view range, the last gate only arrived at 97% - so a reader meeting
+   * this chapter saw its headline sitting above an empty bordered box, which reads as broken
+   * rather than as anticipation. The rail and the gates are now drawn early and the artifact
+   * crossing them is what the remaining scroll is spent on, which is the claim the caption makes.
+   */
+  const span = 40 / Math.max(1, stages.length);
 
   return (
     <div className="scene-pipeline" role="img" aria-label={`A pipeline in which an artifact must pass a gate at each stage before moving to the next: ${stages.join(", ")}.`}>
-      <div className="scene-rail" {...at(6, 20)} />
+      <div className="scene-rail" {...entering(18, 42)} />
       <ol className="scene-stages">
         {stages.map((stage, i) => (
-          <li className="scene-stage" key={stage} {...at(14 + i * span, 32 + i * span)}>
+          <li className="scene-stage" key={stage} {...entering(34 + i * span, 58 + i * span)}>
             <span className="scene-gate" aria-hidden="true" />
             <span className="scene-stage-index" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
             <span className="scene-stage-name">{stage}</span>
@@ -256,7 +279,7 @@ export function PipelineScene({ stages }: { stages: readonly string[] }) {
         ))}
       </ol>
       {/* The artifact itself, crossing the rail as the reader scrubs. */}
-      <span className="scene-artifact" aria-hidden="true" {...at(14, 92)} />
+      <span className="scene-artifact" aria-hidden="true" {...at(10, 78)} />
     </div>
   );
 }
