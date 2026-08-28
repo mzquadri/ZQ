@@ -99,6 +99,6 @@ After migration:
   resolved successfully on August 20, 2026. LinkedIn's exact profile path was manually
   verified because automated requests receive its anti-bot status.
 
-Recruiter Core v1 was deployed from commit `8ac1cce5d5c362040a453dfdd5ec9f0d94fcbc2e`.
+Recruiter Core v1 was deployed from commit `95d7b7d4c0622aff6229a4f803cc34950f98d310`.
 GitHub Actions passed all checks, both configured production deployments succeeded, and the live
 home, resume, and MLOps case-study routes were smoke-tested on August 20, 2026.
