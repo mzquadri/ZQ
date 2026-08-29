@@ -167,17 +167,6 @@ export const drawDomains: DrawFn = (context, { progress, width, height, camera: 
   }
 };
 
-/* ============================================================================================
- * Resume - no scene, on purpose
- *
- * A trajectory surface was built for this route and then removed. The spine on the page is already
- * the same figure - a rail with one marker per problem class, earliest to latest, the current one
- * filled - and it is real text, so it is readable, selectable and legible to a screen reader. The
- * projected version added a line that crossed the body copy and said nothing the spine did not.
- *
- * Recorded here rather than deleted silently, because "this route does not need one" is a design
- * decision and the next person to look at the gap deserves the reason.
- * ========================================================================================== */
 
 /* ============================================================================================
  * Contact - the closing boundary

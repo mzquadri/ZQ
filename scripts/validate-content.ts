@@ -44,12 +44,6 @@ import {
   type TruthFact,
 } from "../src/content/truth";
 import { getConfidentialProjectIssues, getDraftPublicationIssue } from "./confidential-content";
-import {
-  getResumeSourceSha256,
-  hasDeterministicResumePdfMetadata,
-  sha256,
-  type ResumeManifest,
-} from "./resume-contract";
 import { getPrivateTextIssue, writingLevels, writingTopics } from "../src/content/writing/schema";
 import researchFeed from "../src/content/research-feed.json";
 import {
@@ -177,7 +171,6 @@ const requiredFiles = [
   "src/app/research/thesis/opengraph-image.tsx",
   "src/app/about/page.tsx",
   "src/app/contact/page.tsx",
-  "src/app/resume/page.tsx",
   "src/app/learn/page.tsx",
   "src/app/learn/[slug]/page.tsx",
   "src/app/learn/[slug]/opengraph-image.tsx",
@@ -187,8 +180,6 @@ const requiredFiles = [
   "src/app/opengraph-image.tsx",
   "src/app/not-found.tsx",
   "src/app/work/[slug]/opengraph-image.tsx",
-  "public/mohd-zamin-quadri-resume.pdf",
-  "public/mohd-zamin-quadri-resume.manifest.json",
 ];
 
 for (const path of requiredFiles) {
@@ -224,7 +215,6 @@ const publicSource = publicSourceRoots
       .filter((path): path is string => typeof path === "string" && /\.[cm]?[jt]sx?$/.test(path))
       .map((path) => readFileSync(resolve(root, path), "utf8")),
   )
-  .concat(readFileSync(resolve("scripts/generate-resume.ts"), "utf8"))
   .join("\n");
 const writingSource = readdirSync(resolve("content/writing"))
   .filter((path) => path.endsWith(".mdx"))
@@ -261,31 +251,41 @@ for (const record of site.experience) {
   check(!("startDate" in record) && !("endDate" in record), `${record.id} must not publish disputed dates`);
   check(record.organization.trim().length > 0 && record.title.trim().length > 0, `${record.id} is incomplete`);
 }
-check(site.resume.htmlPath === "/resume", "Canonical HTML resume path changed unexpectedly");
-check(site.resume.pdfPath === "/mohd-zamin-quadri-resume.pdf", "Canonical PDF resume path changed unexpectedly");
-const resumePdfPath = resolve(`public${site.resume.pdfPath}`);
-if (existsSync(resumePdfPath)) {
-  const pdf = readFileSync(resumePdfPath);
-  check(statSync(resumePdfPath).size > 20_000, "Canonical PDF resume is unexpectedly small");
-  check(pdf.subarray(0, 5).toString() === "%PDF-", "Canonical resume is not a PDF file");
-  const pdfStructure = pdf.toString("latin1");
-  check(/\/MarkInfo\s*<<[\s\S]*?\/Marked\s+true/.test(pdfStructure), "Canonical resume PDF is not tagged");
-  check(!pdfStructure.includes("/S /Strong"), "Canonical resume PDF contains unsupported Strong structure elements");
-  check(hasDeterministicResumePdfMetadata(pdf), "Canonical resume PDF metadata is not deterministic");
+/*
+ * The resume subsystem is retired.
+ *
+ * The site no longer publishes a resume in any form - no route, no navigation entry, no download
+ * action, no sitemap entry - so there is no published document left to keep in sync with the
+ * source facts, and the generator that rendered it has been removed along with the route it
+ * rendered. The source PDF is retained outside `public/` and is not served.
+ *
+ * What replaces this check is stricter than it was: the assertion below fails the build if any
+ * resume surface reappears anywhere in the app or content tree.
+ */
+check(
+  !/\bresumes?\b|\bcurriculum vitae\b|download\s+cv\b/i.test(renderedSource),
+  "A resume surface reappeared in the rendered site source",
+);
 
-  const manifestPath = resolve("public/mohd-zamin-quadri-resume.manifest.json");
-  if (existsSync(manifestPath)) {
-    try {
-      const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Partial<ResumeManifest>;
-      check(manifest.schemaVersion === 1, "Resume manifest schema version is invalid");
-      check(manifest.tagged === true, "Resume manifest does not require a tagged PDF");
-      check(manifest.sourceSha256 === getResumeSourceSha256(), "Canonical resume PDF is stale relative to its source facts");
-      check(manifest.pdfSha256 === sha256(pdf), "Canonical resume PDF does not match its manifest");
-    } catch {
-      check(false, "Canonical resume manifest is not valid JSON");
-    }
-  }
+/*
+ * No portfolio chronology.
+ *
+ * The site presents work by what it does, not by when it happened. Project year badges, employment
+ * ranges and 'present' markers are all gone, and the project registry no longer carries a year
+ * field at all, so a badge cannot be reintroduced by rendering one.
+ *
+ * Dates that describe evidence are a different thing and are deliberately still allowed: a dataset
+ * that runs 2008-2022 describes the data, and an academic citation year identifies the work cited.
+ * Neither is a claim about when I did something.
+ */
+for (const project of projects) {
+  check(!("year" in project), `${project.slug} must not publish a portfolio year`);
 }
+check(
+  !/\b(Apr|Jan|Feb|Mar|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(Present|20\d{2})/i.test(renderedSource),
+  "An employment date range reappeared in the rendered site source",
+);
+
 const featuredProjectSlugs: readonly string[] = truthRegistry.portfolio.featuredProjectSlugs.value;
 check(new Set(featuredProjectSlugs).size === featuredProjectSlugs.length, "Featured project slugs must be unique");
 for (const slug of featuredProjectSlugs) {

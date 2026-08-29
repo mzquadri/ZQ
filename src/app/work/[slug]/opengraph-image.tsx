@@ -31,7 +31,7 @@ export default async function ProjectOpenGraphImage({ params }: { params: Promis
       <div style={{ background: "#006d65", display: "flex", width: 34 }} />
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "64px 72px", width: "100%" }}>
         <div style={{ color: "#006058", display: "flex", fontSize: 24, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>
-          {project.classification} / {project.year}
+          {project.classification}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ display: "flex", fontFamily: "serif", fontSize: 66, fontWeight: 600, lineHeight: 1.02, maxWidth: 960 }}>

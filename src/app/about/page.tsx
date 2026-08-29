@@ -151,10 +151,6 @@ export default function AboutPage() {
           <Link className="button button-primary" href="/work"><ArrowLabel kind="forward">Selected work</ArrowLabel></Link>
           <Link className="button button-secondary" href="/contact">Contact</Link>
         </div>
-        <p className="resume-footnote">
-          A condensed record is available as an <Link href={site.resume.htmlPath}>HTML resume</Link>,
-          generated from the same approved facts as this site.
-        </p>
       </section>
     </PageShell>
   );

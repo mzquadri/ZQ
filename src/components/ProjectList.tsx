@@ -18,7 +18,6 @@ export default function ProjectList({ projects }: ProjectListProps) {
             <div className="project-main">
               <div className="project-meta">
                 <span className="classification">{project.classification}</span>
-                <span>{project.year}</span>
               </div>
               <h3>
                 <Link href={`/work/${project.slug}`}>{project.title}</Link>

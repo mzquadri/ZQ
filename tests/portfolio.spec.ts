@@ -8,7 +8,6 @@ const routes = [
   "/research/thesis",
   "/about",
   "/contact",
-  "/resume",
   "/learn",
   "/learn/selective-prediction-when-models-should-abstain",
   "/learn/topic/uncertainty-quantification",
@@ -101,12 +100,11 @@ test("mobile primary navigation meets minimum target sizing", async ({ page }) =
   }
 });
 
-test("contact route exposes approved channels and the canonical resume", async ({ page }) => {
+test("contact route exposes approved channels", async ({ page }) => {
   await page.goto("/contact");
   await expect(page.locator("form")).toHaveCount(0);
   await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
-  await expect(page.locator('a[href="/mohd-zamin-quadri-resume.pdf"]')).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://www.linkedin.com/in/mohdzaminquadri/"]`)).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://github.com/mzquadri"]`)).toBeVisible();
 });
@@ -191,8 +189,7 @@ test("canonical and structured metadata are present", async ({ page }) => {
     ["/research/thesis", "Transport Surrogate Thesis Research"],
     ["/about", "About"],
     ["/contact", "Contact"],
-    ["/resume", "Resume"],
-    ["/learn", "Learn"],
+        ["/learn", "Learn"],
     ["/learn/selective-prediction-when-models-should-abstain", "Selective Prediction: When Models Should Abstain"],
     ["/work/transport-uq", "Reliable GNN Surrogates for Transport Policy Analysis"],
     ["/work/insureassist-rag", "InsureAssist: A Measured RAG Benchmark"],
@@ -290,29 +287,28 @@ test("technical writing renders code, equations, navigation, and Article structu
   expect(article.about[0].url).toBe("https://mzquadri.de/work/transport-uq");
 });
 
-test("resume publishes approved records without disputed experience dates", async ({ page, request }) => {
-  await page.goto("/resume");
-  await expect(page.getByRole("heading", { name: "Experience" })).toBeVisible();
-  await expect(page.getByText("AI Engineer (Working Student)", { exact: true })).toBeVisible();
-  await expect(page.getByText("Intern, Programming of Workflows and Linking of Databases", { exact: true })).toBeVisible();
-  await expect(page.getByText("B.Sc. (Hons.) Mathematics", { exact: true })).toBeVisible();
-  await expect(page.getByText("M.Sc. program: Mathematics in Science and Engineering", { exact: true })).toBeVisible();
-  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
-  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+test("the site publishes no resume in any form", async ({ page, request }) => {
+  /*
+   * The portfolio no longer offers a resume. This replaces the test that asserted the opposite,
+   * and is stricter than it: the route is gone, the asset is gone, and no surface anywhere links
+   * to either.
+   */
+  const route = await request.get("/resume", { maxRedirects: 0 });
+  expect(route.status(), "/resume must not resolve").toBe(404);
 
-  for (const context of await page.locator(".career-context").allTextContents()) {
-    expect(context).not.toMatch(/20\d{2}/);
+  const pdf = await request.get("/mohd-zamin-quadri-resume.pdf", { maxRedirects: 0 });
+  expect(pdf.status(), "the resume PDF must not be served").toBe(404);
+
+  for (const path of ["/", "/work", "/about", "/contact"]) {
+    await page.goto(path);
+    const html = (await page.content()).toLowerCase();
+    expect(html, `${path} still mentions a resume`).not.toMatch(/\bresumes?\b|curriculum vitae/);
+    await expect(page.locator('a[href*="resume" i]')).toHaveCount(0);
   }
 
-  const pdf = await request.get("/mohd-zamin-quadri-resume.pdf");
-  expect(pdf.status()).toBe(200);
-  expect(pdf.headers()["content-type"]).toContain("application/pdf");
-  expect(pdf.headers()["content-disposition"]).toContain("mohd-zamin-quadri-resume.pdf");
-  expect(Number(pdf.headers()["content-length"])).toBeGreaterThan(20_000);
-  const pdfStructure = (await pdf.body()).toString("latin1");
-  expect(pdfStructure).toMatch(/\/MarkInfo\s*<<[\s\S]*?\/Marked\s+true/);
-  expect(pdfStructure).not.toContain("/S /Strong");
-});
+  const sitemap = await request.get("/sitemap.xml");
+  expect((await sitemap.text()).toLowerCase()).not.toContain("resume");
+})
 
 test("case studies expose ownership and direct evidence", async ({ page }) => {
   await page.goto("/work/transport-uq");
@@ -456,7 +452,7 @@ async function describeOverflow(page: import("@playwright/test").Page) {
 
 test("core recruiter routes reflow at 320 pixels", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
-  for (const route of ["/", "/work", "/resume", "/work/mlops-reference-pipeline", "/work/legal-knowledge-platform", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
+  for (const route of ["/", "/work", "/work/mlops-reference-pipeline", "/work/legal-knowledge-platform", "/research", "/research/thesis", "/learn", "/learn/selective-prediction-when-models-should-abstain"]) {
     await page.goto(route);
     const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
 
@@ -673,28 +669,26 @@ test("/learn makes no third-party requests", async ({ page }) => {
   expect(remote).toEqual([]);
 });
 
-test("resume is reachable but is not a conversion call to action", async ({ page }) => {
-  await page.goto("/");
+test("the portfolio presents no chronology", async ({ page }) => {
   /*
-   * The resume is now a peer destination in the rail, which is a deliberate change: it is one of
-   * the six places a visitor may want to go, and hiding it made them hunt. What must stay true is
-   * the original point of this test - the resume is not *pushed*. It is not a button, it is not a
-   * call to action in the page body, and the site does not try to convert a reader into a
-   * download instead of into reading the work.
+   * The work is presented by what it does, not by when it happened. Project year badges and
+   * employment ranges are gone; dates that describe evidence - a dataset period, an academic
+   * citation year - are deliberately still allowed and are not what this checks.
    */
-  await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/resume"]')).toHaveCount(1);
-  await expect(page.locator('main a.cine-cta[href="/resume"]')).toHaveCount(0);
-  await expect(page.locator('main a.button[href="/resume"]')).toHaveCount(0);
-  await expect(page.locator('main a[href="/mohd-zamin-quadri-resume.pdf"]')).toHaveCount(0);
-  await expect(page.locator('footer a[href="/resume"]')).toHaveCount(1);
+  for (const path of ["/", "/work", "/work/transport-uq", "/about"]) {
+    await page.goto(path);
+    const text = await page.locator("main").innerText();
+    expect(text, `${path} shows an employment range`).not.toMatch(
+      /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(Present|20\d{2})/i,
+    );
+  }
 
-  await page.goto("/contact");
-  await expect(page.locator(".contact-note a.button")).toHaveCount(0);
-  await expect(page.locator(".resume-footnote a[href='/resume']")).toBeVisible();
-
-  await page.goto("/about");
-  await expect(page.locator("main a.button[href='/resume']")).toHaveCount(0);
-});
+  await page.goto("/work");
+  /* The index used to badge every project with a year beside its classification. */
+  for (const meta of await page.locator(".project-meta").allInnerTexts()) {
+    expect(meta, "a project is still badged with a year").not.toMatch(/20\d{2}/);
+  }
+})
 
 test("published writing adds no client-side third-party requests", async ({ page }) => {
   const remoteRequests: string[] = [];
@@ -1364,7 +1358,7 @@ test("no script the browser loads contains confidential content", async ({ page 
     if (type.includes("javascript")) scripts.push(response.url());
   });
 
-  for (const route of ["/", "/work", "/about", "/research", "/contact", "/resume"]) {
+  for (const route of ["/", "/work", "/about", "/research", "/contact"]) {
     await page.goto(route, { waitUntil: "networkidle" });
   }
 
