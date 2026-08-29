@@ -25,7 +25,11 @@ export interface ExperienceRecord {
   organization: string;
   title: string;
   location?: string;
-  status?: "Present";
+  /*
+   * No status field. It existed to carry "Present", which is a chronology marker: it only means
+   * anything relative to roles that are past. Roles are published as disciplines, not as a
+   * sequence, so there is no endpoint for it to mark.
+   */
   /**
    * Sanitized, abstract description of confidential professional work. It must never name an
    * internal endpoint, URL, host, customer, credential, or unpublished company document, and
@@ -93,7 +97,6 @@ export const truthRegistry = {
           organization: "BP-IT Consulting & Solutions GmbH",
           title: "AI Engineer (Working Student)",
           location: "Munich",
-          status: "Present",
           practice:
             "Built verification workflows for a multilingual legal knowledge platform using relational, vector, and graph storage.",
         },
@@ -141,7 +144,7 @@ export const truthRegistry = {
           id: "tum-mse",
           institution: "Technical University of Munich",
           credential: "M.Sc. program: Mathematics in Science and Engineering",
-          status: "Master's thesis submitted May 15, 2026",
+          status: "Master's thesis submitted",
         },
         {
           id: "amu-mathematics",
@@ -166,7 +169,7 @@ export const truthRegistry = {
       public: true,
     },
     status: {
-      value: "Master's thesis submitted May 15, 2026",
+      value: "Master's thesis submitted",
       source: { tier: "immutable-artifact", reference: "Submitted thesis artifact and submission record" },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,

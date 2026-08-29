@@ -24,20 +24,25 @@ from `src/content/ecosystem.ts`. That file is a **reviewed static snapshot**, no
 | `topics` | Editorial focus labels. These are **not** GitHub topic metadata and must not be presented as such. |
 | `description` | One or two sentences summarised from the repository README. |
 | `boundary` | What the repository does **not** establish. Required for every entry. |
-| `lastCommit` | Date of the most recent public commit observed during the audit. |
-| `caseStudySlug` | Set only when a written case study exists. |
+| `caseStudySlug` | Set only when a chapter exists, either a `projects` entry or a hand-built route under `src/app/work`. |
+
+The schema carries **no activity date**. A last-commit column ranks work by recency, which is a
+career chronology in a smaller font, and this portfolio publishes none. Validation fails if a
+`lastCommit` or `observedAt` field reappears, and again if the phrase reaches rendered output.
 
 ## Refresh procedure
 
-1. For each repository, read the current README and confirm the description and boundary still
-   describe it honestly.
-2. Record the last public commit date. From a local clone:
-   `git -C <repo> log -1 --format=%cs`
-3. Update `ecosystemSnapshot.observedAt` to the audit date.
+1. List every public repository on the profile:
+   `curl -s "https://api.github.com/users/mzquadri/repos?per_page=100"`
+2. For each one, read the current README and confirm the description and boundary still describe
+   it honestly. The index is **complete**: every public repository is listed, including forks and
+   learning artifacts, because a curated index that quietly drops the unflattering ones is a
+   different kind of claim.
+3. Record no dates.
 4. Run `npm run validate:content` and `npm run test:content`.
 
-Validation enforces that repository names are unique, dates are ISO-formatted and not in the
-future, every case-study repository appears in the index, and the index and the case study agree
+Validation enforces that repository names are unique, no activity date is carried, every
+case-study repository appears in the index, and the index and the case study agree
 on the canonical repository URL. A drift between the two models fails the build rather than
 publishing two versions of the same fact.
 

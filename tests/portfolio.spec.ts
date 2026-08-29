@@ -559,16 +559,22 @@ test("the repository index catalogues public work beyond the case studies", asyn
     await expect(index.getByRole("heading", { name: category, exact: true })).toBeVisible();
   }
 
+  /*
+   * Every public repository, not a selection. Twenty-five were audited from the GitHub API and
+   * all twenty-five are listed - forks and learning exercises included, because an index that
+   * quietly drops the unflattering entries is making a claim of its own.
+   */
   const repositoryLinks = index.locator('a[href^="https://github.com/mzquadri/"]');
-  await expect(repositoryLinks).toHaveCount(13);
+  await expect(repositoryLinks).toHaveCount(25);
 
   await expect(
     index.locator('a[href="https://github.com/mzquadri/Battery-SOC-Estimation-ML"]'),
   ).toBeVisible();
   await expect(index.getByText(/renders identically if GitHub is unavailable/)).toBeVisible();
 
-  // No fabricated activity metrics are published.
+  // No fabricated activity metrics, and no activity dates either.
   await expect(index.getByText(/\d+\s*(stars?|forks?|watchers?|contributions?)/i)).toHaveCount(0);
+  await expect(index.getByText(/last\s+(public\s+)?commit|last\s+active/i)).toHaveCount(0);
 });
 
 test("the repository showcase strip is the content of record", async ({ page }) => {
@@ -583,8 +589,12 @@ test("the repository showcase strip is the content of record", async ({ page }) 
   await expect(showcase.getByText("Evidence boundary").first()).toBeVisible();
   await expect(showcase.getByText("Portfolio status").first()).toBeVisible();
 
-  // Anything the 3D layer could show is on the card: label, kind, repo, last commit.
-  await expect(showcase.getByText(/Last public commit/).first()).toBeVisible();
+  /*
+   * Anything the 3D layer could show is on the card: label, kind, repo, language. It used to
+   * carry a last-commit date as well; that was removed everywhere, because ranking work by
+   * recency is a career chronology in a smaller font.
+   */
+  await expect(showcase.getByText(/Last public commit/)).toHaveCount(0);
 });
 
 test("the 3D layer never mounts where it should not", async ({ page }) => {
@@ -2336,9 +2346,11 @@ test("chapters are joined by seams that name the handoff", async ({ page }) => {
 
 test("each chapter carries the shared-element name its world uses", async ({ page }) => {
   await page.goto("/");
-  const names = await page.locator("article.chapter .chapter-stage").evaluateAll((els) =>
-    els.map((el) => (el as HTMLElement).style.viewTransitionName),
-  );
+  /* A chapter is drawn either as a live stage or as a scrubbed frame sequence; the shared-element
+     name lives on whichever of the two carries the visual. */
+  const names = await page
+    .locator("article.chapter .chapter-stage, article.chapter .seq-frame")
+    .evaluateAll((els) => els.map((el) => (el as HTMLElement).style.viewTransitionName));
   expect(names).toEqual(REEL.map((slug) => `world-${slug}`));
 });
 
@@ -2400,4 +2412,143 @@ test("the homepage still loads no renderer", async ({ page }) => {
     }),
   );
   expect(heavy.some(Boolean), "the reel must stay free of three.js").toBe(false);
+});
+
+/* ============================================================================================
+ * Scroll-scrubbed frame sequences.
+ *
+ * The new delivery mechanism for a chapter that opens one object slowly. These guard the three
+ * properties that made it worth building: it runs on a phone, it never runs under reduced motion,
+ * and it reserves its space so arriving late costs no layout shift.
+ * ========================================================================================== */
+
+test("the transport chapter is a scrubbed sequence that runs on a phone", async ({ page }) => {
+  /*
+   * Every other test in this file runs under reduced motion, which is the right default for
+   * asserting the resting site. This one is about the moving path, so it opts in.
+   */
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/", { waitUntil: "networkidle" });
+  const track = page.locator("#work-transport-uq .seq");
+  await expect(track).toHaveCount(1);
+
+  const box = await track.evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { top: r.top + window.scrollY, height: r.height, vh: window.innerHeight };
+  });
+  /* The track has to be several screens tall or there is no time to scrub across. */
+  expect(box.height / box.vh).toBeGreaterThan(2);
+
+  await page.evaluate((y) => window.scrollTo(0, y), box.top + (box.height - box.vh) * 0.7);
+  await page.waitForTimeout(2500);
+  await expect(
+    page.locator(".seq-canvas[data-ready]"),
+    "a phone must get the sequence, not a static fallback",
+  ).toHaveCount(1);
+});
+
+test("a reduced-motion reader is never sent a frame sequence", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const frames: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("/frames/") && !r.url().includes("poster")) frames.push(r.url());
+  });
+  await page.goto("/", { waitUntil: "networkidle" });
+  await page.evaluate(() => window.scrollTo(0, 4000));
+  await page.waitForTimeout(1200);
+  expect(frames, "no frame may be fetched under reduced motion").toHaveLength(0);
+  /* The poster is the first frame, so the reader still sees the composed object. */
+  await expect(page.locator(".seq-poster")).toHaveCount(1);
+});
+
+test("the sequence describes itself and hides its canvas from assistive technology", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const alt = await page.locator(".seq-poster").getAttribute("alt");
+  expect(alt?.length ?? 0, "the sequence needs a real description").toBeGreaterThan(80);
+  await expect(page.locator(".seq-canvas")).toHaveAttribute("aria-hidden", "true");
+});
+
+/* ============================================================================================
+ * The supporting movement.
+ *
+ * Nine repositories staged rather than listed. The tests below guard the two things that would
+ * quietly break: a repository losing its stage back to a card, and a scene showing a number for a
+ * repository that publishes none.
+ * ========================================================================================== */
+
+test("all nine supporting repositories get a stage, not a card", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  const scenes = page.locator(".sw-scene");
+  await expect(scenes).toHaveCount(9);
+
+  const vh = page.viewportSize()!.height;
+  const heights = await scenes.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
+  for (const height of heights) {
+    expect(height, "a supporting scene must hold the viewport").toBeGreaterThanOrEqual(vh - 1);
+  }
+
+  /* Each scene links to the repository it is about, and the links are distinct. */
+  const links = await page.locator(".sw-repo a").evaluateAll((els) =>
+    els.map((el) => (el as HTMLAnchorElement).href),
+  );
+  expect(new Set(links).size).toBe(9);
+});
+
+test("a repository that publishes no metric shows an empty frame and says why", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  const withheld = page.locator('.sw-scene[data-evidence="withheld"]');
+  await expect(withheld).toHaveCount(5);
+
+  for (let i = 0; i < 5; i += 1) {
+    const scene = withheld.nth(i);
+    await expect(scene.locator(".sw-figure-kind")).toHaveText(/no metric published/i);
+    /* No bar element at all, so there is nothing to mistake for a measurement. */
+    await expect(scene.locator(".sw-bar-fill")).toHaveCount(0);
+    const note = await scene.locator(".sw-figure-note").innerText();
+    expect(note.length, "a refusal has to carry its reason").toBeGreaterThan(80);
+    /* And no score anywhere in the scene's text. */
+    expect(await scene.innerText()).not.toMatch(/\b0\.\d+\b/);
+  }
+});
+
+test("a published bar is drawn at the value printed beside it", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  const rows = page.locator('.sw-scene[data-evidence="measured"] .sw-bars li');
+  const count = await rows.count();
+  expect(count).toBeGreaterThan(5);
+
+  for (let i = 0; i < count; i += 1) {
+    const row = rows.nth(i);
+    const printed = Number(await row.locator(".sw-bar-value").innerText());
+    const drawn = await row.evaluate((el) => {
+      const fill = el.querySelector(".sw-bar-fill")!.getBoundingClientRect().width;
+      const track = el.querySelector(".sw-bar-track")!.getBoundingClientRect().width;
+      return fill / track;
+    });
+    /* The bar's width is the value. A chart that disagrees with its own label is the whole risk. */
+    expect(Math.abs(drawn - printed)).toBeLessThan(0.02);
+  }
+});
+
+test("the supporting scenes are complete when a reader stops on one", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/", { waitUntil: "networkidle" });
+  const scenes = page.locator(".sw-scene");
+  const count = await scenes.count();
+
+  for (let i = 0; i < count; i += 1) {
+    await scenes.nth(i).scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    const min = await scenes.nth(i).evaluate((scene) =>
+      Math.min(
+        ...[...scene.querySelectorAll(".sw-beats li, .sw-bars li, .sw-empty-rows li, .sw-path div")].map(
+          (el) => Number.parseFloat(getComputedStyle(el).opacity),
+        ),
+      ),
+    );
+    expect(min, `scene ${i} is still animating at its rest frame`).toBe(1);
+  }
 });

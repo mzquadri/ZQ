@@ -138,9 +138,7 @@ export default function ShowcaseCanvas({ assemblies }: { assemblies: readonly Re
             <p aria-hidden="true" className={styles.tooltip}>
               <span>{hover.kind}</span>
               <strong>{hover.label}</strong>
-              <span>
-                {hover.repo} · last public commit {hover.lastCommit}
-              </span>
+              <span>{hover.repo}</span>
             </p>
           ) : (
             <p aria-hidden="true" className={styles.hint}>

@@ -25,3 +25,25 @@ export function at(from: number, to: number, extra: React.CSSProperties = {}): R
     } as React.CSSProperties,
   };
 }
+
+/**
+ * The same idea for a scene that fills the viewport.
+ *
+ * `contain` measures the window in which a subject sits entirely inside the scrollport, so it is
+ * only meaningful when the subject is shorter than the viewport - and it collapses to a zero-length
+ * range exactly when the subject is 100vh, which silently freezes every element staged with it.
+ *
+ * `cover` runs from the subject first entering to it fully leaving, and stays well defined at any
+ * size. A full-viewport scene fills the screen at exactly the 50% mark, and that is its rest
+ * frame - so staging has to be *finished* by then, not centred on it. Ranges here end before 50%
+ * and hold, which is what lets a reader stop on a scene and find it complete.
+ */
+export function over(from: number, to: number, extra: React.CSSProperties = {}): Ranged {
+  const round = (n: number) => Math.round(n * 100) / 100;
+  return {
+    style: {
+      "--range": `cover ${round(from)}% cover ${round(to)}%`,
+      ...extra,
+    } as React.CSSProperties,
+  };
+}

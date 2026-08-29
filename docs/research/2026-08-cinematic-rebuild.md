@@ -248,3 +248,34 @@ actual story instead of a static fallback. No WebGL on mobile, unchanged.
 
 Frames rendered offline by Python from the existing evidence modules. Deterministic, regenerable,
 committed as WebP. No AI-generated imagery anywhere.
+
+---
+
+## What shipped from this research
+
+Written after implementation, so the document does not read as a plan that was never checked.
+
+**Adopted.** The scroll-scrubbed frame sequence, built as `src/components/frames/FrameSequence.tsx`
+with no new dependency. Frames are rendered offline by `tools/gen-frames-transport.py` from geometry
+exported out of the site's own modules, so the picture is the same graph the site draws. Ninety
+WebP frames at 1280x720 total 1.1 MB, mean 12.7 KB. Frame zero is the poster, which is what a
+reduced-motion reader and a first paint both get.
+
+The largest win was the one the references did not advertise. Every WebGL world here is refused on
+mobile and under reduced motion, and those readers used to get a static figure instead of the
+story. A frame sequence runs identically everywhere, so **the sequence is now the mobile
+experience** for the chapter that has one.
+
+**Rejected in practice, not only on paper.** No generated imagery. The reference pipelines all end
+in Midjourney, Higgsfield or Seedance, and a generated picture of a technical system asserts
+internals that do not exist. The technique transferred; the asset source could not.
+
+**Where the taxonomy went.** The research proposed flagship / strong / archive. Building it turned
+up a better axis. Reading all nine strong READMEs side by side, two publish tracked numbers and
+five publish none *on purpose*, each naming the artifact it would need first. The supporting
+movement is therefore organised by evidence state rather than by topic, and the five refusals are
+drawn as empty measurement frames. That was not in the storyboard; it came out of the repositories.
+
+**Still open.** Sequences exist for one chapter. The remaining flagships still use their WebGL
+worlds with static figures on mobile, and each additional sequence needs its own offline renderer
+written against that project's real evidence - which is the cost of not generating imagery.

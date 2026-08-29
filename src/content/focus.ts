@@ -1,4 +1,4 @@
-import { ecosystemRepositories, ecosystemSnapshot } from "./ecosystem";
+import { ecosystemRepositories } from "./ecosystem";
 import { getProject } from "./portfolio";
 import { thesisResearchPath } from "./research";
 
@@ -88,5 +88,3 @@ export function getBuildingThreads() {
     detail: ecosystemRepositories.find((repository) => repository.name === thread.repository)!,
   }));
 }
-
-export const focusReviewedAt = ecosystemSnapshot.observedAt;

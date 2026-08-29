@@ -88,11 +88,13 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap career-section">
-        <p className="section-index"><span>02</span>Experience</p>
-        <h2 className="standalone-heading">Professional and research roles</h2>
+        <p className="section-index"><span>02</span>Disciplines</p>
+        <h2 className="standalone-heading">The kinds of work, not the order of them</h2>
         <p className="section-lede">
-          These approved titles establish the public record without inferring disputed dates,
-          private client details, or unsupported impact figures.
+          Grouped by discipline rather than run as a timeline, because with five roles the order is
+          the only thing a sequence adds and it is the thing a reader over-reads. These approved
+          titles establish the public record without inferring dates, private client details, or
+          unsupported impact figures.
         </p>
         <ExperienceList />
       </section>

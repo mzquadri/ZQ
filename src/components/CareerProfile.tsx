@@ -1,39 +1,44 @@
 import { site } from "@/content/portfolio";
-
-interface CareerProfileProps {
-  compact?: boolean;
-}
+import { getDisciplines } from "@/content/disciplines";
 
 /**
- * Experience as a deliberate timeline.
+ * Experience grouped by discipline.
  *
- * Only one role carries an approved description, so the previous list read as four
- * unfinished rows following one complete one. A rail with explicit markers makes the
- * shape intentional: the entries are titles because titles are what has been approved
- * for publication, and the one role with a sanitized description shows it as an
- * annotation on the rail rather than as the only row with content.
+ * This was an ordered rail: five roles, one marker each, read top to bottom. No date was ever
+ * rendered on it, and it was still a career timeline - order was the only information the rail
+ * carried, and a reader turns order into a narrative whether or not one is offered.
  *
- * No date is rendered anywhere. Disputed historical dates are deliberately unpublished.
+ * Grouping by discipline answers a better question. Not when something happened, but which kinds
+ * of work recur, which is visible immediately: one discipline holds two roles, and that repetition
+ * is the actual signal in a five-role record.
+ *
+ * The entries are titles because titles are what has been approved for publication. The one role
+ * with a sanitized practice description shows it under its discipline rather than as the only row
+ * on the page with content.
  */
-export function ExperienceList({ compact = false }: CareerProfileProps) {
-  const records = compact ? site.experience.slice(0, 3) : site.experience;
+export function ExperienceList() {
+  const groups = getDisciplines();
 
   return (
-    <ol className="career-list timeline">
-      {records.map((record) => (
-        <li key={record.id}>
-          <span aria-hidden="true" className="career-rail" />
-          <div>
-            <h3>{record.title}</h3>
-            <p className="career-org">{record.organization}</p>
-            {record.practice ? <p className="career-practice">{record.practice}</p> : null}
-          </div>
-          <p className="career-context">
-            {[record.location, record.status].filter(Boolean).join(" / ")}
-          </p>
-        </li>
+    <div className="discipline-set">
+      {groups.map((group) => (
+        <section className="discipline" key={group.id}>
+          <h3 className="discipline-name">{group.name}</h3>
+          <p className="discipline-summary">{group.summary}</p>
+          <ul className="discipline-roles">
+            {group.roles.map((record) => (
+              <li key={record.id}>
+                <p className="discipline-role">{record.title}</p>
+                <p className="career-org">
+                  {[record.organization, record.location].filter(Boolean).join(" / ")}
+                </p>
+                {record.practice ? <p className="career-practice">{record.practice}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </ol>
+    </div>
   );
 }
 
