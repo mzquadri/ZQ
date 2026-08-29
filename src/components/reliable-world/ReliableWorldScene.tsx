@@ -427,51 +427,123 @@ function Verification({ frame }: { frame: FrameRef }) {
 
 function Verdict({ frame }: { frame: FrameRef }) {
   const groupRef = useRef<THREE.Group>(null);
-  const lampRefs = useRef<(THREE.Mesh | null)[]>([]);
   const keys = ["present", "complete", FAILING_INVARIANT, "current"];
 
-  useFrame(() => {
+  /*
+   * Four inspection plates, not four lamps.
+   *
+   * The verdict used to be four cubes nineteen hundredths of a unit across, in a scene whose other
+   * objects span several units - so the one moment the whole sequence builds towards was the
+   * smallest thing on screen, and which invariant had failed was legible only in the readout.
+   *
+   * Each plate is now a gate the derived state has to pass. A passing gate sits square-on with its
+   * indicator filled; a failing one swings visibly out of true and goes amber, which is readable
+   * from across a room rather than requiring the caption. The verdict is the conjunction: it is
+   * only sound when all four are aligned, which is the actual claim the project makes.
+   */
+  const plates = useMemo(
+    () =>
+      keys.map((key, i) => ({
+        key,
+        x: (i - 1.5) * 1.58,
+        seed: i,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  useFrame(({ camera }) => {
     const p = frame.current?.progress ?? 0;
     const health = at(p, "health");
     const healed = at(p, "rebuild");
     const settled = at(p, "settled");
     const shown = Math.max(health, settled);
-    if (groupRef.current) {
-      groupRef.current.visible = shown > 0.02;
-      /* Low enough to stay in frame at the health shot; the verdict is the subject there. */
-      groupRef.current.position.set(0, 1.95, 0);
+    const node = groupRef.current;
+    if (node) {
+      node.visible = shown > 0.02;
+      /* Low enough that all four gates are inside the frame at the health shot, where the
+         verdict is the subject. At 2.35 they sat above the top edge. */
+      node.position.set(0, 1.35, 1.1);
+      /*
+       * Yaw-only billboard. The camera arrives at this state well off-axis, and plates fixed to
+       * the world plane were seen almost edge-on - four bars rather than four gates. Turning the
+       * rack to face the viewer is what makes a gate that is out of true read as out of true.
+       */
+      node.rotation.set(
+        0,
+        Math.atan2(camera.position.x - node.position.x, camera.position.z - node.position.z),
+        0,
+      );
     }
-    if (shown <= 0.02) return;
+    if (!node || shown <= 0.02) return;
 
-    keys.forEach((key, i) => {
-      const lamp = lampRefs.current[i];
-      if (!lamp) return;
-      const t = Math.max(0, Math.min(1, shown * 4 - i * 0.5));
-      lamp.position.set((i - 1.5) * 0.62, 0, 0);
-      lamp.scale.setScalar(0.001 + t * 0.19);
-      /* Only the consistency lamp fails, and only until the rebuild completes. */
-      const failing = key === FAILING_INVARIANT ? Math.max(0, health - healed) : 0;
-      const material = lamp.material as THREE.MeshStandardMaterial;
+    plates.forEach((plate, i) => {
+      const holder = node.children[i] as THREE.Group;
+      if (!holder) return;
+      const t = Math.max(0, Math.min(1, shown * 4 - i * 0.45));
+      /* Only the consistency gate fails, and only until the rebuild has completed. */
+      const failing = plate.key === FAILING_INVARIANT ? Math.max(0, health - healed) : 0;
+
+      holder.position.set(plate.x, 0, 0);
+      holder.scale.setScalar(Math.max(0.001, t));
+      /* Out of true. A gate that has not passed does not sit flat against the frame. */
+      holder.rotation.set(failing * 0.42, failing * 0.5, failing * 0.16);
+
       C.copy(failing > 0.05 ? FAULT : OK);
-      material.color.copy(C);
-      material.emissive.copy(C);
-      material.emissiveIntensity = 0.4 + t * 0.6;
-      material.opacity = t;
+
+      const face = holder.children[0] as THREE.Mesh;
+      const faceMat = face.material as THREE.MeshStandardMaterial;
+      faceMat.color.copy(C);
+      faceMat.emissive.copy(C);
+      faceMat.emissiveIntensity = 0.1 + t * 0.14;
+      faceMat.opacity = t * (failing > 0.05 ? 0.3 : 0.16);
+
+      const rim = holder.children[1] as THREE.LineSegments;
+      const rimMat = rim.material as THREE.LineBasicMaterial;
+      rimMat.color.copy(C);
+      rimMat.opacity = t * 0.95;
+
+      /* The indicator fills only when the gate is aligned, so a pass is additive and a fail is
+         an absence rather than a differently coloured presence. */
+      const bar = holder.children[2] as THREE.Mesh;
+      const fill = t * (1 - failing);
+      bar.scale.set(Math.max(0.001, fill), 1, 1);
+      bar.position.set(-0.62 + 0.62 * fill, -0.62, 0.06);
+      const barMat = bar.material as THREE.MeshStandardMaterial;
+      barMat.color.copy(C);
+      barMat.emissive.copy(C);
+      barMat.emissiveIntensity = 0.55;
+      barMat.opacity = t;
     });
   });
 
+  const rimGeometry = useMemo(
+    () => new THREE.EdgesGeometry(new THREE.PlaneGeometry(1.44, 1.44)),
+    [],
+  );
+
   return (
     <group ref={groupRef}>
-      {keys.map((key, i) => (
-        <mesh
-          key={key}
-          ref={(node) => {
-            lampRefs.current[i] = node;
-          }}
-        >
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial metalness={0.2} roughness={0.35} transparent />
-        </mesh>
+      {plates.map((plate) => (
+        <group key={plate.key}>
+          <mesh>
+            <planeGeometry args={[1.44, 1.44]} />
+            <meshStandardMaterial
+              depthWrite={false}
+              metalness={0.1}
+              roughness={0.5}
+              side={THREE.DoubleSide}
+              transparent
+            />
+          </mesh>
+          <lineSegments geometry={rimGeometry}>
+            <lineBasicMaterial transparent />
+          </lineSegments>
+          <mesh>
+            <boxGeometry args={[1.24, 0.1, 0.06]} />
+            <meshStandardMaterial metalness={0.2} roughness={0.35} transparent />
+          </mesh>
+        </group>
       ))}
     </group>
   );

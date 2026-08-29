@@ -1,4 +1,5 @@
 import { architecture, findings, sources } from "@/content/medico-world";
+import { RADIOGRAPH_CELLS, radiographField } from "@/content/medico-radiograph";
 
 /**
  * The shapes the medico world is built from.
@@ -16,61 +17,21 @@ function hash(n: number) {
   return ((h ^ (h >>> 16)) >>> 0) / 2 ** 32;
 }
 
-export const GRID = 34;
-
-/**
- * A synthetic radiograph field.
+/*
+ * The radiograph is now generated offline by tools/gen-medico-radiograph.py and shipped as packed
+ * bytes, rather than computed here from a stack of gaussians at module load.
  *
- * Not a downscaled scan. The corpora are not redistributable and a portfolio has no business
- * displaying a chest film belonging to a person, so this is generated: a body outline, two darker
- * lung fields, a brighter mediastinal column between them, a rib texture that follows the chest
- * wall, and nothing at all outside the torso.
+ * Two reasons. Resolution: the inline field ran at 34 cells across and read as a grid of grey
+ * blocks - the opening frame of a chest-X-ray project has to say "chest" or the rest of the
+ * sequence has nothing to stand on. And iteration: tuning anatomy through a browser reload is slow
+ * and inexact, where a generator writes a PNG that can be looked at directly.
  *
- * Legibility is the whole requirement. The first attempt was a soft noise field and it read as a
- * grid of grey tiles - if the opening frame of a chest-X-ray project does not say "chest", the
- * rest of the sequence has nothing to stand on. It is symmetric about the vertical axis because a
- * real one roughly is, and because the horizontal-flip augmentation the script applies only makes
- * sense on an image with that symmetry.
+ * It is still synthetic, still deterministic, still free of any pathology, and still contains no
+ * patient data of any kind.
  */
-export const radiograph = (() => {
-  const cells: number[] = [];
-  for (let row = 0; row < GRID; row += 1) {
-    for (let col = 0; col < GRID; col += 1) {
-      const x = (col / (GRID - 1)) * 2 - 1;
-      const y = (row / (GRID - 1)) * 2 - 1;
+export const GRID = RADIOGRAPH_CELLS;
 
-      /* Torso outline: wider at the shoulders, tapering to the diaphragm. */
-      const halfWidth = 0.86 - Math.max(0, y) * 0.22 - Math.max(0, -y - 0.55) * 0.5;
-      const inBody = Math.abs(x) < halfWidth && y > -0.94 && y < 0.92;
-      if (!inBody) {
-        cells.push(0.015 + (hash(row * 131 + col * 17) - 0.5) * 0.02);
-        continue;
-      }
-
-      /* Soft tissue floor, then the two lung fields cut into it. */
-      let v = 0.52;
-      const lung =
-        Math.exp(-((Math.abs(x) - 0.42) ** 2) / 0.045) *
-        Math.exp(-((y - 0.08) ** 2) / 0.34) *
-        (y > -0.62 ? 1 : 0);
-      v -= lung * 0.42;
-
-      /* Mediastinum and spine: the bright column down the middle. */
-      v += Math.exp(-(x * x) / 0.012) * 0.3;
-      /* Heart shadow, left of midline from the viewer's side. */
-      v += Math.exp(-((x + 0.16) ** 2) / 0.05) * Math.exp(-((y + 0.3) ** 2) / 0.08) * 0.22;
-      /* Diaphragm. */
-      v += Math.exp(-((y + 0.62) ** 2) / 0.02) * 0.26;
-      /* Ribs, curving with the chest wall rather than running straight across. */
-      v += Math.abs(Math.sin(y * 11 - Math.abs(x) * 3.4)) * 0.09 * (1 - Math.abs(x) * 0.4);
-      /* Clavicles. */
-      v += Math.exp(-((y - 0.66) ** 2) / 0.008) * Math.exp(-((Math.abs(x) - 0.36) ** 2) / 0.09) * 0.2;
-
-      cells.push(Math.max(0, Math.min(1, v + (hash(row * 131 + col * 17) - 0.5) * 0.05)));
-    }
-  }
-  return cells;
-})();
+export const radiograph = radiographField();
 
 /**
  * Which findings each source can actually label.

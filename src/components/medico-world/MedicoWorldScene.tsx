@@ -35,6 +35,12 @@ export type Frame = { progress: number };
 type FrameRef = RefObject<Frame | null>;
 
 const CELLS = GRID * GRID;
+/*
+ * Plate size and cell size are derived, not typed. The cell width was a literal tuned for a
+ * 34-cell grid; at 72 the same number would have overlapped every neighbour by half a cell.
+ */
+const PLATE = 3.9;
+const CELL = (PLATE / (GRID - 1)) * 0.98;
 
 /* ============================================================================================
  * 1. The radiograph, and what preprocessing does to it
@@ -42,6 +48,8 @@ const CELLS = GRID * GRID;
 
 function Film({ frame }: { frame: FrameRef }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
+  const lastSignature = useRef(-1);
+  const lastVisible = useRef(-1);
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
@@ -71,6 +79,22 @@ function Film({ frame }: { frame: FrameRef }) {
     if (visible <= 0.02) return;
 
     /*
+     * The field is 96 cells square, so this loop touches 9,216 instances. Nothing in it depends on
+     * time - only on scroll - so it is skipped outright when none of the driving values has moved.
+     * At rest that takes the per-frame cost of this mesh to zero.
+     */
+    const signature =
+      Math.round(prep * 500) * 1e9 +
+      Math.round(at(p, "preprocess") * 500) * 1e6 +
+      Math.round(toSources * 500) * 1e3 +
+      Math.round(intoNetwork * 500);
+    if (signature === lastSignature.current && Math.abs(visible - lastVisible.current) < 0.002) {
+      return;
+    }
+    lastSignature.current = signature;
+    lastVisible.current = visible;
+
+    /*
      * Preprocessing is shown as the crop and the contrast step, because those are the two that
      * change what the model sees. CLAHE raises local contrast, so cells move apart in brightness
      * rather than uniformly brightening - a global gain would misrepresent it as exposure.
@@ -89,8 +113,8 @@ function Film({ frame }: { frame: FrameRef }) {
       const contrasted = mix(base, Math.max(0, Math.min(1, (base - 0.5) * 1.85 + 0.5)), clahe);
       const value = inCrop ? contrasted : mix(contrasted, 0.02, prep);
 
-      const x = (u - 0.5) * 3.9;
-      const y = (0.5 - v) * 3.9;
+      const x = (u - 0.5) * PLATE;
+      const y = (0.5 - v) * PLATE;
       /*
        * Almost flat while it is still a radiograph, and only extruded once it is being treated as
        * data. Relief on the opening frame turned the film into a mosaic of blocks lit from the
@@ -100,7 +124,7 @@ function Film({ frame }: { frame: FrameRef }) {
       const depth = 0.01 + value * 0.34 * relief * (1 - intoNetwork * 0.7);
       P.set(x, y, depth / 2);
       /* Cells all but touch: visible gutters made the film read as tiling, not tissue. */
-      S.set(0.115, 0.115, Math.max(0.004, depth));
+      S.set(CELL, CELL, Math.max(0.004, depth));
       M.compose(P, Q, S);
       mesh.setMatrixAt(i, M);
       /*
@@ -108,7 +132,8 @@ function Film({ frame }: { frame: FrameRef }) {
        * blob; a radiograph is mostly dark, and the air in the lung fields has to be the darkest
        * thing inside the body outline for the image to read at all.
        */
-      C.copy(FILM).multiplyScalar(0.04 + value * value * 1.35);
+      /* Gentler gamma: the squared curve blew the soft tissue out once the field was brighter. */
+      C.copy(FILM).multiplyScalar(0.03 + Math.pow(value, 1.35) * 1.15);
       if (!inCrop) C.lerp(DIM, prep * 0.8);
       mesh.setColorAt(i, C);
     }
@@ -196,6 +221,76 @@ function LabelMatrix({ frame }: { frame: FrameRef }) {
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial metalness={0.1} roughness={0.55} transparent />
       </instancedMesh>
+    </group>
+  );
+}
+
+/* ============================================================================================
+ * 3a. The stem adapter: what makes a pretrained ImageNet model take a chest film
+ * ========================================================================================== */
+
+/**
+ * Three channels becoming one.
+ *
+ * The single recorded fact about how this backbone was adapted is in the stem: "7x7 stride 2, 64
+ * channels - RGB weights averaged to one channel". That is the whole of the transfer, and until
+ * now it existed only as a line of text under a stack of blue sheets.
+ *
+ * So it is drawn. Three plates arrive separated, in the three channels a pretrained ImageNet stem
+ * expects, and collapse into one neutral plate as the network opens. Nothing here implies the
+ * blocks were frozen, because the repository does not say they were.
+ */
+function StemAdapter({ frame }: { frame: FrameRef }) {
+  const groupRef = useRef<THREE.Group>(null);
+
+  const CHANNELS = useMemo(
+    () => [new THREE.Color("#c2584f"), new THREE.Color("#5fa05a"), new THREE.Color("#4f74c2")],
+    [],
+  );
+
+  useFrame(() => {
+    const p = frame.current?.progress ?? 0;
+    const open = at(p, "network");
+    const merged = at(p, "reuse");
+    const gone = at(p, "head");
+    const shown = Math.min(open, 1 - gone);
+    const node = groupRef.current;
+    if (!node) return;
+    node.visible = shown > 0.02;
+    if (shown <= 0.02) return;
+
+    node.children.forEach((child, i) => {
+      const plate = child as THREE.Mesh;
+      const material = plate.material as THREE.MeshStandardMaterial;
+      if (i < 3) {
+        /* The three input channels, converging on the midline as the merge completes. */
+        const spread = (i - 1) * 0.42 * (1 - merged);
+        plate.position.set(spread, spread * 0.5, -2.5 + i * 0.14 * (1 - merged));
+        plate.scale.setScalar(1);
+        material.color.copy(CHANNELS[i]).multiplyScalar(0.9);
+        material.opacity = shown * 0.55 * (1 - merged * 0.92);
+      } else {
+        /* The single grayscale plate the averaged weights actually receive. */
+        plate.position.set(0, 0, -2.4);
+        material.opacity = shown * merged * 0.7;
+      }
+    });
+  });
+
+  return (
+    <group ref={groupRef}>
+      {[0, 1, 2, 3].map((i) => (
+        <mesh key={i}>
+          <boxGeometry args={[1.85, 1.85, 0.05]} />
+          <meshStandardMaterial
+            depthWrite={false}
+            metalness={0.1}
+            roughness={0.6}
+            side={THREE.DoubleSide}
+            transparent
+          />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -422,6 +517,7 @@ export default function MedicoWorldScene({ frame }: { frame: FrameRef }) {
       <CameraRig frame={frame} />
       <Film frame={frame} />
       <LabelMatrix frame={frame} />
+      <StemAdapter frame={frame} />
       <Network frame={frame} />
       <HeadAndLoss frame={frame} />
     </>

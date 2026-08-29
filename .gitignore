@@ -69,6 +69,15 @@ next-env.d.ts
 /media/hyd/
 /media/sf/
 /media/cf/
+/media/after-rks3/
+/media/after-rks2/
+/media/after-rks/
+/media/after-insure/
+/media/after-medico2/
+/media/after-medico/
+/media/before-rks/
+/media/before-insure/
+/media/before-medico/
 /media/audit/
 /media/final2/
 /media/story-*/
@@ -78,3 +87,6 @@ tools/.streamflow-cache/
 
 # Generator cache: CIFAR-10 download and fetched repository artifacts.
 tools/.cifar-cache/
+
+# Generator preview, for looking at while tuning the synthetic radiograph.
+tools/.medico-preview.png
