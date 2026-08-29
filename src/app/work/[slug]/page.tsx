@@ -8,6 +8,8 @@ import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld
 import HydrologyWorld from "@/components/hydrology-world/HydrologyWorld";
 import HydrologyWorldFlat from "@/components/hydrology-world/HydrologyWorldFlat";
 import MlopsWorld from "@/components/mlops-world/MlopsWorld";
+import CifarWorld from "@/components/cifar-world/CifarWorld";
+import CifarWorldFlat from "@/components/cifar-world/CifarWorldFlat";
 import StreamflowWorld from "@/components/streamflow-world/StreamflowWorld";
 import StreamflowWorldFlat from "@/components/streamflow-world/StreamflowWorldFlat";
 import MlopsWorldFlat from "@/components/mlops-world/MlopsWorldFlat";
@@ -137,6 +139,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         {project.slug === "streamflow-forecasting" ? (
           <StreamflowWorld flat={<StreamflowWorldFlat />} />
         ) : null}
+
+        {/*
+          One 32-pixel image taken apart, then the confusion matrix that the finished model
+          produces over ten thousand of them. Shapes are measured from the module itself.
+        */}
+        {project.slug === "cifar10-cnn" ? <CifarWorld flat={<CifarWorldFlat />} /> : null}
 
         {/* The showpiece sits before the prose: the page argues visually first, then explains. */}
         {project.slug === "legal-knowledge-platform" ? (

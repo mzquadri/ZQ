@@ -30,6 +30,7 @@ import * as focus from "../src/content/focus";
 import * as portfolio from "../src/content/portfolio";
 import * as research from "../src/content/research";
 import * as truth from "../src/content/truth";
+import * as cifarWorld from "../src/content/cifar-world";
 import * as hydrologyWorld from "../src/content/hydrology-world";
 import * as mlopsWorld from "../src/content/mlops-world";
 import * as streamflowWorld from "../src/content/streamflow-world";
@@ -38,6 +39,7 @@ const QUIET = process.argv.includes("--quiet");
 
 /** Every module whose exported strings can end up as an href on a page. */
 const MODULES: Record<string, unknown> = {
+  cifarWorld,
   ecosystem,
   focus,
   hydrologyWorld,
