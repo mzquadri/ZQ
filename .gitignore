@@ -69,6 +69,8 @@ next-env.d.ts
 /media/hyd/
 /media/sf/
 /media/cf/
+/media/audit/
+/media/final2/
 /media/story-*/
 
 # Generator cache: fetched from the streamflow repository on demand.

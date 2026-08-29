@@ -17,33 +17,71 @@
   color: var(--stage-ink);
 }
 
+/*
+ * A chapter is a stage, not a card.
+ *
+ * The previous layout stacked a heading, a figure and three paragraphs inside a content column,
+ * and every chapter measured between 0.78 and 1.47 viewports. That is the shape of a list. A
+ * flagship now takes the whole viewport with the scene holding the larger half of it and the
+ * words in a plate beside it, so a visitor spends a screen with one project at a time.
+ *
+ * Supporting work keeps a smaller stage. The difference in height is doing real work: it is the
+ * clearest signal on the page about which of these is a thesis and which is a weekend benchmark.
+ */
 .chapter {
+  position: relative;
   border-top: 1px solid var(--stage-line);
-  padding: clamp(4rem, 9vh, 7.5rem) 0;
-}
-
-.chapter-inner {
-  width: min(100% - 3rem, var(--content));
-  margin: 0 auto;
   display: grid;
-  gap: clamp(1.75rem, 4vw, 3rem);
+  gap: clamp(1.5rem, 3.5vw, 2.75rem);
+  padding: clamp(3.5rem, 8vh, 6rem) 0;
+  grid-template-areas: "plate" "stage" "note";
 }
 
-/* A flagship gets the figure at full width above the copy; a compact project puts the figure and
- * its copy side by side, which is the layout equivalent of a smaller budget. */
-.chapter[data-scale="flagship"] .chapter-inner {
-  grid-template-areas: "head" "figure" "copy";
+.chapter-plate { grid-area: plate; }
+.chapter-stage { grid-area: stage; margin: 0; min-width: 0; }
+.chapter-note { grid-area: note; }
+
+/* Narrow screens keep the single column and simply centre it. */
+.chapter-plate,
+.chapter-stage,
+.chapter-note {
+  width: min(100% - 3rem, var(--content));
+  margin-inline: auto;
 }
 
-.chapter[data-scale="compact"] .chapter-inner {
-  grid-template-areas: "head head" "figure copy";
-  grid-template-columns: 1.35fr 1fr;
-  align-items: center;
-}
+@media (min-width: 1000px) {
+  .chapter {
+    /*
+     * The note belongs to the scene, so it sits under it rather than spanning the chapter. When it
+     * ran full width it ended up several hundred pixels below the figure it describes, reading as
+     * a stray line of body copy rather than a caption.
+     */
+    grid-template-areas: "plate stage" "plate note";
+    grid-template-columns: minmax(20rem, 32%) 1fr;
+    grid-template-rows: auto auto;
+    column-gap: clamp(2rem, 5vw, 4.5rem);
+    row-gap: clamp(0.75rem, 2vh, 1.25rem);
+    align-content: center;
+    align-items: center;
+    padding-inline: clamp(1.5rem, 5vw, 4.5rem);
+  }
 
-.chapter-head { grid-area: head; }
-.chapter-figure { grid-area: figure; margin: 0; }
-.chapter-copy { grid-area: copy; }
+  .chapter-plate,
+  .chapter-stage {
+    width: auto;
+    margin-inline: 0;
+  }
+
+  .chapter-note {
+    width: auto;
+    margin-inline: 0;
+    max-width: 70ch;
+    align-self: start;
+  }
+
+  .chapter[data-scale="flagship"] { min-height: 100vh; }
+  .chapter[data-scale="compact"] { min-height: 66vh; }
+}
 
 .chapter-index {
   margin: 0 0 0.5rem;
@@ -92,6 +130,76 @@
 .chapter-link:hover,
 .chapter-link:focus-visible {
   background-size: 100% 2px;
+}
+
+/* ---- The plate: the four things a chapter says ---------------------------------------------- */
+
+.chapter-index {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  /*
+   * The full accent, not a mix toward the stage. This used to be a display numeral, where the
+   * mix cleared the 3:1 large-text threshold; at 0.72rem it needs 4.5:1 and the blue and purple
+   * accents came in at 4.05 and 3.71.
+   */
+  color: var(--accent);
+}
+
+.chapter-question {
+  margin: 0.9rem 0 0;
+  max-width: 42ch;
+  font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+  line-height: 1.55;
+  color: var(--stage-ink-soft);
+}
+
+.chapter-metric {
+  display: grid;
+  gap: 0.15rem;
+  margin: 1.4rem 0 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--accent);
+}
+
+.chapter-metric span {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stage-ink-soft);
+}
+
+.chapter-metric strong {
+  font-family: var(--mono);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  color: var(--stage-ink);
+}
+
+.chapter-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--accent) 45%, transparent);
+  padding-bottom: 0.2rem;
+  transition: border-color var(--dur-base) var(--ease-exit);
+}
+
+.chapter-more::after { content: "92"; }
+.chapter-more:hover,
+.chapter-more:focus-visible { border-bottom-color: var(--accent); }
+
+.chapter-note {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--stage-ink-soft);
 }
 
 /* ---- Figures ------------------------------------------------------------------------------- */
@@ -1106,4 +1214,213 @@
     animation: revert !important;
     opacity: 1;
   }
+}
+
+/* ============================================================================================
+ * Seams: the join between two chapters.
+ *
+ * Short on purpose - about a third of a viewport - because this is a way between two things, not
+ * a third thing to look at. Resting state is the completed handoff, so a browser without scroll
+ * timelines and a reader who declined motion both get the finished figure rather than a gap.
+ * ========================================================================================== */
+
+.seam {
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  padding: clamp(3rem, 9vh, 6rem) 1.5rem;
+  background: var(--stage);
+  color: var(--stage-ink-soft);
+  text-align: center;
+}
+
+.seam-line {
+  width: 1px;
+  height: clamp(2rem, 5vh, 3.5rem);
+  background: linear-gradient(to bottom, transparent, var(--stage-line));
+}
+.seam-line:last-child { background: linear-gradient(to bottom, var(--stage-line), transparent); }
+
+.seam-morph { width: min(100%, 13rem); }
+.seam-morph svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.seam-a { fill: color-mix(in oklab, var(--stage-ink) 55%, var(--stage)); }
+.seam-b {
+  fill: none;
+  stroke: color-mix(in oklab, var(--stage-ink) 55%, var(--stage));
+  stroke-width: 1.4;
+}
+.seam-path {
+  fill: none;
+  stroke: var(--stage-line);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+.seam-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.seam-label span { color: var(--stage-ink); }
+/* Not opacity: at 0.55 this resolved to 3.14:1 against the stage. */
+.seam-label em { font-style: normal; color: var(--stage-ink-soft); }
+
+.seam-note {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+/* ============================================================================================
+ * Route transitions.
+ *
+ * Progressive enhancement in the strict sense: this whole block is inert in a browser without the
+ * View Transitions API, and navigation there is exactly what it was before. Where it is supported,
+ * a chapter's figure carries the same `view-transition-name` as the world it links to, so entering
+ * a project animates the object the visitor was already looking at rather than cutting to an
+ * unrelated composition.
+ *
+ * Deliberately short and deliberately without movement of the page itself. A long slide would be a
+ * second thing to sit through on every navigation.
+ * ========================================================================================== */
+
+@view-transition { navigation: auto; }
+
+::view-transition-group(*) { animation-duration: 260ms; }
+
+::view-transition-old(root) {
+  animation: mz-vt-out 180ms var(--ease-exit, ease) both;
+}
+::view-transition-new(root) {
+  animation: mz-vt-in 260ms var(--ease-entry, ease) both;
+}
+
+@keyframes mz-vt-out { to { opacity: 0; } }
+@keyframes mz-vt-in { from { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* An instant swap, which is what this reader asked for. */
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
+}
+
+/* ============================================================================================
+ * The exhibition index: eight worlds, eight marks, in running order.
+ * ========================================================================================== */
+
+.exhibit { margin-top: clamp(2rem, 5vh, 3.5rem); }
+
+.exhibit-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--stage-line);
+  border: 1px solid var(--stage-line);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.exhibit-item { background: var(--stage); }
+
+.exhibit-link {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "mark index" "mark name" "mark kind";
+  align-items: center;
+  gap: 0.1rem 0.85rem;
+  padding: 1rem 1.1rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--dur-base) var(--ease-exit);
+}
+
+.exhibit-link:hover,
+.exhibit-link:focus-visible {
+  background: color-mix(in oklab, var(--accent) 9%, var(--stage));
+}
+
+.exhibit-mark { grid-area: mark; display: block; width: 2.9rem; }
+.exhibit-mark svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Two fills and a dash, so a mark can say "this one is different" without another colour. */
+.exhibit-mark .mark-fill { fill: var(--accent); stroke: none; }
+.exhibit-mark .mark-fill-soft { fill: color-mix(in oklab, var(--accent) 30%, transparent); stroke: none; }
+.exhibit-mark .mark-dash { stroke-dasharray: 2 2; opacity: 0.6; }
+.exhibit-mark .mark-window {
+  stroke: var(--stage-ink);
+  stroke-dasharray: 3 2;
+  opacity: 0.75;
+}
+
+.exhibit-index {
+  grid-area: index;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.exhibit-name {
+  grid-area: name;
+  font-size: 0.92rem;
+  line-height: 1.3;
+  color: var(--stage-ink);
+}
+.exhibit-kind {
+  grid-area: kind;
+  font-size: 0.72rem;
+  color: var(--stage-ink-soft);
+}
+
+.exhibit-item-all { --accent: var(--stage-ink-soft); }
+
+/*
+ * Keep a stage inside its own chapter.
+ *
+ * A chapter is a viewport tall, and several of these figures are naturally taller than the column
+ * they sit in - the branching capture ran off the top of the screen at rest, so the one object the
+ * chapter is about was the one thing partly out of frame. Capping the stage and letting the figure
+ * scale to it keeps every chapter's subject whole at its resting position.
+ */
+@media (min-width: 1000px) {
+  .chapter-stage {
+    display: grid;
+    align-content: center;
+    max-height: 68vh;
+  }
+
+  .chapter-stage > *,
+  .chapter-stage .projected,
+  .chapter-stage .scene-svg,
+  .chapter-stage svg {
+    max-height: 68vh;
+  }
+
+  /* SVG figures keep their ratio while fitting the cap. */
+  .chapter-stage svg { width: 100%; height: auto; }
+}
+
+.chapter-project {
+  margin: 0.7rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--stage-ink-soft);
 }

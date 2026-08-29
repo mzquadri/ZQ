@@ -1,72 +1,86 @@
 import Link from "next/link";
 
+import ChapterSeam from "@/components/cinema/ChapterSeam";
 import { PROJECT_WORLDS, WORLD_ORDER } from "@/components/cinema/project-worlds";
 import { getProject } from "@/content/portfolio";
 
 /*
- * The selected-work sequence.
+ * The reel.
  *
- * Each project is a full-bleed chapter with its own accent and its own figure, and the figure is
- * the thing the reader meets first. The text underneath is short on purpose: a hiring manager
- * should be able to take the point from the picture and one sentence, and anyone who wants the
- * evidence follows the link to the case study, which is where the numbers and the limitations
- * live. Progressive disclosure rather than a wall.
+ * This was a stack of case-study cards: title, small figure, summary, metric, link. Measured, the
+ * chapters came out between 0.78 and 1.47 viewports each, which is why the page read as a list -
+ * a reader never spent a whole screen with any one project, and the figure was always sharing the
+ * frame with three paragraphs.
  *
- * Visual budget is deliberately unequal. The thesis and the two reference implementations get a
- * full stage; the smaller experiments get a compact one. Giving every project the same treatment
+ * A flagship chapter is now a full stage. The scene takes the viewport, and the words over it are
+ * the four a visitor needs in order to decide whether to go further: what it is, the question it
+ * answers, the one measured line that answers it, and the way in. Everything else - the method,
+ * the evidence, the limitations - is one click away on a page built to carry it.
+ *
+ * Supporting work keeps the compact treatment on purpose. Giving every project the same weight
  * would flatten exactly the distinction a reader is trying to make.
  */
 
-function WorkChapter({ slug, index }: { slug: string; index: number }) {
-  const project = getProject(slug);
+function WorkChapter({ slug, index, last }: { slug: string; index: number; last: boolean }) {
   const world = PROJECT_WORLDS[slug];
-  if (!project || !world) return null;
+  if (!world) return null;
 
-  /* One headline result, taken from the evidence registry rather than written here. */
-  const headline = project.evidence[0];
+  /* Most chapters are portfolio projects; reliable knowledge systems is its own route. */
+  const project = getProject(slug) ?? null;
 
   return (
-    <article
-      className="chapter"
-      data-scale={world.scale}
-      id={`work-${project.slug}`}
-      style={{ "--accent": world.accent } as React.CSSProperties}
-    >
-      <div className="chapter-inner">
-        <header className="chapter-head">
-          <p className="chapter-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</p>
-          <p className="chapter-eyebrow">{project.eyebrow}</p>
-          <h3 className="chapter-title">
-            <Link className="chapter-link" href={`/work/${project.slug}`}>{project.title}</Link>
-          </h3>
-        </header>
-
-        <figure className="chapter-figure">
+    <>
+      <article
+        className="chapter"
+        data-scale={world.scale}
+        id={`work-${slug}`}
+        style={{ "--accent": world.accent } as React.CSSProperties}
+      >
+        {/*
+          The figure carries a view-transition name matching the one on its detail route, so a
+          browser that supports the API animates this object into the next page rather than
+          cutting to an unrelated composition.
+        */}
+        <figure className="chapter-stage" style={{ viewTransitionName: `world-${slug}` }}>
           {world.scene(project)}
-          <figcaption>{world.figureNote}</figcaption>
         </figure>
 
-        <div className="chapter-copy">
-          <p className="chapter-summary">{project.summary}</p>
+        <div className="chapter-plate">
+          <p className="chapter-index" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")} / {String(WORLD_ORDER.length).padStart(2, "0")}
+          </p>
+          <p className="chapter-eyebrow">{world.eyebrow}</p>
+          <h3 className="chapter-title">
+            <Link className="chapter-link mz-interactive" href={world.href}>
+              {world.title}
+            </Link>
+          </h3>
+          <p className="chapter-question">{world.question}</p>
 
-          {headline ? (
+          {/*
+            The exhibition title states the finding, which is what makes a reel readable - but a
+            visitor still has to be able to tell which project they are looking at, so the project's
+            own name stays on the plate underneath it.
+          */}
+          {project ? <p className="chapter-project">{project.title}</p> : null}
+
+          {world.evidence.value ? (
             <p className="chapter-metric">
-              <span>{headline.label}</span>
-              <strong>{headline.value}</strong>
+              <span>{world.evidence.label}</span>
+              <strong>{world.evidence.value}</strong>
             </p>
           ) : null}
 
-          <p className="chapter-meta">
-            <span>{project.classification}</span>
-            <span>{project.year}</span>
-          </p>
-
-          <Link className="chapter-more mz-interactive" href={`/work/${project.slug}`}>
-            Read the case study
+          <Link className="chapter-more mz-interactive" href={world.href}>
+            Enter this world
           </Link>
         </div>
-      </div>
-    </article>
+
+        <p className="chapter-note">{world.figureNote}</p>
+      </article>
+
+      {world.seam && !last ? <ChapterSeam seam={world.seam} /> : null}
+    </>
   );
 }
 
@@ -74,7 +88,7 @@ export default function WorkChapters() {
   return (
     <div className="chapters">
       {WORLD_ORDER.map((slug, i) => (
-        <WorkChapter index={i} key={slug} slug={slug} />
+        <WorkChapter index={i} key={slug} last={i === WORLD_ORDER.length - 1} slug={slug} />
       ))}
     </div>
   );

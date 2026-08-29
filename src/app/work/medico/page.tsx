@@ -57,7 +57,9 @@ export default function MedicoPage() {
           script; on a phone, a narrow window, or for a reader who declined motion, the coverage
           matrix is drawn once and completely instead.
         */}
-        <MedicoWorld flat={<MedicoWorldFlat />} />
+        <div style={{ viewTransitionName: "world-medico" }}>
+          <MedicoWorld flat={<MedicoWorldFlat />} />
+        </div>
 
         <section className="section-wrap">
           <p className="section-index"><span>01</span>What this is</p>
