@@ -330,12 +330,27 @@ function Answer({ frame }: { frame: FrameRef }) {
   const groupRef = useRef<THREE.Group>(null);
   const planeRef = useRef<THREE.Mesh>(null);
   const linkRef = useRef<THREE.LineSegments>(null);
+  const packetRef = useRef<THREE.Group>(null);
+  const feedRef = useRef<THREE.LineSegments>(null);
 
   const linkGeometry = useMemo(() => {
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(config.servingTopK * 6), 3));
     return g;
   }, []);
+
+  /* Packet-to-answer feed: one segment per slab, so the answer is visibly fed rather than lit. */
+  const feedGeometry = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(config.servingTopK * 6), 3));
+    return g;
+  }, []);
+
+  /* One provenance colour per form, so a slab in the packet still says which document it is. */
+  const provenance = useMemo(
+    () => formSlabs.map((_, i) => new THREE.Color().setHSL(0.08 + i * 0.12, 0.55, 0.6)),
+    [],
+  );
 
   useFrame(() => {
     const p = frame.current?.progress ?? 0;
@@ -346,11 +361,52 @@ function Answer({ frame }: { frame: FrameRef }) {
     if (groupRef.current) groupRef.current.visible = shown > 0.02;
     if (shown <= 0.02) return;
 
-    /* The answer surface only exists after evidence has been selected, never before. */
+    /*
+     * The evidence packet.
+     *
+     * Five slabs, stacked, each carrying a stripe in the colour of the form it came from. This is
+     * the object the whole project is about: after retrieval the passage is not free-floating text,
+     * it is text plus the identity of the document it was taken from, and that identity has to
+     * survive into whatever is generated next.
+     */
+    const packet = packetRef.current;
+    if (packet) {
+      packet.visible = evidence > 0.02;
+      packet.children.forEach((child, i) => {
+        const slabIndex = Math.floor(i / 2);
+        const isStripe = i % 2 === 1;
+        const mesh = child as THREE.Mesh;
+        const t = Math.max(0, Math.min(1, evidence * config.servingTopK - slabIndex * 0.5));
+        const y = (slabIndex - 2) * 0.5;
+        mesh.position.set(isStripe ? -2.06 : -1.0, y, 2.2);
+        mesh.scale.set(t, t, t);
+        const material = mesh.material as THREE.MeshStandardMaterial;
+        material.opacity = t * (isStripe ? 0.95 : 0.5);
+        if (isStripe) material.color.copy(provenance[slabIndex % provenance.length]);
+      });
+    }
+
+    /*
+     * The answer surface only exists after evidence has been selected, never before - and it is
+     * framed rather than free. Generation here is a constrained formatter fed by the packet, not
+     * an autonomous thing that knows something the evidence does not.
+     */
     if (planeRef.current) {
-      planeRef.current.position.set(0, mix(-1.4, 0.2, generation), 2.2);
-      planeRef.current.scale.set(2.4 * generation, 1.3 * generation, 1);
-      (planeRef.current.material as THREE.MeshStandardMaterial).opacity = generation * 0.5;
+      planeRef.current.position.set(2.4, mix(-1.4, 0.1, generation), 2.2);
+      planeRef.current.scale.set(2.1 * generation, 1.25 * generation, 1);
+      (planeRef.current.material as THREE.MeshStandardMaterial).opacity = generation * 0.62;
+    }
+
+    /* Packet feeds answer. Short, thick, and only present once there is something to feed it. */
+    const feed = feedGeometry.getAttribute("position") as THREE.BufferAttribute;
+    for (let i = 0; i < config.servingTopK; i += 1) {
+      const y = (i - 2) * 0.5;
+      feed.setXYZ(i * 2, -0.45, y, 2.2);
+      feed.setXYZ(i * 2 + 1, mix(-0.45, 1.3, generation), mix(y, y * 0.3 + 0.1, generation), 2.2);
+    }
+    feed.needsUpdate = true;
+    if (feedRef.current) {
+      (feedRef.current.material as THREE.LineBasicMaterial).opacity = generation * 0.8 * (1 - close);
     }
 
     /* Five citations, each still attached to the form it came from. */
@@ -358,8 +414,8 @@ function Answer({ frame }: { frame: FrameRef }) {
     for (let i = 0; i < config.servingTopK; i += 1) {
       const t = Math.max(0, Math.min(1, evidence * config.servingTopK - i * 0.55));
       const slab = formSlabs[i % formSlabs.length];
-      position.setXYZ(i * 2, (i - 2) * 0.5, 0.2 * generation, 2.2);
-      position.setXYZ(i * 2 + 1, mix((i - 2) * 0.5, 0, t), mix(0.2, slab.index * 0.16, t), mix(2.2, slab.z, t));
+      position.setXYZ(i * 2, -2.06, (i - 2) * 0.5, 2.2);
+      position.setXYZ(i * 2 + 1, mix(-2.06, 0, t), mix((i - 2) * 0.5, slab.index * 0.16, t), mix(2.2, slab.z, t));
     }
     position.needsUpdate = true;
     linkGeometry.computeBoundingSphere();
@@ -370,6 +426,41 @@ function Answer({ frame }: { frame: FrameRef }) {
 
   return (
     <group ref={groupRef}>
+      {/* The packet: a slab and its provenance stripe, five times. */}
+      <group ref={packetRef}>
+        {formSlabs.slice(0, config.servingTopK).flatMap((_, i) => [
+          <mesh key={`slab-${i}`}>
+            <boxGeometry args={[2, 0.36, 0.06]} />
+            <meshStandardMaterial
+              color={PAPER}
+              depthWrite={false}
+              roughness={0.7}
+              side={THREE.DoubleSide}
+              transparent
+            />
+          </mesh>,
+          <mesh key={`stripe-${i}`}>
+            <boxGeometry args={[0.12, 0.36, 0.08]} />
+            <meshStandardMaterial roughness={0.4} transparent />
+          </mesh>,
+        ])}
+      </group>
+
+      {/* The generation frame. Open on all sides: it formats, it does not decide. */}
+      <group position={[2.4, 0.1, 2.2]}>
+        {[
+          [0, 0.72, 2.4, 0.05],
+          [0, -0.72, 2.4, 0.05],
+          [-1.2, 0, 0.05, 1.45],
+          [1.2, 0, 0.05, 1.45],
+        ].map(([x, y, w, h], i) => (
+          <mesh key={i} position={[x, y, 0]}>
+            <boxGeometry args={[w, h, 0.05]} />
+            <meshStandardMaterial color={DIM} roughness={0.5} transparent opacity={0.7} />
+          </mesh>
+        ))}
+      </group>
+
       <mesh ref={planeRef}>
         <planeGeometry args={[1, 1]} />
         <meshStandardMaterial
@@ -380,6 +471,10 @@ function Answer({ frame }: { frame: FrameRef }) {
           transparent
         />
       </mesh>
+
+      <lineSegments geometry={feedGeometry} ref={feedRef}>
+        <lineBasicMaterial color={RIGHT} transparent />
+      </lineSegments>
       <lineSegments geometry={linkGeometry} ref={linkRef}>
         <lineBasicMaterial color={RIGHT} transparent />
       </lineSegments>

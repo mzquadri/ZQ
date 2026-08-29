@@ -118,7 +118,8 @@ export const { at, active } = choreograph(STATES);
  * back to square-on for the boundaries at the end.
  */
 export const SHOTS: Record<MedicoKey, { height: number; distance: number; look: number; yaw: number }> = {
-  radiograph: { height: 0.0, distance: 6.6, look: 0.0, yaw: 0.0 },
+  /* Pulled back so the whole plate is inside the frame at rest rather than cropped. */
+  radiograph: { height: 0.0, distance: 8.2, look: 0.0, yaw: 0.0 },
   preprocess: { height: 0.9, distance: 8.4, look: 0.1, yaw: -0.34 },
   /*
    * The label states are shot nearly square-on.
