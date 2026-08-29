@@ -112,6 +112,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           run, so a reader who scrolls it has seen the real held-out result before reaching a
           paragraph about it.
         */}
+        {/*
+          One shell per world, carrying the view-transition name its homepage chapter also carries.
+          A browser with the API animates that object across the navigation; one without ignores
+          the property entirely and the page behaves exactly as it did before.
+        */}
+        <div style={{ viewTransitionName: `world-${project.slug}` }}>
         {project.slug === "insureassist-rag" ? (
           <InsureAssistWorld flat={<InsureAssistWorldFlat />} />
         ) : null}
@@ -145,6 +151,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           produces over ten thousand of them. Shapes are measured from the module itself.
         */}
         {project.slug === "cifar10-cnn" ? <CifarWorld flat={<CifarWorldFlat />} /> : null}
+        </div>
 
         {/* The showpiece sits before the prose: the page argues visually first, then explains. */}
         {project.slug === "legal-knowledge-platform" ? (

@@ -2281,3 +2281,129 @@ test("the homepage cifar chapter uses real per-class numbers", async ({ page }) 
   expect(text).toContain("64.26");
   expect(text).toContain("33.5");
 });
+
+/* ============================================================================================
+ * The exhibition: the homepage as one reel rather than eight separate pieces.
+ *
+ * These guard the integration itself - the running order, the weight each chapter carries, the
+ * seams between them, and the shared-element names that make entering a project feel like going
+ * further into the same object rather than opening a second website.
+ * ========================================================================================== */
+
+const REEL = [
+  "transport-uq",
+  "reliable-knowledge-systems",
+  "medico",
+  "insureassist-rag",
+  "mlops-reference-pipeline",
+  "hydrology-uq",
+  "streamflow-forecasting",
+  "cifar10-cnn",
+];
+
+test("the homepage runs all eight worlds in the exhibition order", async ({ page }) => {
+  await page.goto("/");
+  const ids = await page.locator("article.chapter").evaluateAll((els) =>
+    els.map((el) => el.id.replace(/^work-/, "")),
+  );
+  expect(ids).toEqual(REEL);
+});
+
+test("every flagship chapter takes the viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  /*
+   * The full-viewport rule is deliberately gated at 1000px - a phone gets a stacked chapter sized
+   * by its content, which is the right shape there. The mobile project cannot leave that gate even
+   * after a resize, so the assertion is scoped to the width it describes rather than relaxed.
+   */
+  const wide = await page.evaluate(() => window.innerWidth >= 1000);
+  test.skip(!wide, "flagship height is a desktop rule");
+  const sizes = await page.locator('article.chapter[data-scale="flagship"]').evaluateAll((els) =>
+    els.map((el) => ({ id: el.id, h: Math.round(el.getBoundingClientRect().height) })),
+  );
+  expect(sizes.length).toBeGreaterThanOrEqual(5);
+  for (const s of sizes) {
+    /* A chapter that shares the screen with the next one is a card, which is what this replaced. */
+    expect(s.h, `${s.id} is only ${s.h}px tall`).toBeGreaterThanOrEqual(880);
+  }
+});
+
+test("chapters are joined by seams that name the handoff", async ({ page }) => {
+  await page.goto("/");
+  const seams = page.locator(".seam");
+  /* One between each pair, and none after the last chapter. */
+  await expect(seams).toHaveCount(REEL.length - 1);
+  for (const seam of await seams.all()) {
+    const text = await seam.innerText();
+    expect(text.toLowerCase()).toContain("becomes");
+  }
+});
+
+test("each chapter carries the shared-element name its world uses", async ({ page }) => {
+  await page.goto("/");
+  const names = await page.locator("article.chapter .chapter-stage").evaluateAll((els) =>
+    els.map((el) => (el as HTMLElement).style.viewTransitionName),
+  );
+  expect(names).toEqual(REEL.map((slug) => `world-${slug}`));
+});
+
+test("entering a world lands on the matching shared element", async ({ page }) => {
+  for (const slug of ["transport-uq", "medico", "reliable-knowledge-systems"]) {
+    await page.goto(`/work/${slug}`);
+    const found = await page.evaluate(
+      (s) =>
+        Array.from(document.querySelectorAll<HTMLElement>("[style*='view-transition-name']")).some(
+          (el) => el.style.viewTransitionName === `world-${s}`,
+        ),
+      slug,
+    );
+    expect(found, `/work/${slug} is missing its shared-element name`).toBe(true);
+  }
+});
+
+test("every chapter says which project it is and how to enter it", async ({ page }) => {
+  await page.goto("/");
+  for (const slug of REEL) {
+    const chapter = page.locator(`#work-${slug}`);
+    /* The exhibition title states a finding, so the way in must be unambiguous. */
+    await expect(chapter.locator(".chapter-more")).toHaveAttribute("href", new RegExp(slug));
+    const text = await chapter.innerText();
+    expect(text.length, `${slug} has almost no copy`).toBeGreaterThan(80);
+  }
+});
+
+test("the exhibition index lists every world plus the way to the rest", async ({ page }) => {
+  await page.goto("/");
+  const links = page.locator(".exhibit-link");
+  await expect(links).toHaveCount(REEL.length + 1);
+  const hrefs = await links.evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+  for (const slug of REEL) {
+    expect(hrefs.some((h) => h?.includes(slug)), `index is missing ${slug}`).toBe(true);
+  }
+  expect(hrefs).toContain("/work");
+});
+
+test("the work index also carries the reliable-knowledge-systems world", async ({ page }) => {
+  await page.goto("/work");
+  /* It has a route and a world but no portfolio entry, so the project list alone cannot show it. */
+  const hrefs = await page
+    .locator(".exhibit-link")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+  expect(hrefs).toContain("/work/reliable-knowledge-systems");
+});
+
+test("the homepage still loads no renderer", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (r) => {
+    if (r.url().endsWith(".js")) scripts.push(r.url());
+  });
+  await page.goto("/", { waitUntil: "networkidle" });
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the reel must stay free of three.js").toBe(false);
+});

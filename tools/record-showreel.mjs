@@ -1,8 +1,13 @@
 /**
  * The showreel.
  *
- * Records a silent pass over the finished site: the hero scrub, each project's figure, the public
- * engineering verbs, and the ending.
+ * Records a silent pass over the finished site: the hero scrub, the exhibition index, all eight
+ * worlds in the reel's running order, the public engineering verbs, and the ending.
+ *
+ * The cut was rewritten when the homepage became a reel. The previous one walked six chapters in
+ * the old order, had no shot for the two worlds that were not yet in the sequence, and labelled
+ * the streamflow chapter "forecast horizon" - a description the repository-first pass on that
+ * project retired, since it evaluates one step ahead and produces no horizon at all.
  *
  * Playwright's own recorder is used rather than a frame-dump plus ffmpeg. ffmpeg is not on this
  * machine and `ffmpeg-static` was deliberately removed from the project earlier - it pulled 80MB
@@ -31,21 +36,29 @@ mkdirSync(raw, { recursive: true });
  * span for the pinned sequences. `hold` is seconds spent on that moment.
  */
 const SHOTS = [
-  { route: "/", settle: 1.6, hold: 1.2, label: "open on the hero" },
-  { scrub: ".cine-hero", at: 0.3, hold: 0.9, label: "prediction draws" },
-  { scrub: ".cine-hero", at: 0.55, hold: 0.9, label: "interval calibrates" },
-  { scrub: ".cine-hero", at: 0.85, hold: 1.1, label: "observations and the declined region" },
-  { to: "#work-transport-uq", hold: 1.5, label: "graph propagation" },
-  { to: "#work-insureassist-rag", hold: 1.5, label: "retrieval and tethers" },
-  { to: "#work-mlops-reference-pipeline", hold: 1.4, label: "gates" },
-  { to: "#work-hydrology-uq", hold: 1.3, label: "ensemble spread" },
-  { to: "#work-streamflow-forecasting", hold: 1.3, label: "forecast horizon" },
-  { to: "#work-cifar10-cnn", hold: 1.2, label: "feature planes" },
-  { to: "#engineering", hold: 1.6, label: "ingest, represent, verify, observe" },
+  { route: "/", settle: 1.6, hold: 1.4, label: "open on the hero" },
+  { scrub: ".cine-hero", at: 0.32, hold: 0.9, label: "prediction draws" },
+  { scrub: ".cine-hero", at: 0.58, hold: 0.9, label: "interval calibrates" },
+  { scrub: ".cine-hero", at: 0.86, hold: 1.1, label: "observations and the declined region" },
+
+  { to: "#work", hold: 1.6, label: "the exhibition index: eight worlds" },
+
+  /* One memorable shot per world, in the reel's running order, with the seams between them. */
+  { to: "#work-transport-uq", hold: 1.8, label: "01 graph propagation and per-junction uncertainty" },
+  { to: "#work-reliable-knowledge-systems", hold: 1.8, label: "02 one capture, three derived forms" },
+  { to: "#work-medico", hold: 1.6, label: "03 fourteen findings, and what a corpus cannot label" },
+  { to: "#work-insureassist-rag", hold: 1.7, label: "04 the right provision from the wrong policy" },
+  { to: "#work-mlops-reference-pipeline", hold: 1.7, label: "05 four checks, and the one that refuses" },
+  { to: "#work-hydrology-uq", hold: 1.6, label: "06 perturb the rain, then perturb the ruler" },
+  { to: "#work-streamflow-forecasting", hold: 1.5, label: "07 one step ahead, given yesterday" },
+  { to: "#work-cifar10-cnn", hold: 1.5, label: "08 one number covering ten" },
+
+  { to: "#engineering", hold: 1.5, label: "ingest, represent, verify, observe" },
   { to: "#research", hold: 1.2, label: "research metrics" },
   { to: "#experience", hold: 1.2, label: "problems in order" },
-  { to: "#contact", hold: 1.8, label: "the ending" },
+  { to: "#contact", hold: 2.0, label: "the ending" },
 ];
+
 
 const browser = await chromium.launch({
   args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],

@@ -54,7 +54,7 @@ export const chapters = {
     eyebrow: "Selected work",
     title: "Each system, as the thing it actually is",
     introduction:
-      "Six public projects. Every one is drawn as its own mechanism rather than as a card, because a graph surrogate and a retrieval benchmark do not resemble each other and should not be presented as though they do.",
+      "Eight worlds, in running order. Every one is drawn as its own mechanism rather than as a card, because a graph surrogate and a retrieval benchmark do not resemble each other and should not be presented as though they do. Each opens into a case study carrying its evidence and its limits.",
   },
   engineering: {
     index: "02",

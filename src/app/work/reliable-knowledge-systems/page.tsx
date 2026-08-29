@@ -57,7 +57,9 @@ export default function ReliableKnowledgeSystemsPage() {
           The machine, before the prose. On a phone, a narrow window, or for a reader who declined
           motion, the same schematic is drawn once and completely instead.
         */}
-        <ReliableWorld flat={<ReliableWorldFlat />} />
+        <div style={{ viewTransitionName: "world-reliable-knowledge-systems" }}>
+          <ReliableWorld flat={<ReliableWorldFlat />} />
+        </div>
 
         <section className="section-wrap case-section two-column-copy">
           <div>

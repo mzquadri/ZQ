@@ -7,18 +7,23 @@ import {
   ExperienceSection,
   ResearchSection,
 } from "@/components/cinema/HomeSections";
+import ExhibitionIndex from "@/components/cinema/ExhibitionIndex";
 import WorkChapters from "@/components/cinema/WorkChapters";
-import MedicoChapter from "@/components/cinema/MedicoChapter";
 import PageShell from "@/components/PageShell";
 import { chapters } from "@/content/cinema";
 
 /*
  * The homepage is one continuous stage.
  *
- * It opens by drawing the argument the rest of the site is about, then walks six projects, each
- * as the mechanism it actually is, then the engineering, the research and the roles behind them.
- * The order is deliberate: a visitor should be able to stop after any section and have taken
- * something real from it.
+ * It opens by drawing the argument the rest of the site is about, then runs eight projects as a
+ * reel - each one a full stage rather than a card - and then the approach, the research and the
+ * roles behind them. The order is deliberate: a visitor should be able to stop after any chapter
+ * and have taken something real from it.
+ *
+ * Two chapters used to sit outside that reel. Medico was appended after the sequence had closed,
+ * and the current-engineering work was a section further down the page, which meant the two pieces
+ * of work a visitor most needs to see were the two furthest from the top. Both are now in the
+ * running order.
  *
  * Everything here is server-rendered, and the page ships no animation JavaScript at all.
  *
@@ -39,13 +44,11 @@ export default function Home() {
           <p className="chapter-intro-eyebrow">{chapters.work.eyebrow}</p>
           <h2 className="chapter-intro-title">{chapters.work.title}</h2>
           <p className="chapter-intro-lede">{chapters.work.introduction}</p>
+          <ExhibitionIndex />
         </div>
       </section>
 
       <WorkChapters />
-
-      {/* Filed after the case studies and labelled as what it is: a prototype with no results. */}
-      <MedicoChapter />
 
       <section className="chapter-outro">
         <Link className="cine-cta cine-cta-quiet mz-interactive" href="/work">

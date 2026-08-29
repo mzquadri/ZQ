@@ -1919,3 +1919,33 @@
   color: #cfd6da;
 }
 .scene-cifar-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: #7c8892; }
+
+/*
+ * Reserve a floor for the readout, where the readout actually varies.
+ *
+ * The caption is bottom-anchored, so a state whose readout is three rows and one whose readout is
+ * a six-item list move the heading above them by the difference. A floor absorbs most of that:
+ * short states leave space below their rows instead of pulling everything up.
+ *
+ * Scoped rather than global, because measurement showed a single floor trades one route against
+ * another. Applied everywhere it took the three worst routes down but pushed medico, insureassist
+ * and cifar up - their readouts already cluster near the floor and gained nothing from it. These
+ * four are the worlds whose states differ most in height.
+ *
+ * 15rem is a floor, not a fixed height. An earlier attempt reserved the tallest readout outright,
+ * and the long states then overflowed the top of a viewport-height caption and were clipped, which
+ * is worse than the shift it was fixing.
+ */
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .reliable-world[data-mode="scene"] .world-readout,
+  .reliable-world[data-mode="scene"] .world-readout-list,
+  .mlops-world[data-mode="scene"] .world-readout,
+  .mlops-world[data-mode="scene"] .world-readout-list,
+  .hydrology-world[data-mode="scene"] .world-readout,
+  .hydrology-world[data-mode="scene"] .world-readout-list,
+  .streamflow-world[data-mode="scene"] .world-readout,
+  .streamflow-world[data-mode="scene"] .world-readout-list {
+    min-height: 15rem;
+    align-content: start;
+  }
+}

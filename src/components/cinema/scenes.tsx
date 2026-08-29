@@ -1,3 +1,4 @@
+import { at } from "@/components/cinema/scroll";
 import { GraphCityCanvas, RetrievalCanvas } from "@/components/scene/ProjectedCanvases";
 import { graphEdges, graphMaxHop, graphNodes, GRAPH } from "@/content/cinema-geometry";
 import {
@@ -29,14 +30,6 @@ import {
 type Ranged = { style: React.CSSProperties };
 
 /** Build the inline custom property that positions an element within its scene's scroll slice. */
-function at(from: number, to: number, extra: React.CSSProperties = {}): Ranged {
-  /* Rounded because these are usually computed from a division, and binary floating point then
-   * emits a long trailing run of digits into the stylesheet. */
-  const round = (n: number) => Math.round(n * 100) / 100;
-  return {
-    style: { "--range": `contain ${round(from)}% contain ${round(to)}%`, ...extra } as React.CSSProperties,
-  };
-}
 
 /**
  * The same thing, measured while the element is arriving rather than after it has arrived.

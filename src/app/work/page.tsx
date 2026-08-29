@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EcosystemGroups, SnapshotNote } from "@/components/EcosystemGrid";
+import ExhibitionIndex from "@/components/cinema/ExhibitionIndex";
 import { StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import RepoShowcase from "@/components/repo-assembly/RepoShowcase";
@@ -60,6 +61,15 @@ export default function WorkPage() {
           title="The work written up in full"
           introduction="Each case study states the problem, my contribution, the versioned evidence, the quality controls, and the limitations that bound the claim."
         />
+
+        {/*
+          The eight worlds first, as the marks they are drawn with on the homepage, so a reader who
+          arrives here from the reel recognises what they are looking at. It also carries the one
+          project the list below cannot: reliable knowledge systems has a route and a world but no
+          entry in the portfolio registry, because the case study it stands in for is confidential.
+        */}
+        <ExhibitionIndex />
+
         <ProjectList projects={projects} />
       </section>
 

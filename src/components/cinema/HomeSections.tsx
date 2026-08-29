@@ -1,8 +1,6 @@
 import Link from "next/link";
 
 import { VerbScene } from "@/components/cinema/scenes";
-import { BranchCanvas } from "@/components/scene/ProjectedCanvases";
-import BranchFlat from "@/components/scene/BranchFlat";
 import { chapters, closing, problemClasses } from "@/content/cinema";
 import { site, thesis } from "@/content/portfolio";
 import { getProject } from "@/content/portfolio";
@@ -37,8 +35,12 @@ function SectionHead({ chapter }: { chapter: { index: string; eyebrow: string; t
  * The four verbs are kept - they are a fair summary of what a platform like this has to do - but
  * they are no longer the whole chapter. What the work is actually about is the return direction:
  * every derived representation gets asked whether it still agrees with the evidence it came from,
- * and the four invariants below are what that question decomposes into. The compressed version of
- * that argument lives here; the machine is one click away.
+ * and the four invariants below are what that question decomposes into.
+ *
+ * The branching figure used to open this section. It is now the reliable-knowledge-systems chapter
+ * in the reel above, where that work belongs, so what is left here is the part the reel does not
+ * carry: the four verbs a platform of this kind has to perform, and the four questions a check on
+ * one has to answer. Keeping the figure in both places made the page argue the same point twice.
  * ----------------------------------------------------------------------------------------- */
 export function EngineeringSection() {
   const verbs = problemClasses[0].verbs;
@@ -47,8 +49,6 @@ export function EngineeringSection() {
     <section className="cine-section cine-engineering" id="engineering">
       <div className="cine-section-inner">
         <SectionHead chapter={chapters.engineering} />
-
-        <BranchCanvas flat={<BranchFlat />} />
 
         <ol className="verb-track" aria-label="Four things a data platform has to do">
           {verbs.map((verb, i) => (
