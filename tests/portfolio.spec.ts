@@ -1991,3 +1991,144 @@ test("hydrology fits a narrow phone", async ({ page }) => {
   const report = overflows ? await describeOverflow(page) : null;
   expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
 });
+
+/* ============================================================================================
+ * Streamflow: a synthetic one-step-ahead benchmark.
+ *
+ * The negative guards matter most here too, and for a specific reason: this project's page used
+ * to carry a forecast-cone figure, and the repository produces no intervals and no multi-step
+ * horizon at all. Several of the tests below exist to keep that framing from coming back.
+ * ========================================================================================== */
+
+test("streamflow renders the world and its leaderboard", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  await expect(page.locator(".world-stage.streamflow-world")).toBeVisible();
+  const text = await page.locator("main").innerText();
+  for (const value of ["0.9786", "0.7206", "-11.692"]) {
+    expect(text, `expected the published metric ${value}`).toContain(value);
+  }
+});
+
+test("streamflow metrics are the reference run's, not a retraining's", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = await page.locator("main").innerText();
+  /* Each of these is recomputed by the generator and checked against forecast_results.json. */
+  for (const value of ["3.71", "2.865", "90.299", "89.935"]) {
+    expect(text, `expected the generated value ${value}`).toContain(value);
+  }
+});
+
+test("streamflow names the models the repository actually uses", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = await page.locator("main").innerText();
+  expect(text).toContain("XGBoost");
+  expect(text).toContain("SARIMAX");
+  expect(text).toContain("Seasonal Naive");
+});
+
+test("streamflow states its horizon honestly", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = await page.locator("main").innerText();
+  /* The single most important sentence in the project: one step, with observed lags supplied. */
+  expect(text).toContain("One step");
+  expect(text.toLowerCase()).toContain("one step ahead");
+});
+
+test("streamflow claims no multi-step forecast it never evaluated", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  for (const absent of ["forecast cone", "lead time", "multi-step forecast", "forecast horizon"]) {
+    expect(text, `${absent} would overstate a one-step benchmark`).not.toContain(absent);
+  }
+});
+
+test("streamflow invents no uncertainty, because the benchmark produces none", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  /* Every prediction in this repository is a point estimate. No intervals exist to report. */
+  expect(text).not.toMatch(/\b(90|95|99)\s*%\s*(prediction\s+|confidence\s+)?interval\b/);
+  expect(text).not.toContain("confidence interval");
+  expect(text).not.toContain("prediction interval");
+  expect(text).not.toContain("empirical coverage");
+});
+
+test("streamflow keeps the synthetic scope in front of the reader", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  expect(text).toContain("synthetic");
+  /* Every occurrence of the headline score must sit near its scope, never alone as a boast. */
+  expect(text).toContain("fixed seed");
+});
+
+test("streamflow reports what each row was scored on", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = await page.locator("main").innerText();
+  /* The mismatch is the finding, so it must survive into the static document. */
+  expect(text).toContain("730 daily values");
+  expect(text).toContain("25 monthly means");
+});
+
+test("streamflow shows a measured failure case", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const text = await page.locator("main").innerText();
+  /* Peak undershoot, stated with numbers rather than as an impression of a chart. */
+  expect(text).toContain("5.591");
+  expect(text).toContain("2.562");
+});
+
+test("streamflow keeps its renderer behind the gates", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().endsWith(".js")) scripts.push(response.url());
+  });
+  await page.goto("/work/streamflow-forecasting", { waitUntil: "networkidle" });
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the renderer must not load behind the gates").toBe(false);
+  await expect(page.locator(".world-stage.streamflow-world")).toHaveAttribute("data-mode", "static");
+});
+
+test("streamflow gives a reduced-motion reader the whole argument", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/work/streamflow-forecasting");
+  await expect(page.locator(".streamflow-flat-board")).toBeVisible();
+  const rows = await page.locator(".streamflow-flat-rows li").count();
+  expect(rows).toBe(3);
+  /* The scored-on column is the finding and must never be the thing that gets dropped. */
+  const scored = await page.locator(".streamflow-flat-scored").allInnerTexts();
+  expect(scored.join(" ")).toContain("monthly means");
+  const limits = await page.locator(".streamflow-flat-limits li").count();
+  expect(limits).toBeGreaterThanOrEqual(5);
+});
+
+test("streamflow figures carry text alternatives", async ({ page }) => {
+  await page.goto("/work/streamflow-forecasting");
+  const label = await page.locator(".streamflow-flat-figure svg").getAttribute("aria-label");
+  expect(label?.length ?? 0, "the prediction figure needs a description").toBeGreaterThan(80);
+});
+
+test("streamflow fits a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/work/streamflow-forecasting");
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  const report = overflows ? await describeOverflow(page) : null;
+  expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
+});
+
+test("the homepage no longer promises a forecast horizon", async ({ page }) => {
+  await page.goto("/");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  /*
+   * The streamflow chapter used to draw an interval opening with lead time, from a formula. The
+   * repository has no horizon and no intervals, so neither the figure nor its caption may imply
+   * one.
+   */
+  expect(text).not.toContain("lead time");
+  expect(text).not.toContain("the horizon opens");
+});

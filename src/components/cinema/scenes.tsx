@@ -1,10 +1,10 @@
-import {
-  GraphCityCanvas,
-  HorizonCanvas,
-  RetrievalCanvas,
-} from "@/components/scene/ProjectedCanvases";
+import { GraphCityCanvas, RetrievalCanvas } from "@/components/scene/ProjectedCanvases";
 import { graphEdges, graphMaxHop, graphNodes, GRAPH } from "@/content/cinema-geometry";
 import { chapter, chapterEvent, chapterMaxQ } from "@/content/hydrology-chapter";
+import {
+  chapter as streamflowChapter,
+  chapterZoom,
+} from "@/content/streamflow-chapter";
 
 /*
  * One scene per project.
@@ -374,64 +374,58 @@ function EnsembleFlat() {
 }
 
 /* ============================================================================================
- * Streamflow - uncertainty is a function of lead time
+ * Streamflow - the number, and what it was given
  *
- * Distinct again: the shape here is a cone. What the figure says is that a forecast is not
- * uniformly uncertain - it is nearly tight at the moment of issue and necessarily loose far out,
- * and the honest way to draw a horizon is to let it open.
+ * This chapter used to be a forecast cone: an observed series, an issue point, and an interval
+ * opening with lead time. It was drawn from a formula, and the repository it stands for produces
+ * no intervals and no multi-step horizon at all - every prediction in it is one step ahead with
+ * the previous day's measured discharge supplied as an input feature. The cone was asserting the
+ * one capability the project is careful to say it never tested, so it is gone rather than
+ * relabelled.
+ *
+ * What replaces it is the actual reference run: the tracked model's predictions over the first
+ * days of the holdout, laid on the observed series they are almost identical to, and the three
+ * rows of the leaderboard labelled with what each was really scored on.
  * ========================================================================================== */
+
+const SF_W = 460;
+const SF_H = 116;
+const SF_PAD = { left: 8, right: 8, top: 8, bottom: 8 };
+const SF_IW = SF_W - SF_PAD.left - SF_PAD.right;
+const SF_IH = SF_H - SF_PAD.top - SF_PAD.bottom;
+
+const SF_MIN = Math.min(...chapterZoom.map((p) => Math.min(p[1], p[2])));
+const SF_MAX = Math.max(...chapterZoom.map((p) => Math.max(p[1], p[2])));
+
+const sfx = (t: number) => SF_PAD.left + t * SF_IW;
+const sfy = (q: number) => SF_PAD.top + SF_IH - ((q - SF_MIN) / (SF_MAX - SF_MIN)) * SF_IH;
+
+const sfTruth = chapterZoom.map((p) => `${sfx(p[0])},${sfy(p[1])}`).join(" ");
+const sfPred = chapterZoom.map((p) => `${sfx(p[0])},${sfy(p[2])}`).join(" ");
+
 function HorizonFlat() {
-  const width = 1000;
-  const height = 300;
-  const issue = 300;
-
-  const history: string[] = [];
-  for (let i = 0; i <= 40; i += 1) {
-    const t = i / 40;
-    const x = t * issue;
-    const y = height * 0.55 - Math.sin(t * Math.PI * 2.4) * 34 + Math.sin(t * 13) * 5;
-    history.push(`${i === 0 ? "M" : "L"}${Math.round(x * 100) / 100} ${Math.round(y * 100) / 100}`);
-  }
-
-  const centre = height * 0.55 - Math.sin(Math.PI * 2.4) * 34;
-  const upper: string[] = [];
-  const lower: string[] = [];
-  for (let i = 0; i <= 40; i += 1) {
-    const t = i / 40;
-    const x = issue + t * (width - issue);
-    const drift = Math.sin(t * Math.PI * 1.3) * 26;
-    const open = 6 + t * t * 96;
-    upper.push(`${i === 0 ? "M" : "L"}${Math.round(x * 100) / 100} ${Math.round((centre + drift - open) * 100) / 100}`);
-    lower.push(`L${Math.round(x * 100) / 100} ${Math.round((centre + drift + open) * 100) / 100}`);
-  }
-  const cone = `${upper.join(" ")} ${lower.reverse().join(" ")} Z`;
-
   return (
-    <svg
-      className="scene-svg scene-horizon"
+    <div
+      className="scene-streamflow"
       role="img"
-      aria-label="An observed series runs up to the moment a forecast is issued, after which the predicted interval opens out as the lead time grows."
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="xMidYMid meet"
+      aria-label={`A benchmark result on synthetic data. XGBoost scores R² ${streamflowChapter.r2} against SARIMAX ${streamflowChapter.sarimaxR2} and a seasonal-naive baseline at ${streamflowChapter.naiveR2}, but the predicted and observed lines overlap because each prediction is one day ahead and is given the discharge observed the day before. The two most recent lag features carry ${Math.round(streamflowChapter.topTwoShare * 1000) / 10}% of the model.`}
     >
-      <path className="scene-history" d={history.join(" ")} pathLength={100} {...at(8, 30)} />
-      <line className="scene-issue" x1={issue} x2={issue} y1={24} y2={height - 24} {...at(30, 40)} />
-      <path className="scene-cone" d={cone} {...at(40, 74)} />
-      {/* Lead-time ticks, so the widening is read as a function of distance rather than decoration. */}
-      <g className="scene-leads">
-        {[0.25, 0.5, 0.75, 1].map((t, i) => (
-          <line
-            className="scene-lead"
-            key={t}
-            x1={issue + t * (width - issue)}
-            x2={issue + t * (width - issue)}
-            y1={height - 34}
-            y2={height - 18}
-            {...at(62 + i * 5, 76 + i * 5)}
-          />
-        ))}
-      </g>
-    </svg>
+      <svg
+        aria-hidden="true"
+        preserveAspectRatio="xMidYMid meet"
+        viewBox={`0 0 ${SF_W} ${SF_H}`}
+      >
+        <polyline className="scene-sf-truth" points={sfTruth} pathLength={100} {...at(8, 46)} />
+        <polyline className="scene-sf-pred" points={sfPred} pathLength={100} {...at(24, 62)} />
+      </svg>
+      <p className="scene-sf-caption" {...at(56, 78)}>
+        <strong>R² {streamflowChapter.r2}</strong>
+        <span>
+          one step ahead, given yesterday&rsquo;s measurement &mdash; lag&nbsp;1 and lag&nbsp;2
+          carry {Math.round(streamflowChapter.topTwoShare * 1000) / 10}% of the model
+        </span>
+      </p>
+    </div>
   );
 }
 
@@ -444,7 +438,7 @@ export function EnsembleScene() {
 }
 
 export function HorizonScene() {
-  return <HorizonCanvas flat={<HorizonFlat />} />;
+  return <HorizonFlat />;
 }
 
 /* ============================================================================================

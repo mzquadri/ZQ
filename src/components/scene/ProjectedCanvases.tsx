@@ -3,7 +3,7 @@
 import { useMemo, type ReactNode } from "react";
 
 import CanvasStage from "@/components/scene/CanvasStage";
-import { drawBranch, drawHorizon } from "@/components/scene/project-scenes";
+import { drawBranch } from "@/components/scene/project-scenes";
 import { drawGraphCity, drawRetrieval } from "@/components/scene/migrated-scenes";
 import type { Camera } from "@/components/scene/projector";
 
@@ -40,21 +40,6 @@ const MIN_WIDTH = 900;
 
 function useCamera(overrides?: Partial<Camera>) {
   return useMemo<Camera>(() => ({ ...SHARED_CAMERA, ...overrides }), [overrides]);
-}
-
-export function HorizonCanvas({ flat }: { flat: ReactNode }) {
-  const camera = useCamera({ focal: 1000 });
-  return (
-    <CanvasStage
-      camera={camera}
-      className="projected projected-horizon"
-      draw={drawHorizon}
-      fallback={flat}
-      minWidth={MIN_WIDTH}
-      trackSelector=".case-story-body"
-      label="Observed history runs up to the moment a forecast is issued, and beyond that plane the predicted interval opens as it recedes - the depth axis is lead time."
-    />
-  );
 }
 
 export function BranchCanvas({ flat }: { flat: ReactNode }) {
