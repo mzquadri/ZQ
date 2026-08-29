@@ -65,7 +65,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "streamflow-forecasting": {
     accent: "var(--accent-flow)",
     figureNote:
-      "A forecast is nearly tight at the moment of issue and necessarily loose far out, so the horizon opens.",
+      "R² 0.979 on synthetic data, one step ahead with yesterday's measurement supplied. The two lines overlap because of what the model was given.",
     scale: "compact",
     scene: () => <HorizonScene />,
   },

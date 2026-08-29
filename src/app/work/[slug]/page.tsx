@@ -8,6 +8,8 @@ import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld
 import HydrologyWorld from "@/components/hydrology-world/HydrologyWorld";
 import HydrologyWorldFlat from "@/components/hydrology-world/HydrologyWorldFlat";
 import MlopsWorld from "@/components/mlops-world/MlopsWorld";
+import StreamflowWorld from "@/components/streamflow-world/StreamflowWorld";
+import StreamflowWorldFlat from "@/components/streamflow-world/StreamflowWorldFlat";
 import MlopsWorldFlat from "@/components/mlops-world/MlopsWorldFlat";
 import InsureAssistWorldFlat from "@/components/insureassist-world/InsureAssistWorldFlat";
 import PageShell from "@/components/PageShell";
@@ -126,6 +128,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "hydrology-uq" ? (
           <HydrologyWorld flat={<HydrologyWorldFlat />} />
+        ) : null}
+
+        {/*
+          The benchmark's own leaderboard, then what each row was scored on. Every number is
+          reproduced from the repository's fixed-seed generator and its tracked model file.
+        */}
+        {project.slug === "streamflow-forecasting" ? (
+          <StreamflowWorld flat={<StreamflowWorldFlat />} />
         ) : null}
 
         {/* The showpiece sits before the prose: the page argues visually first, then explains. */}

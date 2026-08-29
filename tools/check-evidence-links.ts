@@ -32,6 +32,7 @@ import * as research from "../src/content/research";
 import * as truth from "../src/content/truth";
 import * as hydrologyWorld from "../src/content/hydrology-world";
 import * as mlopsWorld from "../src/content/mlops-world";
+import * as streamflowWorld from "../src/content/streamflow-world";
 
 const QUIET = process.argv.includes("--quiet");
 
@@ -43,6 +44,7 @@ const MODULES: Record<string, unknown> = {
   mlopsWorld,
   portfolio,
   research,
+  streamflowWorld,
   truth,
 };
 
