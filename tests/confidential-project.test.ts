@@ -34,7 +34,6 @@ function validConfidentialProject(): EmployerConfidentialProject {
     classification: "Employer engineering",
     evidenceMode: "employer-confidential",
     publication: { status: "draft", reason: "No approval has been requested." },
-    year: "2026",
     authors: [{ name: "Example Author" }],
     projectRole: "Engineer on the verification services",
     summary: "A summary that says what the work established without naming anything internal.",

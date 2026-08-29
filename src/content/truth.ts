@@ -251,19 +251,6 @@ export const truthRegistry = {
       public: false,
     },
   },
-  resume: {
-    canonical: {
-      value: {
-        htmlPath: "/resume",
-        pdfPath: "/mohd-zamin-quadri-resume.pdf",
-        label: "Mohd Zamin Quadri resume",
-      },
-      source: { tier: "approved-document", reference: "Recruiter Core v1 canonical resume decision" },
-      verifiedAt,
-      reviewAfter: currentFactReviewAfter,
-      public: true,
-    },
-  },
   portfolio: {
     featuredProjectSlugs: {
       value: ["transport-uq", "mlops-reference-pipeline", "insureassist-rag", "hydrology-uq"] as const,
@@ -295,7 +282,6 @@ export const currentPublicFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.profiles.domain,
   truthRegistry.profiles.github,
   truthRegistry.profiles.linkedin,
-  truthRegistry.resume.canonical,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -321,7 +307,6 @@ export const publishedFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.profiles.domain,
   truthRegistry.profiles.github,
   truthRegistry.profiles.linkedin,
-  truthRegistry.resume.canonical,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -340,7 +325,6 @@ export const site = {
   education: truthRegistry.education.records.value as readonly EducationRecord[],
   github: truthRegistry.profiles.github.value,
   linkedin: truthRegistry.profiles.linkedin.value,
-  resume: truthRegistry.resume.canonical.value,
 } as const;
 
 export const thesis = {

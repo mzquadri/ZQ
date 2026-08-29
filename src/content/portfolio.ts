@@ -62,7 +62,6 @@ interface ProjectBase {
   title: string;
   eyebrow: string;
   classification: ProjectClassification;
-  year: string;
   authors: readonly ProjectAuthor[];
   projectRole: string;
   institution?: string;
@@ -195,7 +194,7 @@ export const insureAssistBenchmark = {
  * The audited reference run published at {@link canonicalMlopsEvidence.commit}.
  *
  * Single source for every MLOps number on this site. Components read from here rather
- * than restating figures, so a metric cannot drift between the case study, the resume
+ * than restating figures, so a metric cannot drift between the case study, the index
  * and the repository index.
  */
 export const mlopsReferenceRun = {
@@ -243,7 +242,6 @@ const authoredProjects: readonly Project[] = [
     title: "Reliable GNN Surrogates for Transport Policy Analysis",
     eyebrow: "Master's thesis / Reliable ML",
     classification: "Academic research",
-    year: "2026",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Researcher and thesis author",
     institution: thesis.institution,
@@ -345,7 +343,6 @@ const authoredProjects: readonly Project[] = [
     title: "InsureAssist: A Measured RAG Benchmark",
     eyebrow: "Retrieval evaluation",
     classification: "Reference implementation",
-    year: "2026",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Project author and engineer",
     summary:
@@ -414,7 +411,6 @@ const authoredProjects: readonly Project[] = [
     title: "A Testable End-to-End MLOps Pipeline",
     eyebrow: "ML systems engineering",
     classification: "Reference implementation",
-    year: "2026",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Project author and engineer",
     summary:
@@ -520,7 +516,6 @@ const authoredProjects: readonly Project[] = [
     title: "Uncertainty Quantification in Hydrology",
     eyebrow: "TUM project seminar",
     classification: "Group coursework",
-    year: "2024",
     authors: [
       { name: site.name, url: site.github },
       { name: "Christine Leers", url: "https://github.com/chrLeers" },
@@ -574,7 +569,6 @@ const authoredProjects: readonly Project[] = [
     title: "CIFAR-10 CNN: A Reproducible Baseline",
     eyebrow: "Deep learning experiment",
     classification: "Reproducible experiment",
-    year: "2026",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Project author",
     summary:
@@ -616,7 +610,6 @@ const authoredProjects: readonly Project[] = [
     title: "Synthetic Streamflow Forecasting Benchmark",
     eyebrow: "Scientific computing demonstration",
     classification: "Synthetic demonstration",
-    year: "2026",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Project author",
     summary:
@@ -665,7 +658,6 @@ const authoredProjects: readonly Project[] = [
       reason:
         "Employer work. No publication approval has been requested or granted, so this case study is authored and reviewable but withheld from a production build.",
     },
-    year: "2026",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Engineer on the verification, ingestion and reporting services",
     institution: "BP-IT Consulting & Solutions GmbH",
@@ -835,7 +827,6 @@ export function getResearchProjects() {
   return researchProjectSlugs.map((slug) => getProject(slug)!);
 }
 
-export const resumeProjectSlugs = ["transport-uq", "mlops-reference-pipeline", "insureassist-rag"] as const;
 
 export function getFeaturedProjects() {
   const featuredSlugs: readonly string[] = truthRegistry.portfolio.featuredProjectSlugs.value;

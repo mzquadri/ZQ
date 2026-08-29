@@ -8,7 +8,7 @@ import {
 import { writingLevels, writingTopics } from "@/content/writing/schema";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/work", "/research", "/research/thesis", "/learn", "/about", "/contact", "/resume"];
+  const routes = ["", "/work", "/research", "/research/thesis", "/learn", "/about", "/contact"];
   const projectRoutes = projects.map((project) => `/work/${project.slug}`);
   /*
    * A filter route is listed only once something is published behind it.

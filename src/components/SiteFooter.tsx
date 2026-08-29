@@ -17,7 +17,6 @@ export default function SiteFooter() {
         <nav aria-label="Footer navigation" className="footer-links">
           <Link href="/work">Selected work</Link>
           <Link href="/learn">Learn</Link>
-          <Link href={site.resume.htmlPath}>Resume</Link>
           <a href={site.github}>
             <ArrowLabel>GitHub</ArrowLabel>
           </a>

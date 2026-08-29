@@ -201,34 +201,3 @@ export function ClosingMark() {
     </svg>
   );
 }
-
-/* ============================================================================================
- * Resume - the arc, before the document
- *
- * A resume page that opens with a download button asks the reader to leave before they have any
- * reason to. This is the thing worth knowing first: the direction of travel. Four stages, drawn
- * as a spine, ordered earliest to latest so the shape of the progression is the point rather than
- * any individual row.
- *
- * It states no dates and no impact figures - the site does not publish disputed chronology, and
- * inventing a trajectory would be exactly the kind of claim the rest of it argues against.
- * ========================================================================================== */
-
-export function ProfileSpine({
-  stages,
-}: {
-  stages: readonly { stage: string; problem: string; detail: string }[];
-}) {
-  return (
-    <ol className="spine" aria-label="The arc of the work, earliest first">
-      {stages.map((entry, i) => (
-        <li className="spine-step" key={entry.stage} style={{ "--i": i } as React.CSSProperties}>
-          <span aria-hidden="true" className="spine-node" />
-          <p className="spine-stage">{entry.stage}</p>
-          <p className="spine-problem">{entry.problem}</p>
-          <p className="spine-detail">{entry.detail}</p>
-        </li>
-      ))}
-    </ol>
-  );
-}

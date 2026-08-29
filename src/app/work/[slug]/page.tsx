@@ -76,7 +76,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           "@type": "CreativeWork",
           name: project.title,
           description: project.summary,
-          dateCreated: project.year,
           author: project.authors.map((author) => ({ "@type": "Person", ...author })),
           creditText: project.projectRole,
           sourceOrganization: project.institution

@@ -65,19 +65,11 @@ export default function ContactPage() {
                   <strong>What was built, checked, and where it stops</strong>
                 </Link>
               </li>
-              <li>
-                <a href={site.resume.pdfPath} download>
-                  <span>Resume</span>
-                  <strong>One page, as a PDF</strong>
-                </a>
-              </li>
             </ul>
 
-            <p className="ending-note resume-footnote">
-              No form, no tracking, no cookies, and no contact-form data. The PDF above and the{" "}
-              <Link href={site.resume.htmlPath}>HTML resume</Link> are generated from the same
-              approved facts, and publish no email, phone number, street address, private
-              identifier, or disputed employment date.
+            <p className="ending-note">
+              No form, no tracking, no cookies, and no contact-form data. Nothing on this site
+              publishes a phone number, street address or private identifier.
             </p>
           </div>
 

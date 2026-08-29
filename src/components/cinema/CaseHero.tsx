@@ -44,10 +44,6 @@ export default function CaseHero({ project, children }: { project: Project; chil
               <dt>Classification</dt>
               <dd>{project.classification}</dd>
             </div>
-            <div>
-              <dt>Year</dt>
-              <dd>{project.year}</dd>
-            </div>
             {project.institution ? (
               <div>
                 <dt>Institution</dt>
