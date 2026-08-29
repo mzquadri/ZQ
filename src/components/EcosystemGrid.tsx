@@ -1,21 +1,8 @@
 import Link from "next/link";
-import {
-  ecosystemSnapshot,
-  repositoryUrl,
-  type EcosystemRepository,
-} from "@/content/ecosystem";
+import { repositoryUrl, type EcosystemRepository } from "@/content/ecosystem";
 import { getProject } from "@/content/portfolio";
 import styles from "./EcosystemGrid.module.css";
 import { ArrowLabel } from "@/components/Icon";
-
-function formatDate(isoDate: string) {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${isoDate}T00:00:00Z`));
-}
 
 export function RepositoryCard({ repository }: { repository: EcosystemRepository }) {
   const caseStudy = repository.caseStudySlug ? getProject(repository.caseStudySlug) : undefined;
@@ -45,9 +32,7 @@ export function RepositoryCard({ repository }: { repository: EcosystemRepository
       </ul>
 
       <div className={styles.cardFoot}>
-        <p className={styles.updated}>
-          Last public commit <time dateTime={repository.lastCommit}>{formatDate(repository.lastCommit)}</time>
-        </p>
+        <p className={styles.updated}>{repository.language}</p>
         {caseStudy ? (
           <Link className={styles.caseLink} href={`/work/${caseStudy.slug}`}>
 <ArrowLabel kind="forward">Case study</ArrowLabel>
@@ -91,9 +76,8 @@ export function EcosystemGroups({
 export function SnapshotNote() {
   return (
     <p className={styles.snapshot}>
-      Repository details are a reviewed snapshot recorded on{" "}
-      <time dateTime={ecosystemSnapshot.observedAt}>{formatDate(ecosystemSnapshot.observedAt)}</time>. This page makes
-      no request to GitHub, publishes no contribution counts, and renders identically if GitHub is unavailable.
+      Repository details are a reviewed offline snapshot. This page makes no request to GitHub, publishes no
+      contribution counts or activity dates, and renders identically if GitHub is unavailable.
     </p>
   );
 }

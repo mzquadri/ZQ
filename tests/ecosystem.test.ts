@@ -20,9 +20,16 @@ test("the repository index is a consistent, deduplicated snapshot", () => {
   for (const repository of ecosystemRepositories) {
     assert.equal(repositoryUrl(repository), `${site.github}/${repository.name}`);
     assert.ok(ecosystemCategories.includes(repository.category));
-    assert.match(repository.lastCommit, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(!("lastCommit" in repository), `${repository.name} must publish no activity date`);
     assert.ok(repository.topics.length > 0, `${repository.name} needs focus areas`);
   }
+
+  /*
+   * The index is complete, not curated. Twenty-five public repositories were audited from the
+   * GitHub API, and all twenty-five are listed - forks and learning exercises included, because
+   * an index that silently drops the unflattering entries is making a claim of its own.
+   */
+  assert.equal(ecosystemRepositories.length, 25);
 
   const grouped = getPopulatedCategories();
   const total = grouped.reduce((count, group) => count + group.repositories.length, 0);

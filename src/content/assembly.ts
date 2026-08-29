@@ -35,7 +35,6 @@ export interface RepoAssembly {
   title: string;
   category: EcosystemCategory;
   language: string;
-  lastCommit: string;
   description: string;
   boundary: string;
   href: string;
@@ -141,7 +140,6 @@ export function getRepoAssemblies(): RepoAssembly[] {
       title: repository.title,
       category: repository.category,
       language: repository.language,
-      lastCommit: repository.lastCommit,
       description: repository.description,
       boundary: repository.boundary,
       href: repositoryUrl(repository),

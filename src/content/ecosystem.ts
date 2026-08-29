@@ -68,8 +68,6 @@ export interface EcosystemRepository {
   description: string;
   /** The boundary of what the repository does and does not establish. */
   boundary: string;
-  /** Date of the most recent public commit observed during the audit. */
-  lastCommit: string;
   /** Slug of the matching case study, when one exists. */
   caseStudySlug?: string;
 }
@@ -77,13 +75,145 @@ export interface EcosystemRepository {
 const owner = `${site.github}/`;
 
 export const ecosystemSnapshot = {
-  observedAt: "2026-08-21",
   method:
-    "Manual audit of public repositories. Repository URLs and last-commit dates were read directly from the tracked clones; descriptions and boundaries are summarised from each README.",
+    "Manual audit of every public repository on the profile. Repository names, languages and URLs were read from GitHub; descriptions and evidence boundaries are summarised from each README. No activity dates are published.",
   profile: site.github,
 } as const;
 
 export const ecosystemRepositories: readonly EcosystemRepository[] = [
+  {
+    name: "medico",
+    title: "Medico: Chest X-Ray Multi-Label Training",
+    category: "Featured",
+    language: "Python",
+    topics: ["Medical Imaging", "DenseNet-121", "Masked Focal Loss", "Transfer Learning"],
+    description:
+      "A research training script that fine-tunes a DenseNet-121 across fourteen chest-radiograph findings, combining three source datasets and masking the loss wherever a label is uncertain or simply absent.",
+    boundary:
+      "Experimental research code and nothing else. The repository ships no trained weights, no patient data, no held-out metrics and no clinical validation, and must not be used for diagnosis, triage or treatment.",
+    caseStudySlug: "medico",
+  },
+  {
+    name: "DPS",
+    title: "DPS: Traffic Accident Prediction API",
+    category: "Engineering",
+    language: "Jupyter Notebook",
+    topics: ["FastAPI", "Regression", "Input Validation", "Model Serving"],
+    description:
+      "A small FastAPI service that loads a regression model trained on Munich traffic-accident records and answers a calendar year and month with a rounded predicted count.",
+    boundary:
+      "An educational prototype, not a public-safety forecast. The tracked model and CSV come from a historical-data exercise and establish no forecast accuracy for any future decision.",
+  },
+  {
+    name: "Weather-Data-Analytics-EDA",
+    title: "Weather Analytics: Exploratory Analysis",
+    category: "Engineering",
+    language: "Python",
+    topics: ["Exploratory Data Analysis", "pandas", "Visualization", "Synthetic Data"],
+    description:
+      "A wrangling-and-visualisation walkthrough over deterministic generated daily observations for six cities, covering statistical summaries, seasonality and correlation.",
+    boundary:
+      "Every observation is produced by a seeded generator. The figures are not weather-station records, climate evidence or forecasts, and support no operational or scientific claim.",
+  },
+  {
+    name: "ML-Water-Quality-Classification",
+    title: "Water Quality: Classifier Comparison",
+    category: "Engineering",
+    language: "Python",
+    topics: ["Classification", "Cross-Validation", "XGBoost", "Synthetic Data"],
+    description:
+      "Four pipelines - logistic regression, random forest, XGBoost and an RBF SVM - compared under cross-validation and hyperparameter tuning on a seeded five-thousand-sample dataset.",
+    boundary:
+      "The labels are generated, not laboratory measurements. The tracked scores measure how well each model recovers the generator's own class-correlated distributions, and say nothing about whether real water is safe to drink.",
+  },
+  {
+    name: "complete-python-warmup",
+    title: "Python and Data-Analysis Practice",
+    category: "Reference",
+    language: "Jupyter Notebook",
+    topics: ["Python", "NumPy", "pandas", "Learning Artifact"],
+    description:
+      "An early notebook of Python, NumPy, pandas and introductory analysis exercises with their saved exploratory outputs.",
+    boundary:
+      "Kept as a learning artifact. Several cells need external CSVs whose redistribution terms were never recorded, so the saved outputs are examples rather than independently reproducible results.",
+  },
+  {
+    name: "pde-problems",
+    title: "Snake, Water, Gun",
+    category: "Reference",
+    language: "Python",
+    topics: ["Python", "Unit Testing", "Learning Artifact"],
+    description:
+      "A command-line variant of rock-paper-scissors with input validation and a unittest suite. Despite the repository name it has nothing to do with partial differential equations.",
+    boundary:
+      "A beginner exercise, retained under its original name rather than quietly renamed to look like something else.",
+  },
+  {
+    name: "local-repo",
+    title: "Git and Python Learning Example",
+    category: "Reference",
+    language: "Python",
+    topics: ["Git", "Python", "Learning Artifact"],
+    description:
+      "A minimal executable script and a standalone CSS snippet, kept from early Git practice.",
+    boundary:
+      "Not an application and not a portfolio project. It is indexed here because the index is complete, not because it demonstrates anything.",
+  },
+  {
+    name: "iftaar-invitation-2026",
+    title: "Iftaar Invitation",
+    category: "Reference",
+    language: "HTML",
+    topics: ["Static Site", "Client-Side Only", "Design Artifact"],
+    description:
+      "A single-file personalised invitation for a private gathering. Guest names, animation and countdown all run in the browser; nothing is submitted, collected or measured.",
+    boundary:
+      "An event-specific design artifact, not a reusable event-management system. The host and venue details are deliberately particular to the original invitation.",
+  },
+  {
+    name: "mzquadri",
+    title: "Profile README",
+    category: "Reference",
+    language: "Markdown",
+    topics: ["Documentation", "Evidence Boundaries"],
+    description:
+      "The GitHub profile landing page: a short statement of focus and a table of selected work in which every row carries its own evidence boundary.",
+    boundary:
+      "Documentation. It makes no claim of its own beyond pointing at the repositories that do.",
+  },
+  {
+    name: "mzquadri.de",
+    title: "Retired Legacy Landing Page",
+    category: "Reference",
+    language: "CSS",
+    topics: ["Static Site", "Superseded"],
+    description:
+      "The previous portfolio landing page, retained in public so old links resolve and point at the maintained platform.",
+    boundary:
+      "Superseded and no longer developed. It is listed so that the index does not silently omit a page that still exists.",
+  },
+  {
+    name: "ml_surrogates_for_agent_based_transport_models",
+    title: "Thesis Repository (Fork)",
+    category: "Reference",
+    language: "Python",
+    topics: ["Fork", "Thesis", "Consolidation"],
+    description:
+      "A fork carrying the same thesis work as the canonical repository, kept while the two are consolidated.",
+    boundary:
+      "Not an independent contribution. The maintained destination for the thesis artifact is ml-surrogates-thesis, and this entry exists so the duplication is visible rather than hidden.",
+  },
+  {
+    name: "express",
+    title: "express (Upstream Fork)",
+    category: "Reference",
+    language: "JavaScript",
+    topics: ["Fork", "Upstream"],
+    description:
+      "A fork of the upstream Express web framework.",
+    boundary:
+      "No authored contribution. It appears here only because this index lists every public repository, including the ones that flatter nobody.",
+  },
   {
     name: "ml-surrogates-thesis",
     title: "Reliable GNN Surrogates for Transport Policy",
@@ -94,7 +224,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Master's thesis codebase studying when a graph neural network surrogate for transport simulation can be trusted, and how uncertainty supports a review decision.",
     boundary:
       "Publishes the submitted PDF, a post-submission corrigendum, and aggregate audited artifacts. Raw simulation data and row-level predictions are not redistributable.",
-    lastCommit: "2026-08-20",
     caseStudySlug: "transport-uq",
   },
   {
@@ -107,7 +236,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "The lifecycle around a text classifier on a licensed dataset: checksum-verified data that validation can refuse, leak-free feature fitting, a promotion gate measured against a baseline, atomic checksummed bundles, and a served container.",
     boundary:
       "A reference implementation, not a deployed product. The published result is an ordinary TF-IDF baseline on 600 held-out rows, pooled across three sources, and has never carried production traffic.",
-    lastCommit: "2026-08-21",
     caseStudySlug: "mlops-reference-pipeline",
   },
   {
@@ -120,7 +248,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "A local-first insurance-policy question-answering service that retrieves source clauses and returns cited answers behind a typed FastAPI contract.",
     boundary:
       "An engineering prototype. Kubernetes manifests are authored but no completed cloud deployment and no regulated-data validation are claimed.",
-    lastCommit: "2026-08-09",
     caseStudySlug: "insureassist-rag",
   },
   {
@@ -133,7 +260,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Source of this website: a server-first Next.js platform with a typed factual registry, evidence and privacy validation, generated metadata, and automated accessibility regression tests.",
     boundary:
       "A personal platform rather than a general-purpose template. Content validation rules encode decisions specific to this portfolio.",
-    lastCommit: "2026-08-21",
   },
   {
     name: "UQ-Hydrology-Seminar-TUM",
@@ -145,7 +271,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "A three-person TUM seminar connecting HBV rainfall-runoff calibration, local and global sensitivity analysis, and input/output uncertainty propagation.",
     boundary:
       "Group coursework. Individual ownership of each result is not claimed, and course-provided forcing data is not redistributable.",
-    lastCommit: "2026-08-20",
     caseStudySlug: "hydrology-uq",
   },
   {
@@ -158,7 +283,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "An educational playground for a mathematical question: if two networks agree on every input, must their parameters agree? Accompanies a TUM mathematics seminar on neural-network identification.",
     boundary:
       "Source code and exploratory notebooks only. No versioned experiment configurations or numerical findings, so no empirical identifiability result is established.",
-    lastCommit: "2026-08-10",
   },
   {
     name: "Supply-Chain-Analytics-Dashboard",
@@ -170,7 +294,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Cleans order data, computes operational KPIs, compares demand-forecasting baselines, and illustrates classical inventory calculations inside a single Dash application.",
     boundary:
       "Versions source and notebooks only. No dataset, screenshots, or verified business metrics, so no fill-rate or forecast-accuracy claim is made.",
-    lastCommit: "2026-08-10",
   },
   {
     name: "Battery-SOC-Estimation-ML",
@@ -182,7 +305,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Compares regression models, clustering, cycle-aware features, and a genetic-fuzzy prototype for inferring lithium-ion state of charge from voltage, current, and temperature.",
     boundary:
       "A research prototype with no dataset, weights, or tracked evaluation. It must not be used to operate a battery-management system or make safety decisions.",
-    lastCommit: "2026-08-10",
   },
   {
     name: "Time-Series-Streamflow-Forecasting",
@@ -194,7 +316,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "A deterministic benchmark comparing seasonal-naive, SARIMAX, and gradient-boosted one-step streamflow predictions on a fixed-seed synthetic series.",
     boundary:
       "Synthetic data. Strong scores test the evaluation pipeline and are not evidence of real-catchment validity.",
-    lastCommit: "2026-08-10",
     caseStudySlug: "streamflow-forecasting",
   },
   {
@@ -207,7 +328,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Trains an LSTM to read thirty days of precipitation, temperature, and soil moisture and predict next-day discharge, on a deterministic rainfall-runoff generator written for the repository.",
     boundary:
       "A reproducible synthetic-data demonstration. Reported metrics describe the generated benchmark only, not a validated flood-forecasting system.",
-    lastCommit: "2026-08-10",
   },
   {
     name: "CNN-Image-Classification-PyTorch",
@@ -219,7 +339,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "A compact image-classification experiment with a tracked configuration, learning history, per-class diagnostics, and an honestly recorded reference result.",
     boundary:
       "A bounded educational baseline on a 15,000-image training subset. No checkpoint is versioned and no state-of-the-art result is claimed.",
-    lastCommit: "2026-08-10",
     caseStudySlug: "cifar10-cnn",
   },
   {
@@ -232,7 +351,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Works through classification, probability calibration with Platt scaling or isotonic regression, cost-sensitive threshold selection, and SHAP-based attribution.",
     boundary:
       "Source and notebooks only, with no versioned data, model, or evaluation report. It is not an underwriting, pricing, or claims-decision system.",
-    lastCommit: "2026-08-10",
   },
   {
     name: "NLP-Text-Classification-Transformers",
@@ -244,7 +362,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Runs TF-IDF baselines and a fine-tuned DistilBERT against the same AG News task with the same evaluation, so the two tracks can be compared rather than asserted.",
     boundary:
       "Versions source and notebooks but not data, checkpoints, or metrics, so no accuracy, F1, or model-comparison claim is published.",
-    lastCommit: "2026-08-10",
   },
 ];
 

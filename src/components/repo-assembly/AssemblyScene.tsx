@@ -64,7 +64,6 @@ export interface HoverInfo {
   label: string;
   kind: string;
   repo: string;
-  lastCommit: string;
 }
 
 function readToken(name: string, fallback: string) {
@@ -127,7 +126,6 @@ function Part({
           label: part.label,
           kind: PART_KIND_LABEL[part.kind],
           repo: assembly.title,
-          lastCommit: assembly.lastCommit,
         });
       }}
       onClick={(event) => {

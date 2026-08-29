@@ -10,6 +10,7 @@ import {
 import ExhibitionIndex from "@/components/cinema/ExhibitionIndex";
 import WorkChapters from "@/components/cinema/WorkChapters";
 import PageShell from "@/components/PageShell";
+import StrongWorkBand from "@/components/cinema/StrongWork";
 import { chapters } from "@/content/cinema";
 
 /*
@@ -49,6 +50,13 @@ export default function Home() {
       </section>
 
       <WorkChapters />
+
+      {/*
+        The second movement. Eight flagships run above; these nine repositories are the rest of
+        the public work, and they are staged rather than listed because each has an end-to-end
+        story. What they are organised by is what each one can actually prove.
+      */}
+      <StrongWorkBand />
 
       <section className="chapter-outro">
         <Link className="cine-cta cine-cta-quiet mz-interactive" href="/work">

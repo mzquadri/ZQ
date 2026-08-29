@@ -286,6 +286,20 @@ check(
   "An employment date range reappeared in the rendered site source",
 );
 
+/*
+ * Activity dates are the other way a chronology creeps back: not a CV range, but a "last public
+ * commit" stamp or an audit date on the repository index. Those rank my work by recency, which
+ * is the same claim in a smaller font.
+ *
+ * The arXiv feed's freshness stamp is deliberately not covered. It dates a cache of other
+ * people's papers so a reader knows the list may be stale, which is a statement about the
+ * data and not about when I did anything.
+ */
+check(
+  !/last\s+(public\s+)?commit|recorded\s+on\b|\blast\s+active\b|commits?\s+in\s+the\s+last/i.test(renderedSource),
+  "An activity date reappeared in the rendered site source",
+);
+
 const featuredProjectSlugs: readonly string[] = truthRegistry.portfolio.featuredProjectSlugs.value;
 check(new Set(featuredProjectSlugs).size === featuredProjectSlugs.length, "Featured project slugs must be unique");
 for (const slug of featuredProjectSlugs) {
@@ -494,16 +508,22 @@ check(
 
 // --- Public repository ecosystem -------------------------------------------------------------
 
-const today = new Date().toISOString().slice(0, 10);
 const repositoryNames = new Set<string>();
 const projectRepositoryUrls = new Set(
   projects.flatMap((project) => (isEmployerConfidential(project) ? [] : [project.repository])),
 );
 const ecosystemUrls = new Set(ecosystemRepositories.map((repository) => repositoryUrl(repository)));
 
-check(isIsoDate(ecosystemSnapshot.observedAt), "Ecosystem snapshot has an invalid observation date");
-check(ecosystemSnapshot.observedAt <= today, "Ecosystem snapshot claims a future observation date");
 check(ecosystemSnapshot.profile === site.github, "Ecosystem snapshot must use the verified GitHub profile");
+/*
+ * The index carries no activity dates. A last-commit column is a chronology by another name: it
+ * ranks work by recency and invites the reader to date the author, which is exactly what this
+ * portfolio does not publish.
+ */
+check(
+  !("observedAt" in ecosystemSnapshot),
+  "The ecosystem snapshot reintroduced an observation date",
+);
 check(ecosystemRepositories.length > projectRepositoryUrls.size, "The repository index must show more than the case studies alone");
 
 for (const repository of ecosystemRepositories) {
@@ -516,8 +536,7 @@ for (const repository of ecosystemRepositories) {
   check(repository.language.trim().length > 0, `${label} has no language`);
   check(repository.topics.length > 0, `${label} has no focus areas`);
   check(new Set(repository.topics).size === repository.topics.length, `${label} repeats a focus area`);
-  check(isIsoDate(repository.lastCommit), `${label} has an invalid last-commit date`);
-  check(repository.lastCommit <= today, `${label} claims a future commit date`);
+  check(!("lastCommit" in repository), `${label} reintroduced a commit date`);
   check(
     repositoryUrl(repository).startsWith(`${site.github}/`),
     `${label} does not resolve under the verified GitHub profile`,
@@ -525,10 +544,20 @@ for (const repository of ecosystemRepositories) {
 
   if (repository.caseStudySlug) {
     const project = projectBySlug.get(repository.caseStudySlug);
-    check(Boolean(project), `${label} references unknown case study: ${repository.caseStudySlug}`);
-    // The repository index and the case study must agree on the canonical repository URL.
+    /*
+     * Two shapes of chapter exist. Most are data-driven entries in `projects`; a few - the ones
+     * whose story could not be reduced to the common schema - are hand-built routes under
+     * src/app/work. Both are real destinations, so the link is valid if either resolves, and the
+     * route is checked on disk rather than trusted.
+     */
+    const route = existsSync(resolve("src/app/work", repository.caseStudySlug, "page.tsx"));
     check(
-      project?.repository === repositoryUrl(repository),
+      Boolean(project) || route,
+      `${label} references unknown case study: ${repository.caseStudySlug}`,
+    );
+    // Where a data-driven case study exists, it and the index must agree on the repository URL.
+    check(
+      !project || project.repository === repositoryUrl(repository),
       `${label} and case study ${repository.caseStudySlug} disagree on the repository URL`,
     );
   }

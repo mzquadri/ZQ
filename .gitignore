@@ -90,3 +90,7 @@ tools/.cifar-cache/
 
 # Generator preview, for looking at while tuning the synthetic radiograph.
 tools/.medico-preview.png
+
+# Geometry exported from the site's own modules for the offline frame renderer. Derived, not
+# source: regenerate with `npx tsx tools/export-geometry.mjs`.
+/tools/.geometry/
