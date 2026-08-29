@@ -1,5 +1,10 @@
 import { GraphCityCanvas, RetrievalCanvas } from "@/components/scene/ProjectedCanvases";
 import { graphEdges, graphMaxHop, graphNodes, GRAPH } from "@/content/cinema-geometry";
+import {
+  chapter as cifarChapter,
+  chapterClasses as cifarChapterClasses,
+  chapterSample as cifarChapterSample,
+} from "@/content/cifar-chapter";
 import { chapter, chapterEvent, chapterMaxQ } from "@/content/hydrology-chapter";
 import {
   chapter as streamflowChapter,
@@ -442,36 +447,48 @@ export function HorizonScene() {
 }
 
 /* ============================================================================================
- * CIFAR-10 - abstraction, compactly
+ * CIFAR-10 - the aggregate, and the ten numbers under it
  *
- * A smaller project gets a smaller budget. The idea is only that detail is traded for meaning
- * layer by layer, so it is three receding planes and a result - CSS 3D rather than WebGL,
- * because nothing here needs a renderer.
+ * This chapter used to be three receding planes of cells above four class bars whose widths were
+ * `92 - i * 26` percent - invented confidences, for four of the ten classes, on a project whose
+ * whole point is that its per-class results are wildly uneven. The bars are now the run's actual
+ * per-class accuracies, all ten of them, against the 64.26% aggregate they average out to.
+ *
+ * Still no renderer: one real 32-pixel test image and ten div-width bars.
  * ========================================================================================== */
-export function FeatureMapScene({ classes }: { classes: readonly string[] }) {
+export function FeatureMapScene() {
+  const above = cifarChapter.testAccuracy;
   return (
     <div
-      className="scene-featuremap"
+      className="scene-cifar"
       role="img"
-      aria-label="A pixel grid is reduced through successive feature maps into a small set of class scores."
+      aria-label={`A CIFAR-10 classifier scoring ${cifarChapter.testAccuracy}% overall, with per-class accuracy ranging from ${cifarChapter.worstAccuracy}% on ${cifarChapter.worst} to ${cifarChapter.bestAccuracy}% on ${cifarChapter.best}. Its largest single error is ${cifarChapter.topCount} ${cifarChapter.topFrom} images predicted as ${cifarChapter.topTo}.`}
     >
-      <div className="scene-planes" aria-hidden="true">
-        {[0, 1, 2].map((layer) => (
-          <div className="scene-plane" data-layer={layer} key={layer} {...at(10 + layer * 16, 40 + layer * 16)}>
-            {Array.from({ length: (4 - layer) * (4 - layer) * 4 }, (_, cell) => (
-              <span key={cell} />
-            ))}
-          </div>
-        ))}
+      <div className="scene-cifar-head" aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="" src={cifarChapterSample} {...at(4, 26)} />
+        <p {...at(10, 34)}>
+          <strong>{cifarChapter.testAccuracy}%</strong>
+          <span>overall, across ten classes</span>
+        </p>
       </div>
-      <ol className="scene-classes" aria-hidden="true">
-        {classes.map((name, i) => (
-          <li className="scene-class" data-top={i === 0 ? "" : undefined} key={name} {...at(64 + i * 4, 80 + i * 4)}>
-            <span>{name}</span>
-            <i style={{ "--w": `${92 - i * 26}%` } as React.CSSProperties} />
+      <ol className="scene-cifar-bars" aria-hidden="true">
+        {cifarChapterClasses.map((c, i) => (
+          <li
+            data-side={c.accuracy >= above ? "above" : "below"}
+            key={c.cls}
+            {...at(20 + i * 4, 54 + i * 4)}
+          >
+            <span>{c.cls}</span>
+            <i style={{ "--w": `${c.accuracy}%` } as React.CSSProperties} />
+            <em>{c.accuracy}%</em>
           </li>
         ))}
       </ol>
+      <p className="scene-cifar-note" {...at(66, 88)}>
+        {cifarChapter.topCount} {cifarChapter.topFrom} images were predicted as{" "}
+        {cifarChapter.topTo}.
+      </p>
     </div>
   );
 }

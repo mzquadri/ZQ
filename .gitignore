@@ -68,7 +68,11 @@ next-env.d.ts
 /media/routes-*/
 /media/hyd/
 /media/sf/
+/media/cf/
 /media/story-*/
 
 # Generator cache: fetched from the streamflow repository on demand.
 tools/.streamflow-cache/
+
+# Generator cache: CIFAR-10 download and fetched repository artifacts.
+tools/.cifar-cache/

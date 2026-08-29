@@ -30,9 +30,6 @@ export interface ProjectWorld {
   scene: (project: Project) => ReactNode;
 }
 
-/* CIFAR-10's label set is public and fixed; naming four of them is a fact about the dataset. */
-const CIFAR_CLASSES = ["airplane", "automobile", "bird", "cat"] as const;
-
 export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "transport-uq": {
     accent: "var(--accent-graph)",
@@ -71,9 +68,10 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   },
   "cifar10-cnn": {
     accent: "var(--accent-vision)",
-    figureNote: "Detail traded for meaning, one layer at a time.",
+    figureNote:
+      "One number covering ten very different ones: 64.26% overall, from 33.5% on cat to 82.0% on automobile.",
     scale: "compact",
-    scene: () => <FeatureMapScene classes={CIFAR_CLASSES} />,
+    scene: () => <FeatureMapScene />,
   },
 };
 

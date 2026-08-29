@@ -1684,3 +1684,238 @@
   color: #4cc4b0;
 }
 .scene-sf-caption span { font-size: 0.78rem; line-height: 1.45; color: #7c8892; }
+
+/* ------------------------------------------------------------------ */
+/* CIFAR: one small image, then ten thousand of them.                   */
+/* ------------------------------------------------------------------ */
+
+.cifar-flat {
+  --world-muted: #7c8892;
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+}
+
+.cifar-flat-top {
+  display: grid;
+  gap: clamp(1rem, 3vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.cifar-flat-samples,
+.cifar-flat-stack,
+.cifar-flat-classes,
+.cifar-flat-matrix { margin: 0; }
+
+.cifar-flat-samples figcaption,
+.cifar-flat-stack figcaption,
+.cifar-flat-classes figcaption,
+.cifar-flat-matrix figcaption {
+  margin: 0 0 0.7rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--world-muted);
+}
+.cifar-flat-samples figcaption { margin: 0.7rem 0 0; text-transform: none; letter-spacing: 0; font-size: 0.82rem; line-height: 1.5; color: #9aa7b2; }
+
+.cifar-flat-tiles { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+.cifar-flat-tiles span { display: grid; gap: 0.3rem; justify-items: center; }
+/*
+ * Nearest-neighbour on purpose. Smoothing a 32-pixel image into something that looks like a
+ * photograph would misrepresent the only input this network ever gets.
+ */
+.cifar-flat-tiles img {
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
+  border: 1px solid #39424a;
+}
+.cifar-flat-tiles em {
+  font-style: normal;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  color: var(--world-muted);
+}
+
+.cifar-flat-stack ol {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  list-style: none;
+}
+.cifar-flat-stack li {
+  display: grid;
+  grid-template-columns: minmax(6rem, auto) 1fr auto;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding-left: 0.75rem;
+  border-left: 2px solid #39424a;
+}
+.cifar-flat-stack strong { font-size: 0.84rem; color: #f2f0e8; }
+.cifar-flat-stack code {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.82rem;
+  color: #4cc4b0;
+}
+.cifar-flat-stack li span { font-size: 0.74rem; color: var(--world-muted); }
+.cifar-flat-stack p,
+.cifar-flat-classes p,
+.cifar-flat-matrix p {
+  margin: 0.8rem 0 0;
+  max-width: 68ch;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #9aa7b2;
+}
+.cifar-flat-matrix p strong { color: #f0a03c; }
+
+.cifar-flat-classes ol {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cifar-flat-classes li {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, auto) 1fr 3rem;
+  gap: 0.6rem;
+  align-items: center;
+}
+.cifar-flat-cls { font-size: 0.82rem; color: #f2f0e8; }
+.cifar-flat-track {
+  position: relative;
+  display: block;
+  height: 0.55rem;
+  background: rgb(255 255 255 / 0.05);
+  border-radius: 1px;
+}
+.cifar-flat-track i { display: block; width: var(--w); height: 100%; background: #4cc4b0; border-radius: 1px; }
+.cifar-flat-classes li[data-side="below"] .cifar-flat-track i { background: #f0a03c; }
+/* The aggregate, as one line every bar is read against. */
+.cifar-flat-track b {
+  position: absolute;
+  top: -0.2rem;
+  bottom: -0.2rem;
+  left: var(--x);
+  width: 1px;
+  background: #e8edf1;
+}
+.cifar-flat-pct {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.78rem;
+  text-align: right;
+  color: #dfe6ea;
+}
+
+.cifar-flat-matrix-scroll { overflow-x: auto; }
+.cifar-flat-matrix table {
+  border-collapse: collapse;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+}
+.cifar-flat-matrix th {
+  padding: 0.25rem 0.35rem;
+  font-weight: 500;
+  color: var(--world-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+.cifar-flat-matrix thead th { text-align: center; }
+.cifar-flat-matrix td {
+  padding: 0.25rem 0.35rem;
+  text-align: right;
+  color: #cfd6da;
+  /* Shaded by count, so the structure is visible before any number is read. */
+  background: rgb(111 157 196 / calc(var(--v) * 0.55));
+}
+/*
+ * A lighter teal, and a lower alpha ceiling. The diagonal was #4cc4b0 on a tint that darkened
+ * with the count, so the strongest classes - the ones a reader most wants to read - fell to a
+ * 3.9:1 contrast ratio. The identity is kept; the foreground is moved far enough to clear 4.5:1.
+ */
+.cifar-flat-matrix td[data-diagonal] {
+  color: #a8e6da;
+  background: rgb(76 196 176 / calc(var(--v) * 0.3));
+}
+.cifar-flat-matrix td[data-worst] { color: #0a0d0f; background: #f0a03c; font-weight: 700; }
+
+.cifar-flat-figures {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+}
+.cifar-flat-figures div {
+  display: grid;
+  gap: 0.1rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid #39424a;
+}
+.cifar-flat-figures dt { font-size: 0.78rem; color: var(--world-muted); }
+.cifar-flat-figures dd {
+  margin: 0;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.92rem;
+  color: #f2f0e8;
+}
+
+.cifar-flat-limits {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+.cifar-flat-limits li {
+  display: grid;
+  gap: 0.1rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid #f0a03c;
+}
+.cifar-flat-limits strong { font-size: 0.88rem; color: #f2f0e8; }
+.cifar-flat-limits span { font-size: 0.8rem; line-height: 1.45; color: var(--world-muted); }
+
+/* The CIFAR homepage chapter: the aggregate, and the ten numbers under it. */
+.scene-cifar { display: grid; gap: 0.75rem; width: 100%; }
+.scene-cifar-head { display: flex; gap: 0.85rem; align-items: center; }
+.scene-cifar-head img {
+  width: 56px;
+  height: 56px;
+  image-rendering: pixelated;
+  border: 1px solid #39424a;
+}
+.scene-cifar-head p { display: grid; gap: 0.1rem; margin: 0; }
+.scene-cifar-head strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 1.05rem;
+  color: #e8edf1;
+}
+.scene-cifar-head span { font-size: 0.76rem; color: #7c8892; }
+
+.scene-cifar-bars { display: grid; gap: 0.22rem; margin: 0; padding: 0; list-style: none; }
+.scene-cifar-bars li {
+  display: grid;
+  grid-template-columns: 5rem 1fr 2.4rem;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #9aa7b2;
+}
+.scene-cifar-bars i {
+  display: block;
+  width: var(--w);
+  height: 0.4rem;
+  background: #4cc4b0;
+  border-radius: 1px;
+}
+.scene-cifar-bars li[data-side="below"] i { background: #f0a03c; }
+.scene-cifar-bars em {
+  font-style: normal;
+  font-family: var(--mono, ui-monospace, monospace);
+  text-align: right;
+  color: #cfd6da;
+}
+.scene-cifar-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: #7c8892; }

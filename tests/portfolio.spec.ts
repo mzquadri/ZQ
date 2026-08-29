@@ -2132,3 +2132,152 @@ test("the homepage no longer promises a forecast horizon", async ({ page }) => {
   expect(text).not.toContain("lead time");
   expect(text).not.toContain("the horizon opens");
 });
+
+/* ============================================================================================
+ * CIFAR-10: a bounded reference experiment.
+ *
+ * The specific risk on this project is claiming more than the artifacts support. The repository
+ * deliberately versions no checkpoint, so there are no activations and no per-image predictions
+ * to show, and the guards below exist to keep invented ones out.
+ * ========================================================================================== */
+
+test("cifar renders the world and its architecture", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  await expect(page.locator(".world-stage.cifar-world")).toBeVisible();
+  const text = await page.locator("main").innerText();
+  expect(text).toContain("64.26");
+  expect(text).toContain("815,018");
+});
+
+test("cifar reports the real tensor shapes", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const text = await page.locator("main").innerText();
+  /* Measured from the module by the generator, not read off the README. */
+  for (const shape of ["3 × 32 × 32", "32 × 16 × 16", "64 × 8 × 8", "128 × 4 × 4"]) {
+    expect(text, `expected the measured shape ${shape}`).toContain(shape);
+  }
+});
+
+test("cifar has all ten classes and their real accuracies", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const text = await page.locator("main").innerText();
+  for (const c of ["airplane", "automobile", "bird", "cat", "deer",
+                   "dog", "frog", "horse", "ship", "truck"]) {
+    expect(text, `expected class ${c}`).toContain(c);
+  }
+  /*
+   * The two ends of the spread, checked as complete percentages rather than as bare digits -
+   * "82" alone matches a parameter count and would pass without the class result being present.
+   */
+  expect(text).toMatch(/33\.5\s*%/);
+  expect(text).toMatch(/\b82\s*%/);
+});
+
+test("cifar publishes the confusion matrix as selectable numbers", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const cells = page.locator(".cifar-flat-matrix tbody td");
+  await expect(cells).toHaveCount(100);
+  /* Every row must still sum to 1,000 in the DOM, which catches a truncated render. */
+  const rows = await page.locator(".cifar-flat-matrix tbody tr").all();
+  expect(rows.length).toBe(10);
+  for (const row of rows) {
+    const values = await row.locator("td").allInnerTexts();
+    const total = values.reduce((a, v) => a + Number(v), 0);
+    expect(total, "each true class has 1,000 test images").toBe(1000);
+  }
+});
+
+test("cifar shows the largest confusion", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const text = await page.locator("main").innerText();
+  /* cat -> dog, 291: the biggest off-diagonal cell in the tracked matrix. */
+  expect(text).toContain("291");
+  await expect(page.locator(".cifar-flat-matrix td[data-worst]")).toHaveCount(1);
+});
+
+test("cifar claims no activations, because no checkpoint is versioned", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  /* The page must say so rather than quietly implying recorded feature maps. */
+  expect(text).toContain("no checkpoint");
+  for (const absent of ["saliency", "grad-cam", "activation map", "this neuron"]) {
+    expect(text, `${absent} is not supported by this repository`).not.toContain(absent);
+  }
+});
+
+test("cifar invents no confidence values", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  /* No softmax was ever run for a displayed image, so no probability may be shown. */
+  for (const absent of ["confidence", "softmax", "probability", "logit"]) {
+    expect(text, `${absent} would imply an inference this page never ran`).not.toContain(absent);
+  }
+});
+
+test("cifar keeps the training budget next to the score", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const text = await page.locator("main").innerText();
+  /* The subset and the epoch count are the context the headline number needs. */
+  expect(text).toContain("15,000");
+  expect(text).toMatch(/12\s+epochs|epochs\s+12/i);
+  /* And the run is described as unfinished, which the history supports. */
+  expect(text.toLowerCase()).toContain("had not converged");
+});
+
+test("cifar keeps its renderer behind the gates", async ({ page }) => {
+  const scripts: string[] = [];
+  page.on("response", (response) => {
+    if (response.url().endsWith(".js")) scripts.push(response.url());
+  });
+  await page.goto("/work/cifar10-cnn", { waitUntil: "networkidle" });
+  const heavy = await Promise.all(
+    scripts.map(async (url) => {
+      const body = await page.request.get(url).then((r) => r.body()).catch(() => null);
+      return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
+    }),
+  );
+  expect(heavy.some(Boolean), "the renderer must not load behind the gates").toBe(false);
+  await expect(page.locator(".world-stage.cifar-world")).toHaveAttribute("data-mode", "static");
+});
+
+test("cifar gives a reduced-motion reader the whole argument", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/work/cifar10-cnn");
+  await expect(page.locator(".cifar-flat-matrix table")).toBeVisible();
+  await expect(page.locator(".cifar-flat-classes li")).toHaveCount(10);
+  await expect(page.locator(".cifar-flat-stack li")).toHaveCount(5);
+  const limits = await page.locator(".cifar-flat-limits li").count();
+  expect(limits).toBeGreaterThanOrEqual(5);
+});
+
+test("cifar sample images are real and described", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
+  const imgs = page.locator(".cifar-flat-tiles img");
+  await expect(imgs).toHaveCount(3);
+  for (const img of await imgs.all()) {
+    const alt = await img.getAttribute("alt");
+    expect(alt ?? "", "each sample needs a description").toContain("CIFAR-10");
+    const src = await img.getAttribute("src");
+    expect(src ?? "").toMatch(/^data:image\/png;base64,/);
+  }
+});
+
+test("cifar fits a narrow phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/work/cifar10-cnn");
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  const report = overflows ? await describeOverflow(page) : null;
+  expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
+});
+
+test("the homepage cifar chapter uses real per-class numbers", async ({ page }) => {
+  await page.goto("/");
+  const bars = page.locator(".scene-cifar-bars li");
+  /* It used to show four classes with invented widths; it must now show all ten, from evidence. */
+  await expect(bars).toHaveCount(10);
+  const text = await page.locator(".scene-cifar").innerText();
+  expect(text).toContain("64.26");
+  expect(text).toContain("33.5");
+});
