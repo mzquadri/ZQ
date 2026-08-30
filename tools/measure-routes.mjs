@@ -29,7 +29,8 @@ const browser = await chromium.launch({
 
 console.log(
   `${"route".padEnd(22)}${"motion".padEnd(15)}${"req".padStart(4)}${"3rd".padStart(5)}` +
-    `${"html".padStart(9)}${"js".padStart(10)}${"css".padStart(9)}${"font".padStart(8)}` +
+    /* Suffixed -d for decoded, so nobody reads these as bytes on the wire. */
+    `${"html-d".padStart(9)}${"js-d".padStart(10)}${"css-d".padStart(9)}${"font-d".padStart(8)}` +
     `${"fcp".padStart(7)}${"cls".padStart(9)}${"dom".padStart(6)}${"canvas".padStart(8)}`,
 );
 
@@ -40,6 +41,14 @@ for (const [route, motion] of ROUTES) {
   });
   const page = await context.newPage();
 
+  /*
+   * DECODED bytes, not wire bytes: response.body() hands back the decompressed body. Kept that
+   * way because this tool's subject is what the parser and the DOM have to deal with, alongside
+   * CLS and FCP. For what a reader actually downloads - and for the initial/on-scroll split that
+   * any payload budget is written against - use tools/measure-payload.mjs, which is the canonical
+   * source for those numbers. Reading a figure from here as if it were a transfer size is how
+   * this repository ended up with two sets of payload numbers that disagreed by 20%.
+   */
   const bytes = { html: 0, js: 0, css: 0, font: 0 };
   let requests = 0;
   let thirdParty = 0;
