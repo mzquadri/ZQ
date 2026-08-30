@@ -2078,3 +2078,41 @@
   font-size: 0.7rem;
   color: var(--ink-soft);
 }
+
+/* ---- retrieval selection sweep ---- */
+
+.research-figure .sweep-bar { fill: var(--line-strong); }
+.research-figure [data-selected] .sweep-bar { fill: var(--teal-dark); }
+.research-data-table tr[data-selected] th[scope="row"],
+.research-data-table tr[data-selected] td { font-weight: 700; }
+
+/*
+ * The two numbers side by side. The held-out one is the one that means anything, so it is the one
+ * that carries the colour reserved on this site for a result that qualifies another.
+ */
+.selection-gap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--ink);
+}
+
+.selection-gap-value {
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 680;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.selection-gap [data-held-out] .selection-gap-value { color: var(--orange, #c2521a); }
+
+.selection-gap-label {
+  margin-top: 0.5rem;
+  max-width: 26ch;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
