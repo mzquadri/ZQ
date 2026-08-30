@@ -3023,3 +3023,82 @@ test("the amplification makes no forecasting claim", async ({ page }) => {
     expect(text, `the amplification figure must not say "${word}"`).not.toContain(word);
   }
 });
+
+/*
+ * A world that has been scrolled past must stop drawing.
+ *
+ * Every world used to mount once and then render for the rest of the session, because
+ * react-three-fiber's default frameloop is "always" and the mount gate never flipped back. Parked
+ * at the bottom of a case study, with the stage thousands of pixels above the viewport, the
+ * hydrology renderer was still issuing about 4,700 draw calls a second at readers who had
+ * finished with it.
+ *
+ * Draw calls are counted rather than frame rate, because a call issued is a call issued whatever
+ * is rasterising it - so this guard means the same thing on the software renderer CI uses as it
+ * does on a real adapter.
+ */
+for (const slug of ["hydrology-uq", "reliable-knowledge-systems", "medico"]) {
+  test(`the ${slug} world stops drawing once it is off screen`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.addInitScript(() => {
+      (window as unknown as { __draws: number }).__draws = 0;
+      const names = ["drawArrays", "drawElements", "drawArraysInstanced", "drawElementsInstanced"];
+      for (const proto of [window.WebGLRenderingContext, window.WebGL2RenderingContext]) {
+        if (!proto) continue;
+        for (const name of names) {
+          const original = (proto.prototype as unknown as Record<string, unknown>)[name];
+          if (typeof original !== "function") continue;
+          (proto.prototype as unknown as Record<string, unknown>)[name] = function (
+            this: unknown,
+            ...args: unknown[]
+          ) {
+            (window as unknown as { __draws: number }).__draws += 1;
+            return (original as (...a: unknown[]) => unknown).apply(this, args);
+          };
+        }
+      }
+    });
+
+    await page.goto(`/work/${slug}`);
+    const wide = await page.evaluate(() => window.innerWidth >= 1000);
+    test.skip(!wide, "the worlds only mount on a desktop viewport");
+
+    const stage = await page.evaluate(() => {
+      const el = document.querySelector(".world-stage");
+      return el ? Math.round(el.getBoundingClientRect().top + window.scrollY) : null;
+    });
+    expect(stage).not.toBeNull();
+
+    /* Walk down to it so the arrival gate fires. */
+    for (let y = 0; y <= (stage ?? 0) + 600; y += 300) {
+      await page.evaluate((to) => window.scrollTo(0, to), y);
+      await page.waitForTimeout(120);
+    }
+
+    /*
+     * Then wait for it to actually draw rather than guessing a duration. CI rasterises WebGL in
+     * software, where fetching the deferred bundle, creating the context and compiling shaders
+     * comfortably outlasts any fixed pause worth writing.
+     */
+    await page.waitForSelector(".world-canvas canvas, .thesis-world-canvas canvas", {
+      timeout: 30_000,
+    });
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { __draws: number }).__draws), {
+        timeout: 30_000,
+        message: "the world should draw while it is on screen",
+      })
+      .toBeGreaterThan(0);
+    const drawing = await page.evaluate(() => (window as unknown as { __draws: number }).__draws);
+
+    /* Then leave, and let anything in flight settle. */
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await page.waitForTimeout(1200);
+    const before = await page.evaluate(() => (window as unknown as { __draws: number }).__draws);
+    await page.waitForTimeout(1500);
+    const after = await page.evaluate(() => (window as unknown as { __draws: number }).__draws);
+
+    expect(drawing).toBeGreaterThan(0);
+    expect(after - before, "an off-screen world must not draw").toBeLessThanOrEqual(2);
+  });
+}

@@ -12,9 +12,18 @@ import MedicoWorldScene, { type Frame } from "./MedicoWorldScene";
  * module scope in a file the page imports directly pulls fiber and three into the eagerly-loaded
  * chunk, however lazy the scene import beneath it looks.
  */
-export default function MedicoWorldCanvas({ frame }: { frame: RefObject<Frame | null> }) {
+export default function MedicoWorldCanvas({
+  frame,
+  frameloop,
+}: {
+  frame: RefObject<Frame | null>;
+  /* "never" while the stage is off screen, so a finished world stops competing for the
+   * main thread with whatever the reader moved on to. */
+  frameloop: "always" | "never";
+}) {
   return (
     <Canvas
+      frameloop={frameloop}
       camera={{ far: 80, fov: 40, near: 0.1, position: [0, 0, 7.4] }}
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
