@@ -55,6 +55,7 @@ function Film({ frame }: { frame: FrameRef }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const lastSignature = useRef(-1);
   const lastVisible = useRef(-1);
+  const primed = useRef(false);
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
@@ -107,31 +108,66 @@ function Film({ frame }: { frame: FrameRef }) {
     const crop = 0.14 * prep;
     const clahe = at(p, "preprocess");
 
+    /*
+     * Only two numbers per cell actually move.
+     *
+     * This loop used to compose a full transform for each of the 9,216 instances and hand it to
+     * setMatrixAt: quaternion maths and sixteen float writes per cell per frame, for a grid that
+     * never rotates and never slides sideways. The lateral scales and the x/y position are fixed
+     * by the cell's index, and were being rewritten with their own values sixty times a second.
+     *
+     * A continuous capture of this route measured what that cost: 8 fps with the film on screen,
+     * against 60 everywhere else on the site, on a scene issuing barely one draw call a frame -
+     * the time was going into JavaScript, not the GPU.
+     *
+     * So the invariant half of the transform is written once, and the frame loop touches only the
+     * depth scale, the depth offset and the colour. Same output, an order of magnitude less work.
+     */
+    if (!primed.current) {
+      const fixed = mesh.instanceMatrix.array;
+      for (let i = 0; i < CELLS; i += 1) {
+        const o = i * 16;
+        /* Cells all but touch: visible gutters made the film read as tiling, not tissue. */
+        fixed[o] = CELL;
+        fixed[o + 5] = CELL;
+        fixed[o + 15] = 1;
+        fixed[o + 12] = (((i % GRID) / (GRID - 1)) - 0.5) * PLATE;
+        fixed[o + 13] = (0.5 - Math.floor(i / GRID) / (GRID - 1)) * PLATE;
+        /* Allocates instanceColor, so the frame loop can write straight into it. */
+        mesh.setColorAt(i, C);
+      }
+      primed.current = true;
+    }
+
+    const matrices = mesh.instanceMatrix.array;
+    const colours = mesh.instanceColor?.array;
+    if (!colours) return;
+
+    const span = 1 / (GRID - 1);
+    /*
+     * Almost flat while it is still a radiograph, and only extruded once it is being treated as
+     * data. Relief on the opening frame turned the film into a mosaic of blocks lit from the
+     * front - the one thing it must not look like is tiling.
+     */
+    const relief = Math.max(prep, toSources) * (1 - intoNetwork * 0.7);
+    const fade = prep * 0.8;
+    const inner = 1 - crop;
+
     for (let i = 0; i < CELLS; i += 1) {
-      const row = Math.floor(i / GRID);
-      const col = i % GRID;
-      const u = col / (GRID - 1);
-      const v = row / (GRID - 1);
-      const inCrop = u > crop && u < 1 - crop && v > crop && v < 1 - crop;
+      const row = (i / GRID) | 0;
+      const u = (i - row * GRID) * span;
+      const v = row * span;
+      const inCrop = u > crop && u < inner && v > crop && v < inner;
 
       const base = radiograph[i];
       const contrasted = mix(base, Math.max(0, Math.min(1, (base - 0.5) * 1.85 + 0.5)), clahe);
       const value = inCrop ? contrasted : mix(contrasted, 0.02, prep);
 
-      const x = (u - 0.5) * PLATE;
-      const y = (0.5 - v) * PLATE;
-      /*
-       * Almost flat while it is still a radiograph, and only extruded once it is being treated as
-       * data. Relief on the opening frame turned the film into a mosaic of blocks lit from the
-       * front - the one thing it must not look like is tiling.
-       */
-      const relief = Math.max(prep, toSources);
-      const depth = 0.01 + value * 0.34 * relief * (1 - intoNetwork * 0.7);
-      P.set(x, y, depth / 2);
-      /* Cells all but touch: visible gutters made the film read as tiling, not tissue. */
-      S.set(CELL, CELL, Math.max(0.004, depth));
-      M.compose(P, Q, S);
-      mesh.setMatrixAt(i, M);
+      const depth = 0.01 + value * 0.34 * relief;
+      const o = i * 16;
+      matrices[o + 10] = depth > 0.004 ? depth : 0.004;
+      matrices[o + 14] = depth / 2;
+
       /*
        * Wide tonal range on purpose. Compressed into the top of the scale the film read as a white
        * blob; a radiograph is mostly dark, and the air in the lung fields has to be the darkest
@@ -139,8 +175,11 @@ function Film({ frame }: { frame: FrameRef }) {
        */
       /* Gentler gamma: the squared curve blew the soft tissue out once the field was brighter. */
       C.copy(FILM).multiplyScalar(0.03 + Math.pow(value, 1.35) * 1.15);
-      if (!inCrop) C.lerp(DIM, prep * 0.8);
-      mesh.setColorAt(i, C);
+      if (!inCrop) C.lerp(DIM, fade);
+      const c = i * 3;
+      colours[c] = C.r;
+      colours[c + 1] = C.g;
+      colours[c + 2] = C.b;
     }
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
