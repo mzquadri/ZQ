@@ -2901,3 +2901,60 @@ test("the release page never presents its staged refusal as a recorded failure",
   }
   expect(sawRefusal, "the refusal state was never reached").toBe(true);
 });
+
+test("no detail route ships a WebGL renderer before a reader scrolls", async ({ page }) => {
+  /*
+   * /work/medico used to arrive with 228 KB of three.js because its world's observer had a zero
+   * root margin: the world sits under a short hero, so it was already intersecting on load. Six of
+   * the eight worlds deferred it and two did not.
+   */
+  test.slow();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  for (const slug of ["medico", "transport-uq", "cifar10-cnn"]) {
+    let initialJs = 0;
+    const onResponse = async (r: { url: () => string; body: () => Promise<Buffer> }) => {
+      if (!r.url().endsWith(".js")) return;
+      try {
+        initialJs += (await r.body()).length;
+      } catch {
+        /* a redirect or an aborted body; not counted */
+      }
+    };
+    page.on("response", onResponse);
+    await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
+    page.off("response", onResponse);
+
+    /*
+     * The renderer alone is about 875 KB uncompressed. Anything under half of that means it has
+     * not been pulled into the first load.
+     */
+    expect(initialJs, `${slug} ships too much JavaScript before any scroll`).toBeLessThan(1_400_000);
+  }
+});
+
+test("the radiograph is only carried by the route that draws it", async ({ page }) => {
+  /*
+   * The packed field used to sit in a geometry module imported by the chapter registry, so /work
+   * and every detail route inherited 36 KB of base64 and the Buffer polyfill its decoder pulled
+   * in, while rendering no radiograph at all.
+   */
+  for (const route of ["/work", "/work/cifar10-cnn"]) {
+    const scripts: string[] = [];
+    page.on("response", async (r) => {
+      if (!r.url().endsWith(".js")) return;
+      try {
+        const body = (await r.body()).toString("utf8");
+        if (body.includes("RADIOGRAPH") || /Buffer size must be a multiple/.test(body)) {
+          scripts.push(r.url());
+        }
+      } catch {
+        /* ignore bodies that cannot be read */
+      }
+    });
+    await page.goto(route, { waitUntil: "networkidle" });
+    expect(scripts, `${route} should not carry the radiograph`).toHaveLength(0);
+    page.removeAllListeners("response");
+  }
+});
