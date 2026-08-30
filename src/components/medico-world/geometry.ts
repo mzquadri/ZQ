@@ -1,5 +1,4 @@
 import { architecture, findings, sources } from "@/content/medico-world";
-import { RADIOGRAPH_CELLS, radiographField } from "@/content/medico-radiograph";
 
 /**
  * The shapes the medico world is built from.
@@ -29,9 +28,15 @@ function hash(n: number) {
  * It is still synthetic, still deterministic, still free of any pathology, and still contains no
  * patient data of any kind.
  */
-export const GRID = RADIOGRAPH_CELLS;
+/*
+ * The grid size and the decoded field itself now live in the scene module rather than here.
+ *
+ * This file is imported by MedicoMatrix, which is imported by the chapter registry, which is
+ * imported by /work and by every detail route. Holding the packed radiograph here therefore put
+ * 36 KB of base64 - and the Buffer polyfill its decoder pulled in - into the initial JS of pages
+ * that never draw a radiograph. Only the three.js scene reads it, and the scene loads on demand.
+ */
 
-export const radiograph = radiographField();
 
 /**
  * Which findings each source can actually label.

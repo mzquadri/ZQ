@@ -5,7 +5,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import Readout from "./Readout";
 import { STATES, active } from "./states";
-import type { Frame } from "./MedicoWorldScene";
 
 /**
  * The host for the medico world.
@@ -18,6 +17,17 @@ import type { Frame } from "./MedicoWorldScene";
  * Scroll is sampled per frame into a ref. Only the caption and the readout re-render, and only
  * when the state changes.
  */
+
+/*
+ * Declared here rather than imported from the scene.
+ *
+ * `MedicoWorldScene` imports three and react-three-fiber, and this shell is loaded with the page.
+ * Even as `import type`, the edge from here to that module was enough for the bundler to place the
+ * renderer in this route's initial chunk: /work/medico shipped 228 KB of three.js on arrival while
+ * its sibling routes shipped none. The other seven worlds keep this type inside their canvas
+ * module, which is the one that is dynamically imported; medico was the odd one out.
+ */
+type Frame = { progress: number };
 
 const WorldCanvas = dynamic(() => import("./MedicoWorldCanvas"), { ssr: false });
 
@@ -51,7 +61,16 @@ export default function MedicoWorld({ flat }: { flat: ReactNode }) {
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && setMounted(true)),
       /* No pre-roll: the renderer arrives when the section does, not as part of page load. */
-      { rootMargin: "0px" },
+      /*
+       * The bottom of the root is pulled up by a third, so the section has to reach the upper two
+       * thirds of the viewport before it counts as visible.
+       *
+       * A plain zero margin was measured shipping the renderer as part of the initial page: this
+       * route's world sits close under a short hero, so it was already intersecting on arrival and
+       * /work/medico downloaded 228 KB of three.js before a reader had scrolled at all. Six of the
+       * eight worlds already deferred it this way; this one and the thesis world did not.
+       */
+      { rootMargin: "0px 0px -35% 0px" },
     );
     observer.observe(host);
     return () => observer.disconnect();

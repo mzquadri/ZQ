@@ -6,7 +6,12 @@ import * as THREE from "three";
 
 import { findings, lossTerms, sources } from "@/content/medico-world";
 import { blendShots, mix } from "@/components/worlds/choreography";
-import { GRID, jitter, labelStateFor, maskMatrix, radiograph, sheets } from "./geometry";
+import { RADIOGRAPH_CELLS, radiographField } from "@/content/medico-radiograph";
+import { jitter, labelStateFor, maskMatrix, sheets } from "./geometry";
+
+/* Read here, where it is actually drawn, so no other route inherits the packed field. */
+const GRID = RADIOGRAPH_CELLS;
+const radiograph = radiographField();
 import { SHOTS, STATES, at } from "./states";
 
 /**

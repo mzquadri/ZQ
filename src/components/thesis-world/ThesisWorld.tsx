@@ -67,7 +67,16 @@ export default function ThesisWorld({ flat }: { flat: ReactNode }) {
        * download starts when the section does, which costs a moment of flat figure and keeps
        * the opening screen the weight of the text it actually shows.
        */
-      { rootMargin: "0px" },
+      /*
+       * The bottom of the root is pulled up by a third, so the section has to reach the upper two
+       * thirds of the viewport before it counts as visible.
+       *
+       * A plain zero margin was measured shipping the renderer as part of the initial page: this
+       * route's world sits close under a short hero, so it was already intersecting on arrival and
+       * /work/medico downloaded 228 KB of three.js before a reader had scrolled at all. Six of the
+       * eight worlds already deferred it this way; this one and the thesis world did not.
+       */
+      { rootMargin: "0px 0px -35% 0px" },
     );
     observer.observe(host);
     return () => observer.disconnect();

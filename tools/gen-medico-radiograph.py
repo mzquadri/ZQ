@@ -173,15 +173,15 @@ w("")
 w("/** 0-1 attenuation per cell, row-major from the top-left. */")
 w("export function radiographField(): Float32Array {")
 w("  if (decoded) return decoded;")
-w("  const bin = typeof atob === \"function\" ? atob(PACKED) : Buffer.from(PACKED, \"base64\").toString(\"binary\");")
+w("  const bin = atob(PACKED);")
 w("  const out = new Float32Array(bin.length);")
 w("  for (let i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i) / 255;")
 w("  decoded = out;")
 w("  return out;")
 w("}")
 w("")
-w("/** The same image at " + str(IMAGE) + " square, for the static figure. */")
-w('export const RADIOGRAPH_IMAGE = "' + uri + '" as const;')
+# The 256-square PNG data URI is no longer emitted: nothing imported it, and it was 36 KB
+# of the generated module. The preview file below is still written for eyeballing the field.
 w("")
 
 NL = chr(10)
