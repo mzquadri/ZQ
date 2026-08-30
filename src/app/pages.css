@@ -2266,3 +2266,114 @@
   color: #f0a03c;
   font-weight: 500;
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * The rating-curve amplification, under the reader's own hand.
+ *
+ * One control, two readings: a measurement uncertainty that never changes and a discharge interval
+ * that does. The input bracket is drawn at constant width on purpose - it is the evidence that the
+ * error did not grow.
+ * ------------------------------------------------------------------------------------------- */
+
+.rating-amp-controls {
+  margin: 1.5rem 0 0.5rem;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.rating-amp-controls label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.rating-amp-controls output {
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-amp-controls input[type="range"] { width: 100%; accent-color: var(--teal-dark); }
+
+.rating-amp-controls input[type="range"]:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.rating-amp-stops { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.rating-amp-stops button {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.rating-amp-stops button:hover { border-color: var(--ink); color: var(--ink); }
+.rating-amp-stops button[data-active] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.rating-amp-curve { fill: none; stroke: var(--teal-dark); stroke-width: 2; }
+
+/* Constant width, at every position. That is the point of the figure. */
+.rating-amp-input line { stroke: var(--ink); stroke-width: 2.5; }
+
+.rating-amp-project line {
+  stroke: var(--ink-soft);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.75;
+}
+
+.rating-amp-output { stroke: var(--orange-ink); stroke-width: 7; stroke-linecap: round; }
+.rating-amp-dot { fill: var(--ink); }
+
+.rating-amp-readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--ink);
+}
+
+.rating-amp-label {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.rating-amp-value {
+  margin-top: 0.35rem;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 680;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.rating-amp-readout [data-output] .rating-amp-value { color: var(--orange-ink); }
+
+.rating-amp-note {
+  margin-top: 0.5rem;
+  max-width: 34ch;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}

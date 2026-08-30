@@ -18,6 +18,7 @@ import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import NextSystem from "@/components/cinema/NextSystem";
+import RatingAmplification from "@/components/research/RatingAmplification";
 import RetrievalSelection from "@/components/research/RetrievalSelection";
 import {
   ThesisArchitecture,
@@ -139,6 +140,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         {project.slug === "insureassist-rag" ? (
           <section className="section-wrap visual-section" aria-label="How the retrieval configuration was selected">
             <RetrievalSelection />
+          </section>
+        ) : null}
+
+        {/*
+          The amplification, under the reader's own hand. The page reports it at two stages; this is
+          where the reason becomes a derivative rather than a pair of numbers.
+        */}
+        {project.slug === "hydrology-uq" ? (
+          <section className="section-wrap visual-section" aria-label="How gauge uncertainty becomes discharge uncertainty">
+            <RatingAmplification />
           </section>
         ) : null}
 
