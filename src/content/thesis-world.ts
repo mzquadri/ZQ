@@ -160,7 +160,107 @@ export const models = [
 export const limits = [
   "One road network, one city, one corpus.",
   "One intervention family: capacity reduction.",
-  "One model family: PointNetTransfGAT.",
+  "One model family: PointNetTransfGAT. On the same features and the same held-out split, a gradient-boosted tree predicts more accurately than any graph model here; the graph model is retained for its uncertainty behaviour, not for its accuracy.",
   "Coverage is empirical and marginal over the evaluated split. Nodes within a scenario are dependent, so these are not per-scenario or deployment guarantees.",
 ] as const;
 
+
+/* ---------------------------------------------------------------------------------------------
+ * Added after a second audit, this time of the implementation repository rather than the
+ * document one.
+ *
+ * The thesis work lives in two public repositories. The canonical one carries the submitted
+ * document and the figure scripts; the other carries `scripts/gnn`, `scripts/training`,
+ * `results/trials` and `docs/verified` - the model, the runs and the verification pass over them.
+ * Everything below comes from the second, and none of it was represented on this site before.
+ *
+ * The omission mattered. A reader could previously see the surrogate's scores and the uncertainty
+ * work built on top of them without ever learning that a gradient-boosted tree, trained on the
+ * same features and evaluated on the same held-out split, scores higher than any graph model in
+ * the study. That is the single most important number in the repository and it was missing.
+ * ------------------------------------------------------------------------------------------- */
+
+/** The model, as `scripts/gnn/models/point_net_transf_gat.py` composes it. */
+export const architecture = [
+  {
+    stage: "PointNet, start position",
+    detail: "Local MLP 7 to 256, global MLP 256 to 512 to 512",
+    note: "Seven inputs: the five features plus the segment's start coordinates.",
+  },
+  {
+    stage: "PointNet, end position",
+    detail: "Local MLP 514 to 256, global MLP 256 to 512 to 128",
+    note: "The same operator again against the other end of the segment.",
+  },
+  {
+    stage: "TransformerConv",
+    detail: "128 to 256, four heads",
+    note: "Attention over the neighbourhood, not a fixed aggregation.",
+  },
+  {
+    stage: "TransformerConv",
+    detail: "256 to 512, four heads",
+  },
+  {
+    stage: "GATConv",
+    detail: "512 to 64",
+  },
+  {
+    stage: "GATConv",
+    detail: "64 to 1",
+    note: "One number per road segment. The final layer is a graph convolution, not a linear head.",
+  },
+] as const;
+export const architectureSource =
+  "scripts/gnn/models/point_net_transf_gat.py" as const;
+
+/**
+ * The eight training runs, in the order they were run, with what each one changed.
+ *
+ * This is a record of what did not work as much as what did. The two weighted-loss runs are the
+ * clearest result in the table: weighting the loss toward the large changes cost more than half
+ * the R2 and neither was pursued.
+ */
+export const trials = [
+  { id: "T1", change: "First run", batch: 32, lr: 0.001, dropout: 0.0, r2: 0.786, mae: 2.97, split: "80/15/5", excluded: true, note: "Excluded from comparison: a linear final layer, not the graph convolution T2 onward use." },
+  { id: "T2", change: "Correct architecture", batch: 16, lr: 0.0005, dropout: 0.3, r2: 0.5117, mae: 4.33, split: "80/15/5", excluded: false },
+  { id: "T3", change: "Weighted loss", batch: 16, lr: 0.0005, dropout: 0.0, r2: 0.2246, mae: 5.99, split: "80/15/5", excluded: false, note: "Weighting the loss toward large changes halves the fit." },
+  { id: "T4", change: "Weighted loss, dropout back", batch: 16, lr: 0.0005, dropout: 0.3, r2: 0.2426, mae: 6.08, split: "80/15/5", excluded: false },
+  { id: "T5", change: "Smaller batch", batch: 8, lr: 0.0005, dropout: 0.3, r2: 0.5553, mae: 4.24, split: "80/15/5", excluded: false },
+  { id: "T6", change: "Lower learning rate", batch: 8, lr: 0.0003, dropout: 0.3, r2: 0.5223, mae: 4.32, split: "80/15/5", excluded: false },
+  { id: "T7", change: "80/10/10 split", batch: 8, lr: 0.0006, dropout: 0.3, r2: 0.5471, mae: 4.06, split: "80/10/10", excluded: false },
+  { id: "T8", change: "Lower dropout", batch: 8, lr: 0.0005, dropout: 0.2, r2: 0.5957, mae: 3.96, split: "80/10/10", excluded: false, note: "The model every uncertainty result on this page is built on." },
+] as const;
+export const trialsSource = "docs/verified/VERIFIED_RESULTS_MASTER.csv" as const;
+
+/**
+ * The comparison the surrogate does not win.
+ *
+ * Same five features, same 80/10/10 scenario-level split, same 100 held-out scenarios and the same
+ * 3,163,500 test nodes. A gradient-boosted tree scores higher than every graph model here, and it
+ * trains in under three minutes against the graph model's hours.
+ *
+ * The graph model is not therefore pointless - it is the thing the uncertainty work is built on,
+ * and the tree carries no notion of the network - but any honest reading of this table has to
+ * start with the fact that the simplest baseline in it is also the most accurate.
+ */
+export const baselines = [
+  { name: "XGBoost", family: "tree", r2: 0.7414, mae: 2.7739, rmse: 5.6933, trainSeconds: 174.9, note: "Library defaults, early stopping on the same validation scenarios." },
+  { name: "Deep ensemble", family: "graph", r2: 0.6841, mae: 3.4853, rmse: 6.2927, trainSeconds: null, note: "Five independently seeded PointNetTransfGAT models." },
+  { name: "Random forest", family: "tree", r2: 0.6612, mae: 3.2628, rmse: 6.5164, trainSeconds: 115.1, note: "cuML defaults on GPU." },
+  { name: "T8 with MC dropout", family: "graph", r2: 0.5856, mae: 3.9479, rmse: 7.2073, trainSeconds: null, note: "Thirty stochastic passes. The best uncertainty, not the best fit." },
+  { name: "MLP", family: "neural", r2: 0.4928, mae: 3.8831, rmse: 7.973, trainSeconds: 29708.8, note: "One hidden layer of 100 units." },
+] as const;
+export const baselinesSource = "results/trials/non_gnn_baseline_results.json" as const;
+
+/**
+ * And the comparison it does win.
+ *
+ * Rank quality, not accuracy. The deep ensemble predicts better and ranks its own errors worse;
+ * MC dropout on the weaker model is the better risk score. That is the reason the selective-review
+ * result on this page is built on T8 rather than on the ensemble.
+ */
+export const uncertaintyQuality = [
+  { name: "T8 with MC dropout", spearman: 0.4817, meanSigma: 1.3689 },
+  { name: "Deep ensemble", spearman: 0.3997, meanSigma: 1.2576 },
+] as const;
