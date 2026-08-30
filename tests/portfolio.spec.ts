@@ -2278,12 +2278,24 @@ test("cifar fits a narrow phone", async ({ page }) => {
 
 test("the homepage cifar chapter uses real per-class numbers", async ({ page }) => {
   await page.goto("/");
-  const bars = page.locator(".scene-cifar-bars li");
-  /* It used to show four classes with invented widths; it must now show all ten, from evidence. */
-  await expect(bars).toHaveCount(10);
-  const text = await page.locator(".scene-cifar").innerText();
-  expect(text).toContain("64.26");
-  expect(text).toContain("33.5");
+  /*
+   * This chapter once showed four classes with invented bar widths. It now draws the tracked
+   * confusion matrix itself, so the guard is stronger than a count of bars: every one of the
+   * hundred cells has to be on screen, and the headline has to be stated as the mean of ten
+   * rather than on its own.
+   */
+  const still = page.locator("#work-cifar10-cnn .scn-still-wide");
+  const cells = await still.locator("rect").count();
+  expect(cells, "the full ten-by-ten matrix must be drawn").toBeGreaterThanOrEqual(100);
+
+  const described = await page.locator("#work-cifar10-cnn figcaption").innerText();
+  for (const value of ["64.26", "33.5", "82.0", "291"]) {
+    expect(described, `${value} is a tracked number and must be published`).toContain(value);
+  }
+
+  /* And the plate still carries the headline it is the mean of. */
+  const plate = await page.locator("#work-cifar10-cnn .chapter-plate").innerText();
+  expect(plate).toContain("64.26");
 });
 
 /* ============================================================================================
@@ -2349,7 +2361,7 @@ test("each chapter carries the shared-element name its world uses", async ({ pag
   /* A chapter is drawn either as a live stage or as a scrubbed frame sequence; the shared-element
      name lives on whichever of the two carries the visual. */
   const names = await page
-    .locator("article.chapter .chapter-stage, article.chapter .seq-frame")
+    .locator("article.chapter .chapter-stage, article.chapter .scn-frame")
     .evaluateAll((els) => els.map((el) => (el as HTMLElement).style.viewTransitionName));
   expect(names).toEqual(REEL.map((slug) => `world-${slug}`));
 });
@@ -2415,60 +2427,127 @@ test("the homepage still loads no renderer", async ({ page }) => {
 });
 
 /* ============================================================================================
- * Scroll-scrubbed frame sequences.
+ * Flagship scenes.
  *
- * The new delivery mechanism for a chapter that opens one object slowly. These guard the three
- * properties that made it worth building: it runs on a phone, it never runs under reduced motion,
- * and it reserves its space so arriving late costs no layout shift.
+ * Every flagship chapter is a scroll-driven scene now, drawn twice from one function: once on the
+ * server into the SVG that is the resting composition, and once on a canvas as the reader scrolls.
+ * These guard what made that worth building.
  * ========================================================================================== */
 
-test("the transport chapter is a scrubbed sequence that runs on a phone", async ({ page }) => {
+const FLAGSHIPS = [
+  "transport-uq",
+  "reliable-knowledge-systems",
+  "medico",
+  "insureassist-rag",
+  "mlops-reference-pipeline",
+  "hydrology-uq",
+  "streamflow-forecasting",
+  "cifar10-cnn",
+] as const;
+
+test("every flagship chapter is a scene, and each one is its own drawing", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(page.locator("article.chapter-scene")).toHaveCount(FLAGSHIPS.length);
+
+  for (const slug of FLAGSHIPS) {
+    await expect(page.locator(`#work-${slug} .scn`), `${slug} has no scene`).toHaveCount(1);
+  }
+
   /*
-   * Every other test in this file runs under reduced motion, which is the right default for
-   * asserting the resting site. This one is about the moving path, so it opts in.
+   * Eight scenes, eight different pictures. The markup of each resting still is compared against
+   * every other one: if two chapters ever became the same drawing with different numbers, this is
+   * the test that would say so.
    */
+  const stills = await page
+    .locator("article.chapter-scene .scn-still-wide")
+    .evaluateAll((els) => els.map((el) => el.innerHTML));
+  expect(new Set(stills).size, "two flagships are drawing the same picture").toBe(FLAGSHIPS.length);
+
+  /* And they are genuinely different shapes, not the same shape re-coloured. */
+  const shapes = stills.map((html) =>
+    ["line", "circle", "rect", "polyline", "polygon", "text"]
+      .map((tag) => (html.match(new RegExp(`<${tag}[ />]`, "g")) ?? []).length)
+      .join("/"),
+  );
+  expect(new Set(shapes).size, "flagship scenes share a primitive signature").toBeGreaterThan(5);
+});
+
+test("a flagship scene costs no image request and reserves its own space", async ({ page }) => {
+  const media: string[] = [];
+  page.on("request", (r) => {
+    if (/\.(png|jpe?g|webp|avif|gif|mp4|webm)(\?|$)/i.test(r.url())) media.push(r.url());
+  });
+  await page.goto("/", { waitUntil: "networkidle" });
+  await page.evaluate(() => window.scrollTo(0, 6000));
+  await page.waitForTimeout(1200);
+  /*
+   * The resting composition is markup, not a poster. This replaced ninety WebP frames for one
+   * chapter; eight chapters the same way would have been megabytes.
+   */
+  expect(media, "a scene must not fetch an image").toHaveLength(0);
+
+  const ratios = await page
+    .locator(".scn-frame")
+    .evaluateAll((els) => els.map((el) => getComputedStyle(el).aspectRatio));
+  expect(ratios.length).toBe(FLAGSHIPS.length);
+  expect(ratios.every((r) => r !== "auto"), "a frame must reserve its ratio").toBe(true);
+});
+
+test("a reduced-motion reader gets the resting composition and no canvas", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "networkidle" });
+  await page.evaluate(() => window.scrollTo(0, 6000));
+  await page.waitForTimeout(1000);
+
+  /* The still is in the markup either way; what reduced motion removes is the scrubbing. */
+  await expect(page.locator(".scn-still-wide")).toHaveCount(FLAGSHIPS.length);
+  await expect(page.locator(".scn-canvas[data-ready]")).toHaveCount(0);
+
+  /* And the track collapses, so nobody scrolls through empty pinned viewports. */
+  const tall = await page
+    .locator(".scn")
+    .evaluateAll((els) => els.filter((el) => el.getBoundingClientRect().height > window.innerHeight * 1.5).length);
+  expect(tall, "reduced motion must not leave tall empty tracks").toBe(0);
+});
+
+test("a scene scrubs on a phone, where no world renderer is allowed", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/", { waitUntil: "networkidle" });
-  const track = page.locator("#work-transport-uq .seq");
-  await expect(track).toHaveCount(1);
 
-  const box = await track.evaluate((el) => {
+  const box = await page.locator("#work-hydrology-uq .scn").evaluate((el) => {
     const r = el.getBoundingClientRect();
     return { top: r.top + window.scrollY, height: r.height, vh: window.innerHeight };
   });
-  /* The track has to be several screens tall or there is no time to scrub across. */
+  /* Tall enough to scrub across, and not so tall that reading it is a chore. */
   expect(box.height / box.vh).toBeGreaterThan(2);
+  expect(box.height / box.vh).toBeLessThan(4);
 
-  await page.evaluate((y) => window.scrollTo(0, y), box.top + (box.height - box.vh) * 0.7);
-  await page.waitForTimeout(2500);
+  await page.evaluate((y) => window.scrollTo(0, y), box.top + (box.height - box.vh) * 0.6);
+  await page.waitForTimeout(1500);
   await expect(
-    page.locator(".seq-canvas[data-ready]"),
-    "a phone must get the sequence, not a static fallback",
+    page.locator("#work-hydrology-uq .scn-canvas[data-ready]"),
+    "a phone must get the moving scene, not a static fallback",
   ).toHaveCount(1);
+
+  /* A phone gets the portrait composition, not a wide one letterboxed into a tall frame. */
+  const shown = await page.locator("#work-hydrology-uq .scn-still-tall").evaluate((el) => getComputedStyle(el).display);
+  expect(shown).not.toBe("none");
 });
 
-test("a reduced-motion reader is never sent a frame sequence", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  const frames: string[] = [];
-  page.on("request", (r) => {
-    if (r.url().includes("/frames/") && !r.url().includes("poster")) frames.push(r.url());
-  });
-  await page.goto("/", { waitUntil: "networkidle" });
-  await page.evaluate(() => window.scrollTo(0, 4000));
-  await page.waitForTimeout(1200);
-  expect(frames, "no frame may be fetched under reduced motion").toHaveLength(0);
-  /* The poster is the first frame, so the reader still sees the composed object. */
-  await expect(page.locator(".seq-poster")).toHaveCount(1);
-});
-
-test("the sequence describes itself and hides its canvas from assistive technology", async ({
+test("a scene describes itself once and hides its drawing from assistive technology", async ({
   page,
 }) => {
   await page.goto("/");
-  const alt = await page.locator(".seq-poster").getAttribute("alt");
-  expect(alt?.length ?? 0, "the sequence needs a real description").toBeGreaterThan(80);
-  await expect(page.locator(".seq-canvas")).toHaveAttribute("aria-hidden", "true");
+  for (const slug of FLAGSHIPS) {
+    const caption = page.locator(`#work-${slug} .scn-frame figcaption`);
+    await expect(caption).toHaveCount(1);
+    const text = await caption.innerText();
+    expect(text.length, `${slug} needs a real description`).toBeGreaterThan(120);
+  }
+  /* Both stills and the canvas are decorative; the caption is the accessible description. */
+  await expect(page.locator(".scn-still[aria-hidden='true']")).toHaveCount(FLAGSHIPS.length * 2);
+  await expect(page.locator(".scn-canvas[aria-hidden='true']")).toHaveCount(FLAGSHIPS.length);
 });
 
 /* ============================================================================================

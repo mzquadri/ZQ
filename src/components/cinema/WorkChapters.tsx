@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 import ChapterSeam from "@/components/cinema/ChapterSeam";
-import FrameSequence from "@/components/frames/FrameSequence";
-import { SEQUENCES } from "@/components/frames/sequences";
+import SceneStage from "@/components/sequence/SceneStage";
+import { SCENES } from "@/components/sequence/scenes";
 import { PROJECT_WORLDS, WORLD_ORDER } from "@/components/cinema/project-worlds";
 import { getProject } from "@/content/portfolio";
 
@@ -30,32 +30,24 @@ function WorkChapter({ slug, index, last }: { slug: string; index: number; last:
   /* Most chapters are portfolio projects; reliable knowledge systems is its own route. */
   const project = getProject(slug) ?? null;
 
-  const sequence = SEQUENCES[slug];
+  const scene = SCENES[slug];
 
   /*
-   * A chapter with a rendered sequence is a different shape from a chapter with a figure. The
-   * sequence takes the whole frame and the plate sits over it, which is the composition every
-   * reference for this rebuild uses: full-bleed object, title and one result at the lower left,
-   * and scroll as the thing that opens it.
+   * A chapter with a scene is a different shape from a chapter with a figure. The scene takes the
+   * whole frame and the plate sits over it, which is the composition every reference for this
+   * rebuild uses: full-bleed object, title and one result at the lower left, and scroll as the
+   * thing that opens it.
    */
-  if (sequence) {
+  if (scene) {
     return (
       <>
         <article
-          className="chapter chapter-sequence"
+          className="chapter chapter-scene"
           data-scale={world.scale}
           id={`work-${slug}`}
           style={{ "--accent": world.accent } as React.CSSProperties}
         >
-          <FrameSequence
-            count={sequence.count}
-            height={sequence.height}
-            label={sequence.label}
-            src={sequence.src}
-            travel={sequence.travel}
-            viewTransitionName={`world-${slug}`}
-            width={sequence.width}
-          >
+          <SceneStage slug={slug} viewTransitionName={`world-${slug}`}>
             <div className="chapter-plate">
               <p className="chapter-index" aria-hidden="true">
                 {String(index + 1).padStart(2, "0")} / {String(WORLD_ORDER.length).padStart(2, "0")}
@@ -78,7 +70,7 @@ function WorkChapter({ slug, index, last }: { slug: string; index: number; last:
                 Enter this world
               </Link>
             </div>
-          </FrameSequence>
+          </SceneStage>
         </article>
 
         {world.seam && !last ? <ChapterSeam seam={world.seam} /> : null}

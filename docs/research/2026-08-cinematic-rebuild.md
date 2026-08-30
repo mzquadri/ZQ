@@ -255,11 +255,20 @@ committed as WebP. No AI-generated imagery anywhere.
 
 Written after implementation, so the document does not read as a plan that was never checked.
 
-**Adopted.** The scroll-scrubbed frame sequence, built as `src/components/frames/FrameSequence.tsx`
-with no new dependency. Frames are rendered offline by `tools/gen-frames-transport.py` from geometry
-exported out of the site's own modules, so the picture is the same graph the site draws. Ninety
-WebP frames at 1280x720 total 1.1 MB, mean 12.7 KB. Frame zero is the poster, which is what a
-reduced-motion reader and a first paint both get.
+**Adopted, then improved.** The first pass built the references' own mechanism literally: ninety
+pre-rendered WebP frames for one chapter, scrubbed on a canvas. It worked and it cost 1.4 MB for a
+single chapter, which put eight chapters at roughly eleven megabytes of raster.
+
+It is now a **procedural scene**: one drawing function per chapter, evaluated twice. On the server
+it renders to SVG - that markup *is* the resting composition, so there is no poster request, no
+decode, and nothing that can shift the layout. In the browser the identical function paints a
+canvas at the scroll position. The measured result is that all eight chapters together add **zero
+image bytes**, and the homepage's initial transfer went *down* from 591 KB to 570 KB while gaining
+seven sequences.
+
+What the references were really teaching was the *rhythm* - a static hero that is frame zero, scroll
+as bidirectional time, separation along attachment axes, rest frames. None of that required their
+delivery mechanism, and their mechanism was the expensive part.
 
 The largest win was the one the references did not advertise. Every WebGL world here is refused on
 mobile and under reduced motion, and those readers used to get a static figure instead of the
@@ -276,6 +285,8 @@ five publish none *on purpose*, each naming the artifact it would need first. Th
 movement is therefore organised by evidence state rather than by topic, and the five refusals are
 drawn as empty measurement frames. That was not in the storyboard; it came out of the repositories.
 
-**Still open.** Sequences exist for one chapter. The remaining flagships still use their WebGL
-worlds with static figures on mobile, and each additional sequence needs its own offline renderer
-written against that project's real evidence - which is the cost of not generating imagery.
+**Complete.** All eight flagship chapters are scenes, each drawn from its own project's evidence
+module and each a different picture: a graph opening into depth, an orthogonal store diagram, a
+near-monochrome light box, three identical documents, one artifact on a track, a rating curve with
+intervals projected through it, a ribbon of time, and a confusion matrix. Detail routes keep their
+WebGL worlds, which carry more than a chapter needs to.
