@@ -17,6 +17,7 @@ import InsureAssistWorldFlat from "@/components/insureassist-world/InsureAssistW
 import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
+import RetrievalSelection from "@/components/research/RetrievalSelection";
 import {
   ThesisArchitecture,
   ThesisBaselineComparison,
@@ -130,6 +131,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           The release machine, before the prose. Every threshold it shows is generated from the
           repository's own config, and the gate it draws is the one the code composes.
         */}
+        {/*
+          How the retrieval configuration was chosen, and the gap between the score that chose it
+          and the score on questions it had not seen.
+        */}
+        {project.slug === "insureassist-rag" ? (
+          <section className="section-wrap visual-section" aria-label="How the retrieval configuration was selected">
+            <RetrievalSelection />
+          </section>
+        ) : null}
+
         {project.slug === "mlops-reference-pipeline" ? (
           <MlopsWorld flat={<MlopsWorldFlat />} />
         ) : null}

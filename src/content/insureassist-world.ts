@@ -178,3 +178,39 @@ export const provenance = {
   python: "3.13.5",
 } as const;
 
+
+/**
+ * How the frozen chunking was chosen, and what that choice cost.
+ *
+ * Ten configurations swept on the fourteen answerable development questions. The selected row -
+ * 800 characters with 120 of overlap - is the one that put a relevant chunk in the top five for
+ * every single dev question. On the eighteen held-out questions the same configuration retrieves
+ * one in 0.5556 of cases.
+ *
+ * That gap is the most useful thing in this table. A perfect score on fourteen questions is what
+ * selecting on fourteen questions produces, and the held-out number is the one that means
+ * anything. The sweep is published here rather than summarised so a reader can see how close the
+ * neighbouring configurations were.
+ */
+export const chunkingSweep = [
+  { size: 400, overlap: 80, depth: 10, chunks: 664, hit5: 0.4286, mrr: 0.3824 },
+  { size: 400, overlap: 80, depth: 20, chunks: 664, hit5: 0.5, mrr: 0.4167 },
+  { size: 600, overlap: 100, depth: 10, chunks: 426, hit5: 0.6429, mrr: 0.4923 },
+  { size: 600, overlap: 100, depth: 20, chunks: 426, hit5: 0.7857, mrr: 0.5126 },
+  { size: 600, overlap: 150, depth: 10, chunks: 474, hit5: 0.7143, mrr: 0.5185 },
+  { size: 600, overlap: 150, depth: 20, chunks: 474, hit5: 0.6429, mrr: 0.5211 },
+  { size: 800, overlap: 120, depth: 10, chunks: 314, hit5: 1.0, mrr: 0.6214, selected: true },
+  { size: 800, overlap: 120, depth: 20, chunks: 314, hit5: 0.9286, mrr: 0.6071 },
+  { size: 1000, overlap: 150, depth: 10, chunks: 251, hit5: 0.7143, mrr: 0.6015 },
+  { size: 1000, overlap: 150, depth: 20, chunks: 251, hit5: 0.7143, mrr: 0.6066 },
+] as const;
+export const chunkingSweepSource = "eval/dev_chunking_sweep.json" as const;
+
+/** The number the sweep produced, beside the number the held-out set produced. */
+export const selectionGap = {
+  devQuestions: 14,
+  devHitAt5: 1.0,
+  testQuestions: 18,
+  testHitAt5: 0.5556,
+  note: "Selected on development questions, reported on held-out ones. The first number is what selection produces; the second is the one that means anything.",
+} as const;
