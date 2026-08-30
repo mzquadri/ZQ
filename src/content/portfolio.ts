@@ -311,6 +311,7 @@ const authoredProjects: readonly Project[] = [
       "Historical preprocessing used split-specific scalers, creating an evaluation-distribution methodology risk",
       "Uncertainty ranking weakens in some high-change regimes, and coverage is marginal rather than a per-scenario guarantee",
       "The portfolio application analyzes cached artifacts; it is not a live policy simulator",
+      "On the same five features and the same held-out split, a gradient-boosted tree reaches R-squared 0.7414 against the best graph model's 0.6841. The graph surrogate is retained for its uncertainty behaviour, not for its accuracy.",
     ],
     learned:
       "Reliable ML is not one score. Ranking, calibration, conditional behavior, compute cost, and the operational cost of review must be evaluated together.",

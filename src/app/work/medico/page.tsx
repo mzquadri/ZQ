@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import NextSystem from "@/components/cinema/NextSystem";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import MedicoWorld from "@/components/medico-world/MedicoWorld";
 import MedicoWorldFlat from "@/components/medico-world/MedicoWorldFlat";
@@ -150,6 +151,7 @@ export default function MedicoPage() {
             stored, or published.
           </p>
         </section>
+        <NextSystem slug="medico" />
       </article>
     </PageShell>
   );

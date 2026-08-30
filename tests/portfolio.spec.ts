@@ -2582,7 +2582,8 @@ test("every flagship opens its detail route on the object the homepage drew", as
 
   for (const slug of FLAGSHIPS) {
     await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
-    const identity = page.locator(".scn-identity");
+    /* Scoped to the header: the way-onward band at the end carries the next system's object too. */
+    const identity = page.locator("header .scn-identity");
     await expect(identity, `${slug} has no opening object`).toHaveCount(1);
 
     /*
@@ -2649,13 +2650,13 @@ test("a detail route never opens on an empty first viewport", async ({ page }) =
     expect((await h1.innerText()).trim().length).toBeGreaterThan(8);
 
     const drawn = await page
-      .locator(".scn-identity .scn-still-wide, .scn-identity .scn-still-tall")
+      .locator("header .scn-identity .scn-still-wide, header .scn-identity .scn-still-tall")
       .first()
       .evaluate((el) => el.innerHTML.length);
     expect(drawn, `${slug} opens on an empty figure`).toBeGreaterThan(500);
 
     /* The way onward is present without scrolling to find it. */
-    await expect(page.locator(".scn-identity figcaption")).toHaveCount(1);
+    await expect(page.locator("header .scn-identity figcaption")).toHaveCount(1);
   }
 });
 
@@ -2664,7 +2665,7 @@ test("the opening object survives reduced motion and needs no renderer", async (
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const slug of ["transport-uq", "medico", "cifar10-cnn"]) {
     await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
-    const frame = page.locator(".scn-identity-frame");
+    const frame = page.locator("header .scn-identity-frame");
     await expect(frame).toBeVisible();
     /* The composition is markup: no canvas is created for it and nothing is fetched to draw it. */
     await expect(page.locator(".scn-identity canvas")).toHaveCount(0);
@@ -2763,5 +2764,73 @@ test("the supporting scenes are complete when a reader stops on one", async ({ p
       ),
     );
     expect(min, `scene ${i} is still animating at its rest frame`).toBe(1);
+  }
+});
+
+/* ============================================================================================
+ * Completion pass: evidence depth and the way onward.
+ * ========================================================================================== */
+
+test("the transport page publishes the baseline that beats its own surrogate", async ({ page }) => {
+  await page.goto("/work/transport-uq");
+  const text = await page.locator("article").innerText();
+  /*
+   * The comparison the surrogate loses. It was absent from this site until a second audit of the
+   * implementation repository, and a page that shows the surrogate's scores without it is making
+   * the work look better than the evidence does.
+   */
+  expect(text).toContain("0.7414");
+  expect(text).toContain("XGBoost");
+  const limits = await page.locator(".limitation-panel").innerText();
+  expect(limits.toLowerCase()).toContain("gradient-boosted tree");
+});
+
+test("the retrieval page shows the score that chose the configuration beside the held-out one", async ({
+  page,
+}) => {
+  await page.goto("/work/insureassist-rag");
+  const gap = page.locator(".selection-gap");
+  await expect(gap).toHaveCount(1);
+  const text = await gap.innerText();
+  expect(text).toContain("1.00");
+  expect(text).toContain("0.5556");
+});
+
+test("every substantial repository opens into how it runs", async ({ page }) => {
+  await page.goto("/work", { waitUntil: "networkidle" });
+  const panels = page.locator("[data-showcase='index'] details");
+  await expect(panels).toHaveCount(9);
+
+  const first = panels.first();
+  await first.locator("summary").click();
+  /* A pipeline named after real modules, technologies in the role each fills, and an evidence state. */
+  expect(await first.locator("code").count()).toBeGreaterThan(1);
+  expect(await first.locator("dt").count()).toBeGreaterThan(1);
+  await expect(first.locator("[class*='evidenceState']")).toHaveCount(1);
+});
+
+test("a project offers the next system rather than only the index", async ({ page }) => {
+  const REEL = [
+    "transport-uq",
+    "reliable-knowledge-systems",
+    "medico",
+    "insureassist-rag",
+    "mlops-reference-pipeline",
+    "hydrology-uq",
+    "streamflow-forecasting",
+    "cifar10-cnn",
+  ];
+  test.slow();
+  for (let i = 0; i < REEL.length; i += 1) {
+    await page.goto(`/work/${REEL[i]}`);
+    const nav = page.locator(".next-system");
+    await expect(nav, `${REEL[i]} has no way onward`).toHaveCount(1);
+
+    /* The order wraps, so the last chapter leads back to the first rather than dead-ending. */
+    const expected = REEL[(i + 1) % REEL.length];
+    const href = await nav.locator(".next-system-title a").getAttribute("href");
+    expect(href, `${REEL[i]} points at the wrong next system`).toContain(expected);
+
+    await expect(nav.getByRole("link", { name: "All work" })).toHaveCount(1);
   }
 });
