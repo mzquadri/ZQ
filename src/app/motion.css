@@ -87,6 +87,10 @@
   --accent-flow: #5fb0d8;
   --accent-vision: #d081c8;
   --accent-systems: #8fd05a;
+  /* Added for the corpus chapter, so no two neighbouring chapters in the reel share a hue. */
+  --accent-corpus: #a78bfa;
+  /* A neutral instrument colour, for a scene where amber has to keep meaning "this failed". */
+  --accent-steel: #8ea6bd;
 
   --accent: var(--accent-graph);
 }

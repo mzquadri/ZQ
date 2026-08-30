@@ -122,7 +122,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   },
 
   "insureassist-rag": {
-    accent: "var(--accent-retrieval)",
+    accent: "var(--accent-corpus)",
     title: "The right provision from the wrong policy",
     eyebrow: "Reference implementation / Retrieval",
     question:
@@ -141,7 +141,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   },
 
   "mlops-reference-pipeline": {
-    accent: "var(--accent-pipeline)",
+    accent: "var(--accent-systems)",
     title: "An unqualified model cannot reach release",
     eyebrow: "Reference implementation / Delivery",
     question:
