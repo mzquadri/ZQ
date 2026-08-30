@@ -103,13 +103,6 @@
   border-top: 1px solid var(--line);
 }
 
-.updated {
-  font-size: 0.76rem;
-  color: var(--ink-soft);
-  font-family: var(--mono);
-  overflow-wrap: anywhere;
-}
-
 .caseLink {
   font-size: 0.83rem;
   font-weight: 600;
@@ -160,3 +153,101 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * How a repository actually runs.
+ *
+ * Closed by default. The index has to stay scannable for a reader comparing twenty-five
+ * repositories, and carry real depth for the one they stop at - a disclosure does both, where a
+ * permanently expanded panel would only do the second.
+ * ------------------------------------------------------------------------------------------- */
+
+.detail {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.9rem;
+}
+
+.detail > summary {
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+  list-style: none;
+}
+
+.detail > summary::-webkit-details-marker { display: none; }
+
+.detail > summary::before {
+  content: "+ ";
+  font-weight: 700;
+}
+
+.detail[open] > summary::before { content: "− "; }
+
+.detail > summary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.flow {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.flow li {
+  display: grid;
+  gap: 0.15rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--line-strong);
+}
+
+.flow code {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.flow span {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.stack {
+  margin: 1.1rem 0 0;
+  display: grid;
+  gap: 0.5rem 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.stack dt {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.stack dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.evidenceState {
+  margin-top: 1.1rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--teal-dark);
+}
+
+.evidenceState[data-state="withheld"] { border-left-color: var(--orange, #c2521a); }
