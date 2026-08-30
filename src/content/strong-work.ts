@@ -56,6 +56,25 @@ export type StrongEvidence =
       absent: readonly string[];
     };
 
+/** One step of a repository's real pipeline, named after the module that performs it. */
+export interface FlowStep {
+  module: string;
+  does: string;
+}
+
+/**
+ * A technology and the job it actually does here.
+ *
+ * Listed this way rather than as a row of logos: "Python, PyTorch, FastAPI, Docker" tells a reader
+ * nothing about which part of the system each one is responsible for, and a portfolio that lists
+ * tools without roles is a keyword list. Every entry is read from the repository's own dependency
+ * file, so nothing aspirational appears.
+ */
+export interface StackEntry {
+  role: string;
+  tool: string;
+}
+
 export interface StrongWork {
   /** Exact GitHub repository name. The link is derived from it. */
   repository: string;
@@ -68,6 +87,15 @@ export interface StrongWork {
   transform: string;
   limitation: string;
   evidence: StrongEvidence;
+  /**
+   * The pipeline, one entry per module that actually exists in the repository's source tree.
+   *
+   * Derived from the tree rather than described from memory: if a step is listed here, there is a
+   * file with that name doing it.
+   */
+  flow: readonly FlowStep[];
+  /** Technologies in the role each one fills, from the repository's dependency file. */
+  stack: readonly StackEntry[];
 }
 
 export const strongWork: readonly StrongWork[] = [
@@ -101,6 +129,19 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "The catchment is synthetic. Every score describes the generated benchmark, and none of it is real-catchment performance.",
+    flow: [
+      { module: "src/generate_data.py", does: "Writes the synthetic catchment from a fixed seed" },
+      { module: "src/dataset.py", does: "Windows it into 30-day sequences and fits the scalers on training rows only" },
+      { module: "src/model.py", does: "Defines the LSTM" },
+      { module: "src/train.py", does: "Trains with early stopping and a learning-rate schedule" },
+      { module: "src/evaluate.py", does: "Scores the held-out period and writes the figures" },
+    ],
+    stack: [
+      { role: "Sequence model", tool: "PyTorch" },
+      { role: "Scaling and metrics", tool: "scikit-learn" },
+      { role: "Data", tool: "NumPy, pandas" },
+      { role: "Artifacts", tool: "joblib" },
+    ],
   },
   {
     repository: "ML-Water-Quality-Classification",
@@ -131,6 +172,15 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "The labels are generated, not laboratory measurements. These scores measure how well each model recovers the generator's own distributions and say nothing about whether real water is safe to drink.",
+    flow: [
+      { module: "src/generate_data.py", does: "Generates five thousand labelled samples from a fixed seed" },
+      { module: "src/pipeline.py", does: "Runs all four model families through one cross-validated pipeline and tunes them" },
+    ],
+    stack: [
+      { role: "Classifiers and cross-validation", tool: "scikit-learn" },
+      { role: "Gradient boosting", tool: "XGBoost" },
+      { role: "Figures", tool: "Matplotlib, seaborn" },
+    ],
   },
   {
     repository: "DPS",
@@ -155,6 +205,16 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "An educational prototype, not a public-safety forecast. The tracked model and CSV come from a historical-data exercise and establish no accuracy for any future decision.",
+    flow: [
+      { module: "DPS_Model.ipynb", does: "Explores the Munich accident records" },
+      { module: "Regression_model.ipynb", does: "Fits the regression and writes Regressionmodel.pkl" },
+      { module: "app.py", does: "Validates a year and month, loads the model relative to itself, returns a rounded count" },
+    ],
+    stack: [
+      { role: "Service", tool: "FastAPI" },
+      { role: "Server", tool: "Uvicorn" },
+      { role: "Model", tool: "scikit-learn" },
+    ],
   },
   {
     repository: "Weather-Data-Analytics-EDA",
@@ -179,6 +239,15 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "Not weather-station observations, climate evidence or forecasts. Nothing here supports an operational, scientific or policy decision.",
+    flow: [
+      { module: "src/generate_data.py", does: "Writes ten years of daily observations for six cities from a fixed seed" },
+      { module: "src/eda_analysis.py", does: "Produces the summaries, seasonality and correlation figures" },
+    ],
+    stack: [
+      { role: "Data", tool: "pandas, NumPy" },
+      { role: "Statistics", tool: "SciPy" },
+      { role: "Figures", tool: "Matplotlib, seaborn" },
+    ],
   },
   {
     repository: "Battery-SOC-Estimation-ML",
@@ -198,6 +267,19 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "No dataset, trained weights or tracked evaluation are included. It must not be used to operate a battery-management system or make a safety decision.",
+    flow: [
+      { module: "src/data_loader.py", does: "Reads authorised NASA files, or generates discharge cycles for development" },
+      { module: "src/feature_engineering.py", does: "Builds cycle-aware features from voltage, current, temperature and time" },
+      { module: "src/soc_regression.py", does: "SVR, random forest, XGBoost, LightGBM and an LSTM" },
+      { module: "src/clustering_analysis.py", does: "K-means and Gaussian mixtures over operating regimes" },
+      { module: "src/genetic_fuzzy.py", does: "A fuzzy estimator with its rule base optimised by a genetic algorithm" },
+    ],
+    stack: [
+      { role: "Regressors", tool: "scikit-learn, XGBoost, LightGBM" },
+      { role: "Sequence model", tool: "PyTorch" },
+      { role: "Genetic optimisation", tool: "DEAP" },
+      { role: "Fuzzy inference", tool: "scikit-fuzzy" },
+    ],
   },
   {
     repository: "Insurance-Claims-Prediction-ML",
@@ -217,6 +299,20 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "The example cost matrix is illustrative and is not a validated business policy. Nothing here may be used to make automated decisions about people or policies.",
+    flow: [
+      { module: "src/data_pipeline.py", does: "Cleans, encodes and scales, fitting every transformer on training rows only" },
+      { module: "src/model_training.py", does: "Logistic regression and random forest, with optional boosting" },
+      { module: "src/calibration.py", does: "Platt scaling or isotonic regression, cross-validated" },
+      { module: "src/threshold_optimizer.py", does: "Chooses an operating threshold against a cost matrix" },
+      { module: "src/explainability.py", does: "SHAP attributions over the fitted model" },
+    ],
+    stack: [
+      { role: "Models and calibration", tool: "scikit-learn" },
+      { role: "Boosting", tool: "XGBoost, LightGBM" },
+      { role: "Attribution", tool: "SHAP" },
+      { role: "Class imbalance", tool: "imbalanced-learn" },
+      { role: "Data access", tool: "Kaggle CLI" },
+    ],
   },
   {
     repository: "NLP-Text-Classification-Transformers",
@@ -236,6 +332,19 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "The offline synthetic fixture exists for development only. Its results are not comparable to AG News or to real news classification.",
+    flow: [
+      { module: "src/data_loader.py", does: "Fetches AG News, and stops rather than silently using the offline fixture" },
+      { module: "src/model.py", does: "The TF-IDF baselines and the DistilBERT configuration" },
+      { module: "src/train.py", does: "Fits a baseline, or fine-tunes through the Hugging Face Trainer" },
+      { module: "src/evaluate.py", does: "Classification metrics, confusion matrices and optional latency" },
+      { module: "src/inference.py", does: "Runs either track from a locally saved artifact" },
+    ],
+    stack: [
+      { role: "Transformer", tool: "Transformers, Tokenizers" },
+      { role: "Training loop", tool: "Accelerate" },
+      { role: "Corpus access", tool: "Datasets" },
+      { role: "Baselines and metrics", tool: "scikit-learn" },
+    ],
   },
   {
     repository: "Neural-Network-Identifiability-Analysis",
@@ -255,6 +364,18 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "The activation labels describe the assumptions this prototype considers. The formal statements live in the cited papers, not here.",
+    flow: [
+      { module: "src/network_isomorphisms.py", does: "Builds networks related by hidden-unit permutations and sign flips" },
+      { module: "src/identifiability_checks.py", does: "Looks for clone pairs, inactive units and sampled non-degeneracy" },
+      { module: "src/activation_analysis.py", does: "Records which assumptions each activation family satisfies" },
+      { module: "src/symmetry_breaking.py", does: "Tries regularisers intended to remove the symmetry" },
+      { module: "src/visualization.py", does: "Draws the parameter alignment" },
+    ],
+    stack: [
+      { role: "Networks", tool: "PyTorch" },
+      { role: "Numerics", tool: "SciPy, NumPy" },
+      { role: "Graph structure", tool: "NetworkX" },
+    ],
   },
   {
     repository: "Supply-Chain-Analytics-Dashboard",
@@ -274,6 +395,20 @@ export const strongWork: readonly StrongWork[] = [
     },
     limitation:
       "The inventory values are illustrative outputs whose assumptions must be validated before they touch a real operation, and the proxy must never be read as a supplier-quality assessment.",
+    flow: [
+      { module: "src/data_ingestion.py", does: "Cleans the order records into a processed table" },
+      { module: "src/kpi_engine.py", does: "Computes the operational indicators" },
+      { module: "src/demand_forecasting.py", does: "Compares forecasting baselines, continuing if Prophet is unavailable" },
+      { module: "src/inventory_optimizer.py", does: "EOQ, safety stock and reorder points" },
+      { module: "src/supplier_scoring.py", does: "Groups departments as an explicit proxy and scores from late delivery" },
+      { module: "src/dashboard.py", does: "Serves all of it" },
+    ],
+    stack: [
+      { role: "Dashboard", tool: "Dash, Plotly" },
+      { role: "Data", tool: "pandas, SQLAlchemy" },
+      { role: "Statistical baselines", tool: "statsmodels" },
+      { role: "Optional forecaster", tool: "Prophet" },
+    ],
   },
 ];
 
