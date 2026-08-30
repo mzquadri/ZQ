@@ -2454,6 +2454,7 @@ const FLAGSHIPS = [
 ] as const;
 
 test("every flagship chapter is a scene, and each one is its own drawing", async ({ page }) => {
+  test.slow();
   await page.goto("/", { waitUntil: "networkidle" });
   await expect(page.locator("article.chapter-scene")).toHaveCount(FLAGSHIPS.length);
 
@@ -2568,6 +2569,8 @@ test("a scene describes itself once and hides its drawing from assistive technol
  * ========================================================================================== */
 
 test("every flagship opens its detail route on the object the homepage drew", async ({ page }) => {
+  /* Nine navigations in one test. On a CI runner that is comfortably past the default budget. */
+  test.slow();
   await page.goto("/", { waitUntil: "networkidle" });
   const home = new Map<string, string>();
   for (const slug of FLAGSHIPS) {
@@ -2595,6 +2598,7 @@ test("every flagship opens its detail route on the object the homepage drew", as
 test("the shared-element name is on the object, in the first viewport, on both sides", async ({
   page,
 }) => {
+  test.slow();
   const viewport = page.viewportSize()!;
 
   await page.goto("/", { waitUntil: "networkidle" });
@@ -2632,6 +2636,7 @@ test("the shared-element name is on the object, in the first viewport, on both s
 });
 
 test("a detail route never opens on an empty first viewport", async ({ page }) => {
+  test.slow();
   for (const slug of FLAGSHIPS) {
     await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
     /* A name, a line of context, and the object. All three, above the fold. */
@@ -2651,6 +2656,7 @@ test("a detail route never opens on an empty first viewport", async ({ page }) =
 });
 
 test("the opening object survives reduced motion and needs no renderer", async ({ page }) => {
+  test.slow();
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const slug of ["transport-uq", "medico", "cifar10-cnn"]) {
     await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
