@@ -11,6 +11,11 @@
   --teal: #006d65;
   --teal-dark: #004c47;
   --orange: #f15a35;
+  /*
+   * The same hue, dark enough to be read as text on paper. `--orange` is a fill colour: at
+   * 3.21:1 against the page it fails AA wherever it is used for a label rather than a bar.
+   */
+  --orange-ink: #b8501c;
   --orange-text: #a9361d;
   --yellow: #e5ba38;
   --line: rgba(17, 24, 32, 0.22);

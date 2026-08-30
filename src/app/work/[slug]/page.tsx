@@ -17,6 +17,7 @@ import InsureAssistWorldFlat from "@/components/insureassist-world/InsureAssistW
 import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
+import NextSystem from "@/components/cinema/NextSystem";
 import RetrievalSelection from "@/components/research/RetrievalSelection";
 import {
   ThesisArchitecture,
@@ -316,6 +317,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </Link>
           </div>
         </section>
+        {/* The way onward is the next system, not the index. */}
+        <NextSystem slug={project.slug} />
       </ArticleShell>
     </PageShell>
   );

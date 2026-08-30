@@ -250,4 +250,4 @@
   border-left: 2px solid var(--teal-dark);
 }
 
-.evidenceState[data-state="withheld"] { border-left-color: var(--orange, #c2521a); }
+.evidenceState[data-state="withheld"] { border-left-color: var(--orange-ink); }

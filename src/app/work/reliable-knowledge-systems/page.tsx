@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import PageShell from "@/components/PageShell";
+import NextSystem from "@/components/cinema/NextSystem";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import ReliableWorld from "@/components/reliable-world/ReliableWorld";
 import ReliableWorldFlat from "@/components/reliable-world/ReliableWorldFlat";
@@ -196,6 +197,7 @@ export default function ReliableKnowledgeSystemsPage() {
             it is legible on a screen.
           </p>
         </section>
+        <NextSystem slug="reliable-knowledge-systems" />
       </article>
     </PageShell>
   );
