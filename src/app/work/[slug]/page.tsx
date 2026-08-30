@@ -112,11 +112,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           paragraph about it.
         */}
         {/*
-          One shell per world, carrying the view-transition name its homepage chapter also carries.
-          A browser with the API animates that object across the navigation; one without ignores
-          the property entirely and the page behaves exactly as it did before.
+          The worlds themselves. They no longer carry the view-transition name: it moved up to the
+          opening figure, which is the object a visitor actually clicked and the only one of the
+          two that is on screen when the navigation happens.
         */}
-        <div style={{ viewTransitionName: `world-${project.slug}` }}>
+        <div>
         {project.slug === "insureassist-rag" ? (
           <InsureAssistWorld flat={<InsureAssistWorldFlat />} />
         ) : null}

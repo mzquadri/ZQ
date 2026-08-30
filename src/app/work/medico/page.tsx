@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import SceneIdentity from "@/components/sequence/SceneIdentity";
 import MedicoWorld from "@/components/medico-world/MedicoWorld";
 import MedicoWorldFlat from "@/components/medico-world/MedicoWorldFlat";
 import PageShell from "@/components/PageShell";
@@ -36,6 +37,21 @@ export default function MedicoPage() {
           <Link className="back-link" href="/work">← Selected work</Link>
           <p className="kicker">Research prototype / Medical imaging</p>
           <h1>Uncertain is not negative.</h1>
+
+          {/*
+            The object from the homepage chapter, at the same resting beat. This route had no
+            opening figure at all, so a click from the reel arrived on prose and the thing that had
+            just been on screen was nowhere in the first viewport.
+
+            Directly after the title, so a phone sees it without scrolling. At desktop widths the
+            hero is a two-column grid and this is placed into the second column regardless of where
+            it sits in the source.
+          */}
+          <SceneIdentity
+            caption="A synthetic film, then the three corpora that disagree about what they can label."
+            slug="medico"
+            viewTransitionName="world-medico"
+          />
           <p>
             A multi-label chest X-ray classifier over {findings.length} findings, trained across
             three corpora that do not agree about what they label. The interesting part is not the
@@ -50,6 +66,7 @@ export default function MedicoPage() {
           <div className="hero-actions">
             <a className="button button-primary" href={REPOSITORY}><ArrowLabel>Repository</ArrowLabel></a>
           </div>
+
         </header>
 
         {/*
@@ -57,7 +74,7 @@ export default function MedicoPage() {
           script; on a phone, a narrow window, or for a reader who declined motion, the coverage
           matrix is drawn once and completely instead.
         */}
-        <div style={{ viewTransitionName: "world-medico" }}>
+        <div>
           <MedicoWorld flat={<MedicoWorldFlat />} />
         </div>
 

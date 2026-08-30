@@ -1403,13 +1403,21 @@ test("the medico route renders and states what it is", async ({ page }) => {
 
 test("the four boundaries are on the page, not buried in a footer", async ({ page }) => {
   await page.goto("/work/medico");
+  /*
+   * Scoped past the opening figure. The scene drawn at the top of this route captions itself
+   * "synthetic film. no patient data, no finding.", which is a truthful line and not the boundary
+   * list - and an unscoped text match found that SVG label instead of the list this test is about.
+   */
+  const prose = page.locator("article");
   for (const boundary of [
     "No trained weights",
     "No patient data",
     "No held-out metrics",
     "No clinical validation",
   ]) {
-    await expect(page.getByText(boundary, { exact: false }).first()).toBeVisible();
+    await expect(
+      prose.getByText(boundary, { exact: false }).filter({ visible: true }).first(),
+    ).toBeVisible();
   }
   /* The prohibition itself, in the repository's own terms. */
   await expect(page.getByText(/must not be used for diagnosis/i)).toBeVisible();
@@ -2548,6 +2556,122 @@ test("a scene describes itself once and hides its drawing from assistive technol
   /* Both stills and the canvas are decorative; the caption is the accessible description. */
   await expect(page.locator(".scn-still[aria-hidden='true']")).toHaveCount(FLAGSHIPS.length * 2);
   await expect(page.locator(".scn-canvas[aria-hidden='true']")).toHaveCount(FLAGSHIPS.length);
+});
+
+/* ============================================================================================
+ * Homepage to detail: entering the same object.
+ *
+ * The audit that prompted these found the detail routes naming an element 661 to 1076 pixels down
+ * the page while the homepage named a full-viewport frame at the top, and rendering a different
+ * drawing of the same subject in the hero. These guard the fix: same drawing, same beat, matching
+ * frame, in the first viewport, on both sides.
+ * ========================================================================================== */
+
+test("every flagship opens its detail route on the object the homepage drew", async ({ page }) => {
+  await page.goto("/", { waitUntil: "networkidle" });
+  const home = new Map<string, string>();
+  for (const slug of FLAGSHIPS) {
+    home.set(
+      slug,
+      await page.locator(`#work-${slug} .scn-still-wide`).evaluate((el) => el.innerHTML),
+    );
+  }
+
+  for (const slug of FLAGSHIPS) {
+    await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
+    const identity = page.locator(".scn-identity");
+    await expect(identity, `${slug} has no opening object`).toHaveCount(1);
+
+    /*
+     * Byte-identical, not merely similar. Both sides call the same drawing function at the same
+     * resting progress, which is what makes the navigation read as continuity even in a browser
+     * with no View Transitions support at all.
+     */
+    const detail = await identity.locator(".scn-still-wide").evaluate((el) => el.innerHTML);
+    expect(detail, `${slug} opens on a different drawing than its chapter`).toBe(home.get(slug));
+  }
+});
+
+test("the shared-element name is on the object, in the first viewport, on both sides", async ({
+  page,
+}) => {
+  const viewport = page.viewportSize()!;
+
+  await page.goto("/", { waitUntil: "networkidle" });
+  const homeRatio = new Map<string, number>();
+  for (const slug of FLAGSHIPS) {
+    const named = page.locator(`#work-${slug} [style*="view-transition-name"]`).first();
+    await expect(named).toHaveClass(/scn-frame/);
+    const box = (await named.boundingBox())!;
+    homeRatio.set(slug, box.width / box.height);
+  }
+
+  for (const slug of FLAGSHIPS) {
+    await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
+    const named = page.locator('[style*="view-transition-name"]');
+    await expect(named, `${slug} should name exactly one object`).toHaveCount(1);
+    await expect(named).toHaveClass(/scn-identity-frame/);
+
+    const box = (await named.boundingBox())!;
+    /* On screen when the navigation lands, or the browser is animating into nothing. */
+    expect(box.y, `${slug} opens with its object below the fold`).toBeLessThan(viewport.height);
+    expect(box.y + box.height).toBeGreaterThan(0);
+
+    /*
+     * The same shape as the frame it came from, so the morph is a move rather than a squash.
+     * Measured against the homepage frame at this same viewport rather than a constant, because
+     * the chapter frame is 16 / 9 on a wide screen and 4 / 5 on a phone and the opening object
+     * has to follow it in both.
+     */
+    const ratio = box.width / box.height;
+    expect(
+      Math.abs(ratio - homeRatio.get(slug)!),
+      `${slug} changes aspect across the navigation`,
+    ).toBeLessThan(0.12);
+  }
+});
+
+test("a detail route never opens on an empty first viewport", async ({ page }) => {
+  for (const slug of FLAGSHIPS) {
+    await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
+    /* A name, a line of context, and the object. All three, above the fold. */
+    const h1 = page.locator("h1").first();
+    await expect(h1).toBeVisible();
+    expect((await h1.innerText()).trim().length).toBeGreaterThan(8);
+
+    const drawn = await page
+      .locator(".scn-identity .scn-still-wide, .scn-identity .scn-still-tall")
+      .first()
+      .evaluate((el) => el.innerHTML.length);
+    expect(drawn, `${slug} opens on an empty figure`).toBeGreaterThan(500);
+
+    /* The way onward is present without scrolling to find it. */
+    await expect(page.locator(".scn-identity figcaption")).toHaveCount(1);
+  }
+});
+
+test("the opening object survives reduced motion and needs no renderer", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  for (const slug of ["transport-uq", "medico", "cifar10-cnn"]) {
+    await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
+    const frame = page.locator(".scn-identity-frame");
+    await expect(frame).toBeVisible();
+    /* The composition is markup: no canvas is created for it and nothing is fetched to draw it. */
+    await expect(page.locator(".scn-identity canvas")).toHaveCount(0);
+  }
+});
+
+test("navigating to a flagship does not smooth-scroll the whole page past the reader", async ({
+  page,
+}) => {
+  /*
+   * A blanket `scroll-behavior: smooth` also applies to a route change's scroll reset, and
+   * clicking the last chapter used to take about a second and a half to fly the detail page past
+   * before settling - straight through the shared-element transition.
+   */
+  await page.goto("/", { waitUntil: "networkidle" });
+  const behaviour = await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
+  expect(behaviour, "route changes must reset scroll instantly").toBe("auto");
 });
 
 /* ============================================================================================

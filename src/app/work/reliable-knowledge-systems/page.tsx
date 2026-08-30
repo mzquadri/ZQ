@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import PageShell from "@/components/PageShell";
+import SceneIdentity from "@/components/sequence/SceneIdentity";
 import ReliableWorld from "@/components/reliable-world/ReliableWorld";
 import ReliableWorldFlat from "@/components/reliable-world/ReliableWorldFlat";
 import {
@@ -44,6 +45,17 @@ export default function ReliableKnowledgeSystemsPage() {
           <Link className="back-link" href="/work">← Selected work</Link>
           <p className="kicker">Current engineering / Illustrative model</p>
           <h1>Anything derived should be rebuildable. Anything else must not be overwritten.</h1>
+
+          {/*
+            The object from the homepage chapter, at the same resting beat. Directly after the
+            title so a phone sees it without scrolling; the desktop grid places it in the second
+            column regardless of source order.
+          */}
+          <SceneIdentity
+            caption="One captured evidence core, and the three representations derived from it."
+            slug="reliable-knowledge-systems"
+            viewTransitionName="world-reliable-knowledge-systems"
+          />
           <p>
             Most data platforms end up holding the same information several times over &mdash; as
             records, as vectors, as a graph. Each copy earns its place, and each one can quietly stop
@@ -51,13 +63,14 @@ export default function ReliableKnowledgeSystemsPage() {
             the engineering I work on.
           </p>
           <p className="section-note">{disclosure.long}</p>
+
         </header>
 
         {/*
           The machine, before the prose. On a phone, a narrow window, or for a reader who declined
           motion, the same schematic is drawn once and completely instead.
         */}
-        <div style={{ viewTransitionName: "world-reliable-knowledge-systems" }}>
+        <div>
           <ReliableWorld flat={<ReliableWorldFlat />} />
         </div>
 
