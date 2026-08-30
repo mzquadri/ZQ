@@ -2958,3 +2958,68 @@ test("the radiograph is only carried by the route that draws it", async ({ page 
     page.removeAllListeners("response");
   }
 });
+
+test("the rating curve amplifies a fixed gauge error into a growing discharge interval", async ({
+  page,
+}) => {
+  await page.goto("/work/hydrology-uq");
+  const fig = page.locator(".rating-amp");
+  await expect(fig).toHaveCount(1);
+
+  const widthAt = async (label: string) => {
+    await fig.getByRole("button", { name: label }).click();
+    const text = await fig.locator("[data-output] .rating-amp-value").innerText();
+    return Number.parseFloat(text);
+  };
+
+  const low = await widthAt("Low flow");
+  const base = await widthAt("Base stage");
+  const peak = await widthAt("Peak stage");
+
+  /* The input never changes; only what the curve does with it. */
+  await expect(fig.locator(".rating-amp-readout p").first()).toHaveText(/Measurement uncertainty/i);
+  expect(await fig.innerText()).toContain("±25 cm");
+
+  expect(low).toBeLessThan(base);
+  expect(base).toBeLessThan(peak);
+  /* And it lands on the seminar's own published band widths. */
+  expect(base).toBeCloseTo(8.63, 1);
+  expect(peak).toBeCloseTo(338, 0);
+
+  /* The drawn input bracket is identical at both ends of the range. */
+  const bracket = async (label: string) => {
+    await fig.getByRole("button", { name: label }).click();
+    return fig.locator(".rating-amp-input line").first().evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return Math.round(r.width);
+    });
+  };
+  expect(Math.abs((await bracket("Low flow")) - (await bracket("Peak stage")))).toBeLessThan(2);
+});
+
+test("the amplification is operable from the keyboard and readable without it", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const fig = page.locator(".rating-amp");
+  const slider = fig.locator('input[type="range"]');
+  await slider.focus();
+  const before = await fig.locator("output").innerText();
+  for (let i = 0; i < 15; i += 1) await page.keyboard.press("ArrowRight");
+  expect(await fig.locator("output").innerText()).not.toBe(before);
+
+  /*
+   * And the same information exists without touching the control at all: three positions, their
+   * identical gauge uncertainty, and the interval each one produces.
+   */
+  const rows = fig.locator(".research-data-table tbody tr");
+  await expect(rows).toHaveCount(3);
+  expect(await rows.first().innerText()).toContain("±25 cm");
+  expect(await fig.locator("figcaption").innerText()).toMatch(/25 cm/);
+});
+
+test("the amplification makes no forecasting claim", async ({ page }) => {
+  await page.goto("/work/hydrology-uq");
+  const text = (await page.locator(".rating-amp").innerText()).toLowerCase();
+  for (const word of ["forecast horizon", "lead time", "confidence cone", "prediction interval", "coverage"]) {
+    expect(text, `the amplification figure must not say "${word}"`).not.toContain(word);
+  }
+});

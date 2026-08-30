@@ -386,3 +386,45 @@ export const limits = [
   { label: "Random error only", note: "The precipitation study perturbs without systematic bias, which its own summary notes is the more consequential case and was not tested." },
   { label: "One event, one catchment", note: "A single short high-flow event. Nothing here establishes that the same ordering holds for longer records or other catchments." },
 ] as const;
+
+/**
+ * The fitted stage-discharge relationship, evaluated.
+ *
+ * Two power laws blended by a sigmoid, exactly as `ratingCurve` reports them. Kept here rather
+ * than in a renderer so the homepage chapter and the detail route's amplification figure evaluate
+ * the same function: a curve typed twice is a curve that can disagree with itself.
+ *
+ * Evaluated either side of the stages the seminar reports, it reproduces the published band
+ * widths - 8.633 at base stage and 337.68 at the peak - which is the check that the parameters
+ * here and the numbers in `verdict` describe the same fit.
+ */
+export function ratingDischarge(stage: number): number {
+  const w = 1 / (1 + Math.exp(-(stage - ratingCurve.transition.centre) / ratingCurve.transition.width));
+  const low =
+    stage > ratingCurve.q1.h0 ? ratingCurve.q1.a * Math.pow(stage - ratingCurve.q1.h0, ratingCurve.q1.b) : 0;
+  const high =
+    stage > ratingCurve.q2.h0 ? ratingCurve.q2.a * Math.pow(stage - ratingCurve.q2.h0, ratingCurve.q2.b) : 0;
+  return low * (1 - w) + high * w;
+}
+
+/** The measurement uncertainty the seminar actually perturbed the gauge by, in centimetres. */
+export const gaugeUncertaintyCm = 25 as const;
+
+/**
+ * The discharge interval that a fixed gauge uncertainty produces at a given stage.
+ *
+ * The input never changes: plus or minus 25 cm, everywhere on the curve. What changes is what the
+ * curve does with it.
+ */
+export function dischargeBand(stage: number) {
+  const low = ratingDischarge(stage - gaugeUncertaintyCm);
+  const high = ratingDischarge(stage + gaugeUncertaintyCm);
+  return { low, high, width: high - low, centre: ratingDischarge(stage) };
+}
+
+/** Three positions a reader can be dropped at, for a phone and for a reader who declined motion. */
+export const amplificationStops = [
+  { key: "low", label: "Low flow", stage: 260 },
+  { key: "base", label: "Base stage", stage: verdict.baseStage },
+  { key: "peak", label: "Peak stage", stage: verdict.peakStage },
+] as const;
