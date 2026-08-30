@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import { useStageVisibility } from "@/components/world/stage-visibility";
+
 import Readout from "./Readout";
 import { STATES, active } from "./states";
 import type { Frame } from "./HydrologyWorldScene";
@@ -26,7 +28,7 @@ export default function HydrologyWorld({ flat }: { flat: ReactNode }) {
   const frame = useRef<Frame>({ progress: 0 });
 
   const [eligible, setEligible] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const { drawing, mounted } = useStageVisibility(hostRef, eligible);
   const [caption, setCaption] = useState(() => STATES[0]);
 
   useEffect(() => {
@@ -43,18 +45,7 @@ export default function HydrologyWorld({ flat }: { flat: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!eligible || !host) return;
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => entry.isIntersecting && setMounted(true)),
-      { rootMargin: "0px 0px -35% 0px" },
-    );
-    observer.observe(host);
-    return () => observer.disconnect();
-  }, [eligible]);
-
-  useEffect(() => {
-    if (!mounted) return;
+    if (!drawing) return;
     let raf = 0;
     let lastKey = "";
 
@@ -76,7 +67,7 @@ export default function HydrologyWorld({ flat }: { flat: ReactNode }) {
 
     raf = requestAnimationFrame(sample);
     return () => cancelAnimationFrame(raf);
-  }, [mounted]);
+  }, [drawing]);
 
   return (
     <div
@@ -88,7 +79,7 @@ export default function HydrologyWorld({ flat }: { flat: ReactNode }) {
         <div className="world-viewport">
           {mounted ? (
             <div aria-hidden="true" className="world-canvas">
-              <WorldCanvas frame={frame} />
+              <WorldCanvas frame={frame} frameloop={drawing ? "always" : "never"} />
             </div>
           ) : null}
 

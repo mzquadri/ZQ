@@ -16,9 +16,18 @@ import ThesisWorldScene, { type Frame } from "./ThesisWorldScene";
  *
  * With the renderer isolated here, nothing three-shaped is fetched until all three gates pass.
  */
-export default function ThesisWorldCanvas({ frame }: { frame: RefObject<Frame | null> }) {
+export default function ThesisWorldCanvas({
+  frame,
+  frameloop,
+}: {
+  frame: RefObject<Frame | null>;
+  /* "never" while the stage is off screen, so a finished world stops competing for the
+   * main thread with whatever the reader moved on to. */
+  frameloop: "always" | "never";
+}) {
   return (
     <Canvas
+      frameloop={frameloop}
       camera={{ far: 90, fov: 42, near: 0.1, position: [0, 11, 13] }}
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}

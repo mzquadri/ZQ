@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import { useStageVisibility } from "@/components/world/stage-visibility";
+
 import Readout from "./Readout";
 import { STATES, active } from "./states";
 import type { Frame } from "./ReliableWorldScene";
@@ -29,7 +31,7 @@ export default function ReliableWorld({ flat }: { flat: ReactNode }) {
   const frame = useRef<Frame>({ progress: 0 });
 
   const [eligible, setEligible] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const { drawing, mounted } = useStageVisibility(hostRef, eligible);
   const [caption, setCaption] = useState(() => STATES[0]);
 
   useEffect(() => {
@@ -46,28 +48,7 @@ export default function ReliableWorld({ flat }: { flat: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!eligible || !host) return;
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => entry.isIntersecting && setMounted(true)),
-      /*
-       * The bottom of the root is pulled up by a third, so the section has to reach the upper two
-       * thirds of the viewport before it counts as visible.
-       *
-       * A plain zero margin was not enough here. This world sits directly under a case-study hero
-       * that is shorter than one viewport, so the section was already intersecting on load and the
-       * renderer arrived as part of the initial page weight - 1.46MB on a page whose first screen
-       * is a title and a paragraph. Shrinking the root means the download starts when the reader
-       * actually moves toward it.
-       */
-      { rootMargin: "0px 0px -35% 0px" },
-    );
-    observer.observe(host);
-    return () => observer.disconnect();
-  }, [eligible]);
-
-  useEffect(() => {
-    if (!mounted) return;
+    if (!drawing) return;
     let raf = 0;
     let lastKey = "";
 
@@ -89,7 +70,7 @@ export default function ReliableWorld({ flat }: { flat: ReactNode }) {
 
     raf = requestAnimationFrame(sample);
     return () => cancelAnimationFrame(raf);
-  }, [mounted]);
+  }, [drawing]);
 
   return (
     <div className="world-stage reliable-world" data-mode={mounted ? "scene" : "static"} ref={hostRef}>
@@ -97,7 +78,7 @@ export default function ReliableWorld({ flat }: { flat: ReactNode }) {
         <div className="world-viewport">
           {mounted ? (
             <div aria-hidden="true" className="world-canvas">
-              <WorldCanvas frame={frame} />
+              <WorldCanvas frame={frame} frameloop={drawing ? "always" : "never"} />
             </div>
           ) : null}
 

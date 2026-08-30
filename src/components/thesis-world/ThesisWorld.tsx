@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import { useStageVisibility } from "@/components/world/stage-visibility";
+
 import ReliabilityPanel from "./ReliabilityPanel";
 import Readout from "./Readout";
 import { STATES, activeState } from "./states";
@@ -33,7 +35,7 @@ export default function ThesisWorld({ flat }: { flat: ReactNode }) {
   const frame = useRef<Frame>({ progress: 0 });
 
   const [eligible, setEligible] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const { drawing, mounted } = useStageVisibility(hostRef, eligible);
   const [caption, setCaption] = useState(() => STATES[0]);
   /* Quantised so the readout re-renders a few times per state, not sixty times a second. */
   const [step, setStep] = useState(0);
@@ -53,38 +55,10 @@ export default function ThesisWorld({ flat }: { flat: ReactNode }) {
   }, []);
 
   /* Gate three: nothing downloads until the section is near the viewport. */
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!eligible || !host) return;
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => entry.isIntersecting && setMounted(true)),
-      /*
-       * No pre-roll margin, deliberately.
-       *
-       * The world begins about thirty pixels below the fold, so a 300px margin was satisfied
-       * before the reader had scrolled at all and the renderer arrived as part of the initial
-       * load - 1.47MB on a page whose first screen is a title and an abstract. At zero the
-       * download starts when the section does, which costs a moment of flat figure and keeps
-       * the opening screen the weight of the text it actually shows.
-       */
-      /*
-       * The bottom of the root is pulled up by a third, so the section has to reach the upper two
-       * thirds of the viewport before it counts as visible.
-       *
-       * A plain zero margin was measured shipping the renderer as part of the initial page: this
-       * route's world sits close under a short hero, so it was already intersecting on arrival and
-       * /work/medico downloaded 228 KB of three.js before a reader had scrolled at all. Six of the
-       * eight worlds already deferred it this way; this one and the thesis world did not.
-       */
-      { rootMargin: "0px 0px -35% 0px" },
-    );
-    observer.observe(host);
-    return () => observer.disconnect();
-  }, [eligible]);
 
   /* Scroll position, sampled once per frame and parked in a ref. */
   useEffect(() => {
-    if (!mounted) return;
+    if (!drawing) return;
     let raf = 0;
     let lastKey = "";
 
@@ -109,7 +83,7 @@ export default function ThesisWorld({ flat }: { flat: ReactNode }) {
 
     raf = requestAnimationFrame(sample);
     return () => cancelAnimationFrame(raf);
-  }, [mounted]);
+  }, [drawing]);
 
   return (
     <div className="thesis-world" data-mode={mounted ? "scene" : "static"} ref={hostRef}>
@@ -117,7 +91,7 @@ export default function ThesisWorld({ flat }: { flat: ReactNode }) {
         <div className="thesis-world-viewport">
           {mounted ? (
             <div aria-hidden="true" className="thesis-world-canvas">
-              <WorldCanvas frame={frame} />
+              <WorldCanvas frame={frame} frameloop={drawing ? "always" : "never"} />
             </div>
           ) : null}
 
