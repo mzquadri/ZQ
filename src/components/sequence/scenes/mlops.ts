@@ -71,7 +71,8 @@ function draw(s: Surface, progress: number, p: Palette) {
   const at = (t: number) => (vertical ? { x: cross, y: mix(a0, a1, t) } : { x: mix(a0, a1, t), y: cross });
 
   /* ---- the rail ---- */
-  const railPaint = { stroke: p.line, width: 1, alpha: 0.8 };
+  /* The rail is the object this chapter is about; at one pixel of --line it read as blank. */
+  const railPaint = { stroke: p.soft, width: 1.6, alpha: 0.55 };
   if (vertical) s.line(cross, a0, cross, a1, railPaint);
   else s.line(a0, cross, a1, cross, railPaint);
 
@@ -115,7 +116,7 @@ function draw(s: Surface, progress: number, p: Palette) {
     const fails = i === MARGIN && refuse > 0.2 && rebuild < 0.5;
     const held = pass > 0.2 || (check > 0.2 && i !== MARGIN);
     const colour = fails ? p.warn : held ? p.accent : p.soft;
-    const on = 0.35 + check * 0.65;
+    const on = 0.55 + check * 0.45;
 
     /* A plate the bundle has to pass through: a bar across the track. */
     if (vertical) s.line(px, py, px + len, py, { stroke: colour, width: fails ? 3 : 2, alpha: on, cap: "round" });
@@ -153,15 +154,15 @@ function draw(s: Surface, progress: number, p: Palette) {
     const reached = i === 0 ? staging : promote;
     s.rect(c.x - size / 2, c.y - size / 2, size, size, {
       fill: reached > 0.3 ? blend(p.raised, p.accent, 0.25) : p.raised,
-      stroke: reached > 0.3 ? p.accent : p.line,
+      stroke: reached > 0.3 ? p.accent : p.soft,
       width: 1.4,
-      alpha: 0.5 + reached * 0.5,
+      alpha: 0.7 + reached * 0.3,
     });
     /* Staggered. Side by side at this spacing the two words overprinted each other. */
     s.text(c.x, c.y + size * (i === 0 ? 1.05 : 2.0), stage.label, {
       size: s.unit * 0.021,
       fill: reached > 0.3 ? p.accent : p.soft,
-      alpha: 0.6 + reached * 0.4,
+      alpha: 0.8 + reached * 0.2,
       mono: true,
       anchor: "middle",
     });
