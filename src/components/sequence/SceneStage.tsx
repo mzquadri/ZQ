@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import SceneCanvas from "./SceneCanvas";
 import { SCENES } from "./scenes";
-import { SvgSurface } from "./surface";
+import { sceneStills } from "./stills";
 
 /**
  * A flagship chapter, as a full stage.
@@ -35,11 +35,12 @@ export default function SceneStage({
   const scene = SCENES[slug];
   if (!scene) return null;
 
-  const wide = new SvgSurface(scene.width, scene.height);
-  scene.draw(wide, scene.rest, scene.palette);
-
-  const tall = new SvgSurface(scene.portraitWidth, scene.portraitHeight);
-  scene.draw(tall, scene.rest, scene.palette);
+  /*
+   * The same helper the detail route's opening figure uses, so the two sides of a navigation are
+   * the identical drawing at the identical progress rather than two compositions that resemble
+   * each other. That is what carries the continuity when there is no View Transitions support.
+   */
+  const stills = sceneStills(scene);
 
   return (
     <div
@@ -64,16 +65,16 @@ export default function SceneStage({
           <svg
             aria-hidden="true"
             className="scn-still scn-still-wide"
-            dangerouslySetInnerHTML={{ __html: wide.markup() }}
+            dangerouslySetInnerHTML={{ __html: stills.wide.markup }}
             preserveAspectRatio="xMidYMid meet"
-            viewBox={`0 0 ${scene.width} ${scene.height}`}
+            viewBox={stills.wide.viewBox}
           />
           <svg
             aria-hidden="true"
             className="scn-still scn-still-tall"
-            dangerouslySetInnerHTML={{ __html: tall.markup() }}
+            dangerouslySetInnerHTML={{ __html: stills.tall.markup }}
             preserveAspectRatio="xMidYMid meet"
-            viewBox={`0 0 ${scene.portraitWidth} ${scene.portraitHeight}`}
+            viewBox={stills.tall.viewBox}
           />
           <SceneCanvas slug={slug} />
           <figcaption className="visually-hidden">{scene.label}</figcaption>

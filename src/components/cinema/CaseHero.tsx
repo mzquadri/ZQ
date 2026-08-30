@@ -1,14 +1,18 @@
 import Link from "next/link";
 
 import { PROJECT_WORLDS } from "@/components/cinema/project-worlds";
+import SceneIdentity from "@/components/sequence/SceneIdentity";
+import { SCENES } from "@/components/sequence/scenes";
 import type { Project } from "@/content/portfolio";
 
 /*
  * The opening of a case study.
  *
- * The page argues visually before it explains, so the project's own figure is the first thing
- * under the title - the same figure the homepage chapter used, in the same accent, so arriving
- * here feels like following a thread rather than landing somewhere unrelated.
+ * The page argues visually before it explains, so the project's own object is the first thing
+ * beside the title - and it is now literally the object the homepage chapter drew, at the same
+ * resting beat, not a second figure of the same subject. Before this, transport opened on an
+ * extruded bar field where the homepage had shown a flat isometric network with uncertainty on
+ * it: recognisably the same topic and visibly not the same picture.
  *
  * Only the hero is staged. Everything below it stays on paper, because the rest of a case study
  * is long-form technical reading - evidence tables, limitations, what the work does not show -
@@ -61,7 +65,18 @@ export default function CaseHero({ project, children }: { project: Project; chil
          * draft is the case that matters here: it has no public figure by design, and an empty
          * frame would imply one is missing rather than withheld.
          */}
-        {world ? (
+        {SCENES[project.slug] ? (
+          /*
+           * The shared-element name lives here, on the object, in the first viewport. It used to
+           * sit on the world further down the page, so a browser was asked to animate a
+           * full-viewport stage into something below the fold - which can only look like a fade.
+           */
+          <SceneIdentity
+            caption={world?.figureNote}
+            slug={project.slug}
+            viewTransitionName={`world-${project.slug}`}
+          />
+        ) : world ? (
           <figure className="case-stage-figure">
             {world.scene(project)}
             <figcaption>{world.figureNote}</figcaption>

@@ -28,8 +28,24 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /*
+   * Instant by default, smooth only for in-page jumps.
+   *
+   * A blanket `scroll-behavior: smooth` also applies to the scroll reset a route change performs,
+   * and clicking a flagship from the bottom of the reel then took about a second and a half to fly
+   * the whole detail page past the reader before settling - which is the opposite of arriving in
+   * the object they clicked, and it ran straight through the shared-element transition.
+   *
+   * `:has(:target)` keeps the easing where it was wanted: an anchor sets a target, a navigation
+   * does not. A browser without `:has()` gets instant scrolling everywhere, which is the safer of
+   * the two failures.
+   */
+  scroll-behavior: auto;
   background: var(--paper);
+}
+
+html:has(:target) {
+  scroll-behavior: smooth;
 }
 
 body {

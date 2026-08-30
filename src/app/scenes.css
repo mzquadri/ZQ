@@ -1989,3 +1989,147 @@
 
   .sw-beats li { grid-template-columns: 1fr; gap: 0.3rem; }
 }
+
+/* ============================================================================================
+ * The opening object of a detail route.
+ *
+ * The same drawing the homepage chapter rests on, rendered again at the top of the project it
+ * belongs to. Two things make the navigation read as entering rather than as a page change, and
+ * neither of them is the View Transitions API:
+ *
+ *   - it is the *same function at the same beat*, so the picture matches whether or not a browser
+ *     animates anything, and
+ *   - it keeps the chapter's 16 / 9 frame and its ground, so the bounding box and the background
+ *     relationship correspond across the navigation instead of jumping.
+ *
+ * Where the API is available the name on this figure is the name the chapter's frame carries, so
+ * the object is morphed from one size to the other. Where it is not, the reader simply arrives on
+ * the composition they clicked.
+ * ========================================================================================== */
+
+.scn-identity {
+  margin: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.scn-identity-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--stage);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.scn-identity .scn-still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.scn-identity .scn-still-tall { display: none; }
+
+.scn-identity figcaption {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+/* On the dark case stage the caption takes the stage's own soft ink rather than the paper one. */
+.case-stage .scn-identity figcaption {
+  color: var(--stage-ink-soft);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+/*
+ * The two routes whose hero is on paper get the object as a framed panel. It is the same drawing
+ * on the same ground; only the page around it is lighter.
+ */
+.page-hero .scn-identity {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  max-width: 46rem;
+}
+
+@media (max-width: 999px) {
+  .scn-identity-frame { aspect-ratio: 4 / 5; }
+  .scn-identity .scn-still-wide { display: none; }
+  .scn-identity .scn-still-tall { display: block; }
+}
+
+/*
+ * The entry settle.
+ *
+ * A single short move after arrival, so the object reads as coming to rest in its new frame rather
+ * than being cut into place. It is deliberately smaller than it wants to be: a recruiter clicking
+ * quickly should never wait for it, and nothing on the page is hidden while it runs.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .scn-identity-frame {
+    animation: mz-identity-settle 460ms var(--ease-exit, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  }
+
+  @keyframes mz-identity-settle {
+    from {
+      opacity: 0.55;
+      transform: scale(0.985);
+    }
+  }
+}
+
+/*
+ * The two routes whose hero is a column of prose.
+ *
+ * Medico and reliable knowledge systems open on paper rather than on the dark case stage, and
+ * appending the object after the copy left it 850 pixels down - out of the first viewport, which
+ * is exactly the problem this pass exists to fix. At desktop widths the hero becomes two columns
+ * so the object sits beside the title instead of after it.
+ *
+ * `:has()` rather than a new class, so nothing in the two routes' markup has to know about the
+ * layout. A browser without it simply stacks, which is where these pages already were.
+ */
+/*
+ * 1180, not 1000. At 1024 a two-column hero leaves the text column around 470px, which is tight
+ * for a display headline and a definition list; below this width the hero stacks, which is where
+ * it already was. The object stays in the first viewport either way.
+ */
+@media (min-width: 1180px) {
+  .page-hero:has(.scn-identity) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    /*
+     * Dense, because the figure sits directly after the title in the source - that is what puts it
+     * in view on a phone - and sparse packing would then refuse to place the copy that follows it
+     * back into the rows beside it, pushing the headline most of a screen down the page.
+     */
+    grid-auto-flow: row dense;
+    gap: 0 clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .page-hero:has(.scn-identity) > .scn-identity {
+    grid-column: 2;
+    grid-row: 1 / span 20;
+    /* Top-aligned, not centred: centring put it low on the taller of the two heroes. */
+    align-self: start;
+    margin-top: clamp(3rem, 6vw, 5rem);
+  }
+
+  /*
+   * The headline is set for a full-width column, and halving the column without touching it left
+   * one of these two heroes with a five-line display headline that pushed everything past the
+   * fold. This is the only typographic change in the pass.
+   */
+  .page-hero:has(.scn-identity) h1 {
+    font-size: clamp(2rem, 3.2vw, 2.9rem);
+    line-height: 1.08;
+  }
+
+  .page-hero:has(.scn-identity) > *:not(.scn-identity) {
+    grid-column: 1;
+  }
+}
