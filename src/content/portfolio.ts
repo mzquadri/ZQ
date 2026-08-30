@@ -649,6 +649,100 @@ const authoredProjects: readonly Project[] = [
     repository: "https://github.com/mzquadri/Time-Series-Streamflow-Forecasting",
   },
   {
+    slug: "mcp-policy-gateway",
+    title: "The boundary a scanner cannot stand at",
+    eyebrow: "Runtime policy enforcement for MCP tool calls",
+    classification: "Engineering prototype",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Sole author of the gateway, controls, corpus, benchmark and trace format",
+    summary:
+      "An MCP client trusts three things at three different times: the tool declarations a server publishes, the arguments a model builds, and the content a tool returns. The security tooling that exists reads declarations before use, which covers the first and cannot reach the third — a poisoned search result does not exist until the search runs. This puts an enforcement point at the protocol boundary, where all three are visible, and then measures what each control is worth against a corpus that includes the legitimate traffic a careless rule would break.",
+    problem:
+      "A tool description is prose the client concatenates into a prompt, and a tool result is prose appended to the conversation. A model has no reliable way to tell a sentence that describes data from a sentence that instructs it, and there is no parameterised query for a prompt. So the question is not how to make the model resistant to persuasion — it is how much of the deputy’s authority can be taken away at the boundary before the cost in refused legitimate calls makes an operator switch the control off.",
+    contribution:
+      "Everything except the protocol itself. The gateway is an MCP server to the client and an MCP client to the downstream server, so it needs no cooperation from either and works against a server whose source I do not have. Nine controls run across three stages; eight of them answer decidable questions and one has to make a judgement, which is deliberate — it means the false-positive story has exactly one owner. The Model Context Protocol SDK is a dependency and is not my work.",
+    systemSummary:
+      "Client speaks MCP to the gateway; the gateway speaks MCP to the real server. Policy runs when declarations are relayed, before arguments are forwarded, and before results re-enter context. Every decision is written to a JSON Lines trace that stores digests and lengths rather than payloads.",
+    workflow: [
+      "Relay the downstream tool list, withholding or stripping declarations that carry instructions",
+      "Check arguments against the schema the server itself published, and against the sandbox",
+      "Forward the call, or refuse it, or hold it for a human if its effects cannot be undone",
+      "Inspect the returned content before it is read back into the model’s context",
+      "Record the decision, the rules that fired and the timing, without copying the payload",
+    ],
+    tools: [
+      "Python 3.11–3.13",
+      "Model Context Protocol SDK 2.x (dependency, MIT, Anthropic PBC)",
+      "asyncio over stdio transport",
+      "pytest",
+      "ruff",
+      "mypy",
+      "GitHub Actions",
+    ],
+    evidence: [
+      {
+        label: "Attacks caught",
+        value: "92.3%",
+        note: "24 of 26 adversarial cases handled at or above the response each case requires. Deterministic: no model call, no network.",
+      },
+      {
+        label: "Legitimate traffic refused",
+        value: "11.1%",
+        note: "2 of 18 benign near-misses blocked. The keyword filter it is compared against refuses 38.9%.",
+      },
+      {
+        label: "Controls with no false positives",
+        value: "8 of 9",
+        note: "Every benign case touched is touched by the one control permitted to be uncertain. A test enforces this.",
+      },
+      {
+        label: "Median decision",
+        value: "99.6 µs",
+        note: "Roughly 0.3 ms of policy per tool call across three stages, against a call that touches a disk or a network.",
+      },
+    ],
+    quality: [
+      "98 tests: unit, engine properties, corpus hygiene, and integration over a real MCP subprocess",
+      "CI runs lint, format, mypy, the tests, the benchmark and the end-to-end demo on 3.11, 3.12 and 3.13",
+      "The benchmark reproduces exactly from a clean clone, with no API key, network or GPU",
+      "Headline numbers are pinned by tests, and the four known failures are named exactly so a new one fails the build",
+    ],
+    limitations: [
+      "Paraphrase defeats pattern matching, so 92.3% is an upper bound against the attack forms represented",
+      "Encoded payloads are not decoded before matching, and one corpus case is kept as a scored miss because of it",
+      "One event at a time: an instruction assembled across several tool results is invisible",
+      "English only; images, PDFs and binary content are not inspected",
+      "The corpus is mine, which is not the same as an independent evaluation",
+    ],
+    learned:
+      "The benign half is the hard half. Writing attacks took an afternoon; the near-misses forced every interesting decision — matching on imperative shape rather than vocabulary, four actions instead of allow and deny, demoting a finding when the text is quoting rather than demanding.",
+    nextStep:
+      "A paraphrase axis, to put a number on how much the headline over-states things, and attacks that deliberately exploit the reporting-context demotion.",
+    repository: "https://github.com/mzquadri/mcp-policy-gateway",
+    artifacts: [
+      {
+        label: "Benchmark results",
+        href: "https://github.com/mzquadri/mcp-policy-gateway/blob/d5bd208/assets/results.json",
+        note: "Every case, every configuration, generated by evaluation/make_evidence.py.",
+      },
+      {
+        label: "Per-control effectiveness",
+        href: "https://github.com/mzquadri/mcp-policy-gateway/blob/d5bd208/assets/control-table.json",
+        note: "What each control caught, and how much benign traffic it touched.",
+      },
+      {
+        label: "Demo trace",
+        href: "https://github.com/mzquadri/mcp-policy-gateway/blob/d5bd208/assets/demo-trace.jsonl",
+        note: "A real run against the hostile example server, over stdio.",
+      },
+      {
+        label: "Upstream attribution",
+        href: "https://github.com/mzquadri/mcp-policy-gateway/blob/d5bd208/NOTICE",
+        note: "The MCP SDK dependency and the prior art the threat taxonomy came from.",
+      },
+    ],
+  },
+  {
     slug: "legal-knowledge-platform",
     title: "Stored is not the same as correct",
     eyebrow: "Verification for a multilingual legal corpus",
