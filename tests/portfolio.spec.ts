@@ -2834,3 +2834,39 @@ test("a project offers the next system rather than only the index", async ({ pag
     await expect(nav.getByRole("link", { name: "All work" })).toHaveCount(1);
   }
 });
+
+test("a flagship world holds its caption still while it scrubs", async ({ page }) => {
+  /*
+   * The detail-route layout shift, measured rather than assumed. The caption used to move up to
+   * 74px between states while its own height never changed: a bottom-anchored block grows upward,
+   * so anything taller below the headline lifted it.
+   */
+  test.slow();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  for (const slug of ["mlops-reference-pipeline", "hydrology-uq", "medico"]) {
+    await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
+    const tops = await page.evaluate(async () => {
+      const seen = new Set<number>();
+      for (let y = 600; y < 7000; y += 200) {
+        window.scrollTo(0, y);
+        await new Promise((r) => requestAnimationFrame(r));
+        const stage = document.querySelector<HTMLElement>(".world-stage");
+        const viewport = document.querySelector(".world-viewport");
+        const line = document.querySelector(".world-caption .world-stage-line");
+        if (!stage || !viewport || !line) continue;
+        /*
+         * Only while the stage is pinned and the scene is up. Outside the sticky range the caption
+         * scrolls with the page, which is movement but not a layout shift.
+         */
+        if (stage.dataset.mode !== "scene") continue;
+        if (Math.abs(viewport.getBoundingClientRect().top) > 2) continue;
+        seen.add(Math.round(line.getBoundingClientRect().top));
+      }
+      return [...seen];
+    });
+    const spread = Math.max(...tops) - Math.min(...tops);
+    expect(spread, `${slug} moves its caption headline by ${spread}px between states`).toBeLessThan(4);
+  }
+});

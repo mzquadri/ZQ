@@ -1017,6 +1017,48 @@
   max-width: 32rem;
 }
 
+/*
+ * The caption anchors from the top, not the bottom.
+ *
+ * With `justify-content: flex-end` the block's bottom edge is fixed and its top edge is wherever
+ * the content happens to end up, so a state whose readout is a row taller lifts the headline above
+ * it - measured at up to 74px of movement while the headline's own height never changed.
+ *
+ * Reserving each child's tallest state was tried twice and failed both times: the readout's
+ * `min-height` does not resolve reliably here, and a caption also carries an optional note that
+ * appears in some states and not others, so there are three varying children rather than one.
+ *
+ * Pinning the top removes the problem instead of compensating for it. Content grows downward from
+ * a fixed offset, so nothing below the headline can move it, whatever it contains. The offset
+ * places the block in the lower part of the frame, which is where the composition wants it, and
+ * the tallest state still clears the bottom padding.
+ */
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .world-caption {
+    justify-content: flex-start;
+    /*
+     * Low enough to keep the lower-left composition, high enough that the tallest state still
+     * clears the bottom of the frame. Measured: the tallest caption in any world runs 564px, so at
+     * this offset it ends around 860 of 900 and the shortest ends around 670.
+     */
+    padding-top: clamp(15rem, 32vh, 23rem);
+    /*
+     * The scrim follows the text rather than the frame. It used to be anchored to the bottom of a
+     * full-height box, which was right when the text was too; with the text pinned near the top of
+     * its block the fade has to start above it or the type sits on bare scene.
+     */
+    background-position: top;
+    background-size: 100% 100%;
+    background-image: linear-gradient(
+      to bottom,
+      rgb(10 13 15 / 0) 0%,
+      rgb(10 13 15 / 0.72) 22%,
+      rgb(10 13 15 / 0.9) 40%,
+      rgb(10 13 15 / 0.94) 100%
+    );
+  }
+}
+
 .world-readout-row { display: grid; gap: 0.1rem; }
 
 .world-readout dt {
@@ -1089,15 +1131,30 @@
 .world-flat { width: min(100% - 3rem, 70rem); padding: clamp(2rem, 6vh, 4rem) 0; }
 .world-stage[data-mode="scene"] .world-flat { visibility: hidden; }
 
-.world-stage[data-mode="static"] .world-caption {
-  position: static;
-  display: block;
-  background: none;
-  max-width: none;
-  width: min(100% - 3rem, 70rem);
-  margin: 0 auto clamp(1.5rem, 4vh, 2.5rem);
-  padding: 0;
-  background: none;
+/*
+ * The in-flow caption belongs to readers who will never be given a scene.
+ *
+ * A world mounts its renderer only at 1000px and above with motion allowed, and until it does the
+ * stage renders `data-mode="static"`. This rule used to apply there too, which meant that on a wide
+ * desktop the caption sat in the grid flow before mount and became an absolute overlay after it -
+ * a positioning-mode change on a live page, measured at up to 0.106 full-scroll CLS with the
+ * caption moving 74px while its own height never changed.
+ *
+ * Scoping it to the exact complement of the mount condition removes the switch rather than
+ * compensating for it: a reader who will get a scene sees the overlay geometry from the first
+ * paint, and mounting then adds only the canvas behind it. A reader who will not get one keeps the
+ * readable stacked layout this rule was written for.
+ */
+@media (max-width: 999px), (prefers-reduced-motion: reduce) {
+  .world-stage[data-mode="static"] .world-caption {
+    position: static;
+    display: block;
+    background: none;
+    max-width: none;
+    width: min(100% - 3rem, 70rem);
+    margin: 0 auto clamp(1.5rem, 4vh, 2.5rem);
+    padding: 0;
+  }
 }
 
 /* ---- medico: the coverage matrix ---- */
