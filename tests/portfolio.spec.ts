@@ -2870,3 +2870,34 @@ test("a flagship world holds its caption still while it scrubs", async ({ page }
     expect(spread, `${slug} moves its caption headline by ${spread}px between states`).toBeLessThan(4);
   }
 });
+
+test("the release page never presents its staged refusal as a recorded failure", async ({ page }) => {
+  test.slow();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/work/mlops-reference-pipeline", { waitUntil: "networkidle" });
+
+  const track = await page.evaluate(() => {
+    const r = document.querySelector(".world-track")!.getBoundingClientRect();
+    return { top: Math.round(r.top + window.scrollY), h: Math.round(r.height), vh: window.innerHeight };
+  });
+
+  /*
+   * The tracked run clears all four gates. The refusal state holds one condition short so the
+   * branch is visible at all, and a gate closing on screen reads as a deployment that failed
+   * unless the page says otherwise.
+   */
+  let sawRefusal = false;
+  for (let i = 0; i <= 14; i += 1) {
+    await page.evaluate((y) => window.scrollTo(0, y), track.top + ((track.h - track.vh) * i) / 14);
+    await page.waitForTimeout(320);
+    const heading = await page.locator(".world-caption .world-stage-line strong").innerText();
+    if (!/refused/i.test(heading)) continue;
+    sawRefusal = true;
+    const caption = await page.locator(".world-caption").innerText();
+    expect(caption.toLowerCase()).toContain("demonstration");
+    expect(caption).toContain("0.3067");
+    await expect(page.locator(".world-note[data-demonstration]")).toHaveCount(1);
+  }
+  expect(sawRefusal, "the refusal state was never reached").toBe(true);
+});

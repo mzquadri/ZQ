@@ -69,21 +69,24 @@ export const STATES: readonly WorldState<MlopsKey>[] = [
     from: 0.42,
     to: 0.52,
     label: "Refused",
-    caption: "The margin over the baseline falls short. The gate stays shut and the candidate goes no further.",
+    caption:
+      "A demonstration, not a recorded run: the margin check is held short so the gate can be seen doing its job. The reference run clears it at 0.3067.",
   },
   {
     key: "rebuilt",
     from: 0.52,
     to: 0.6,
     label: "Back to the start",
-    caption: "A rejected candidate is not patched. Another one is built and measured from scratch.",
+    caption:
+      "Still the demonstration. A refused candidate is not patched: another is built and measured from scratch.",
   },
   {
     key: "passed",
     from: 0.6,
     to: 0.69,
     label: "All four hold",
-    caption: "Accuracy, weighted F1, margin over baseline, and latency. Only now can it be registered.",
+    caption:
+      "Back to the reference run, which is where the numbers come from. Accuracy, weighted F1, margin over baseline and latency all clear. Only now can it be registered.",
   },
   {
     key: "staging",

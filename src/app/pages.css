@@ -2250,3 +2250,19 @@
 
 /* Inside the band the object needs no caption: the title beside it is the caption. */
 .next-system-object .scn-identity figcaption { display: none; }
+
+/*
+ * The one caption on the release page that is not reporting the tracked run.
+ *
+ * The refusal state holds a gate condition short on purpose so the branch can be seen at all. An
+ * animation of a gate closing reads as a deployment that failed unless it says otherwise, and this
+ * repository recorded no such failure - so the note carries the site's refusal colour and a rule,
+ * and reads before the gate list rather than after it.
+ */
+.world-note[data-demonstration] {
+  margin-bottom: 0.9rem;
+  padding-left: 0.8rem;
+  border-left: 3px solid #f0a03c;
+  color: #f0a03c;
+  font-weight: 500;
+}
