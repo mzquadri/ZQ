@@ -52,7 +52,8 @@ const COVERAGE = sources.map((src) =>
 /** A synthetic thorax, as contours. No corpus sample, no scan, and no pathology. */
 function thorax(s: Surface, p: Palette, cx: number, cy: number, r: number, alpha: number) {
   if (alpha <= 0.01) return;
-  const ink = { stroke: p.soft, width: 1.2, alpha: alpha * 0.75 };
+  /* Raised after watching the reel at reading speed: at 0.75 the film read as an empty frame. */
+  const ink = { stroke: p.soft, width: 1.5, alpha: alpha * 0.95 };
 
   /* Chest wall, as two mirrored curves. */
   for (const side of [-1, 1]) {
@@ -67,14 +68,14 @@ function thorax(s: Surface, p: Palette, cx: number, cy: number, r: number, alpha
   }
 
   /* Mediastinal column and the heart border bulging into the left field. */
-  s.line(cx, cy - r * 0.8, cx, cy + r * 0.45, { stroke: p.soft, width: 2, alpha: alpha * 0.55 });
+  s.line(cx, cy - r * 0.8, cx, cy + r * 0.45, { stroke: p.soft, width: 2.4, alpha: alpha * 0.7 });
   const heart: [number, number][] = [];
   for (let i = 0; i <= 12; i += 1) {
     const t = i / 12;
     const a = Math.PI * (0.5 + t);
     heart.push([cx - Math.sin(a) * r * 0.3 - r * 0.02, cy + Math.cos(a) * r * 0.28 + r * 0.12]);
   }
-  s.poly(heart, { stroke: p.soft, width: 1.2, alpha: alpha * 0.6 });
+  s.poly(heart, { stroke: p.soft, width: 1.4, alpha: alpha * 0.78 });
 
   /* Diaphragm domes. */
   for (const side of [-1, 1]) {
@@ -84,7 +85,7 @@ function thorax(s: Surface, p: Palette, cx: number, cy: number, r: number, alpha
       const x = cx + side * (r * 0.08 + t * r * 0.55);
       pts.push([x, cy + r * 0.5 + Math.pow(t, 2) * r * 0.22]);
     }
-    s.poly(pts, { stroke: p.soft, width: 1.4, alpha: alpha * 0.7 });
+    s.poly(pts, { stroke: p.soft, width: 1.6, alpha: alpha * 0.85 });
   }
 
   /*
@@ -101,7 +102,7 @@ function thorax(s: Surface, p: Palette, cx: number, cy: number, r: number, alpha
         const k = (x - cx) / r;
         pts.push([x, cy - r * 0.62 + i * r * 0.17 + k * k * r * 0.42]);
       }
-      s.poly(pts, { stroke: p.soft, width: 1, alpha: alpha * 0.38 });
+      s.poly(pts, { stroke: p.soft, width: 1.1, alpha: alpha * 0.52 });
     }
   }
 }

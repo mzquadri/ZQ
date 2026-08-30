@@ -136,7 +136,7 @@
 
 .chapter-index {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   letter-spacing: 0.22em;
   /*
    * The full accent, not a mix toward the stage. This used to be a display numeral, where the
@@ -163,7 +163,7 @@
 }
 
 .chapter-metric span {
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--stage-ink-soft);
@@ -1384,7 +1384,7 @@
 .exhibit-index {
   grid-area: index;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   letter-spacing: 0.2em;
   color: var(--accent);
 }
@@ -1396,7 +1396,7 @@
 }
 .exhibit-kind {
   grid-area: kind;
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   color: var(--stage-ink-soft);
 }
 
@@ -1654,7 +1654,7 @@
 
 .sw-index {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--accent);
@@ -1695,7 +1695,7 @@
 
 .sw-beat-label {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--accent);
@@ -1747,7 +1747,7 @@
 
 .sw-figure-kind {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
@@ -1755,7 +1755,7 @@
 
 .sw-figure-axis {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--stage-ink-soft);
 }
 
@@ -1819,7 +1819,7 @@
   display: flex;
   justify-content: space-between;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--stage-ink-soft);
   margin: 0.6rem 0 0;
   padding-top: 0.5rem;
@@ -1840,7 +1840,7 @@
 
 .sw-readouts dt {
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--stage-ink-soft);
@@ -1871,7 +1871,7 @@
 
 .sw-path dt {
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
@@ -1928,7 +1928,7 @@
 
 .sw-empty-mark {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--accent);
@@ -2164,5 +2164,75 @@
 
   .page-hero:has(.scn-identity) > *:not(.scn-identity) {
     grid-column: 1;
+  }
+}
+
+/* ============================================================================================
+ * The two project openings that were built on paper.
+ *
+ * Found by putting all eight detail openings on one contact sheet: six open on the dark case
+ * stage and two - reliable knowledge systems and medico - opened on the light page hero, which
+ * side by side reads as two projects from a different site. Both carry the same object, the same
+ * eyebrow and the same summary as the other six; only the ground differed.
+ *
+ * Restyled rather than rebuilt. The markup of those two routes is untouched: this gives their
+ * existing hero the stage's ground and ink so the eight openings read as one set.
+ * ========================================================================================== */
+
+.page-hero:has(.scn-identity) {
+  background: var(--stage);
+  color: var(--stage-ink);
+  padding-block: clamp(2.5rem, 7vh, 5rem) clamp(3rem, 8vh, 6rem);
+  margin-bottom: 0;
+  /*
+   * Full bleed from a width-constrained element. These two heroes are `section-wrap`, so painting
+   * the ground on the element alone left a strip of paper down each side; the ring spreads it to
+   * the viewport edges and the clip keeps it from painting above or below.
+   */
+  box-shadow: 0 0 0 100vmax var(--stage);
+  clip-path: inset(0 -100vmax);
+}
+
+.page-hero:has(.scn-identity) h1 { color: var(--stage-ink); }
+
+.page-hero:has(.scn-identity) > p,
+.page-hero:has(.scn-identity) .section-note {
+  color: var(--stage-ink-soft);
+}
+
+.page-hero:has(.scn-identity) .kicker {
+  color: var(--accent, var(--stage-ink-soft));
+}
+
+.page-hero:has(.scn-identity) .back-link {
+  color: var(--stage-ink-soft);
+}
+
+.page-hero:has(.scn-identity) .back-link:hover,
+.page-hero:has(.scn-identity) .back-link:focus-visible {
+  color: var(--stage-ink);
+}
+
+.page-hero:has(.scn-identity) .research-meta dt { color: var(--stage-ink-soft); }
+.page-hero:has(.scn-identity) .research-meta dd { color: var(--stage-ink); }
+
+/* The primary action matches the pill the other six openings use. */
+.page-hero:has(.scn-identity) .hero-actions .button-primary {
+  background: var(--accent, var(--stage-ink));
+  color: var(--stage);
+  border-color: transparent;
+}
+
+/* On a phone the object leads here too, as it already does on the other six. */
+@media (max-width: 999px) {
+  .page-hero:has(.scn-identity) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-hero:has(.scn-identity) > .scn-identity {
+    order: -1;
+    margin-top: 0;
+    margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
   }
 }
