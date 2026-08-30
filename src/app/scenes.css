@@ -913,6 +913,17 @@
 @media (max-width: 900px) {
   .case-stage-inner { grid-template-columns: minmax(0, 1fr); }
   .case-stage .scene-svg { max-height: none; }
+
+  /*
+   * On a phone the object leads.
+   *
+   * Stacked, the copy - eyebrow, headline, summary, three facts and a call to action - left the
+   * object about fifty pixels above the fold on a 727-pixel screen, which is in view only in the
+   * arithmetic sense. Putting it first is also the more honest arrival: a visitor tapped that
+   * object, and it is what the page opens on. The name and its line of context follow immediately
+   * underneath, still in the first viewport.
+   */
+  .case-stage-inner > .scn-identity { order: -1; }
 }
 
 @media (max-width: 640px) {
@@ -2056,9 +2067,31 @@
 }
 
 @media (max-width: 999px) {
+  /*
+   * The headline on these two heroes is set for a wide column, and one of them is long enough to
+   * run to six lines on a phone - which pushed the object to within a hundred pixels of the fold
+   * locally and over it on CI, where the fallback face wraps differently again. A first viewport
+   * that holds the name, a line of context and the object is the whole requirement here, so the
+   * display size gives way to it.
+   */
+  .page-hero:has(.scn-identity) h1 {
+    font-size: clamp(1.9rem, 8.4vw, 2.6rem);
+    line-height: 1.1;
+  }
+
   .scn-identity-frame { aspect-ratio: 4 / 5; }
   .scn-identity .scn-still-wide { display: none; }
   .scn-identity .scn-still-tall { display: block; }
+
+  /*
+   * Narrower than the column on a phone.
+   *
+   * The portrait frame is 4 / 5, and at full width on a 393-pixel screen that is 491 pixels of
+   * object - enough, once it leads the page, to push the headline off the bottom. Holding the
+   * aspect and giving up some width keeps both the object and the name in the first viewport,
+   * which is the requirement; the shared-element transition scales between the two sizes anyway.
+   */
+  .scn-identity { max-width: 19rem; margin-inline: auto; }
 }
 
 /*

@@ -2617,8 +2617,12 @@ test("the shared-element name is on the object, in the first viewport, on both s
     await expect(named).toHaveClass(/scn-identity-frame/);
 
     const box = (await named.boundingBox())!;
-    /* On screen when the navigation lands, or the browser is animating into nothing. */
-    expect(box.y, `${slug} opens with its object below the fold`).toBeLessThan(viewport.height);
+    /*
+     * Meaningfully on screen when the navigation lands, not one pixel of it. A hundred pixels of
+     * headroom is what separates "the object is here" from "the object is technically not clipped",
+     * and it is the margin a slower font load eats on CI.
+     */
+    expect(box.y, `${slug} opens with its object below the fold`).toBeLessThan(viewport.height - 100);
     expect(box.y + box.height).toBeGreaterThan(0);
 
     /*
