@@ -129,6 +129,17 @@ export default function Readout({ state }: { state: MlopsKey }) {
     case "rejected":
       return (
         <>
+          {/*
+            The distinction this state has to carry. Every other state on this page reports the
+            repository's tracked run; this one holds a condition short on purpose so the refusal
+            path is visible at all. Without saying so, an animation of a gate closing reads as a
+            deployment that failed, which is not something this repository recorded.
+          */}
+          <p className="world-note" data-demonstration="">
+            Gate logic demonstration &mdash; not a recorded failure. The tracked reference run
+            clears all four checks; the margin is held below its threshold here so the refusal path
+            can be seen.
+          </p>
           <GateList failing />
           <p className="world-note">
             The gate is <code>all()</code> over the four. One short check is enough, and the margin
@@ -142,6 +153,7 @@ export default function Readout({ state }: { state: MlopsKey }) {
       return (
         <Rows
           items={[
+            { label: "Still the demonstration", note: "the reference run never reaches this branch", value: "Staged" },
             { label: "Rejected candidate", note: "no partial credit, no patching", value: "Discarded" },
             { label: "Next candidate", note: "the same checks, from the same data", value: "Built again" },
             { label: "Thresholds come from", note: "never from the split the gate is applied to", value: "Validation" },
