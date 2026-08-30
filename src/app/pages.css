@@ -2377,3 +2377,205 @@
   line-height: 1.5;
   color: var(--ink-soft);
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * mcp-policy-gateway
+ *
+ * One new idea in here: the comparison bars run in both directions from a shared centre, because
+ * the finding is a trade rather than a score. Attacks caught grows right, legitimate traffic
+ * refused grows left, both on the same scale, so the keyword row is visibly the wrong shape
+ * without a caption having to argue it. Everything else reuses the research-figure system.
+ * ------------------------------------------------------------------------------------------- */
+
+.gw-yes { color: var(--ink); font-weight: 600; }
+.gw-no { color: var(--orange-ink); font-weight: 600; }
+
+.research-data-table tr[data-judging] th[scope="row"] code { color: var(--orange-ink); }
+
+.gw-control-what {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  max-width: 34rem;
+}
+
+/* ----------------------------------------------------------------------- the comparison */
+
+.gw-bars { margin: 1.75rem 0 1.25rem; }
+
+.gw-bars-axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.gw-axis-left { color: var(--orange-ink); }
+
+.gw-row { padding: 1.1rem 0; border-bottom: 1px solid var(--line); }
+.gw-row[data-highlight] { background: color-mix(in srgb, var(--teal-dark) 5%, transparent); }
+
+.gw-row-label {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink);
+  margin-bottom: 0.55rem;
+}
+
+.gw-row-note {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+/* The shared centre line. Left half is refusals, right half is catches. */
+.gw-track { display: flex; align-items: stretch; min-height: 1.6rem; }
+.gw-half { flex: 1 1 50%; display: flex; align-items: center; position: relative; }
+.gw-half-left { justify-content: flex-end; border-right: 2px solid var(--ink); padding-right: 0.5rem; }
+.gw-half-right { justify-content: flex-start; padding-left: 0.5rem; }
+
+.gw-bar { height: 1.15rem; }
+.gw-bar-caught { background: var(--teal-dark); }
+.gw-bar-refused { background: var(--orange-ink); }
+
+.gw-value {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  padding: 0 0.5rem;
+}
+
+.gw-half-left .gw-bar { order: 2; }
+.gw-half-left .gw-value { order: 1; }
+
+/* ----------------------------------------------------------------------- failures */
+
+.gw-failures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 2rem;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.gw-failure-kind {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 1rem;
+}
+
+.gw-failure-kind span { color: var(--orange-ink); margin-left: 0.4rem; }
+
+.gw-failure { margin-bottom: 1.1rem; }
+.gw-failure-id { font-size: 0.9rem; color: var(--ink); line-height: 1.5; }
+.gw-failure-id code { color: var(--orange-ink); margin-right: 0.35rem; }
+.gw-failure-why { margin-top: 0.3rem; font-size: 0.85rem; color: var(--ink-soft); line-height: 1.55; }
+
+/* ----------------------------------------------------------------------- the bypass */
+
+.gw-bypass-steps {
+  list-style: none;
+  margin: 1.5rem 0 1.25rem;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.gw-bypass-steps li {
+  padding-left: 1rem;
+  border-left: 2px solid var(--line-strong);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.gw-step-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.3rem;
+}
+
+/* ----------------------------------------------------------------------- provenance */
+
+.gw-provenance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: 2rem;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.gw-prov-kind {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 0.9rem;
+}
+
+.gw-upstream .gw-prov-kind { border-bottom-color: var(--orange-ink); color: var(--orange-ink); }
+
+.gw-prov-name { font-size: 1.05rem; margin-bottom: 0.7rem; }
+
+.gw-prov-facts { display: grid; gap: 0.35rem; margin-bottom: 0.8rem; }
+.gw-prov-facts > div { display: flex; gap: 0.6rem; font-size: 0.85rem; }
+.gw-prov-facts dt {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  min-width: 6rem;
+}
+.gw-prov-facts dd { color: var(--ink); }
+
+.gw-prov-role { font-size: 0.85rem; color: var(--ink-soft); line-height: 1.55; margin-bottom: 0.4rem; }
+
+.gw-prov-list { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; }
+.gw-prov-list li { font-size: 0.88rem; line-height: 1.55; color: var(--ink); }
+
+/* ----------------------------------------------------------------------- limits */
+
+.gw-limits { margin: 1.4rem 0 1.2rem; padding-left: 1.1rem; display: grid; gap: 0.55rem; }
+.gw-limits li { font-size: 0.9rem; line-height: 1.6; color: var(--ink); }
+
+@media (max-width: 640px) {
+  .gw-bars-axis { font-size: 0.62rem; }
+  .gw-row-label { font-size: 0.78rem; }
+  .gw-value { font-size: 0.72rem; padding: 0 0.3rem; }
+}
+
+/*
+ * The per-control sentence is desktop-only.
+ *
+ * It is genuinely useful next to the name on a wide screen and it is the wrong thing to keep on a
+ * phone: at 390px it crushed the first column until "instruction_injection" broke mid-word, and
+ * widening the table so it could scroll instead let the sentence overflow under the next column.
+ * The row's actual data is the name and the two counts, and every one of these sentences is said
+ * again in the prose below the table, so dropping it costs a narrow reader nothing.
+ */
+@media (max-width: 760px) {
+  .gw-control-what { display: none; }
+}

@@ -49,8 +49,16 @@ export const categoryDefinitions: readonly CategoryDefinition[] = [
     summary: "Clearly bounded experiments. Not production systems.",
   },
   {
+    /*
+     * Widened to describe what is actually in it. The bucket holds early learning exercises, but
+     * it also holds a profile README, a retired landing page and an upstream fork with no authored
+     * contribution - and calling those "learning-oriented implementations" was the one place this
+     * index described itself less accurately than its own entries do. Each entry already carries
+     * an honest boundary; the category heading now matches them.
+     */
     id: "Reference",
-    summary: "Learning-oriented implementations kept for reference, not promoted as flagship work.",
+    summary:
+      "Early learning exercises, documentation and forks. Listed because the index is complete rather than curated, and not offered as evidence of engineering depth.",
   },
 ];
 
@@ -76,11 +84,23 @@ const owner = `${site.github}/`;
 
 export const ecosystemSnapshot = {
   method:
-    "Manual audit of every public repository on the profile. Repository names, languages and URLs were read from GitHub; descriptions and evidence boundaries are summarised from each README. No activity dates are published.",
+    "Manual audit of every public repository on the profile, re-run when a repository is added. Repository names, languages and URLs were read from GitHub; descriptions and evidence boundaries are summarised from each README. No activity dates are published.",
   profile: site.github,
 } as const;
 
 export const ecosystemRepositories: readonly EcosystemRepository[] = [
+  {
+    name: "mcp-policy-gateway",
+    title: "MCP Policy Gateway: Runtime Enforcement for Tool Calls",
+    category: "Featured",
+    language: "Python",
+    topics: ["Agent Security", "Model Context Protocol", "Prompt Injection", "Adversarial Benchmark"],
+    description:
+      "A proxy that sits between an MCP client and an MCP server, inspecting tool declarations, call arguments and returned content, with a 44-case corpus that measures each control against the legitimate traffic a careless rule would break.",
+    boundary:
+      "A prototype with a reproducible benchmark, not a deployed product. Detection is pattern-based and deterministic, so paraphrased attacks and encoded payloads pass; two of the corpus cases are kept as scored misses and two known false positives are kept for the same reason. The Model Context Protocol SDK is a dependency by other authors, not part of this work.",
+    caseStudySlug: "mcp-policy-gateway",
+  },
   {
     name: "medico",
     title: "Medico: Chest X-Ray Multi-Label Training",

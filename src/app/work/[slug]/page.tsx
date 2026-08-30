@@ -19,6 +19,15 @@ import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVis
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import NextSystem from "@/components/cinema/NextSystem";
 import RatingAmplification from "@/components/research/RatingAmplification";
+import {
+  GatewayBypass,
+  GatewayComparison,
+  GatewayControls,
+  GatewayFailures,
+  GatewayLimits,
+  GatewayProvenance,
+  TrustBoundary,
+} from "@/components/research/GatewayStory";
 import RetrievalSelection from "@/components/research/RetrievalSelection";
 import {
   ThesisArchitecture,
@@ -151,6 +160,39 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <section className="section-wrap visual-section" aria-label="How gauge uncertainty becomes discharge uncertainty">
             <RatingAmplification />
           </section>
+        ) : null}
+
+        {/*
+          The gateway's case study runs in the order the argument does: the trust boundary first,
+          because everything else depends on the reader accepting that the three moments differ;
+          then the controls; then the comparison, which is the finding; then what does not hold.
+          Provenance sits at the end rather than the top - it is a claim about authorship, and it
+          reads better once there is something to attribute.
+        */}
+        {project.slug === "mcp-policy-gateway" ? (
+          <>
+            <section className="section-wrap visual-section" aria-label="What an MCP client trusts, and when">
+              <TrustBoundary />
+            </section>
+            <section className="section-wrap visual-section" aria-label="The controls and where uncertainty lives">
+              <GatewayControls />
+            </section>
+            <section className="section-wrap visual-section" aria-label="Attacks caught against legitimate traffic refused">
+              <GatewayComparison />
+            </section>
+            <section className="section-wrap visual-section" aria-label="Known failures">
+              <GatewayFailures />
+            </section>
+            <section className="section-wrap visual-section" aria-label="A bypass found by the integration tests">
+              <GatewayBypass />
+            </section>
+            <section className="section-wrap visual-section" aria-label="Limitations of a deterministic design">
+              <GatewayLimits />
+            </section>
+            <section className="section-wrap visual-section" aria-label="Upstream dependency and original work">
+              <GatewayProvenance />
+            </section>
+          </>
         ) : null}
 
         {project.slug === "mlops-reference-pipeline" ? (

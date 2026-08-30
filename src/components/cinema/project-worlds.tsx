@@ -77,9 +77,33 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
     scale: "flagship",
     scene: () => <GraphSurrogateScene />,
     seam: {
-      from: "junction",
-      to: "source",
-      note: "A node other values are derived from becomes a source other representations are derived from.",
+      from: "uncertainty",
+      to: "judgement",
+      note: "A measure of how unsure a model is becomes the one control that is allowed to be unsure.",
+    },
+  },
+
+  "mcp-policy-gateway": {
+    accent: "var(--accent-steel)",
+    title: "The boundary a scanner cannot stand at",
+    eyebrow: "Current engineering / Agent security",
+    question:
+      "A tool description can be scanned before anyone calls it. The document that tool returns cannot — it does not exist yet. So what is worth putting at the boundary itself, and what does it cost in refused legitimate calls?",
+    evidence: evidenceOf("mcp-policy-gateway"),
+    href: "/work/mcp-policy-gateway",
+    figureNote:
+      "Three lanes of traffic reach a boundary and get three different answers: pass, stop, or strip and continue.",
+    scale: "flagship",
+    /*
+     * No legacy figure. This chapter was built after the procedural scene runtime, so SCENES is
+     * the only rendering it has ever had and WorkChapters takes that branch. The field is
+     * required by the manifest, so it returns nothing rather than pretending to a second figure.
+     */
+    scene: () => null,
+    seam: {
+      from: "boundary",
+      to: "capture",
+      note: "A record of what was allowed to cross becomes the captured source everything downstream is checked against.",
     },
   },
 
@@ -221,6 +245,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
  */
 export const WORLD_ORDER: readonly string[] = [
   "transport-uq",
+  "mcp-policy-gateway",
   "reliable-knowledge-systems",
   "medico",
   "insureassist-rag",

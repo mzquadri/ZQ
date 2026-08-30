@@ -1,6 +1,10 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { ecosystemRepositories } from "../src/content/ecosystem";
+import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
+import { SCENES } from "../src/components/sequence/scenes";
+
 const routes = [
   "/",
   "/work",
@@ -18,6 +22,7 @@ const routes = [
   "/work/hydrology-uq",
   "/work/cifar10-cnn",
   "/work/streamflow-forecasting",
+  "/work/mcp-policy-gateway",
   "/work/legal-knowledge-platform",
 ];
 
@@ -560,12 +565,15 @@ test("the repository index catalogues public work beyond the case studies", asyn
   }
 
   /*
-   * Every public repository, not a selection. Twenty-five were audited from the GitHub API and
-   * all twenty-five are listed - forks and learning exercises included, because an index that
-   * quietly drops the unflattering entries is making a claim of its own.
+   * Every public repository, not a selection - forks and learning exercises included, because an
+   * index that quietly drops the unflattering entries is making a claim of its own.
+   *
+   * Asserted against the content module rather than a literal, so publishing a repository means
+   * adding one entry rather than also editing a number here. The failure this still catches is
+   * the one that matters: the rendered index disagreeing with the audited list.
    */
   const repositoryLinks = index.locator('a[href^="https://github.com/mzquadri/"]');
-  await expect(repositoryLinks).toHaveCount(25);
+  await expect(repositoryLinks).toHaveCount(ecosystemRepositories.length);
 
   await expect(
     index.locator('a[href="https://github.com/mzquadri/Battery-SOC-Estimation-ML"]'),
@@ -2314,18 +2322,18 @@ test("the homepage cifar chapter uses real per-class numbers", async ({ page }) 
  * further into the same object rather than opening a second website.
  * ========================================================================================== */
 
-const REEL = [
-  "transport-uq",
-  "reliable-knowledge-systems",
-  "medico",
-  "insureassist-rag",
-  "mlops-reference-pipeline",
-  "hydrology-uq",
-  "streamflow-forecasting",
-  "cifar10-cnn",
-];
+/*
+ * The running order, taken from the manifest rather than copied.
+ *
+ * This list used to be duplicated here and in one other test. Adding a ninth chapter broke eight
+ * tests that were really only asserting "the page renders the reel that was declared" - which is
+ * still exactly what they assert now, without a second copy of the order to keep in step. What
+ * they can no longer catch is the order itself being wrong, and that was never something a
+ * transcribed duplicate could catch either: it would just have been wrong in both places.
+ */
+const REEL = WORLD_ORDER;
 
-test("the homepage runs all eight worlds in the exhibition order", async ({ page }) => {
+test("the homepage runs every world in the exhibition order", async ({ page }) => {
   await page.goto("/");
   const ids = await page.locator("article.chapter").evaluateAll((els) =>
     els.map((el) => el.id.replace(/^work-/, "")),
@@ -2442,16 +2450,15 @@ test("the homepage still loads no renderer", async ({ page }) => {
  * These guard what made that worth building.
  * ========================================================================================== */
 
-const FLAGSHIPS = [
-  "transport-uq",
-  "reliable-knowledge-systems",
-  "medico",
-  "insureassist-rag",
-  "mlops-reference-pipeline",
-  "hydrology-uq",
-  "streamflow-forecasting",
-  "cifar10-cnn",
-] as const;
+/*
+ * Every chapter that draws a scene, derived from the two manifests rather than transcribed.
+ *
+ * A scene chapter is one that appears in the running order and has a drawing registered for it.
+ * Deriving it means adding a chapter needs one registration, not a fourth copy of the list - and
+ * the assertions below still do their real job, which is comparing what the page rendered against
+ * what was declared.
+ */
+const FLAGSHIPS = WORLD_ORDER.filter((slug) => slug in SCENES);
 
 test("every flagship chapter is a scene, and each one is its own drawing", async ({ page }) => {
   test.slow();
@@ -2463,7 +2470,7 @@ test("every flagship chapter is a scene, and each one is its own drawing", async
   }
 
   /*
-   * Eight scenes, eight different pictures. The markup of each resting still is compared against
+   * One picture per scene, and no two alike. The markup of each resting still is compared against
    * every other one: if two chapters ever became the same drawing with different numbers, this is
    * the test that would say so.
    */
@@ -2491,7 +2498,7 @@ test("a flagship scene costs no image request and reserves its own space", async
   await page.waitForTimeout(1200);
   /*
    * The resting composition is markup, not a poster. This replaced ninety WebP frames for one
-   * chapter; eight chapters the same way would have been megabytes.
+   * chapter; every chapter done the same way would have been megabytes.
    */
   expect(media, "a scene must not fetch an image").toHaveLength(0);
 
@@ -2810,16 +2817,6 @@ test("every substantial repository opens into how it runs", async ({ page }) => 
 });
 
 test("a project offers the next system rather than only the index", async ({ page }) => {
-  const REEL = [
-    "transport-uq",
-    "reliable-knowledge-systems",
-    "medico",
-    "insureassist-rag",
-    "mlops-reference-pipeline",
-    "hydrology-uq",
-    "streamflow-forecasting",
-    "cifar10-cnn",
-  ];
   test.slow();
   for (let i = 0; i < REEL.length; i += 1) {
     await page.goto(`/work/${REEL[i]}`);
