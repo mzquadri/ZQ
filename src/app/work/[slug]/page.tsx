@@ -18,6 +18,11 @@ import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import {
+  ThesisArchitecture,
+  ThesisBaselineComparison,
+  ThesisTrialLog,
+} from "@/components/research/ThesisModelAudit";
+import {
   ClosingAnnotation,
   ConfidenceLadder,
   RepresentationFanOut,
@@ -184,6 +189,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         {project.slug === "transport-uq" ? (
           <section className="section-wrap visual-section" aria-label="Thesis system and result">
             <ThesisPipeline />
+            <ThesisArchitecture />
+            {/*
+              The comparison the surrogate loses, placed before the one it wins. A reader who takes
+              only one number from this page should take the one that qualifies the rest of it.
+            */}
+            <ThesisBaselineComparison />
+            <ThesisTrialLog />
             <SelectiveRiskChart />
           </section>
         ) : null}
