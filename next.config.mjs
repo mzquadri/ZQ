@@ -12,16 +12,7 @@ const securityHeaders = [
 const nextConfig = {
   poweredByHeader: false,
   async headers() {
-    return [
-      { source: "/(.*)", headers: securityHeaders },
-      {
-        source: "/mohd-zamin-quadri-resume.pdf",
-        headers: [
-          { key: "Content-Disposition", value: 'attachment; filename="mohd-zamin-quadri-resume.pdf"' },
-          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
-        ],
-      },
-    ];
+    return [{ source: "/(.*)", headers: securityHeaders }];
   },
 };
 
