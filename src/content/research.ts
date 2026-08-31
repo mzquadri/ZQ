@@ -2,22 +2,22 @@ export const thesisResearchPath = "/research/thesis";
 
 export const canonicalThesisEvidence = {
   repository: "https://github.com/mzquadri/ml-surrogates-thesis",
-  commit: "5f1b840dfdfa2dc965b7883f6310cdc1d65f3594",
-  submittedArtifactCommit: "4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428",
+  commit: "fc1446bbe391093b5e15f0045d344611f2a8bed0",
+  submittedArtifactCommit: "e3d14560f730a44eab7511a3f7a2644e28c4b297",
   submittedPdf:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428/document/main.pdf",
+    "https://github.com/mzquadri/ml-surrogates-thesis/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf",
   corrigendum:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/docs/CORRIGENDUM.md",
+    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/CORRIGENDUM.md",
   provenance:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/docs/ARTIFACT_PROVENANCE.md",
+    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/ARTIFACT_PROVENANCE.md",
   aggregateReport:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md",
+    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md",
   aggregateJson:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/thesis_intelligence.json",
+    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/thesis_intelligence.json",
   modelComparison:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/model_comparison.csv",
+    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/model_comparison.csv",
   manifest:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/artifact_manifest.csv",
+    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/artifact_manifest.csv",
 } as const;
 
 const auditedResults = {

@@ -163,7 +163,7 @@ export const truthRegistry = {
       value: "Uncertainty Quantification for Machine Learning Models in Transportation Policy Analysis",
       source: {
         tier: "immutable-artifact",
-        reference: `${canonicalThesisRepository}/blob/4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428/document/main.pdf`,
+        reference: `${canonicalThesisRepository}/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf`,
       },
       verifiedAt,
       public: true,
