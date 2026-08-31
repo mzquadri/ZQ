@@ -12,6 +12,16 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The authorship guard reads commit metadata, so it needs the commits.
+          fetch-depth: 0
+
+      # Metadata only: author, committer and trailer identities. It deliberately does not
+      # read file content, so documentation and dependency notices that name an AI vendor
+      # are unaffected -- what fails is an assistant recorded as having authored the work.
+      - name: Authorship
+        run: bash tools/check-authorship.sh --all
+
       - uses: actions/setup-node@v7
         with:
           node-version: 24
