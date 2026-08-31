@@ -10,7 +10,7 @@
 - `npm run test:e2e` runs desktop/mobile Playwright and axe checks against that build.
 - `npm run check` runs lint, typecheck, content validation, and build.
 
-Use Node 20 and install with `npm ci`.
+Use Node 24, as declared in `package.json` engines and used by CI. Install with `npm ci`.
 
 ## Architecture
 
@@ -22,43 +22,52 @@ The public repository snapshot lives in `src/content/ecosystem.ts`, current focu
 Routes and server components render those typed models. Do not duplicate project metrics
 or current facts in page components.
 
-Routes are `/`, `/work`, `/work/[slug]`, `/research`, `/research/thesis`, `/learn`, `/learn/[slug]`, `/about`,
-`/resume`, and `/contact`. `/drive` exists only as a redirect to `/work`. Trusted local MDX
-is stored in `content/writing`; never accept or compile user-provided MDX.
+Routes are `/`, `/work`, `/work/[slug]`, `/work/medico`, `/work/reliable-knowledge-systems`,
+`/research`, `/research/thesis`, `/learn`, `/learn/[slug]`, `/learn/level/[level]`,
+`/learn/topic/[topic]`, `/about`, and `/contact`. `/drive` exists only as a redirect to `/work`.
+There is no `/resume` route and no published resume in any form; `private/` holds the retired
+export and nothing in the build reads it. Trusted local MDX is stored in `content/writing`; never
+accept or compile user-provided MDX.
 
 The visual system is plain CSS in `src/app/globals.css`, using local Geist font files and
 static HTML/SVG. New components introduced after Website Completion v1 keep their styles in a
 CSS module beside the component instead of extending `globals.css`. Do not add remote fonts or
 a large client-side framework for decorative effects.
 
-`SystemGraph` is the sanctioned canvas 2D visual. It is hand-written with no 3D dependency,
+`SystemGraph` on `/work` is hand-written canvas 2D with no 3D dependency,
 it explains the data-to-decision path rather than decorating the page, and it must keep all
 four of its guarantees: a server-rendered static SVG and stage list that work without
 JavaScript, no canvas below 760px, no auto-rotation under `prefers-reduced-motion` or after
 the user takes control, and a usable page when the 2D context is unavailable.
 
-WebGL is permitted in exactly one place: the repository assemblies in
-`src/components/repo-assembly/`, on `/work`. That exception was granted deliberately and is
-narrow. It does not generalise. Any other proposal to add WebGL, to a different page or a
-different component, is out of scope and needs its own decision.
+There are two drawing layers. The canvas 2D chapter scenes on `/work` are described in
+`src/components/sequence`, and the 3D project worlds on the detail routes are the `*-world`
+components plus the repository assemblies in `src/components/repo-assembly/`.
 
-The assemblies must keep every one of these properties, or the exception no longer applies:
+Both layers are additive. Adding a new one, on a new page or for a new project, needs its own
+decision; it is not implied by the ones that exist. Every scene must keep all of these
+properties, or it does not ship:
 
-- The server-rendered card strip is the content of record. It renders always, carries every
-  fact the 3D layer can show, and stays fully navigable with JavaScript disabled.
-- three.js is loaded through `next/dynamic` with `ssr: false`, behind an IntersectionObserver,
-  and is absent from the initial payload.
-- The layer does not mount at all under `prefers-reduced-motion`, below 900px, or without
-  WebGL. Those are not degraded modes; they are the intended experience.
-- Rendering is `frameloop="demand"` and scroll-driven. Nothing renders while the page is
-  still. There is no ambient or idle animation.
-- A frame-budget guard unmounts the layer on sustained slow frames, leaving the strip visible
-  with no frozen frame and no layout shift.
-- Part labels come only from the typed registry through `src/content/assembly.ts`, which is a
-  pure mapping. No copy is authored there and assemblies are never padded to a uniform part
-  count.
+- The static figure or table is the content of record. It renders always, carries every fact
+  the scene can show, and stays fully navigable with JavaScript disabled.
+- Scene data comes from the same typed evidence module the surrounding prose cites. No number
+  is authored inside a scene, and no scene is padded to a uniform element count.
+- three.js is loaded through `next/dynamic` with `ssr: false`, behind an IntersectionObserver
+  whose root is shortened so a world under a short hero is not fetched on load. It is absent
+  from the initial payload.
+- Nothing mounts under `prefers-reduced-motion` or below the component's minimum width (1000px
+  for the project worlds, 900px for the assemblies). Those are not degraded modes; they are the
+  intended experience.
+- Drawing is scroll-driven and stops when the section leaves the viewport: the mount gate is
+  one-way, the visibility gate sets `frameloop` to `never`. There is no ambient or idle
+  animation, and no world keeps drawing for a reader who has moved on.
 
-Outside that exception the rule is unchanged: do not add WebGL, perpetual animation, particle
+The repository assemblies carry two further guards that the project worlds do not: an explicit
+WebGL-availability probe, and a frame-budget guard that drops to a degraded band on sustained
+slow frames without a frozen frame or layout shift. Extending either to the worlds would be an
+improvement, not a requirement they currently meet.
+
+Outside these layers the rule is unchanged: do not add WebGL, perpetual animation, particle
 fields, or decorative motion.
 
 ## Evidence And Privacy
