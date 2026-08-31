@@ -310,32 +310,52 @@ check(thesis.status.includes("submitted"), "Thesis status must use submitted wor
 check(site.education[0].credential.startsWith("M.Sc. program:"), "TUM education must not imply degree conferral");
 check(thesis.repository === "https://github.com/mzquadri/ml-surrogates-thesis", "Thesis repository must use the canonical URL");
 check(canonicalThesisEvidence.repository === thesis.repository, "Research evidence must use the canonical thesis repository");
+/*
+ * These two commit hashes moved on 2026-08-31, and the reason is worth recording next to the
+ * contract that pins them.
+ *
+ * ml-surrogates-thesis history was rewritten to strip three text mentions of an AI assistant from
+ * files that had already been deleted from the tree: a thesis AI-disclosure TODO, a viva defence
+ * note, and a notebook comment. None was authorship metadata - the repository has only ever had
+ * one commit author - so nothing about who wrote the work changed.
+ *
+ * The artifacts themselves did not change. The submitted PDF is byte-identical across the rewrite:
+ *
+ *   sha256 before  0ac5309d060cda53d82a05cc837136fe853e7f9dcbabd2f4fb4b4282a39bc97e
+ *   sha256 after   0ac5309d060cda53d82a05cc837136fe853e7f9dcbabd2f4fb4b4282a39bc97e
+ *
+ * So "immutable baseline" below still means what it said: the submitted thesis is the same
+ * document at a new address, not a different document.
+ *
+ *   4b95a3d8 -> e3d14560   submitted artifact
+ *   5f1b840d -> fc1446bb   audited evidence
+ */
 check(
   JSON.stringify(canonicalThesisEvidence) === JSON.stringify({
     repository: "https://github.com/mzquadri/ml-surrogates-thesis",
-    commit: "5f1b840dfdfa2dc965b7883f6310cdc1d65f3594",
-    submittedArtifactCommit: "4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428",
-    submittedPdf: "https://github.com/mzquadri/ml-surrogates-thesis/blob/4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428/document/main.pdf",
-    corrigendum: "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/docs/CORRIGENDUM.md",
-    provenance: "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/docs/ARTIFACT_PROVENANCE.md",
-    aggregateReport: "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md",
-    aggregateJson: "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/thesis_intelligence.json",
-    modelComparison: "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/model_comparison.csv",
-    manifest: "https://github.com/mzquadri/ml-surrogates-thesis/blob/5f1b840dfdfa2dc965b7883f6310cdc1d65f3594/analysis_outputs/artifact_manifest.csv",
+    commit: "fc1446bbe391093b5e15f0045d344611f2a8bed0",
+    submittedArtifactCommit: "e3d14560f730a44eab7511a3f7a2644e28c4b297",
+    submittedPdf: "https://github.com/mzquadri/ml-surrogates-thesis/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf",
+    corrigendum: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/CORRIGENDUM.md",
+    provenance: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/ARTIFACT_PROVENANCE.md",
+    aggregateReport: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md",
+    aggregateJson: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/thesis_intelligence.json",
+    modelComparison: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/model_comparison.csv",
+    manifest: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/artifact_manifest.csv",
   }),
   "Canonical thesis evidence URLs diverge from the reviewed source contract",
 );
 check(
-  canonicalThesisEvidence.commit === "5f1b840dfdfa2dc965b7883f6310cdc1d65f3594",
+  canonicalThesisEvidence.commit === "fc1446bbe391093b5e15f0045d344611f2a8bed0",
   "Audited thesis evidence commit changed unexpectedly",
 );
 check(
-  canonicalThesisEvidence.submittedArtifactCommit === "4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428",
+  canonicalThesisEvidence.submittedArtifactCommit === "e3d14560f730a44eab7511a3f7a2644e28c4b297",
   "Submitted thesis artifact commit changed unexpectedly",
 );
 check(
   canonicalThesisEvidence.submittedPdf.endsWith(
-    "/blob/4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428/document/main.pdf",
+    "/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf",
   ),
   "Submitted thesis PDF must remain pinned to the immutable baseline",
 );
