@@ -1,36 +1,68 @@
 # ZQ Research Portfolio
 
-The evidence-led portfolio for Mohd Zamin Quadri, focused on reliable machine learning,
-Applied AI, graph neural networks, scientific computing, and MLOps engineering.
+The portfolio site for Mohd Zamin Quadri, covering reliable machine learning, applied AI,
+graph neural networks, scientific computing, and MLOps engineering.
 
-The site is built with Next.js 16, React 19, TypeScript, and a small CSS design system.
-It is server-rendered and statically generated wherever possible. There is no analytics,
-cookie, contact form, remote font, WebGL scene, or third-party client script. The one
-interactive visual is a hand-written canvas 2D systems graph with a static server-rendered
-fallback and no 3D dependency.
+Every number on the site comes from a typed content model, and every claim that can be checked
+links to a specific commit in the repository it came from. The build fails rather than publish a
+project whose evidence, limitations, or contribution boundary is missing.
 
-## Information Architecture
+Built with Next.js 16, React 19, TypeScript, and plain CSS. Pages are React Server Components by
+default and statically generated wherever the content allows. There is no analytics, no cookie,
+no contact form, no remote font, and no third-party client script.
+
+## Routes
 
 | Route | Purpose |
 |---|---|
-| `/` | Current focus, selected work, interactive systems graph, research, repository index, experience, capabilities, and writing |
-| `/work` | Six written case studies plus a catalogued index of thirteen public repositories |
+| `/` | Current focus, selected work, systems graph, research, repository index, experience, capabilities, writing |
+| `/work` | Case-study index plus a catalogue of 26 public repositories |
 | `/work/[slug]` | Problem, contribution, workflow, evidence, quality controls, and limitations |
-| `/research` | Research overview with primary, supporting, and emerging directions |
-| `/research/thesis` | Progressive thesis record with methods, aggregate findings, interaction, limits, and provenance |
-| `/learn` | Technical tutorials and notes backed by a typed local MDX collection |
-| `/learn/[slug]` | Long-form technical content with code, equations, references, and related work |
-| `/about` | Current status, working principles, and proof-linked capabilities |
-| `/resume` | Canonical HTML resume generated from the approved truth and project models |
-| `/contact` | Verified GitHub and LinkedIn; no personal-data collection |
-| `/rss.xml` | RSS 2.0 feed for published technical content |
+| `/work/medico` | Standalone case study with its own scene |
+| `/work/reliable-knowledge-systems` | Standalone case study with its own scene |
+| `/research` | Research overview: primary, supporting, and emerging directions |
+| `/research/thesis` | Thesis record with methods, aggregate findings, limits, and provenance |
+| `/learn`, `/learn/[slug]` | Technical notes from a typed local MDX collection |
+| `/learn/level/[level]`, `/learn/topic/[topic]` | Taxonomy indexes derived from published entries |
+| `/about`, `/contact` | Status and working principles; verified GitHub and LinkedIn only |
+| `/rss.xml`, `/sitemap.xml`, `/robots.txt` | Feed and metadata endpoints |
 
-The retired `/drive` experiment redirects to `/work`. One redacted PDF export is generated
-from `/resume`; it intentionally omits email, phone, address, identifiers, and disputed dates.
+The retired `/drive` experiment redirects to `/work`. The site does not publish a resume: there is
+no route, no download, and no sitemap entry. The generated PDF is kept in `private/` as a source of
+record for a document sent privately, and nothing in the build reads it.
 
-## Run Locally
+Eight case studies are authored. Seven render in production. The eighth describes employer work,
+cannot be backed by a public repository, and is held as a draft: a production build excludes it
+entirely until a real approval is recorded against it, and the content validator fails the build
+rather than publish an unapproved one. See `docs/LEGAL_KB_CASE_STUDY.md`.
 
-Node 20 is required.
+## Scenes
+
+Two drawing layers, both fed from the same evidence modules the prose cites, so neither can drift
+from the numbers beside it.
+
+On `/work`, nine chapters are drawn with the canvas 2D API from a shared scene description in
+`src/components/sequence`. On the detail routes, eight projects carry a 3D scene built with
+three.js through react-three-fiber.
+
+Neither layer is the content of record. Every chapter renders a static figure or table that
+carries the same facts, stays in the document, and works with JavaScript disabled. A scene is
+added on top of that, and only when three gates pass:
+
+- the viewport is at least 1000px wide (900px for the repository assemblies on `/work`),
+- the reader has not asked for reduced motion,
+- the section has reached the upper two thirds of the viewport.
+
+Everything touching WebGL sits behind `next/dynamic` with `ssr: false`, so it is absent from the
+initial payload. A separate visibility gate sets `frameloop` to `never` once a section scrolls
+away, because a world that keeps drawing after the reader has moved on competes with them for the
+main thread. `docs/research/motion-review.md` records how that was measured;
+`docs/research/video-evaluation.md` records why the scenes are drawn at runtime rather than
+pre-rendered to video.
+
+## Run locally
+
+`package.json` requires Node 24.
 
 ```bash
 npm ci
@@ -43,47 +75,49 @@ Open `http://localhost:3000`.
 
 ```bash
 npm run check
-npm run generate:resume
 npx playwright install chromium
 npm run test:e2e
+npx tsx tools/check-evidence-links.ts
 ```
 
-`npm run check` runs lint, TypeScript, evidence/content validation, and a production build.
-Playwright exercises all public routes at desktop and mobile sizes with reduced-motion
-emulation and axe accessibility analysis.
+`npm run check` runs lint, TypeScript, content validation, the content test suite, and a
+production build. Playwright exercises the public routes at desktop and mobile sizes with
+reduced-motion emulation and axe accessibility analysis.
 
-## Content Integrity
+`check-evidence-links.ts` resolves every external link the site publishes by importing the content
+modules and walking their values, so a pinned path is checked as the page renders it rather than as
+a regular expression guesses it. It is deliberately outside `npm run check` and CI: it depends on
+GitHub being reachable, and a build that goes red because a third party is having a bad morning
+teaches people to ignore red.
 
-Current public facts live in `src/content/truth.ts`; project evidence lives in
-`src/content/portfolio.ts`; research protocols and aggregate values live in
-`src/content/research.ts`; the public repository snapshot lives in `src/content/ecosystem.ts`;
-current focus lives in `src/content/focus.ts`; long-form content lives in `content/writing`. `scripts/validate-content.ts` checks:
+## Content integrity
+
+Public facts live in `src/content/truth.ts`, project evidence in `src/content/portfolio.ts`,
+research protocols and aggregate values in `src/content/research.ts`, the repository snapshot in
+`src/content/ecosystem.ts`, current focus in `src/content/focus.ts`, and long-form content in
+`content/writing`. Routes render those models; they do not restate metrics.
+
+`scripts/validate-content.ts` checks:
 
 - source tiers, verification dates, review deadlines, and approved visibility;
 - unique project slugs, authorship records, and valid proof links;
 - evidence, quality controls, and limitations for every project;
 - required routes and metadata endpoints;
-- approved experience and education records, canonical resume paths, and omitted disputed dates;
-- absence of public email, phone, stale CV paths, and selected unsupported claims.
-- MDX metadata, publication dates, taxonomy consistency, project relationships, and privacy boundaries.
-- research route ownership, pinned thesis provenance, distinct calibration protocols, and discrete selective-risk points.
-- repository-index consistency: unique names, non-future commit dates, and agreement with each case study on the canonical repository URL.
-- systems-graph integrity: every stage populated, every edge resolvable, and no link on a node that is only a direction of study.
+- approved experience and education records, and omitted disputed dates;
+- absence of public email, phone, stale paths, and selected unsupported claims;
+- MDX metadata, publication dates, taxonomy consistency, and privacy boundaries;
+- research route ownership, pinned thesis provenance, and distinct calibration protocols;
+- repository-index consistency: unique names, non-future commit dates, and agreement with each
+  case study on the canonical repository URL;
+- systems-graph integrity: every stage populated, every edge resolvable, and no link on a node
+  that is only a direction of study;
 - sanitized confidential-work descriptions, which may name no endpoint, host, or address.
 
-Research figures and the focused selective-prediction interaction are site-native and use only
-reviewed aggregate values. No raw
-simulation data, row-level predictions, serialized models, confidential files, or local
-filesystem paths are included. See `docs/EVIDENCE_AND_PRIVACY.md` for the publication
-boundary.
+Figures use reviewed aggregate values only. No raw simulation data, row-level predictions,
+serialized models, confidential files, or local filesystem paths are included.
+`docs/EVIDENCE_AND_PRIVACY.md` sets out the publication boundary.
 
-One case study describes employer work and cannot be backed by a public repository. It is held
-as a draft: a production build excludes it entirely until a real publication approval is recorded
-against it, and the content validator fails the build rather than publish an unapproved one. Its
-figures, its guided walkthrough and its deterministic video export are documented in
-`docs/LEGAL_KB_CASE_STUDY.md`.
-
-The GitHub ecosystem is a reviewed static snapshot, not a live API integration: no route calls
+The GitHub ecosystem is a reviewed static snapshot rather than a live integration: no route calls
 GitHub at render time, no stars, forks, or contribution counts are published, and every page
 renders identically when GitHub is unavailable. See `docs/GITHUB_ECOSYSTEM.md`.
 
@@ -91,18 +125,19 @@ renders identically when GitHub is unavailable. See `docs/GITHUB_ECOSYSTEM.md`.
 
 ![Server-first portfolio architecture](docs/diagrams/architecture.svg)
 
-The site uses React Server Components by default. Shared typed content and trusted local MDX feed static pages,
-metadata, structured data, sitemap entries, and content validation. The only runtime
-dependencies beyond Next.js and React are build/server-side content parsing and rendering tools.
+Shared typed content and trusted local MDX feed static pages, metadata, structured data, sitemap
+entries, and validation. Beyond Next.js and React, the runtime dependencies are content parsing,
+rendering, and the scene layer.
 
 ## Deployment
 
-Vercel installs the locked dependency graph with `npm ci` and runs `npm run check`.
-Security headers disable framing, MIME sniffing, browser access to cameras, microphones,
-and geolocation, and limit referrer disclosure.
+Vercel installs the locked dependency graph with `npm ci` and runs `npm run check` as the build
+command, so a content or type failure blocks the deployment. Security headers disable framing and
+MIME sniffing, block browser access to cameras, microphones, and geolocation, and limit referrer
+disclosure. CI additionally runs the Playwright suite and a guard that rejects commit metadata
+attributing authorship to an assistant.
 
 ## License
 
-Website source is licensed under the [MIT License](LICENSE). Linked research repositories,
-thesis material, data, models, and figures retain their own terms and are not relicensed by
-this portfolio.
+Website source is under the [MIT License](LICENSE). Linked research repositories, thesis material,
+data, models, and figures keep their own terms and are not relicensed by this portfolio.
