@@ -9,6 +9,9 @@
 - `npm run build` creates the production build.
 - `npm run test:e2e` runs desktop/mobile Playwright and axe checks against that build.
 - `npm run check` runs lint, typecheck, content validation, and build.
+- `npm run privacy:scan` checks source and build output for employer-internal detail. The
+  confidential-draft exclusion only applies when `VERCEL_ENV=production`, so scan a build made
+  that way: `VERCEL_ENV=production npm run build && npm run privacy:scan`. CI does this.
 
 Use Node 24, as declared in `package.json` engines and used by CI. Install with `npm ci`.
 

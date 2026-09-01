@@ -98,3 +98,7 @@ tools/.medico-preview.png
 # Fetched repository trees for the source audit. Regenerate with tools/.audit/fetch.mjs.
 /tools/.audit/repos.json
 /media/motion/
+
+# Bytecode from the Python world generators in tools/.
+__pycache__/
+*.py[cod]

@@ -28,5 +28,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+
+      # The confidential draft is withheld by `draftsAreVisible`, which only excludes it
+      # when VERCEL_ENV is "production" -- the environment Vercel builds in. `npm run check`
+      # above builds without it, on purpose, so the draft is present and reviewable there.
+      # That leaves the exclusion itself unexercised, so rebuild the way production does and
+      # scan the output. tools/privacy-scan.mjs existed for exactly this and ran nowhere.
+      - name: Privacy scan against a production build
+        run: npm run build && npm run privacy:scan
+        env:
+          VERCEL_ENV: production
+
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
