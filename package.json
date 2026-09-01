@@ -12,6 +12,7 @@
     "test:content": "tsx --test tests/content-foundation.test.ts tests/ecosystem.test.ts tests/assembly.test.ts tests/confidential-project.test.ts tests/walkthrough.test.ts tests/systems-showcase.test.ts tests/strong-work.test.ts",
     "test:e2e": "npm run build && playwright test",
     "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build",
+    "privacy:scan": "node tools/privacy-scan.mjs",
     "refresh:research-feed": "tsx scripts/refresh-research-feed.ts",
     "record:video": "node tools/record-legal-kb-video.mjs"
   },
