@@ -169,7 +169,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "A beginner exercise, retained under its original name rather than quietly renamed to look like something else.",
   },
   {
-    name: "local-repo",
+    name: "git-python-basics",
     title: "Git and Python Learning Example",
     category: "Reference",
     language: "Python",
