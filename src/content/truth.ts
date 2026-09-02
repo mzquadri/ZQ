@@ -47,7 +47,19 @@ export interface EducationRecord {
 
 const verifiedAt = "2026-08-20";
 const currentFactReviewAfter = "2026-11-20";
-const canonicalThesisRepository = "https://github.com/mzquadri/ml-surrogates-thesis";
+/**
+ * Where the thesis codebase is maintained. The work was consolidated into the fork of the
+ * upstream repository on 1 Sep 2026, and ml-surrogates-thesis was archived at that point.
+ */
+const canonicalThesisRepository =
+  "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models";
+
+/**
+ * The archived predecessor. Used only to cite artifacts pinned to commits made there: those
+ * commits do not exist in the successor, so rewriting these references would break them.
+ * Archiving does not — an archived repository stays readable.
+ */
+const archivedThesisRepository = "https://github.com/mzquadri/ml-surrogates-thesis";
 const recruiterCoreApproval = "Recruiter Core v1 fact approval, 2026-08-20";
 const confidentialWorkApproval =
   "Website Completion v1 confidential-work sanitization approval, 2026-08-21";
@@ -163,7 +175,7 @@ export const truthRegistry = {
       value: "Uncertainty Quantification for Machine Learning Models in Transportation Policy Analysis",
       source: {
         tier: "immutable-artifact",
-        reference: `${canonicalThesisRepository}/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf`,
+        reference: `${archivedThesisRepository}/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf`,
       },
       verifiedAt,
       public: true,

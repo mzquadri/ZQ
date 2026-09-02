@@ -214,14 +214,26 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
   },
   {
     name: "ml_surrogates_for_agent_based_transport_models",
-    title: "Thesis Repository (Fork)",
-    category: "Reference",
+    title: "Reliable GNN Surrogates for Transport Policy",
+    category: "Featured",
     language: "Python",
-    topics: ["Fork", "Thesis", "Consolidation"],
+    topics: ["Uncertainty Quantification", "Graph Neural Networks", "Conformal Prediction", "PyTorch"],
     description:
-      "A fork carrying the same thesis work as the canonical repository, kept while the two are consolidated.",
+      "Master's thesis codebase studying when a graph neural network surrogate for transport simulation can be trusted, and how uncertainty supports a review decision.",
     boundary:
-      "Not an independent contribution. The maintained destination for the thesis artifact is ml-surrogates-thesis, and this entry exists so the duplication is visible rather than hidden.",
+      "A fork of Elena Natterer's repository, extending it with the uncertainty work. It carries the submitted thesis as a frozen record alongside a working copy that has since been edited, and says which is which. The artifacts it reads are published separately in ml-surrogates-thesis-data.",
+    caseStudySlug: "transport-uq",
+  },
+  {
+    name: "ml-surrogates-thesis-data",
+    title: "Thesis Artifacts",
+    category: "Research",
+    language: "Python",
+    topics: ["Research Data", "Reproducibility", "Provenance"],
+    description:
+      "The training and evaluation artifacts behind the thesis, in the directory layout the training scripts wrote: split scalers, test sets and loader parameters under data_created_during_training, model weights under trained_model.",
+    boundary:
+      "Data, not analysis. 1,267 files are tracked; nineteen exceed GitHub's per-file limit and are published as release assets with a script that restores them to their real paths. Reuse of the artifacts needs prior permission, unlike the MIT-licensed upstream code.",
   },
   {
     name: "express",
@@ -236,15 +248,14 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
   },
   {
     name: "ml-surrogates-thesis",
-    title: "Reliable GNN Surrogates for Transport Policy",
-    category: "Featured",
+    title: "Thesis Repository (Archived)",
+    category: "Reference",
     language: "Python",
-    topics: ["Uncertainty Quantification", "Graph Neural Networks", "Conformal Prediction", "PyTorch"],
+    topics: ["Archived", "Thesis", "Provenance"],
     description:
-      "Master's thesis codebase studying when a graph neural network surrogate for transport simulation can be trusted, and how uncertainty supports a review decision.",
+      "The earlier home of the thesis codebase, archived and read-only since the work was consolidated into the fork of the upstream repository.",
     boundary:
-      "Publishes the submitted PDF, a post-submission corrigendum, and aggregate audited artifacts. Raw simulation data and row-level predictions are not redistributable.",
-    caseStudySlug: "transport-uq",
+      "Superseded, and kept rather than deleted because the audited evidence cited across this site is pinned to commits here. Those links still resolve; an archived repository stays readable, and the commits do not exist in the successor.",
   },
   {
     name: "MLOps-End-to-End-Pipeline",
