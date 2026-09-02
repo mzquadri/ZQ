@@ -873,14 +873,49 @@ test("the WebGL layer stays off where it should and takes nothing with it", asyn
   const scripts = await page.locator("script[src]").evaluateAll((nodes) =>
     nodes.map((node) => node.getAttribute("src") ?? ""),
   );
-  const sizes = await Promise.all(
+  const fetched = await Promise.all(
     scripts.map(async (src) => {
       const response = await page.request.get(new URL(src, page.url()).toString());
-      return (await response.body()).byteLength;
+      const body = await response.body();
+      return { src, size: body.byteLength, text: body.toString("utf8") };
     }),
   );
-  const total = sizes.reduce((sum, size) => sum + size, 0);
-  expect(total, "no route script may be large enough to contain a 3D renderer").toBeLessThan(900_000);
+  const total = fetched.reduce((sum, chunk) => sum + chunk.size, 0);
+
+  /*
+   * A size ceiling is a proxy for the thing that actually matters, and a proxy drifts: a
+   * dependency bump can carry it past the line while no renderer is anywhere near this
+   * route. So name the renderer directly, and attach the per-chunk breakdown to both
+   * assertions -- a budget that trips without saying which chunk grew is a puzzle, not a
+   * signal.
+   *
+   * That distinction earned itself on 2 Sep 2026. The 900 kB ceiling began failing on a
+   * commit that had passed the day before, with the repository unchanged: 953,657 bytes,
+   * then 902,094 on a retry of the same run. Chunking is not byte-stable across runs, and
+   * the same build measures 739,143 on Node 20 locally against ~900-950 kB on the Node 24
+   * runner. The renderer assertion passed throughout, which is what established the growth
+   * was dependency weight rather than three.js reaching a route that mounts no canvas.
+   *
+   * Hence 1.2 MB: above the observed spread with room to drift, and still far below what a
+   * leaked renderer costs. The three.js chunk alone is ~855 kB, so a real leak lands near
+   * 1.8 MB and trips this immediately.
+   */
+  const carriesRenderer = fetched.filter((chunk) =>
+    /THREE\.WebGLRenderer|WebGLRenderer|three\.module/.test(chunk.text),
+  );
+  const breakdown = [...fetched]
+    .sort((a, b) => b.size - a.size)
+    .map((chunk) => `  ${String(chunk.size).padStart(8)}  ${chunk.src}`)
+    .join("\n");
+
+  expect(
+    carriesRenderer.map((chunk) => chunk.src),
+    `a route script carries the 3D renderer.\n${breakdown}`,
+  ).toEqual([]);
+  expect(
+    total,
+    `no route script may be large enough to contain a 3D renderer.\n${breakdown}`,
+  ).toBeLessThan(1_200_000);
 
   // The card still says what the points would have said.
   await expect(page.getByText("One embedded record per active unit", { exact: false })).toBeVisible();
