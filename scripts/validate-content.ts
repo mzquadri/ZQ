@@ -308,8 +308,27 @@ for (const slug of featuredProjectSlugs) {
 check(getFeaturedProjects().length === featuredProjectSlugs.length, "Featured project registry is inconsistent");
 check(thesis.status.includes("submitted"), "Thesis status must use submitted wording");
 check(site.education[0].credential.startsWith("M.Sc. program:"), "TUM education must not imply degree conferral");
-check(thesis.repository === "https://github.com/mzquadri/ml-surrogates-thesis", "Thesis repository must use the canonical URL");
-check(canonicalThesisEvidence.repository === thesis.repository, "Research evidence must use the canonical thesis repository");
+/*
+ * Two repositories, two roles, and they stopped being the same one on 1 Sep 2026.
+ *
+ * The thesis work was consolidated into the fork of the upstream repository, and
+ * ml-surrogates-thesis was archived. Maintenance moved; the pinned evidence did not, and
+ * could not: the commits the audited artifacts are cited at exist only in the archived
+ * repository. Repointing those URLs at the successor would name commits that are not there.
+ *
+ * So `thesis.repository` is where the code lives now, `canonicalThesisEvidence.repository`
+ * is where the cited artifacts are frozen, and the check that once collapsed them into one
+ * assertion is split in two. Archiving does not break the links — an archived repository
+ * stays readable — which is why the old one is kept rather than deleted.
+ */
+check(
+  thesis.repository === "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models",
+  "Thesis repository must use the canonical URL",
+);
+check(
+  canonicalThesisEvidence.repository === "https://github.com/mzquadri/ml-surrogates-thesis",
+  "Research evidence must stay pinned to the archived repository that holds those commits",
+);
 /*
  * These two commit hashes moved on 2026-08-31, and the reason is worth recording next to the
  * contract that pins them.
