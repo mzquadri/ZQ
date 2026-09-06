@@ -20,6 +20,15 @@
 # Human co-authors pass. Upstream attribution passes. Documentation discussing an AI
 # vendor passes. What fails is an assistant being recorded as having authored the work.
 #
+# A third check covers tracked assistant CONFIGURATION - CLAUDE.md, .claude/, .cursorrules
+# and friends. It exists because the identity and trailer checks cannot see them: a
+# committed CLAUDE.md carries no attribution metadata at all, so it passed this guard for
+# the whole time it sat in the repository root. It matches PATHS, never content, which is
+# what keeps the NOTICE exemption above intact - a file may discuss any vendor it likes,
+# but a tool's own config file is not part of this work and is not published with it.
+# These paths are covered by a global core.excludesFile, so a hit here means something
+# bypassed the ignore rules, usually `git add -f`.
+#
 # Usage:
 #   tools/check-authorship.sh                 # commits not yet on the upstream branch
 #   tools/check-authorship.sh <range>         # an explicit range, e.g. HEAD~20..HEAD
@@ -37,6 +46,12 @@ FORBIDDEN='claude|anthropic|copilot|chatgpt|openai|gpt-[0-9]|\bai[ -]assistant\b
 # Trailers that assert authorship or contribution.
 TRAILERS='co-authored-by|signed-off-by|assisted-by|generated-by|created-by|authored-with|contributor'
 
+# Assistant configuration that must never be tracked. Matched against tracked PATHS only,
+# anchored so a directory named .claude/ is caught anywhere in the tree while a source file
+# that merely mentions a vendor is not. Extend this list, not FORBIDDEN, for new tools -
+# FORBIDDEN is vocabulary and would false-positive on licence text.
+FORBIDDEN_PATHS='(^|/)(CLAUDE(\.local)?\.md|AGENTS\.md|\.mcp\.json|\.cursorrules|\.windsurfrules|copilot-instructions\.md|\.aider[^/]*)$|(^|/)\.(claude|cursor|continue|aider)/'
+
 range="${1:-}"
 if [ "$range" = "--all" ]; then
   revs="--all"
@@ -53,6 +68,8 @@ else
 fi
 
 fail=0
+fail_meta=0
+fail_paths=0
 
 # --- identities -------------------------------------------------------------------
 # One record per commit so a match can be reported against the commit that carries it.
@@ -62,7 +79,7 @@ while IFS='|' read -r sha an ae cn ce; do
     if printf '%s' "$field" | grep -qiE "$FORBIDDEN"; then
       echo "FAIL ${sha:0:9} AI identity in commit metadata: '${field}'"
       echo "     author=${an} <${ae}>  committer=${cn} <${ce}>"
-      fail=1
+      fail=1; fail_meta=1
     fi
   done
 done < <(git log --format='%H|%an|%ae|%cn|%ce' $revs 2>/dev/null)
@@ -76,12 +93,25 @@ while read -r sha; do
     value="${line#*:}"
     if printf '%s' "$value" | grep -qiE "$FORBIDDEN"; then
       echo "FAIL ${sha:0:9} AI attribution trailer: ${line}"
-      fail=1
+      fail=1; fail_meta=1
     fi
   done < <(git log -1 --format='%B' "$sha" | grep -iE "^[[:space:]]*(${TRAILERS}):" || true)
 done < <(git log --format='%H' $revs 2>/dev/null)
 
-if [ "$fail" -ne 0 ]; then
+# --- tooling artifacts ------------------------------------------------------------
+# Tested against the tracked tree rather than the commit range, deliberately. A config
+# file committed once stays tracked forever while every later range comes back clean, so
+# a range-scoped test reports "clean" on a repository that is still publishing the file.
+artifacts=$(git ls-files | grep -iE "$FORBIDDEN_PATHS" || true)
+if [ -n "$artifacts" ]; then
+  while IFS= read -r path; do
+    [ -z "$path" ] && continue
+    echo "FAIL tracked assistant configuration: ${path}"
+  done <<< "$artifacts"
+  fail=1; fail_paths=1
+fi
+
+if [ "$fail_meta" -ne 0 ]; then
   cat <<'MSG'
 
 Commit metadata records an AI assistant as an author, committer or co-author.
@@ -93,8 +123,31 @@ Fix the identity rather than the wording:
 This check reads Git metadata only. It does not read file content, so upstream
 copyright notices and documentation that discusses an AI vendor are unaffected.
 MSG
+fi
+
+if [ "$fail_paths" -ne 0 ]; then
+  cat <<'MSG'
+
+Assistant configuration is tracked in this repository. These files are the tool's,
+not the work's, and are covered by a global core.excludesFile - so being tracked
+means the ignore rules were bypassed, usually by `git add -f` or by a commit made
+before the rule existed.
+
+Untrack them, keeping your local copies:
+  git rm --cached -r <path>
+
+Verify the ignore rule is actually in effect:
+  git check-ignore -v <path>
+
+Paths are matched, never file content, so a source file or NOTICE that names an AI
+vendor is unaffected.
+MSG
+fi
+
+if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 
 count=$(git rev-list --count $revs 2>/dev/null || echo 0)
-echo "authorship clean: ${count} commit(s) checked in ${revs}"
+tracked=$(git ls-files | wc -l | tr -d ' ')
+echo "authorship clean: ${count} commit(s) checked in ${revs}; ${tracked} tracked path(s) checked"
