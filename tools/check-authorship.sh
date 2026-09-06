@@ -72,6 +72,17 @@ else
   fi
 fi
 
+# A range that does not resolve must not read as "nothing to check". Both loops below
+# redirect stderr and yield no commits on a bad range, and the summary counted with a
+# `|| echo 0` fallback, so an unresolvable range printed "authorship clean: 0 commit(s)"
+# and exited 0. Silent success is the one result a guard may not produce, so resolve the
+# range once, up front, and fail loudly if it does not.
+if ! count=$(git rev-list --count $revs 2>/dev/null); then
+  echo "FAIL cannot resolve revision range: ${revs}" >&2
+  echo "     Nothing was checked. Pass a range that exists, or --all." >&2
+  exit 2
+fi
+
 fail=0
 fail_meta=0
 fail_paths=0
@@ -153,6 +164,5 @@ if [ "$fail" -ne 0 ]; then
   exit 1
 fi
 
-count=$(git rev-list --count $revs 2>/dev/null || echo 0)
 tracked=$(git ls-files | wc -l | tr -d ' ')
 echo "authorship clean: ${count} commit(s) checked in ${revs}; ${tracked} tracked path(s) checked"
