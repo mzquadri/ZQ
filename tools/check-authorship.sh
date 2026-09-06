@@ -34,8 +34,13 @@
 #   tools/check-authorship.sh <range>         # an explicit range, e.g. HEAD~20..HEAD
 #   tools/check-authorship.sh --all           # every commit on every ref
 #
-# Install as a pre-push hook:
-#   ln -s ../../tools/check-authorship.sh .git/hooks/pre-push
+# Install as a pre-push hook - via a wrapper, not a symlink. Git passes the remote name
+# as $1, which this script reads as a rev range, so a direct symlink checks "origin" -
+# the commits already pushed - and never the ones being pushed. The wrapper drops the
+# arguments so the default range applies:
+#
+#   printf '#!/usr/bin/env bash\nexec "$(git rev-parse --show-toplevel)/tools/check-authorship.sh"\n' \
+#     > .git/hooks/pre-push && chmod +x .git/hooks/pre-push
 #
 set -euo pipefail
 
