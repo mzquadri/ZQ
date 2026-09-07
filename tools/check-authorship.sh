@@ -44,6 +44,13 @@
 #
 set -euo pipefail
 
+# Matching runs through bash's own =~ rather than a piped grep. The obvious spelling,
+# `printf '%s' "$field" | grep -qiE "$FORBIDDEN"`, costs two processes per test, which
+# came to roughly five thousand of them on an 824-commit history and over two minutes
+# on Windows, where process creation is expensive. =~ is in-process. nocasematch is what
+# makes it case-insensitive, standing in for grep's -i.
+shopt -s nocasematch
+
 # Identities that must never appear as an author, committer or co-author of this work.
 # Matched case-insensitively against the identity string, not against file content.
 FORBIDDEN='claude|anthropic|copilot|chatgpt|openai|gpt-[0-9]|\bai[ -]assistant\b|\bbot\b'
@@ -92,7 +99,7 @@ fail_paths=0
 while IFS='|' read -r sha an ae cn ce; do
   [ -z "${sha:-}" ] && continue
   for field in "$an" "$ae" "$cn" "$ce"; do
-    if printf '%s' "$field" | grep -qiE "$FORBIDDEN"; then
+    if [[ $field =~ $FORBIDDEN ]]; then
       echo "FAIL ${sha:0:9} AI identity in commit metadata: '${field}'"
       echo "     author=${an} <${ae}>  committer=${cn} <${ce}>"
       fail=1; fail_meta=1
@@ -103,16 +110,26 @@ done < <(git log --format='%H|%an|%ae|%cn|%ce' $revs 2>/dev/null)
 # --- trailers ---------------------------------------------------------------------
 # Only the value side of a trailer is tested. "Co-authored-by: Jane <jane@example.com>"
 # is fine; the same trailer naming an assistant is not.
-while read -r sha; do
-  [ -z "${sha:-}" ] && continue
-  while IFS= read -r line; do
-    value="${line#*:}"
-    if printf '%s' "$value" | grep -qiE "$FORBIDDEN"; then
-      echo "FAIL ${sha:0:9} AI attribution trailer: ${line}"
-      fail=1; fail_meta=1
-    fi
-  done < <(git log -1 --format='%B' "$sha" | grep -iE "^[[:space:]]*(${TRAILERS}):" || true)
-done < <(git log --format='%H' $revs 2>/dev/null)
+#
+# One `git log` for the whole range, not one per commit. The nested form this replaces
+# ran `git log -1` plus a grep for every commit, so the cost grew with history length
+# and an --all scan of 824 commits took over two minutes. Commits are delimited by a
+# leading SOH, which cannot occur in a commit message body.
+TRAILER_RE="^[[:space:]]*(${TRAILERS}):"
+sha=""
+while IFS= read -r line; do
+  line="${line%$'\r'}"
+  if [ "${line:0:1}" = $'\x01' ]; then
+    sha="${line:1}"
+    continue
+  fi
+  [[ $line =~ $TRAILER_RE ]] || continue
+  value="${line#*:}"
+  if [[ $value =~ $FORBIDDEN ]]; then
+    echo "FAIL ${sha:0:9} AI attribution trailer: ${line}"
+    fail=1; fail_meta=1
+  fi
+done < <(git log --format="%x01%H%n%B" $revs 2>/dev/null)
 
 # --- tooling artifacts ------------------------------------------------------------
 # Tested against the tracked tree rather than the commit range, deliberately. A config
