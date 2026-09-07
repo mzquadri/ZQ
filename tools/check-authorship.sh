@@ -96,7 +96,16 @@ fail_paths=0
 
 # --- identities -------------------------------------------------------------------
 # One record per commit so a match can be reported against the commit that carries it.
-while IFS='|' read -r sha an ae cn ce; do
+#
+# Records are NUL-terminated by -z and fields split on US (0x1f), rather than both on a
+# printable character. The previous format was %H|%an|%ae|%cn|%ce, and a pipe in a name
+# shifted every field after it: "Jane | Doe" was read as an="Jane ", ae=" Doe",
+# cn="jane@example.com". Detection survived that only by accident - read assigns the
+# unsplit remainder to the last variable, so the displaced text was still tested as part
+# of $ce - but every diagnostic named the wrong field, which is what a reader acts on.
+# Neither delimiter can appear in an ident: git rejects NUL outright and strips control
+# characters below 0x20 when building one.
+while IFS=$'\x1f' read -r -d '' sha an ae cn ce; do
   [ -z "${sha:-}" ] && continue
   for field in "$an" "$ae" "$cn" "$ce"; do
     if [[ $field =~ $FORBIDDEN ]]; then
@@ -105,7 +114,7 @@ while IFS='|' read -r sha an ae cn ce; do
       fail=1; fail_meta=1
     fi
   done
-done < <(git log --format='%H|%an|%ae|%cn|%ce' $revs 2>/dev/null)
+done < <(git log -z --format="%H%x1f%an%x1f%ae%x1f%cn%x1f%ce" $revs 2>/dev/null)
 
 # --- trailers ---------------------------------------------------------------------
 # Only the value side of a trailer is tested. "Co-authored-by: Jane <jane@example.com>"
