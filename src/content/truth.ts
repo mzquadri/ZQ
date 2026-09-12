@@ -25,11 +25,17 @@ export interface ExperienceRecord {
   organization: string;
   title: string;
   location?: string;
-  /*
-   * No status field. It existed to carry "Present", which is a chronology marker: it only means
-   * anything relative to roles that are past. Roles are published as disciplines, not as a
-   * sequence, so there is no endpoint for it to mark.
+  /**
+   * Employment period, transcribed verbatim from the CV of 19 Aug 2026 and formatted as
+   * "Mon YYYY - Mon YYYY", with "Present" only where the CV itself carries it.
+   *
+   * This field replaces an earlier decision to publish no dates at all. That decision was made
+   * to stop a five-role list reading as a career narrative, and the disciplines grouping still
+   * carries that intent. But a recruiter reading a portfolio needs to know how long something
+   * ran, and withholding it costs more than the narrative it avoided. Dates are published where
+   * a document supports them and nowhere else.
    */
+  period?: string;
   /**
    * Sanitized, abstract description of confidential professional work. It must never name an
    * internal endpoint, URL, host, customer, credential, or unpublished company document, and
@@ -42,7 +48,25 @@ export interface EducationRecord {
   id: string;
   institution: string;
   credential: string;
+  /** Completion year as printed on the CV. Not a conferral claim; see `status`. */
+  period?: string;
+  location?: string;
   status?: string;
+}
+
+/** A certification with an issuer and a date, both taken from the CV. */
+export interface CredentialRecord {
+  id: string;
+  title: string;
+  issuer: string;
+  awarded: string;
+}
+
+/** A language with its self-assessed CEFR level, as published on the CV. */
+export interface LanguageRecord {
+  id: string;
+  language: string;
+  level: string;
 }
 
 const verifiedAt = "2026-08-20";
@@ -64,6 +88,20 @@ const archivedThesisRepository =
 const recruiterCoreApproval = "Recruiter Core v1 fact approval, 2026-08-20";
 const confidentialWorkApproval =
   "Website Completion v1 confidential-work sanitization approval, 2026-08-21";
+/**
+ * The CV that dates, certifications and languages are transcribed from. It is a private
+ * document. What is published from it is the professional record only: no phone number, no
+ * street address, no photograph, no identifier.
+ */
+const curriculumVitae = "Curriculum vitae, revision of 2026-08-19 (privately held)";
+/**
+ * Contact and document publication were both previously withheld, the email for want of a
+ * durable address and the CV after a private PDF was found to be reachable from a public
+ * repository. Both are now approved: the address below is the one already attached to public
+ * commit history, and the published CV is generated for the web rather than being the private
+ * document.
+ */
+const contactApproval = "Professional contact approval, 2026-09-13";
 
 export const truthRegistry = {
   identity: {
@@ -109,7 +147,8 @@ export const truthRegistry = {
           id: "bp-itcs",
           organization: "BP-IT Consulting & Solutions GmbH",
           title: "AI Engineer (Working Student)",
-          location: "Munich",
+          location: "Munich, Germany",
+          period: "Apr 2025 - Present",
           practice:
             "Built verification workflows for a multilingual legal knowledge platform using relational, vector, and graph storage.",
         },
@@ -117,26 +156,34 @@ export const truthRegistry = {
           id: "tum-programming-visualization",
           organization: "Technical University of Munich",
           title: "Student Research Assistant / Programming and Visualization",
+          location: "Munich, Germany",
+          period: "Aug 2023 - Mar 2024",
         },
         {
           id: "audi-workflows-databases",
           organization: "AUDI AG",
           title: "Intern, Programming of Workflows and Linking of Databases",
+          location: "Ingolstadt, Germany",
+          period: "Jan 2023 - Jun 2023",
         },
         {
           id: "tum-numerical-methods",
           organization: "Technical University of Munich",
           title: "Student Research Assistant, Numerical Methods and Scientific Visualization",
+          location: "Munich, Germany",
+          period: "Apr 2022 - Dec 2022",
         },
         {
           id: "iiser-battery-ml",
           organization: "IISER Bhopal",
           title: "Summer Research Intern, Machine Learning for Li-ion Battery State Estimation",
+          location: "Bhopal, India",
+          period: "May 2021 - Jul 2021",
         },
       ] as const satisfies readonly ExperienceRecord[],
       source: {
         tier: "approved-document",
-        reference: `${recruiterCoreApproval}; sanitized practice descriptions under ${confidentialWorkApproval}`,
+        reference: `${recruiterCoreApproval}; sanitized practice descriptions under ${confidentialWorkApproval}; periods and locations from ${curriculumVitae}`,
       },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,
@@ -157,15 +204,53 @@ export const truthRegistry = {
           id: "tum-mse",
           institution: "Technical University of Munich",
           credential: "M.Sc. program: Mathematics in Science and Engineering",
+          location: "Munich, Germany",
+          period: "2026",
           status: "Master's thesis submitted",
         },
         {
           id: "amu-mathematics",
           institution: "Aligarh Muslim University",
           credential: "B.Sc. (Hons.) Mathematics",
+          location: "Aligarh, India",
+          period: "2021",
         },
       ] as const satisfies readonly EducationRecord[],
       source: { tier: "approved-document", reference: recruiterCoreApproval },
+      verifiedAt,
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+  },
+  credentials: {
+    certifications: {
+      value: [
+        {
+          id: "dlai-neural-networks",
+          title: "Neural Networks and Deep Learning",
+          issuer: "DeepLearning.AI, Coursera",
+          awarded: "Sep 2024",
+        },
+        {
+          id: "dlai-improving-dnn",
+          title:
+            "Improving Deep Neural Networks: Hyperparameter Tuning, Regularization and Optimization",
+          issuer: "DeepLearning.AI, Coursera",
+          awarded: "Sep 2024",
+        },
+      ] as const satisfies readonly CredentialRecord[],
+      source: { tier: "approved-document", reference: curriculumVitae },
+      verifiedAt,
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+    languages: {
+      value: [
+        { id: "english", language: "English", level: "Full professional proficiency (C1)" },
+        { id: "german", language: "German", level: "Elementary proficiency (A2), working toward B1" },
+        { id: "hindi-urdu", language: "Hindi / Urdu", level: "Native / bilingual proficiency" },
+      ] as const satisfies readonly LanguageRecord[],
+      source: { tier: "approved-document", reference: curriculumVitae },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,
       public: true,
@@ -260,11 +345,49 @@ export const truthRegistry = {
       reviewAfter: currentFactReviewAfter,
       public: true,
     },
+    /**
+     * The published address. It is the one already attached to public commit history, which
+     * makes it both durable and already disclosed - the two objections that kept this field
+     * null. The university address on the CV is deliberately not used: it expires with the
+     * enrolment, and a portfolio outlives that.
+     */
     email: {
-      value: null,
-      source: { tier: "approved-document", reference: "No durable email approved for publication" },
-      verifiedAt,
-      public: false,
+      value: "mohdzaminquadri@gmail.com",
+      source: { tier: "profile", reference: contactApproval },
+      verifiedAt: "2026-09-13",
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+  },
+  artifacts: {
+    /**
+     * The architecture case studies. A separate public repository and static site, written and
+     * redaction-checked on its own terms; this site links to it rather than restating it.
+     */
+    architecture: {
+      value: "https://mzquadri.github.io/ai-engineering-portfolio/",
+      source: { tier: "public-copy", reference: "github.com/mzquadri/ai-engineering-portfolio" },
+      verifiedAt: "2026-09-13",
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+    architectureRepository: {
+      value: "https://github.com/mzquadri/ai-engineering-portfolio",
+      source: { tier: "public-copy", reference: "Public repository" },
+      verifiedAt: "2026-09-13",
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+    /**
+     * The published CV. It is generated for the web from the facts in this registry, not a copy
+     * of the private document: no phone number, no street address, no photograph.
+     */
+    cv: {
+      value: "/mohd-zamin-quadri-cv.pdf",
+      source: { tier: "approved-document", reference: contactApproval },
+      verifiedAt: "2026-09-13",
+      reviewAfter: currentFactReviewAfter,
+      public: true,
     },
   },
   portfolio: {
@@ -298,6 +421,9 @@ export const currentPublicFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.profiles.domain,
   truthRegistry.profiles.github,
   truthRegistry.profiles.linkedin,
+  truthRegistry.profiles.email,
+  truthRegistry.artifacts.architecture,
+  truthRegistry.artifacts.cv,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -323,6 +449,12 @@ export const publishedFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.profiles.domain,
   truthRegistry.profiles.github,
   truthRegistry.profiles.linkedin,
+  truthRegistry.profiles.email,
+  truthRegistry.credentials.certifications,
+  truthRegistry.credentials.languages,
+  truthRegistry.artifacts.architecture,
+  truthRegistry.artifacts.architectureRepository,
+  truthRegistry.artifacts.cv,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -341,6 +473,12 @@ export const site = {
   education: truthRegistry.education.records.value as readonly EducationRecord[],
   github: truthRegistry.profiles.github.value,
   linkedin: truthRegistry.profiles.linkedin.value,
+  email: truthRegistry.profiles.email.value,
+  certifications: truthRegistry.credentials.certifications.value as readonly CredentialRecord[],
+  languages: truthRegistry.credentials.languages.value as readonly LanguageRecord[],
+  architecture: truthRegistry.artifacts.architecture.value,
+  architectureRepository: truthRegistry.artifacts.architectureRepository.value,
+  cv: truthRegistry.artifacts.cv.value,
 } as const;
 
 export const thesis = {

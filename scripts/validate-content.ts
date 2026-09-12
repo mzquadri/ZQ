@@ -27,6 +27,7 @@ import {
   getPopulatedCategories,
   repositoryUrl,
 } from "../src/content/ecosystem";
+import { cv } from "../src/content/cv";
 import { buildingThreads, focusThemes } from "../src/content/focus";
 import {
   confidenceLadder,
@@ -187,6 +188,15 @@ for (const path of requiredFiles) {
 }
 
 const publicContent = JSON.stringify({
+  /*
+   * The CV module is scanned as public content, not as a build script.
+   *
+   * It is the only input the CV generator reads, so scanning it is what makes "the published PDF
+   * carries no phone number" a checked property rather than a promise about a binary. A regex over
+   * the PDF cannot do this job: Chromium subsets its fonts, so the text is not recoverable from
+   * the bytes and a scan of them passes whatever they contain.
+   */
+  cv,
   buildingThreads,
   capabilities,
   confidenceLadder,
@@ -221,14 +231,22 @@ const writingSource = readdirSync(resolve("content/writing"))
   .map((path) => readFileSync(resolve("content/writing", path), "utf8"))
   .join("\n");
 const renderedSource = `${publicContent}\n${publicSource}\n${writingSource}`;
-const privacyText = renderedSource.replace(/https?:\/\/\S+/g, "");
+/*
+ * URLs and the one approved address are removed before the blanket privacy helper runs.
+ *
+ * That helper answers "does this text contain contact details" and is right to say yes to any
+ * address it finds. Approval is a question it cannot see, so it is asked about the text minus the
+ * address that has been approved - and the check immediately below asks about the address itself.
+ */
+const privacyText = renderedSource
+  .replace(/https?:\/\/\S+/g, "")
+  .replaceAll(truthRegistry.profiles.email.value, "");
 const forbiddenClaims = [
   "production-grade",
   "Dean's List",
   "18+",
   "88.7%",
   "zero bugs",
-  "Mohd_Zamin_CV.pdf",
   "graduated",
   "degree awarded",
   "tracked prediction artifacts",
@@ -241,10 +259,43 @@ for (const claim of forbiddenClaims) {
 const privateTextIssue = getPrivateTextIssue(privacyText);
 check(!privateTextIssue, `Public content ${privateTextIssue ?? "violates the privacy boundary"}`);
 check(!/[A-Za-z]:\\Users\\|\/(?:Users|home)\//.test(renderedSource), "Public content contains a local filesystem path");
-check(!/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/.test(renderedSource), "Public content contains an email address");
+/*
+ * One approved address, and no other.
+ *
+ * This used to forbid every email address in the rendered source. The site now publishes one, so
+ * the check became the wrong shape rather than the wrong idea: what it guards against is an
+ * address arriving without being approved first, not the existence of contact. Every address in
+ * the source is compared against the registry, and anything else fails the build.
+ */
+const approvedEmail = truthRegistry.profiles.email.value;
+check(typeof approvedEmail === "string" && approvedEmail.length > 0, "No approved email in the registry");
+const foundEmails = new Set(renderedSource.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g) ?? []);
+for (const found of foundEmails) {
+  check(found === approvedEmail, `Public content contains an unapproved email address: ${found}`);
+}
 check(site.experience.length === 5, "Expected five approved experience records");
 check(new Set(site.experience.map((record) => record.id)).size === site.experience.length, "Experience IDs must be unique");
-check(!/\b(?:19|20)\d{2}\b/.test(JSON.stringify(site.experience)), "Public experience records must omit dates");
+/*
+ * Experience dates are published now, so the check is on their shape rather than their absence.
+ *
+ * They were withheld because an undated list of five roles still reads as a career narrative, and
+ * the disciplines grouping already answers that better. What it did not answer is how long
+ * anything ran, which a reader of a portfolio legitimately wants. Each period must match one
+ * approved format and end either in a month and year or in "Present", so a half-typed range or an
+ * invented one fails the build rather than shipping.
+ */
+const PERIOD =
+  /^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d{2} - (?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d{2}|Present)$/;
+for (const record of site.experience) {
+  check(
+    typeof record.period === "string" && PERIOD.test(record.period),
+    `${record.id} must publish a period in the approved format, got: ${record.period ?? "none"}`,
+  );
+}
+check(
+  site.experience.filter((record) => record.period?.endsWith("Present")).length <= 1,
+  "At most one role may be marked Present",
+);
 check(site.education.length === 2, "Expected two approved education records");
 check(new Set(site.education.map((record) => record.id)).size === site.education.length, "Education IDs must be unique");
 for (const record of site.experience) {
@@ -252,19 +303,24 @@ for (const record of site.experience) {
   check(record.organization.trim().length > 0 && record.title.trim().length > 0, `${record.id} is incomplete`);
 }
 /*
- * The resume subsystem is retired.
+ * The CV is published again, under a different rule than the one that retired it.
  *
- * The site no longer publishes a resume in any form - no route, no navigation entry, no download
- * action, no sitemap entry - so there is no published document left to keep in sync with the
- * source facts, and the generator that rendered it has been removed along with the route it
- * rendered. The source PDF is retained outside `public/` and is not served.
- *
- * What replaces this check is stricter than it was: the assertion below fails the build if any
- * resume surface reappears anywhere in the app or content tree.
+ * What was withdrawn was a private document that had been committed to a public repository and
+ * was reachable from it. What is published now is generated from this registry by
+ * `tools/gen-cv.ts`, so it contains what the pages contain and nothing else: no phone number, no
+ * street address, no photograph, because none of those are in the content module the generator
+ * reads. The checks below hold that line.
  */
+const cvHref = truthRegistry.artifacts.cv.value;
+check(cvHref === "/mohd-zamin-quadri-cv.pdf", "The published CV path is not the approved one");
+check(existsSync(resolve("public", cvHref.replace(/^\//, ""))), `The published CV is missing: ${cvHref}`);
 check(
-  !/\bresumes?\b|\bcurriculum vitae\b|download\s+cv\b/i.test(renderedSource),
-  "A resume surface reappeared in the rendered site source",
+  !/Mohd_Zamin_Quadri_CV|mohd-zamin-quadri-resume/i.test(renderedSource),
+  "A private CV filename appears in the rendered site source",
+);
+check(
+  !/\+\s*49[\s)(\d-]{7,}|\(\+\d{1,3}\)/.test(renderedSource),
+  "Public content contains a telephone number",
 );
 
 /*
@@ -281,10 +337,26 @@ check(
 for (const project of projects) {
   check(!("year" in project), `${project.slug} must not publish a portfolio year`);
 }
-check(
-  !/\b(Apr|Jan|Feb|Mar|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(Present|20\d{2})/i.test(renderedSource),
-  "An employment date range reappeared in the rendered site source",
+/*
+ * Employment ranges are allowed in the rendered source now, but only the approved ones. Any range
+ * that appears must be a period published by the registry; a date invented in a component, or one
+ * that drifted from the record it was copied from, still fails.
+ */
+const approvedPeriods = new Set(
+  [...site.experience, ...cv.experience, ...cv.research].flatMap((record) =>
+    record.period ? [record.period.replace(/\s*-\s*/, " - ")] : [],
+  ),
 );
+const renderedPeriods =
+  renderedSource.match(
+    /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(?:Present|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2})/g,
+  ) ?? [];
+for (const period of new Set(renderedPeriods)) {
+  check(
+    approvedPeriods.has(period.replace(/\s*[-–]\s*/, " - ")),
+    `An unapproved employment date range appears in the rendered source: ${period}`,
+  );
+}
 
 /*
  * Activity dates are the other way a chronology creeps back: not a CV range, but a "last public

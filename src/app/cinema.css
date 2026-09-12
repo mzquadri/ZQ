@@ -225,11 +225,36 @@
   color: color-mix(in oklab, var(--stage-ink) 82%, transparent);
 }
 
+/*
+ * Role, location and availability, set as three separated items on one line. They are the answer
+ * to "who is this and are they available", which a reader wants before any of the work, so they
+ * sit between the positioning sentence and the actions rather than at the foot of the page.
+ */
+.cine-standing {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.55rem 1.1rem;
+  margin: 0;
+  font-family: var(--mono);
+  font-size: clamp(0.72rem, 1.1vw, 0.8rem);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--stage-ink) 62%, transparent);
+}
+
+.cine-standing span + span::before {
+  margin-right: 1.1rem;
+  color: color-mix(in oklab, var(--stage-ink) 34%, transparent);
+  content: "/";
+}
+
 .cine-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.85rem;
+  gap: 0.7rem;
 }
 
 .cine-cta {
@@ -448,6 +473,25 @@
   .cine-instrument { position: static; }
   .cine-identity { padding-bottom: 3rem; }
   .cine-scroll-hint { display: none; }
+
+  /*
+   * Identity first when the choreography is off.
+   *
+   * With the scrub running, the name and the figure occupy the same space and arrive together.
+   * Take the scrub away and the figure becomes an ordinary block roughly 700px tall, which put
+   * the name, the location and every call to action below the fold - so the one reader who is
+   * least well served by a scroll-driven page also had to scroll furthest to find out whose page
+   * it was. Reordering costs the motion path nothing, because this block does not apply to it.
+   */
+  .cine-hero-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cine-identity { order: 1; }
+  .cine-instrument { order: 2; }
+  .cine-instrument-svg { height: min(42vh, 22rem); }
 }
 
 /*
