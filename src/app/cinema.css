@@ -244,8 +244,15 @@
   color: color-mix(in oklab, var(--stage-ink) 62%, transparent);
 }
 
-.cine-standing span + span::before {
-  margin-right: 1.1rem;
+/*
+ * The separator belongs to the item before it, not the one after.
+ *
+ * As a ::before it began the next item, so when the line wrapped on a phone the new line opened
+ * with a stranded slash. Attached to the preceding item it wraps with the words it separates and
+ * simply disappears at the end of a line, which is what a separator should do.
+ */
+.cine-standing span:not(:last-child)::after {
+  margin-left: 1.1rem;
   color: color-mix(in oklab, var(--stage-ink) 34%, transparent);
   content: "/";
 }
