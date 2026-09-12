@@ -131,13 +131,33 @@ export default function HeroStage() {
 
             <p className="cine-positioning">{site.positioning}</p>
 
+            {/*
+             * Role, place and availability, stated once at full size.
+             *
+             * The name and the four disciplines were doing this job between them, and they did it
+             * by implication: a reader had to assemble "AI engineer, in Munich, looking" out of a
+             * heading and a caption. Someone deciding in ten seconds whether to keep reading
+             * should not have to assemble anything.
+             */}
+            <p className="cine-standing">
+              <span>{site.role}</span>
+              <span>{site.location}</span>
+              <span>{site.availability}</span>
+            </p>
+
             <div className="cine-actions">
               <Link className="cine-cta mz-interactive" href="/work">
                 {heroStage.primaryAction}
               </Link>
+              <Link className="cine-cta cine-cta-quiet mz-interactive" href="/architecture">
+                Explore the architecture
+              </Link>
               <Link className="cine-cta cine-cta-quiet mz-interactive" href="/research/thesis">
                 {heroStage.secondaryAction}
               </Link>
+              <a className="cine-cta cine-cta-quiet mz-interactive" href={site.cv} download>
+                Curriculum vitae
+              </a>
             </div>
           </div>
 

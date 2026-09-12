@@ -102,3 +102,11 @@ tools/.medico-preview.png
 # Bytecode from the Python world generators in tools/.
 __pycache__/
 *.py[cod]
+
+# QA capture output from tools/qa-pass.mjs and the other capture tools. Derived from a build:
+# regenerate with `node tools/qa-pass.mjs <origin> qa`.
+/qa/
+
+# Scratch HTML the CV generator writes and removes; listed so an interrupted run cannot
+# leave one committed.
+/.cv-render.html

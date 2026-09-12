@@ -106,10 +106,16 @@ test("mobile primary navigation meets minimum target sizing", async ({ page }) =
 });
 
 test("contact route exposes approved channels", async ({ page }) => {
+  /*
+   * Email is a channel now; a phone number and a form still are not. The distinction the site
+   * draws is between a published professional address and a private identifier, so this asserts
+   * the one that is approved and the two that never will be.
+   */
   await page.goto("/contact");
   await expect(page.locator("form")).toHaveCount(0);
-  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+  await expect(page.locator(`.contact-links a[href="mailto:mohdzaminquadri@gmail.com"]`)).toBeVisible();
+  await expect(page.locator(`.contact-links a[href="/mohd-zamin-quadri-cv.pdf"]`)).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://www.linkedin.com/in/mohdzaminquadri/"]`)).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://github.com/mzquadri"]`)).toBeVisible();
 });
@@ -292,27 +298,51 @@ test("technical writing renders code, equations, navigation, and Article structu
   expect(article.about[0].url).toBe("https://mzquadri.de/work/transport-uq");
 });
 
-test("the site publishes no resume in any form", async ({ page, request }) => {
+test("the published CV is served, and the private one is not", async ({ page, request }) => {
   /*
-   * The portfolio no longer offers a resume. This replaces the test that asserted the opposite,
-   * and is stricter than it: the route is gone, the asset is gone, and no surface anywhere links
-   * to either.
+   * The portfolio publishes a CV again. What this test guards is the distinction that made the
+   * earlier removal necessary: the document served here is the generated, web-safe one, and the
+   * private file that was purged from this repository stays unreachable.
    */
-  const route = await request.get("/resume", { maxRedirects: 0 });
-  expect(route.status(), "/resume must not resolve").toBe(404);
+  const pdf = await request.get("/mohd-zamin-quadri-cv.pdf", { maxRedirects: 0 });
+  expect(pdf.status(), "the published CV must be served").toBe(200);
+  expect(pdf.headers()["content-type"]).toContain("pdf");
 
-  const pdf = await request.get("/mohd-zamin-quadri-resume.pdf", { maxRedirects: 0 });
-  expect(pdf.status(), "the resume PDF must not be served").toBe(404);
+  /*
+   * The document's text is not asserted here. Chromium subsets the fonts it embeds, so the words
+   * are not recoverable from the bytes and any regex over them passes regardless of what the page
+   * said - which would be a test that reports success without checking anything. What the PDF
+   * contains is checked at its source instead: `scripts/validate-content.ts` scans the content
+   * module the generator reads, and no phone number can reach the PDF without passing through it.
+   */
+  expect((await pdf.body()).byteLength, "the published CV must not be a stub").toBeGreaterThan(20_000);
 
-  for (const path of ["/", "/work", "/about", "/contact"]) {
-    await page.goto(path);
-    const html = (await page.content()).toLowerCase();
-    expect(html, `${path} still mentions a resume`).not.toMatch(/\bresumes?\b|curriculum vitae/);
-    await expect(page.locator('a[href*="resume" i]')).toHaveCount(0);
+  for (const gone of ["/mohd-zamin-quadri-resume.pdf", "/Mohd_Zamin_Quadri_CV.pdf"]) {
+    const response = await request.get(gone, { maxRedirects: 0 });
+    expect(response.status(), `${gone} must not be served`).toBe(404);
   }
 
-  const sitemap = await request.get("/sitemap.xml");
-  expect((await sitemap.text()).toLowerCase()).not.toContain("resume");
+  for (const path of ["/about", "/contact"]) {
+    await page.goto(path);
+    await expect(page.locator('a[href="/mohd-zamin-quadri-cv.pdf"]').first()).toBeVisible();
+  }
+})
+
+test("the architecture case studies are reachable from the site", async ({ page }) => {
+  /*
+   * The case-study site is the strongest single artifact in this portfolio and was, for a while,
+   * linked from nowhere on it. The navigation entry and the gateway page are what fixed that, so
+   * both are asserted rather than left to drift.
+   */
+  await page.goto("/");
+  /* On phones the links live in the sheet, so the entry is asserted wherever it is rendered. */
+  await expect(page.locator('header.rail a[href="/architecture"]').first()).toHaveCount(1);
+
+  await page.goto("/architecture");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+
+  const outbound = page.locator('a[href^="https://mzquadri.github.io/ai-engineering-portfolio"]');
+  expect(await outbound.count(), "the gateway must offer every route into the case studies").toBeGreaterThanOrEqual(5);
 })
 
 test("case studies expose ownership and direct evidence", async ({ page }) => {
@@ -687,18 +717,31 @@ test("/learn makes no third-party requests", async ({ page }) => {
   expect(remote).toEqual([]);
 });
 
-test("the portfolio presents no chronology", async ({ page }) => {
+test("the portfolio presents no chronology it cannot source", async ({ page }) => {
   /*
-   * The work is presented by what it does, not by when it happened. Project year badges and
-   * employment ranges are gone; dates that describe evidence - a dataset period, an academic
-   * citation year - are deliberately still allowed and are not what this checks.
+   * The work is still presented by what it does rather than by when it happened, and project year
+   * badges are still gone. What changed is employment: each role now carries the period the CV
+   * gives it, so the assertion moved from "no range appears" to "every range that appears is one
+   * of the five approved ones". A date invented in a component fails exactly as before.
    */
+  const APPROVED = new Set([
+    "Apr 2025 - Present",
+    "Aug 2023 - Mar 2024",
+    "Jan 2023 - Jun 2023",
+    "Apr 2022 - Dec 2022",
+    "May 2021 - Jul 2021",
+  ]);
+
   for (const path of ["/", "/work", "/work/transport-uq", "/about"]) {
     await page.goto(path);
     const text = await page.locator("main").innerText();
-    expect(text, `${path} shows an employment range`).not.toMatch(
-      /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(Present|20\d{2})/i,
-    );
+    const ranges =
+      text.match(
+        /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(?:Present|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2})/g,
+      ) ?? [];
+    for (const range of ranges) {
+      expect(APPROVED.has(range.replace(/\s*[-–]\s*/, " - ")), `${path} shows an unapproved range: ${range}`).toBe(true);
+    }
   }
 
   await page.goto("/work");

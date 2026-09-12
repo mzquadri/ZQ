@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { EducationList, ExperienceList } from "@/components/CareerProfile";
+import { CredentialsList, EducationList, ExperienceList } from "@/components/CareerProfile";
 import { DomainsScene, StageHero } from "@/components/cinema/PageStages";
 import { DomainsCanvas } from "@/components/scene/PersonalCanvases";
 import PageShell from "@/components/PageShell";
@@ -92,9 +92,9 @@ export default function AboutPage() {
         <h2 className="standalone-heading">The kinds of work, not the order of them</h2>
         <p className="section-lede">
           Grouped by discipline rather than run as a timeline, because with five roles the order is
-          the only thing a sequence adds and it is the thing a reader over-reads. These approved
-          titles establish the public record without inferring dates, private client details, or
-          unsupported impact figures.
+          the only thing a sequence adds and it is the thing a reader over-reads. Each role carries
+          the period it ran for, taken from the CV; no duty, client detail or impact figure beyond
+          the approved record is inferred from a title.
         </p>
         <ExperienceList />
       </section>
@@ -109,8 +109,18 @@ export default function AboutPage() {
         <EducationList />
       </section>
 
+      <section className="section-wrap credentials-section">
+        <p className="section-index"><span>04</span>Certifications and languages</p>
+        <h2 className="standalone-heading">The shorter part of the record</h2>
+        <p className="section-lede">
+          Two lists that belong on a CV rather than in a case study, published here so the document
+          and the pages agree about what the record contains.
+        </p>
+        <CredentialsList />
+      </section>
+
       <section className="section-wrap principles-section">
-        <p className="section-index"><span>04</span>Principles</p>
+        <p className="section-index"><span>05</span>Principles</p>
         <h2 className="standalone-heading">How I approach technical work</h2>
         <div className="principle-grid">
           {principles.map((principle, index) => (
@@ -124,7 +134,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap capability-detail">
-        <p className="section-index"><span>05</span>Capabilities with proof</p>
+        <p className="section-index"><span>06</span>Capabilities with proof</p>
         <h2 className="standalone-heading">What I can contribute</h2>
         <div className="capability-table">
           {capabilities.map((capability) => (
@@ -151,6 +161,8 @@ export default function AboutPage() {
         </p>
         <div className="hero-actions">
           <Link className="button button-primary" href="/work"><ArrowLabel kind="forward">Selected work</ArrowLabel></Link>
+          <Link className="button button-secondary" href="/architecture"><ArrowLabel kind="forward">Architecture</ArrowLabel></Link>
+          <a className="button button-secondary" href={site.cv} download><ArrowLabel kind="forward">Curriculum vitae (PDF)</ArrowLabel></a>
           <Link className="button button-secondary" href="/contact">Contact</Link>
         </div>
       </section>

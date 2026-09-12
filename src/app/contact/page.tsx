@@ -19,12 +19,18 @@ export const metadata: Metadata = createPageMetadata({
  * The ending of the site.
  *
  * Contact is the last page most readers reach, so it is written as a closing scene rather than a
- * list of links: one statement at full size, the availability underneath it, and the two channels
+ * list of links: one statement at full size, the availability underneath it, and the channels
  * that actually work. The mark beside it is a ring drawing itself closed - the site spends its
  * whole length arguing that a system should say where it stops knowing, and the final thing on it
  * is a boundary being drawn.
  *
- * No form. There is nothing to collect, and a form would imply otherwise.
+ * Email and the CV are on this page now. Both were withheld before, and both objections were
+ * answered rather than waived: the address is the one already carried by public commit history,
+ * so publishing it discloses nothing new, and the CV is generated for the web from the same fact
+ * registry the pages render, so it is a published document rather than a private one that has
+ * been copied into a public place.
+ *
+ * Still no form. There is nothing to collect, and a form would imply otherwise.
  */
 
 export default function ContactPage() {
@@ -45,6 +51,18 @@ export default function ContactPage() {
             </p>
 
             <ul className="ending-channels contact-links">
+              <li>
+                <a href={"mailto:" + site.email}>
+                  <span>Email</span>
+                  <strong>{site.email}</strong>
+                </a>
+              </li>
+              <li>
+                <a href={site.cv} download>
+                  <span>Curriculum vitae</span>
+                  <strong>The record in one page, as a PDF</strong>
+                </a>
+              </li>
               <li>
                 <a href={site.linkedin}>
                   <span>LinkedIn</span>
@@ -69,7 +87,8 @@ export default function ContactPage() {
 
             <p className="ending-note">
               No form, no tracking, no cookies, and no contact-form data. Nothing on this site
-              publishes a phone number, street address or private identifier.
+              publishes a phone number, street address or private identifier, and the published CV
+              carries none of them either.
             </p>
           </div>
 

@@ -39,7 +39,12 @@ export const disciplines: readonly Discipline[] = [
     name: "Numerical methods and scientific visualization",
     summary:
       "The discipline underneath the rest of this portfolio. Numerical behaviour, and making a computed result legible to the person who has to judge it.",
-    roleIds: ["tum-numerical-methods", "tum-programming-visualization"],
+    /*
+     * Newest first. The order used to be editorial, on the grounds that nothing here was dated
+     * and so nothing implied a sequence. The roles carry their periods now, and an ascending pair
+     * under a heading reads as a mistake rather than as a choice.
+     */
+    roleIds: ["tum-programming-visualization", "tum-numerical-methods"],
   },
   {
     id: "ml-research",
