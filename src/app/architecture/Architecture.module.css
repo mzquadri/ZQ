@@ -1,0 +1,149 @@
+/*
+ * The architecture gateway.
+ *
+ * This page sends the reader to another site, so its job is to make the decision to leave an
+ * informed one: what is over there, who each route is for, and roughly how long it takes. The
+ * entries are a list of choices, not a grid of equal cards, and they are ordered by time rather
+ * than by importance.
+ */
+
+.entries {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.entry {
+  border-bottom: 1px solid var(--line);
+}
+
+.entryLink {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: clamp(1rem, 4vw, 3rem);
+  align-items: start;
+  padding: clamp(1.4rem, 3vw, 2.1rem) 0;
+  text-decoration: none;
+  transition: background-color 140ms ease, padding-inline 140ms ease;
+}
+
+.entryLink:hover,
+.entryLink:focus-visible {
+  background: var(--paper-raised);
+  padding-inline: clamp(0.5rem, 2vw, 1.25rem);
+}
+
+.entryHead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.audience {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+}
+
+.label {
+  margin: 0;
+  font-size: clamp(1.15rem, 2.3vw, 1.5rem);
+  line-height: 1.25;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.entryBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.summary {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ink-soft);
+}
+
+.duration {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+/* ---- what it is, and what it is not ---------------------------------------------------- */
+
+.scope {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: clamp(1.5rem, 4vw, 3rem);
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.scopeList {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.scopeList li {
+  position: relative;
+  padding-left: 1.5rem;
+  max-width: 58ch;
+  color: var(--ink-soft);
+}
+
+.scopeList li::before {
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.7rem;
+  height: 1px;
+  background: var(--line-strong);
+  content: "";
+}
+
+.scopeIs li::before {
+  background: var(--teal);
+  height: 2px;
+}
+
+.scopeTitle {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.scopeIsTitle {
+  color: var(--teal-dark);
+}
+
+.scopeNotTitle {
+  color: var(--orange-text);
+}
+
+/* ---- the figure ------------------------------------------------------------------------ */
+
+.figure {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 760px) {
+  .entryLink {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+}

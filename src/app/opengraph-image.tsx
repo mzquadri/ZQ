@@ -29,12 +29,16 @@ export default function OpenGraphImage() {
           <div style={{ fontSize: 72, fontWeight: 700, maxWidth: 980, lineHeight: 1.02 }}>
             Applied ML with evidence built in.
           </div>
-          <div style={{ display: "flex", gap: 24, fontSize: 28 }}>
-            <span>Reliable ML</span><span>·</span><span>GNNs</span><span>·</span><span>MLOps</span><span>·</span><span>Scientific computing</span>
+          <div style={{ display: "flex", gap: 20, fontSize: 26 }}>
+            <span>AI systems</span><span>·</span><span>Machine learning</span><span>·</span>
+            <span>RAG</span><span>·</span><span>GNNs</span><span>·</span><span>Research</span>
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-          <strong style={{ fontSize: 34 }}>{site.name}</strong>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <strong style={{ fontSize: 34 }}>{site.name}</strong>
+            <span style={{ fontSize: 24, color: "#3d4a52" }}>{site.role}</span>
+          </div>
           <span style={{ background: "#ff5b35", padding: "12px 18px", fontSize: 22 }}>mzquadri.de</span>
         </div>
       </div>
