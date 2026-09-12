@@ -210,19 +210,8 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     description:
       "Master's thesis codebase studying when a graph neural network surrogate for transport simulation can be trusted, and how uncertainty supports a review decision.",
     boundary:
-      "A fork of Elena Natterer's repository, extending it with the uncertainty work. It carries the submitted thesis as a frozen record alongside a working copy that has since been edited, and says which is which. The artifacts it reads are published separately in ml-surrogates-thesis-data.",
+      "A fork of Elena Natterer's repository, extending it with the uncertainty work. It carries the submitted thesis as a frozen record alongside a working copy that has since been edited, and says which is which. The training and evaluation artifacts it reads are published as release assets on the same repository, the largest of them because they exceed GitHub's per-file limit.",
     caseStudySlug: "transport-uq",
-  },
-  {
-    name: "ml-surrogates-thesis-data",
-    title: "Thesis Artifacts",
-    category: "Research",
-    language: "Python",
-    topics: ["Research Data", "Reproducibility", "Provenance"],
-    description:
-      "The training and evaluation artifacts behind the thesis, in the directory layout the training scripts wrote: split scalers, test sets and loader parameters under data_created_during_training, model weights under trained_model.",
-    boundary:
-      "Data, not analysis. 1,267 files are tracked; nineteen exceed GitHub's per-file limit and are published as release assets with a script that restores them to their real paths. Reuse of the artifacts needs prior permission, unlike the MIT-licensed upstream code.",
   },
   {
     name: "express",
@@ -236,15 +225,26 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "No authored contribution. It appears here only because this index lists every public repository, including the ones that flatter nobody.",
   },
   {
-    name: "ml-surrogates-thesis",
-    title: "Thesis Repository (Archived)",
+    name: "colpali",
+    title: "colpali (Upstream Fork)",
     category: "Reference",
     language: "Python",
-    topics: ["Archived", "Thesis", "Provenance"],
+    topics: ["Fork", "Upstream", "Document Retrieval"],
     description:
-      "The earlier home of the thesis codebase, archived and read-only since the work was consolidated into the fork of the upstream repository.",
+      "A fork of the upstream ColPali repository, a vision-language retriever that indexes document pages as images rather than as extracted text.",
     boundary:
-      "Superseded, and kept rather than deleted because the audited evidence cited across this site is pinned to commits here. Those links still resolve; an archived repository stays readable, and the commits do not exist in the successor.",
+      "No authored contribution. Listed for the same reason as the fork above: this index covers every public repository, not only the flattering ones.",
+  },
+  {
+    name: "Statistical-Learning-Transportation",
+    title: "Statistical Learning Coursework",
+    category: "Reference",
+    language: "Jupyter Notebook",
+    topics: ["Coursework", "Regression", "Ensembles", "Neural Networks"],
+    description:
+      "Three graded problem sets from a TUM master's course: linear regression and diagnostics; then PCA, support vector machines and tree ensembles; then backpropagation, Bayesian optimisation, sequence forecasting, Markov decision processes and convolution.",
+    boundary:
+      "University coursework, published for reference rather than as a research contribution. Sixty-six of the numbers its reports quote were recomputed afterwards from the committed artifacts and all sixty-six matched. The problem sheets it includes are the chair's material, not mine.",
   },
   {
     name: "MLOps-End-to-End-Pipeline",
