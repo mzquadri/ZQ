@@ -23,6 +23,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 const NAV = [
   { href: "/work", label: "Work" },
   { href: "/research", label: "Research" },
+  { href: "/architecture", label: "Architecture" },
   { href: "/learn", label: "Learn" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
