@@ -1,23 +1,43 @@
 export const thesisResearchPath = "/research/thesis";
 
+/**
+ * The thesis evidence, pinned to the repository that holds it today.
+ *
+ * These links used to point at mzquadri/ml-surrogates-thesis. That repository and its
+ * companion ml-surrogates-thesis-data were consolidated into the one below and then
+ * deleted on 4 September 2026, which left every link here answering 404 while the
+ * build still passed: validate-content.ts checked that the strings were present and
+ * well formed, not that they resolved.
+ *
+ * The submitted PDF is the same file, byte for byte: git blob
+ * 1e8c411feb32829d776db46fd36260bb00a842a5, 678,859 bytes. It now sits in the
+ * as-submitted snapshot under thesis/submission_2026-05-15/, which the repository
+ * keeps frozen and separate from the working LaTeX that was edited after submission.
+ *
+ * The retired repositories' history is preserved as bundles on the provenance-v1
+ * release of the repository below.
+ */
+const thesisRepository =
+  "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models";
+const thesisCommit = "b324767c4dcfe6f1179069b1b751e4b995506306";
+const thesisFile = (path: string) =>
+  `${thesisRepository}/blob/${thesisCommit}/${path}`;
+
 export const canonicalThesisEvidence = {
-  repository: "https://github.com/mzquadri/ml-surrogates-thesis",
-  commit: "fc1446bbe391093b5e15f0045d344611f2a8bed0",
-  submittedArtifactCommit: "e3d14560f730a44eab7511a3f7a2644e28c4b297",
-  submittedPdf:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf",
-  corrigendum:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/CORRIGENDUM.md",
-  provenance:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/ARTIFACT_PROVENANCE.md",
-  aggregateReport:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md",
-  aggregateJson:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/thesis_intelligence.json",
-  modelComparison:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/model_comparison.csv",
-  manifest:
-    "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/artifact_manifest.csv",
+  repository: thesisRepository,
+  commit: thesisCommit,
+  submittedArtifactCommit: thesisCommit,
+  submittedPdf: thesisFile(
+    "thesis/submission_2026-05-15/extracted/Zamin_thesis.pdf",
+  ),
+  corrigendum: thesisFile("docs/CORRIGENDUM.md"),
+  provenance: thesisFile("docs/ARTIFACT_PROVENANCE.md"),
+  aggregateReport: thesisFile(
+    "analysis_outputs/THESIS_INTELLIGENCE_REPORT.md",
+  ),
+  aggregateJson: thesisFile("analysis_outputs/thesis_intelligence.json"),
+  modelComparison: thesisFile("analysis_outputs/model_comparison.csv"),
+  manifest: thesisFile("analysis_outputs/artifact_manifest.csv"),
 } as const;
 
 const auditedResults = {

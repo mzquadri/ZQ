@@ -309,75 +309,85 @@ check(getFeaturedProjects().length === featuredProjectSlugs.length, "Featured pr
 check(thesis.status.includes("submitted"), "Thesis status must use submitted wording");
 check(site.education[0].credential.startsWith("M.Sc. program:"), "TUM education must not imply degree conferral");
 /*
- * Two repositories, two roles, and they stopped being the same one on 1 Sep 2026.
+ * One repository again, as of 4 Sep 2026.
  *
- * The thesis work was consolidated into the fork of the upstream repository, and
- * ml-surrogates-thesis was archived. Maintenance moved; the pinned evidence did not, and
- * could not: the commits the audited artifacts are cited at exist only in the archived
- * repository. Repointing those URLs at the successor would name commits that are not there.
+ * The split below used to be real: the thesis work was consolidated into the fork of the
+ * upstream repository on 1 Sep 2026 while the evidence stayed pinned to ml-surrogates-thesis,
+ * on the stated reasoning that "archiving does not break the links - an archived repository
+ * stays readable - which is why the old one is kept rather than deleted."
  *
- * So `thesis.repository` is where the code lives now, `canonicalThesisEvidence.repository`
- * is where the cited artifacts are frozen, and the check that once collapsed them into one
- * assertion is split in two. Archiving does not break the links — an archived repository
- * stays readable — which is why the old one is kept rather than deleted.
+ * It was deleted. ml-surrogates-thesis and ml-surrogates-thesis-data were removed on
+ * 4 Sep 2026 once their history had been captured as bundles, and every evidence URL here
+ * began answering 404. Nothing caught it, because these checks compare strings: they assert
+ * that a URL is present and well formed, never that it resolves. The site went on publishing
+ * eight dead links to the thesis for eight days.
+ *
+ * Both roles now point at the surviving repository, and the artifacts are all present there:
+ * the corrigendum, the provenance note and the four analysis outputs kept their paths, and
+ * the submitted PDF moved from document/main.pdf into the as-submitted snapshot at
+ * thesis/submission_2026-05-15/extracted/Zamin_thesis.pdf.
+ *
+ * The PDF is the same document. Its git blob is 1e8c411feb32829d776db46fd36260bb00a842a5 and
+ * it is 678,859 bytes, which is what the deleted repository served and what the snapshot's own
+ * README records. "Immutable baseline" still means what it said: the same document at a new
+ * address, not a different document.
+ *
+ * The retired history is recoverable from the provenance-v1 release of the repository below.
  */
+const thesisRepositoryUrl =
+  "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models";
+const auditedEvidenceCommit = "b324767c4dcfe6f1179069b1b751e4b995506306";
+const submittedPdfPath = "thesis/submission_2026-05-15/extracted/Zamin_thesis.pdf";
+
 check(
-  thesis.repository === "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models",
+  thesis.repository === thesisRepositoryUrl,
   "Thesis repository must use the canonical URL",
 );
 check(
-  canonicalThesisEvidence.repository === "https://github.com/mzquadri/ml-surrogates-thesis",
-  "Research evidence must stay pinned to the archived repository that holds those commits",
+  canonicalThesisEvidence.repository === thesisRepositoryUrl,
+  "Research evidence must be pinned to the repository that actually holds the artifacts",
 );
-/*
- * These two commit hashes moved on 2026-08-31, and the reason is worth recording next to the
- * contract that pins them.
- *
- * ml-surrogates-thesis history was rewritten to strip three text mentions of an AI assistant from
- * files that had already been deleted from the tree: a thesis AI-disclosure TODO, a viva defence
- * note, and a notebook comment. None was authorship metadata - the repository has only ever had
- * one commit author - so nothing about who wrote the work changed.
- *
- * The artifacts themselves did not change. The submitted PDF is byte-identical across the rewrite:
- *
- *   sha256 before  0ac5309d060cda53d82a05cc837136fe853e7f9dcbabd2f4fb4b4282a39bc97e
- *   sha256 after   0ac5309d060cda53d82a05cc837136fe853e7f9dcbabd2f4fb4b4282a39bc97e
- *
- * So "immutable baseline" below still means what it said: the submitted thesis is the same
- * document at a new address, not a different document.
- *
- *   4b95a3d8 -> e3d14560   submitted artifact
- *   5f1b840d -> fc1446bb   audited evidence
- */
 check(
   JSON.stringify(canonicalThesisEvidence) === JSON.stringify({
-    repository: "https://github.com/mzquadri/ml-surrogates-thesis",
-    commit: "fc1446bbe391093b5e15f0045d344611f2a8bed0",
-    submittedArtifactCommit: "e3d14560f730a44eab7511a3f7a2644e28c4b297",
-    submittedPdf: "https://github.com/mzquadri/ml-surrogates-thesis/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf",
-    corrigendum: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/CORRIGENDUM.md",
-    provenance: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/docs/ARTIFACT_PROVENANCE.md",
-    aggregateReport: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md",
-    aggregateJson: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/thesis_intelligence.json",
-    modelComparison: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/model_comparison.csv",
-    manifest: "https://github.com/mzquadri/ml-surrogates-thesis/blob/fc1446bbe391093b5e15f0045d344611f2a8bed0/analysis_outputs/artifact_manifest.csv",
+    repository: thesisRepositoryUrl,
+    commit: auditedEvidenceCommit,
+    submittedArtifactCommit: auditedEvidenceCommit,
+    submittedPdf: `${thesisRepositoryUrl}/blob/${auditedEvidenceCommit}/${submittedPdfPath}`,
+    corrigendum: `${thesisRepositoryUrl}/blob/${auditedEvidenceCommit}/docs/CORRIGENDUM.md`,
+    provenance: `${thesisRepositoryUrl}/blob/${auditedEvidenceCommit}/docs/ARTIFACT_PROVENANCE.md`,
+    aggregateReport: `${thesisRepositoryUrl}/blob/${auditedEvidenceCommit}/analysis_outputs/THESIS_INTELLIGENCE_REPORT.md`,
+    aggregateJson: `${thesisRepositoryUrl}/blob/${auditedEvidenceCommit}/analysis_outputs/thesis_intelligence.json`,
+    modelComparison: `${thesisRepositoryUrl}/blob/${auditedEvidenceCommit}/analysis_outputs/model_comparison.csv`,
+    manifest: `${thesisRepositoryUrl}/blob/${auditedEvidenceCommit}/analysis_outputs/artifact_manifest.csv`,
   }),
   "Canonical thesis evidence URLs diverge from the reviewed source contract",
 );
 check(
-  canonicalThesisEvidence.commit === "fc1446bbe391093b5e15f0045d344611f2a8bed0",
+  canonicalThesisEvidence.commit === auditedEvidenceCommit,
   "Audited thesis evidence commit changed unexpectedly",
 );
 check(
-  canonicalThesisEvidence.submittedArtifactCommit === "e3d14560f730a44eab7511a3f7a2644e28c4b297",
+  canonicalThesisEvidence.submittedArtifactCommit === auditedEvidenceCommit,
   "Submitted thesis artifact commit changed unexpectedly",
 );
 check(
   canonicalThesisEvidence.submittedPdf.endsWith(
-    "/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf",
+    `/blob/${auditedEvidenceCommit}/${submittedPdfPath}`,
   ),
   "Submitted thesis PDF must remain pinned to the immutable baseline",
 );
+/*
+ * Every evidence URL must name a repository that still exists. This is the check whose
+ * absence let the links rot: it is still a string test, but it fails on the specific way
+ * they broke rather than waiting for a reader to click one.
+ */
+for (const [label, href] of Object.entries(canonicalThesisEvidence)) {
+  if (typeof href !== "string" || !href.startsWith("https://")) continue;
+  check(
+    href.startsWith(`${thesisRepositoryUrl}/`) || href === thesisRepositoryUrl,
+    `${label} points outside the surviving thesis repository: ${href}`,
+  );
+}
 check(canonicalThesisEvidence.corrigendum.includes(`/${canonicalThesisEvidence.commit}/`), "Corrigendum must be pinned to the audited evidence commit");
 for (const [label, href] of Object.entries({
   provenance: canonicalThesisEvidence.provenance,

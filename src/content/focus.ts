@@ -75,7 +75,7 @@ export const buildingThreads: readonly BuildingThread[] = [
   },
   {
     id: "thesis-replication",
-    repository: "ml-surrogates-thesis",
+    repository: "ml_surrogates_for_agent_based_transport_models",
     nextEvidenceGate:
       getProject("transport-uq")?.nextStep ??
       "A replication that fits preprocessing only on training data and tests transfer across networks.",

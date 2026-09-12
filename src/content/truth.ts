@@ -55,11 +55,12 @@ const canonicalThesisRepository =
   "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models";
 
 /**
- * The archived predecessor. Used only to cite artifacts pinned to commits made there: those
- * commits do not exist in the successor, so rewriting these references would break them.
- * Archiving does not — an archived repository stays readable.
+ * Where the cited artifacts live. This was the archived predecessor until 4 Sep 2026, on the
+ * reasoning that an archived repository stays readable. It was then deleted rather than
+ * archived, and every reference below answered 404 until they were repointed here.
  */
-const archivedThesisRepository = "https://github.com/mzquadri/ml-surrogates-thesis";
+const archivedThesisRepository =
+  "https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models";
 const recruiterCoreApproval = "Recruiter Core v1 fact approval, 2026-08-20";
 const confidentialWorkApproval =
   "Website Completion v1 confidential-work sanitization approval, 2026-08-21";
@@ -175,7 +176,7 @@ export const truthRegistry = {
       value: "Uncertainty Quantification for Machine Learning Models in Transportation Policy Analysis",
       source: {
         tier: "immutable-artifact",
-        reference: `${archivedThesisRepository}/blob/e3d14560f730a44eab7511a3f7a2644e28c4b297/document/main.pdf`,
+        reference: `${archivedThesisRepository}/blob/b324767c4dcfe6f1179069b1b751e4b995506306/thesis/submission_2026-05-15/extracted/Zamin_thesis.pdf`,
       },
       verifiedAt,
       public: true,
