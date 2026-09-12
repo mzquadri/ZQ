@@ -104,8 +104,9 @@ __pycache__/
 *.py[cod]
 
 # QA capture output from tools/qa-pass.mjs and the other capture tools. Derived from a build:
-# regenerate with `node tools/qa-pass.mjs <origin> qa`.
-/qa/
+# regenerate with `node tools/qa-pass.mjs <origin> <dir>`. The glob covers the local and
+# against-production output directories, which is the pair that actually gets used.
+/qa*/
 
 # Scratch HTML the CV generator writes and removes; listed so an interrupted run cannot
 # leave one committed.
