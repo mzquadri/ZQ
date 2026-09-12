@@ -13,13 +13,23 @@
  * gateway, the controls, the corpus and the benchmark are mine.
  */
 
+const gatewayRepository = "https://github.com/mzquadri/mcp-policy-gateway";
+
+/**
+ * The commit the published numbers were generated from.
+ *
+ * Written once. It used to appear twice in this object and four more times in
+ * portfolio.ts, and the field documented as the pin was read by none of them, so moving the pin
+ * would have relabelled the citation and left every evidence link on the old commit, still
+ * resolving and quietly quoting different numbers.
+ */
+const gatewayCommit = "d5bd208";
+
 export const gatewaySource = {
-  repository: "https://github.com/mzquadri/mcp-policy-gateway",
-  /** The commit the published numbers were generated from. */
-  commit: "d5bd208",
+  repository: gatewayRepository,
+  commit: gatewayCommit,
   license: "MIT",
-  file: (path: string) =>
-    `https://github.com/mzquadri/mcp-policy-gateway/blob/d5bd208/${path}`,
+  file: (path: string) => `${gatewayRepository}/blob/${gatewayCommit}/${path}`,
 } as const;
 
 /**
