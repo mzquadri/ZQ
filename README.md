@@ -16,7 +16,7 @@ no contact form, no remote font, and no third-party client script.
 | Route | Purpose |
 |---|---|
 | `/` | Current focus, selected work, systems graph, research, repository index, experience, capabilities, writing |
-| `/work` | Case-study index plus a catalogue of 26 public repositories |
+| `/work` | Case-study index plus a catalogue of 24 public repositories |
 | `/work/[slug]` | Problem, contribution, workflow, evidence, quality controls, and limitations |
 | `/work/medico` | Standalone case study with its own scene |
 | `/work/reliable-knowledge-systems` | Standalone case study with its own scene |
