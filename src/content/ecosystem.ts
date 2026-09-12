@@ -147,37 +147,15 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "The labels are generated, not laboratory measurements. The tracked scores measure how well each model recovers the generator's own class-correlated distributions, and say nothing about whether real water is safe to drink.",
   },
   {
-    name: "complete-python-warmup",
-    title: "Python and Data-Analysis Practice",
-    category: "Reference",
-    language: "Jupyter Notebook",
-    topics: ["Python", "NumPy", "pandas", "Learning Artifact"],
-    description:
-      "An early notebook of Python, NumPy, pandas and introductory analysis exercises with their saved exploratory outputs.",
-    boundary:
-      "Kept as a learning artifact. Several cells need external CSVs whose redistribution terms were never recorded, so the saved outputs are examples rather than independently reproducible results.",
-  },
-  {
-    name: "pde-problems",
+    name: "snake-water-gun",
     title: "Snake, Water, Gun",
     category: "Reference",
     language: "Python",
     topics: ["Python", "Unit Testing", "Learning Artifact"],
     description:
-      "A command-line variant of rock-paper-scissors with input validation and a unittest suite. Despite the repository name it has nothing to do with partial differential equations.",
+      "A command-line variant of rock-paper-scissors, with input validation and three unit tests covering the ties, each winning matchup and a rejected input.",
     boundary:
-      "A beginner exercise, retained under its original name rather than quietly renamed to look like something else.",
-  },
-  {
-    name: "git-python-basics",
-    title: "Git and Python Learning Example",
-    category: "Reference",
-    language: "Python",
-    topics: ["Git", "Python", "Learning Artifact"],
-    description:
-      "A minimal executable script and a standalone CSS snippet, kept from early Git practice.",
-    boundary:
-      "Not an application and not a portfolio project. It is indexed here because the index is complete, not because it demonstrates anything.",
+      "A beginner exercise. It sat under the name pde-problems for a year, which is where the repository started before that content was deleted and replaced; the name was corrected rather than left to misdescribe the contents, and GitHub still redirects the old one.",
   },
   {
     name: "iftaar-invitation-2026",

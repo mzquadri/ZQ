@@ -35,8 +35,8 @@ test("the repository index is a consistent, deduplicated snapshot", () => {
    * categories, and both of those are asserted below.
    */
   assert.ok(
-    ecosystemRepositories.length >= 26,
-    `expected at least 26 repositories, found ${ecosystemRepositories.length}`,
+    ecosystemRepositories.length >= 24,
+    `expected at least 24 repositories, found ${ecosystemRepositories.length}`,
   );
 
   const grouped = getPopulatedCategories();
