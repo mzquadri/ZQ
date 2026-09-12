@@ -202,17 +202,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Documentation. It makes no claim of its own beyond pointing at the repositories that do.",
   },
   {
-    name: "mzquadri.de",
-    title: "Retired Legacy Landing Page",
-    category: "Reference",
-    language: "CSS",
-    topics: ["Static Site", "Superseded"],
-    description:
-      "The previous portfolio landing page, retained in public so old links resolve and point at the maintained platform.",
-    boundary:
-      "Superseded and no longer developed. It is listed so that the index does not silently omit a page that still exists.",
-  },
-  {
     name: "ml_surrogates_for_agent_based_transport_models",
     title: "Reliable GNN Surrogates for Transport Policy",
     category: "Featured",
