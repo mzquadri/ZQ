@@ -14,7 +14,7 @@ immediately invalidate its own claim.
 | Continuous integration | GitHub Actions: success |
 | Working tree | Clean and aligned with `origin/main` |
 | Runtime | Node.js 24.12.0, npm 11.6.4 (`engines`: `node >=24 <25`) |
-| Framework | Next.js 16.3.1, React 19.2.8 |
+| Framework | Next.js 16.3.5, React 19.2.8 |
 | Tooling | TypeScript 5.9.3, ESLint 9.39.1, Playwright 1.62.1 |
 
 ### Current verification
@@ -31,19 +31,38 @@ snapshot.
 | Route and accessibility audit | `node tools/audit-site.mjs` | 18 routes × 6 viewports; 0 critical, 0 high, 0 axe violations at WCAG 2.1 AA |
 | Journeys | `node tools/check-journeys.mjs https://mzquadri.de` | All passed against production |
 | WebGL worlds | `node tools/check-worlds.mjs https://mzquadri.de` | All 8 correct on the software and hardware paths |
-| Dependency audit | `npm audit` | **4 advisories: 1 critical, 2 high, 1 low**, across 693 dependencies |
+| Dependency audit | `npm audit` | 0 vulnerabilities, across 693 dependencies |
+| Dependency audit, production | `npm audit --omit=dev` | 0 vulnerabilities |
+| Advisory floors | `npm run check:security` | `next` and `sharp` meet their recorded minimums |
 
-The audit result is not clean and is recorded as measured rather than as hoped. The critical
-advisory is [GHSA-p293-qw3h-jr36](https://github.com/advisories/GHSA-p293-qw3h-jr36), CVSS 9.0,
-unauthenticated remote code execution on Windows-hosted servers, affecting Next.js `>=16.0.0
-<16.3.3`; this site runs 16.3.1 and the fix is 16.3.5. Production is served by Vercel on Linux,
-which is not the affected host platform, but the upgrade is outstanding and is a code change
-rather than a documentation one. The two high advisories (`js-yaml`, `sharp`) and the low
-(`postcss-selector-parser`) are transitive.
+The previous snapshot recorded four advisories, one of them critical, and they have been
+remediated rather than re-described. Next.js moved from 16.3.1 to 16.3.5, closing two critical
+advisories: [GHSA-p293-qw3h-jr36](https://github.com/advisories/GHSA-p293-qw3h-jr36), CVSS 9.0,
+unauthenticated remote code execution on Windows-hosted servers, and
+[GHSA-2xp9-vwfh-vxw4](https://github.com/advisories/GHSA-2xp9-vwfh-vxw4), remote code execution in
+the Image Optimization API for AVIF input — which, unlike the first, was not limited to Windows
+hosts. `sharp` came with it, 0.35.3 to 0.35.4, closing
+[GHSA-rgj7-g3m4-5g8c](https://github.com/advisories/GHSA-rgj7-g3m4-5g8c); it is a transitive
+dependency of Next.js and needed no separate change. `js-yaml` moved 4.3.1 to 4.3.2 inside the
+range its parent already allowed.
 
-The two remaining audit findings are cosmetic and long-standing: one tap target whose *width* is
-short because the link text is a three-letter repository name, and 109 small-label instances at
-10.2–10.9px, which is the design's label scale rather than a defect.
+One advisory needed an override rather than an upgrade.
+[GHSA-w9m9-85wc-3x92](https://github.com/advisories/GHSA-w9m9-85wc-3x92) affects
+`postcss-selector-parser` 6.1.0–6.1.2 and is fixed only in 7.x, while Tailwind CSS 3.4 requires
+`^6.1.2`; there is no in-range resolution. The override to `^7.1.6` was accepted on evidence
+rather than on hope: the site was built with and without it and every emitted stylesheet is
+byte-identical, so the parser change reaches no output. It is recorded here so that a future
+Tailwind major can remove it rather than inherit it silently.
+
+The two remaining route-audit findings are cosmetic and long-standing: one tap target whose
+*width* is short because the link text is a three-letter repository name, and 109 small-label
+instances at 10.2–10.9px, which is the design's label scale rather than a defect.
+
+Two checks now guard this, because they fail differently. `npm run check:security` is offline and
+asserts that installed versions meet the minimum patch recorded for their release line, so a
+revert or a stale lockfile cannot quietly reintroduce a version already known to be vulnerable;
+it cannot learn about anything new. `npm audit --omit=dev --audit-level=high` is the half that
+learns, and CI runs both.
 
 The August 20, 2026 integrity baseline — Node 20, Next.js 14.2.35, React 18.3.1, 34 Playwright
 checks — is preserved in Git history; this document reports the current verified state.
@@ -148,7 +167,8 @@ forward rather than measured.
   make every documentation change instantly self-invalidating, so the snapshot is anchored to the
   application state it was verified against.
 
-`npm run check:docs` compares the framework and runtime versions stated in the snapshot against
+`npm run check:security` asserts the advisory floors above; `npm run check:docs` compares the
+framework and runtime versions stated in the snapshot against
 what is actually installed, and fails when the `Verified:` date is missing or older than ninety
 days. It checks staleness, not correctness: it cannot tell whether a test count is right, only
 whether the document still claims to be current.
