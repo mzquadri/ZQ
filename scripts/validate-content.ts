@@ -27,7 +27,6 @@ import {
   getPopulatedCategories,
   repositoryUrl,
 } from "../src/content/ecosystem";
-import { cv } from "../src/content/cv";
 import { buildingThreads, focusThemes } from "../src/content/focus";
 import {
   confidenceLadder,
@@ -188,15 +187,6 @@ for (const path of requiredFiles) {
 }
 
 const publicContent = JSON.stringify({
-  /*
-   * The CV module is scanned as public content, not as a build script.
-   *
-   * It is the only input the CV generator reads, so scanning it is what makes "the published PDF
-   * carries no phone number" a checked property rather than a promise about a binary. A regex over
-   * the PDF cannot do this job: Chromium subsets its fonts, so the text is not recoverable from
-   * the bytes and a scan of them passes whatever they contain.
-   */
-  cv,
   buildingThreads,
   capabilities,
   confidenceLadder,
@@ -303,21 +293,22 @@ for (const record of site.experience) {
   check(record.organization.trim().length > 0 && record.title.trim().length > 0, `${record.id} is incomplete`);
 }
 /*
- * The CV is published again, under a different rule than the one that retired it.
+ * No downloadable CV, of any kind.
  *
- * What was withdrawn was a private document that had been committed to a public repository and
- * was reachable from it. What is published now is generated from this registry by
- * `tools/gen-cv.ts`, so it contains what the pages contain and nothing else: no phone number, no
- * street address, no photograph, because none of those are in the content module the generator
- * reads. The checks below hold that line.
+ * A generated, web-safe PDF was published from this registry and has been withdrawn. This is the
+ * check that keeps it withdrawn: no CV or resume filename may appear in the rendered source, and
+ * nothing may be served from a `public/` directory that no longer exists. The professional facts
+ * the document carried are unaffected - they are rendered as pages and validated above.
  */
-const cvHref = truthRegistry.artifacts.cv.value;
-check(cvHref === "/mohd-zamin-quadri-cv.pdf", "The published CV path is not the approved one");
-check(existsSync(resolve("public", cvHref.replace(/^\//, ""))), `The published CV is missing: ${cvHref}`);
 check(
-  !/Mohd_Zamin_Quadri_CV|mohd-zamin-quadri-resume/i.test(renderedSource),
-  "A private CV filename appears in the rendered site source",
+  !/Mohd_Zamin_Quadri_CV|mohd-zamin-quadri-resume|mohd-zamin-quadri-cv/i.test(renderedSource),
+  "A CV filename appears in the rendered site source",
 );
+check(
+  !/download\s+(my\s+)?(cv|resume|résumé)/i.test(renderedSource),
+  "A CV download invitation appears in the rendered site source",
+);
+check(!existsSync(resolve("public")), "public/ exists again; it held only the withdrawn CV");
 check(
   !/\+\s*49[\s)(\d-]{7,}|\(\+\d{1,3}\)/.test(renderedSource),
   "Public content contains a telephone number",
@@ -343,7 +334,7 @@ for (const project of projects) {
  * that drifted from the record it was copied from, still fails.
  */
 const approvedPeriods = new Set(
-  [...site.experience, ...cv.experience, ...cv.research].flatMap((record) =>
+  site.experience.flatMap((record) =>
     record.period ? [record.period.replace(/\s*-\s*/, " - ")] : [],
   ),
 );

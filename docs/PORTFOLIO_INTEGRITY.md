@@ -70,7 +70,7 @@ source as canonical.
 | Experience dates | Dates omitted; only the approved current BP status is shown | No employment dates are published |
 | Education | TUM M.Sc. program with thesis submitted; AMU B.Sc. (Hons.) Mathematics | No claim of TUM defense, grade, graduation, or degree conferral |
 | Contact email | Not published | No durable address has passed privacy review |
-| Resume | One HTML record and one generated redacted PDF | Both derive from the typed registry; no email, phone, address, identifiers, or disputed dates |
+| Resume | None published | A generated, web-safe PDF was published for a time and has been withdrawn; the facts it carried are rendered as pages instead |
 | Repository status | `ml-surrogates-thesis` is the only canonical destination | It preserves the submitted artifact and separates post-submission corrections and audited evidence |
 | Services | No public services offer | Services remain inactive until a real offer and operating boundary are approved |
 

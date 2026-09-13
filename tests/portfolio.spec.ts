@@ -107,15 +107,14 @@ test("mobile primary navigation meets minimum target sizing", async ({ page }) =
 
 test("contact route exposes approved channels", async ({ page }) => {
   /*
-   * Email is a channel now; a phone number and a form still are not. The distinction the site
-   * draws is between a published professional address and a private identifier, so this asserts
-   * the one that is approved and the two that never will be.
+   * Email is a channel; a phone number, a form and a CV download are not. The distinction the
+   * site draws is between a published professional address and a private identifier, and the CV
+   * has since been withdrawn, so the channels are the address and the two profiles.
    */
   await page.goto("/contact");
   await expect(page.locator("form")).toHaveCount(0);
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   await expect(page.locator(`.contact-links a[href="mailto:mohdzaminquadri@gmail.com"]`)).toBeVisible();
-  await expect(page.locator(`.contact-links a[href="/mohd-zamin-quadri-cv.pdf"]`)).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://www.linkedin.com/in/mohdzaminquadri/"]`)).toBeVisible();
   await expect(page.locator(`.contact-links a[href="https://github.com/mzquadri"]`)).toBeVisible();
 });
@@ -298,33 +297,37 @@ test("technical writing renders code, equations, navigation, and Article structu
   expect(article.about[0].url).toBe("https://mzquadri.de/work/transport-uq");
 });
 
-test("the published CV is served, and the private one is not", async ({ page, request }) => {
+test("no CV or resume is downloadable", async ({ page, request }) => {
   /*
-   * The portfolio publishes a CV again. What this test guards is the distinction that made the
-   * earlier removal necessary: the document served here is the generated, web-safe one, and the
-   * private file that was purged from this repository stays unreachable.
+   * The portfolio published a generated, web-safe CV for a while, and it has been withdrawn. This
+   * asserts the withdrawal rather than the publication: nothing is served at the path it used, no
+   * page links to one, and the private filenames that were purged from this repository long ago
+   * stay unreachable.
+   *
+   * The facts the document carried are not in question here. They are rendered as pages - roles
+   * and periods, education, the thesis, certifications, languages - and validated elsewhere.
    */
-  const pdf = await request.get("/mohd-zamin-quadri-cv.pdf", { maxRedirects: 0 });
-  expect(pdf.status(), "the published CV must be served").toBe(200);
-  expect(pdf.headers()["content-type"]).toContain("pdf");
-
-  /*
-   * The document's text is not asserted here. Chromium subsets the fonts it embeds, so the words
-   * are not recoverable from the bytes and any regex over them passes regardless of what the page
-   * said - which would be a test that reports success without checking anything. What the PDF
-   * contains is checked at its source instead: `scripts/validate-content.ts` scans the content
-   * module the generator reads, and no phone number can reach the PDF without passing through it.
-   */
-  expect((await pdf.body()).byteLength, "the published CV must not be a stub").toBeGreaterThan(20_000);
-
-  for (const gone of ["/mohd-zamin-quadri-resume.pdf", "/Mohd_Zamin_Quadri_CV.pdf"]) {
+  for (const gone of [
+    "/mohd-zamin-quadri-cv.pdf",
+    "/mohd-zamin-quadri-resume.pdf",
+    "/Mohd_Zamin_Quadri_CV.pdf",
+    "/cv.pdf",
+    "/resume.pdf",
+  ]) {
     const response = await request.get(gone, { maxRedirects: 0 });
     expect(response.status(), `${gone} must not be served`).toBe(404);
   }
 
-  for (const path of ["/about", "/contact"]) {
+  for (const path of ["/", "/about", "/contact", "/work", "/research"]) {
     await page.goto(path);
-    await expect(page.locator('a[href="/mohd-zamin-quadri-cv.pdf"]').first()).toBeVisible();
+    await expect(
+      page.locator('a[href$=".pdf"], a[download]'),
+      `${path} still offers a document download`,
+    ).toHaveCount(0);
+    const text = await page.locator("body").innerText();
+    expect(text, `${path} still invites a CV download`).not.toMatch(
+      /download\s+(my\s+)?(cv|resume|résumé)/i,
+    );
   }
 })
 

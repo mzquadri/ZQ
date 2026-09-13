@@ -68,10 +68,12 @@ The site does not include or collect:
 - a contact form, analytics, cookies, tracking pixels, or remote font requests;
 - raw MATSim scenarios, row-level predictions, spatial road-link exports, model checkpoints,
   serialized loaders, local paths, or confidential research data;
-- any resume field not present in the approved Recruiter Core truth registry.
+- any resume field not present in the approved Recruiter Core truth registry;
+- a downloadable CV or resume, in any format, at any path.
 
-Contact is limited to verified GitHub and LinkedIn profile links. The canonical HTML resume
-and generated PDF omit email, phone, address, identifiers, and disputed employment dates.
+A generated, web-safe PDF was published for a time and has been withdrawn. What it carried is
+unchanged and still published as pages: roles and the periods they ran for, education, the thesis,
+certifications and languages, all read from the same typed registry the document was built from.
 Linked repositories retain their own licenses and privacy obligations.
 
 ## Reviewed publication decisions

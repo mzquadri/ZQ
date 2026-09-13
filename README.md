@@ -27,9 +27,13 @@ no contact form, no remote font, and no third-party client script.
 | `/about`, `/contact` | Status and working principles; verified GitHub and LinkedIn only |
 | `/rss.xml`, `/sitemap.xml`, `/robots.txt` | Feed and metadata endpoints |
 
-The retired `/drive` experiment redirects to `/work`. The site does not publish a resume: there is
-no route, no download, and no sitemap entry. The generated PDF is kept in `private/` as a source of
-record for a document sent privately, and nothing in the build reads it.
+The retired `/drive` experiment redirects to `/work`. The site publishes no CV or resume: no route,
+no download, no sitemap entry, and no file. A generated, web-safe PDF was published for a time and
+has been withdrawn; `scripts/validate-content.ts` and the end-to-end suite both assert its absence.
+
+Withdrawing the document changed nothing about the record. The roles and the periods they ran for,
+education, the thesis, certifications and languages are all rendered as pages from
+`src/content/truth.ts`, which is where they were read from to build the PDF in the first place.
 
 Eight case studies are authored. Seven render in production. The eighth describes employer work,
 cannot be backed by a public repository, and is held as a draft: a production build excludes it

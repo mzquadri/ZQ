@@ -24,11 +24,12 @@ export const metadata: Metadata = createPageMetadata({
  * whole length arguing that a system should say where it stops knowing, and the final thing on it
  * is a boundary being drawn.
  *
- * Email and the CV are on this page now. Both were withheld before, and both objections were
- * answered rather than waived: the address is the one already carried by public commit history,
- * so publishing it discloses nothing new, and the CV is generated for the web from the same fact
- * registry the pages render, so it is a published document rather than a private one that has
- * been copied into a public place.
+ * Email is on this page. It was withheld before for want of a durable address, and the one
+ * published is already carried by public commit history, so it discloses nothing new.
+ *
+ * A generated CV sat beside it for a while and has been withdrawn. Nothing was lost with it: the
+ * roles and their periods, education, the thesis, certifications and languages are pages on this
+ * site, and the work itself is the better version of what a CV summarises.
  *
  * Still no form. There is nothing to collect, and a form would imply otherwise.
  */
@@ -58,12 +59,6 @@ export default function ContactPage() {
                 </a>
               </li>
               <li>
-                <a href={site.cv} download>
-                  <span>Curriculum vitae</span>
-                  <strong>The record in one page, as a PDF</strong>
-                </a>
-              </li>
-              <li>
                 <a href={site.linkedin}>
                   <span>LinkedIn</span>
                   <strong>Professional conversation</strong>
@@ -87,8 +82,7 @@ export default function ContactPage() {
 
             <p className="ending-note">
               No form, no tracking, no cookies, and no contact-form data. Nothing on this site
-              publishes a phone number, street address or private identifier, and the published CV
-              carries none of them either.
+              publishes a phone number, street address or private identifier.
             </p>
           </div>
 

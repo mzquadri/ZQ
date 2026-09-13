@@ -95,11 +95,11 @@ const confidentialWorkApproval =
  */
 const curriculumVitae = "Curriculum vitae, revision of 2026-08-19 (privately held)";
 /**
- * Contact and document publication were both previously withheld, the email for want of a
- * durable address and the CV after a private PDF was found to be reachable from a public
- * repository. Both are now approved: the address below is the one already attached to public
- * commit history, and the published CV is generated for the web rather than being the private
- * document.
+ * The published address. It was withheld for want of a durable one; the address below is the one
+ * already attached to public commit history, so publishing it discloses nothing new.
+ *
+ * A generated CV was approved under the same review and has since been withdrawn. Contact is the
+ * email, LinkedIn and GitHub; there is no document to download.
  */
 const contactApproval = "Professional contact approval, 2026-09-13";
 
@@ -378,17 +378,14 @@ export const truthRegistry = {
       reviewAfter: currentFactReviewAfter,
       public: true,
     },
-    /**
-     * The published CV. It is generated for the web from the facts in this registry, not a copy
-     * of the private document: no phone number, no street address, no photograph.
+    /*
+     * There is no CV artifact here.
+     *
+     * A generated, web-safe PDF was published from this registry and has been withdrawn. The
+     * facts it carried are unchanged and still published as pages: the roles and their periods,
+     * education, the thesis, certifications and languages all live above and are rendered by
+     * /about and /research. What is gone is the download, not the record.
      */
-    cv: {
-      value: "/mohd-zamin-quadri-cv.pdf",
-      source: { tier: "approved-document", reference: contactApproval },
-      verifiedAt: "2026-09-13",
-      reviewAfter: currentFactReviewAfter,
-      public: true,
-    },
   },
   portfolio: {
     featuredProjectSlugs: {
@@ -423,7 +420,6 @@ export const currentPublicFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.profiles.linkedin,
   truthRegistry.profiles.email,
   truthRegistry.artifacts.architecture,
-  truthRegistry.artifacts.cv,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -454,7 +450,6 @@ export const publishedFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.credentials.languages,
   truthRegistry.artifacts.architecture,
   truthRegistry.artifacts.architectureRepository,
-  truthRegistry.artifacts.cv,
   truthRegistry.portfolio.featuredProjectSlugs,
 ];
 
@@ -478,7 +473,6 @@ export const site = {
   languages: truthRegistry.credentials.languages.value as readonly LanguageRecord[],
   architecture: truthRegistry.artifacts.architecture.value,
   architectureRepository: truthRegistry.artifacts.architectureRepository.value,
-  cv: truthRegistry.artifacts.cv.value,
 } as const;
 
 export const thesis = {
