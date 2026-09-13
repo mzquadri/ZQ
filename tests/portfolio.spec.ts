@@ -3277,3 +3277,126 @@ test("published links do not point at a deleted repository", async ({ page }) =>
     page.locator('a[href*="ml_surrogates_for_agent_based_transport_models"]').first(),
   ).toHaveCount(1);
 });
+
+test("a software rasteriser gets the flat figure, not a 3D scene", async ({ browser }, testInfo) => {
+  /*
+   * The world hosts gated on width, motion and visibility, and never on whether the machine could
+   * render the scene without a software rasteriser. On /work/insureassist-rag the cost of that was
+   * visible: ANGLE reported "GPU stall due to ReadPixels" for the first frames after the drawing
+   * buffer was allocated, and the page took six long tasks rather than one.
+   *
+   * This test builds its own context, which is the only way it can reach the thing it tests. Both
+   * projects in playwright.config.ts set `reducedMotion: "reduce"`, and the motion gate comes
+   * first, so a world never mounts anywhere else in this suite - two earlier drafts of this test
+   * passed with the fix reverted, reporting "no canvas" for the wrong reason. It also needs a
+   * viewport at or above the world's 1000px minimum.
+   *
+   * Playwright's headless browser is itself a software rasteriser (SwiftShader), so on a default
+   * run this exercises the software branch; on a machine with a GPU it exercises the other.
+   */
+  testInfo.skip(testInfo.project.name !== "desktop-chromium", "one browser is enough");
+
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    reducedMotion: "no-preference",
+  });
+  const page = await context.newPage();
+
+  const warnings: string[] = [];
+  page.on("console", (message) => {
+    if (/ReadPixels|GPU stall/i.test(message.text())) warnings.push(message.text());
+  });
+
+  try {
+    await page.goto("/work/insureassist-rag");
+    await page.waitForLoadState("networkidle");
+
+    const software = await page.evaluate(() => {
+      const canvas = document.createElement("canvas");
+      const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+      if (!gl) return true;
+      const info = gl.getExtension("WEBGL_debug_renderer_info");
+      if (!info) return false;
+      const name = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? "").toLowerCase();
+      return ["swiftshader", "llvmpipe", "softpipe", "basic render", "software adapter"].some((s) =>
+        name.includes(s),
+      );
+    });
+
+    const stage = page.locator(".world-stage.insureassist-world");
+    await expect(stage).toHaveCount(1);
+
+    /* Satisfy the visibility gate, so only the renderer gate decides the outcome. */
+    await stage.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1500);
+
+    /* The flat figure is the content of record and renders whichever way the gate falls. */
+    await expect(stage.locator(".world-stage-line")).toBeVisible();
+
+    if (software) {
+      await expect(
+        page.locator(".world-canvas canvas"),
+        "a software rasteriser must not be asked to render the world",
+      ).toHaveCount(0);
+      expect(warnings, `GPU stall warnings: ${warnings.join(" | ")}`).toHaveLength(0);
+    } else {
+      await expect(
+        page.locator(".world-canvas canvas"),
+        "a machine with a GPU should still get the scene",
+      ).toHaveCount(1);
+    }
+  } finally {
+    await context.close();
+  }
+});
+
+test("no world scene performs a GPU readback of its own", async ({ browser }, testInfo) => {
+  /*
+   * The stall was never an application readback - readPixels, getBufferSubData, getImageData,
+   * toDataURL, toBlob and drawImage were all instrumented and all sat at zero. This keeps it that
+   * way: a scene that started reading pixels back per frame, to do picking or to capture a
+   * thumbnail, would fail here. That is the regression worth guarding against, and unlike a
+   * driver message it is a property of this code rather than of a rasteriser.
+   *
+   * Its own context, for the same reason as the test above.
+   */
+  testInfo.skip(testInfo.project.name !== "desktop-chromium", "one browser is enough");
+
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    reducedMotion: "no-preference",
+  });
+  await context.addInitScript(() => {
+    (window as unknown as { __readbacks: number }).__readbacks = 0;
+    for (const Ctx of [window.WebGLRenderingContext, window.WebGL2RenderingContext]) {
+      if (!Ctx) continue;
+      for (const method of ["readPixels", "getBufferSubData"] as const) {
+        const original = (Ctx.prototype as unknown as Record<string, unknown>)[method];
+        if (typeof original !== "function") continue;
+        (Ctx.prototype as unknown as Record<string, unknown>)[method] = function (
+          this: unknown,
+          ...args: unknown[]
+        ) {
+          (window as unknown as { __readbacks: number }).__readbacks += 1;
+          return (original as (...a: unknown[]) => unknown).apply(this, args);
+        };
+      }
+    }
+  });
+  const page = await context.newPage();
+
+  try {
+    for (const route of ["/work/insureassist-rag", "/work/hydrology-uq", "/research/thesis"]) {
+      await page.goto(route);
+      await page.waitForLoadState("networkidle");
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
+      await page.waitForTimeout(1200);
+      const readbacks = await page.evaluate(
+        () => (window as unknown as { __readbacks: number }).__readbacks,
+      );
+      expect(readbacks, `${route} performed ${readbacks} GPU readback(s)`).toBe(0);
+    }
+  } finally {
+    await context.close();
+  }
+});
