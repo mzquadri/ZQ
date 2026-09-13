@@ -126,33 +126,6 @@ or other personal identifier was published, and the site still collects nothing.
 position was revisited on 13 September 2026 and is recorded below; phone number, street address
 and other identifiers remain unpublished.
 
-**2026-09-13 — contact address and employment periods published; downloadable CV withdrawn.**
-
-Three decisions, recorded together because they were taken together and one of them was reversed.
-
-*The approved personal email is published*, on `/contact` and in the footer. It was withheld for
-want of a durable address; the address published is the one already carried by public commit
-history, so publishing it discloses nothing that was not already disclosed. The university
-address on the privately held CV is deliberately not used, because it expires with the
-enrolment. `scripts/validate-content.ts` fails the build on any address in the rendered source
-other than the approved one.
-
-*The five approved employment periods are published*, in one format, from the registry. They were
-withheld on the reasoning that an undated list of five roles still reads as a career narrative;
-the disciplines grouping on `/about` answers that better, and it never answered how long anything
-ran, which a reader of a portfolio is entitled to. Each period is transcribed from the privately
-held curriculum vitae, and `validate:content` fails on any rendered range that is not one of them.
-
-*A generated, web-safe CV was published and has since been withdrawn.* It carried no phone number,
-street address or photograph, because none of those were in the content module the generator read.
-It is gone: the PDF, the generator, and the module that fed it. `/resume`, `/cv` and every CV or
-resume PDF path return 404, no page offers a document download, and both the content validator and
-the end-to-end suite assert the absence rather than merely no longer asserting the presence.
-
-What did not change: no phone number, no street address, no student identifier, no signature, no
-contact form, and no collection of any kind. The privately held CV remains evidence rather than
-an artifact — named in the registry as the source of specific facts, and served nowhere.
-
 **2026-08-26 — employer-confidential case study authored as a draft, not approved for publication.**
 
 A case study about professional work at BP-IT Consulting & Solutions GmbH exists in this
@@ -211,3 +184,30 @@ outstanding rather than the point at which review begins.
 **Approval status at the time of this work: none.** Publication requires an employer approval
 recorded against the project as `publication: { status: "approved", … }`. Until that exists, the
 page cannot reach production, and this note should not be read as suggesting that it may.
+
+**2026-09-13 — contact address and employment periods published; downloadable CV withdrawn.**
+
+Three decisions, recorded together because they were taken together and one of them was reversed.
+
+*The approved personal email is published*, on `/contact` and in the footer. It was withheld for
+want of a durable address; the address published is the one already carried by public commit
+history, so publishing it discloses nothing that was not already disclosed. The university
+address on the privately held CV is deliberately not used, because it expires with the
+enrolment. `scripts/validate-content.ts` fails the build on any address in the rendered source
+other than the approved one.
+
+*The five approved employment periods are published*, in one format, from the registry. They were
+withheld on the reasoning that an undated list of five roles still reads as a career narrative;
+the disciplines grouping on `/about` answers that better, and it never answered how long anything
+ran, which a reader of a portfolio is entitled to. Each period is transcribed from the privately
+held curriculum vitae, and `validate:content` fails on any rendered range that is not one of them.
+
+*A generated, web-safe CV was published and has since been withdrawn.* It carried no phone number,
+street address or photograph, because none of those were in the content module the generator read.
+It is gone: the PDF, the generator, and the module that fed it. `/resume`, `/cv` and every CV or
+resume PDF path return 404, no page offers a document download, and both the content validator and
+the end-to-end suite assert the absence rather than merely no longer asserting the presence.
+
+What did not change: no phone number, no street address, no student identifier, no signature, no
+contact form, and no collection of any kind. The privately held CV remains evidence rather than
+an artifact — named in the registry as the source of specific facts, and served nowhere.
