@@ -128,7 +128,7 @@
   grid-area: summary;
   margin-top: 0.35rem;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.07em;
   text-transform: uppercase;
   opacity: 0.75;

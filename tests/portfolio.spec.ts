@@ -677,12 +677,25 @@ test("the learn index is a library, with a way in and a way to filter it", async
   // Grid mode, not the single-feature layout the page used when there was one article.
   await expect(page.locator(".writing-feature")).toHaveCount(0);
 
-  const cards = page.locator("#all .writing-grid article");
-  expect(await cards.count()).toBeGreaterThanOrEqual(8);
-
+  /*
+   * The index shows a shortlist; the complete list is its own route. Showing all thirteen here
+   * put the browse band below eight screens of cards, so what is asserted is the shape: a few
+   * featured, a few more, no repeats between them, and a way to the rest.
+   */
   await expect(page.locator("#featured .writing-grid article")).toHaveCount(3);
-  await expect(page.getByRole("heading", { name: "Every tutorial, newest first" })).toBeVisible();
   await expect(page.locator("#browse")).toBeVisible();
+
+  const shown = await page
+    .locator(".writing-grid article h2 a, .writing-grid article h3 a")
+    .evaluateAll((els) => els.map((el) => el.textContent!.trim()));
+  expect(shown.length).toBeGreaterThanOrEqual(6);
+  expect(new Set(shown).size, "a tutorial is listed twice on the index").toBe(shown.length);
+
+  await page.getByRole("link", { name: /All \d+ tutorials/ }).click();
+  await page.waitForURL(/\/learn\/all$/);
+  const all = await page.locator("#all .writing-grid article").count();
+  expect(all).toBeGreaterThanOrEqual(8);
+  expect(all, "the complete list is missing entries").toBeGreaterThan(shown.length);
 });
 
 test("the arXiv listing is unmistakably other people's work", async ({ page }) => {
@@ -3121,7 +3134,7 @@ test("every live route is in the sitemap", async ({ request }) => {
 });
 
 test("every published tutorial is in the sitemap and the feed", async ({ page, request }) => {
-  await page.goto("/learn");
+  await page.goto("/learn/all");
   const paths = await page
     .locator("#all .writing-grid article h2 a, #all .writing-grid article h3 a")
     .evaluateAll((els) => els.map((el) => el.getAttribute("href")!));

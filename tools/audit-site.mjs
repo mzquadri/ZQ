@@ -245,9 +245,19 @@ for (const vp of VIEWPORTS) {
 
       for (const el of document.querySelectorAll("p, li, span, dd, dt, figcaption, td, th")) {
         if (el.childElementCount) continue;
-        if (!el.textContent?.trim()) continue;
+        const raw = el.textContent ?? "";
+        if (!raw.trim()) continue;
+        /*
+         * Skip nodes that carry no visible glyph.
+         *
+         * KaTeX builds its vertical metrics out of `.vlist-s` struts: a zero-width space set at
+         * 1px, one per stacked box. They are layout, not type, and they are not readable in any
+         * sense the size of this check is about. Reporting fourteen of them per equation buries
+         * the findings that are real, which is how a check stops being read.
+         */
+        if (!/[^\s​-‏﻿]/.test(raw)) continue;
         const size = parseFloat(getComputedStyle(el).fontSize);
-        if (size && size < 11) tinyText.push(`${Math.round(size * 10) / 10}px "${el.textContent.trim().slice(0, 36)}"`);
+        if (size && size < 11) tinyText.push(`${Math.round(size * 10) / 10}px "${raw.trim().slice(0, 36)}"`);
       }
 
       out.overflowing = [...new Set(overflowing)].slice(0, 6);

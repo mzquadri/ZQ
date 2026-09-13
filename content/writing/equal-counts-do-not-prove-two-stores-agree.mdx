@@ -36,7 +36,7 @@ This is the most common integrity check in data platforms, and it is close to th
 
 The useful question is not *does this check pass* but *what does passing rule out, and what does it leave open?*
 
-<Callout title="The framing">
+<Callout title="Read a check by what it leaves open">
   Treat integrity checks as a ladder. Each rung rules out a class of failure and leaves the rungs above it untouched. A check that does not state what it leaves open is being read as stronger than it is.
 </Callout>
 
@@ -138,6 +138,6 @@ There is one further distinction worth building in from the start: *not applicab
 - Record what produced each version, and check the record against what is installed.
 - Report every rung separately, and distinguish *not applicable* from *not run*.
 
-## Related
+## Where the ladder cannot see
 
 The [reliable knowledge systems model](/work/reliable-knowledge-systems) is a synthetic walk through a system built around this ladder. [Building an independent verification oracle](/learn/building-an-independent-verification-oracle) addresses the failure the ladder cannot see on its own: a checker that shares a defect with the thing it is checking.

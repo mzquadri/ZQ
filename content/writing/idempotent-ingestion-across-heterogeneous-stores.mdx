@@ -47,7 +47,7 @@ Then the broker redelivers the message, because that is what at-least-once deliv
 
 The question this article answers is narrow: what has to be true about your identifiers so that the second delivery leaves the system in exactly the state the first one did?
 
-<Callout title="The claim">
+<Callout title="Identifiers that cannot drift">
   If every identifier is a pure function of the input, every write becomes an upsert, and convergence stops needing coordination. You do not need a distributed transaction. You need identifiers that cannot drift.
 </Callout>
 
@@ -131,7 +131,7 @@ if stored != expected:
     raise ProjectionMismatch(f"expected {expected} points, found {stored}")
 ```
 
-This catches partial writes, silent client-side batching failures, and the whole class of "it looked like it worked". It is worth having.
+This catches partial writes, silent client-side batching failures, and the whole class of "it looked like it worked". Keep it.
 
 It does not prove the stores agree. Equal totals survive one record being removed and another added — the subject of [a separate article](/learn/equal-counts-do-not-prove-two-stores-agree), because it is the mistake I see made most often once someone has added fences and feels finished.
 
@@ -156,6 +156,6 @@ That last point is the one that bit me. Broker-level ordering is per partition, 
 
 None of this requires a distributed transaction, a saga, or a two-phase commit. It requires deciding what "the same thing" means and then computing it the same way everywhere.
 
-## Related
+## The consumer side, and the theory
 
 The [reliable knowledge systems model](/work/reliable-knowledge-systems) shows the shape of a system built this way, with synthetic data throughout. [Designing replay as a normal path](/learn/designing-replay-as-a-normal-path) covers the consumer side: what has to be true for re-running a stream to be routine rather than an incident. Kleppmann's *Designing Data-Intensive Applications* is the reference I would send someone to for the surrounding theory, and the [UUID specification](https://www.rfc-editor.org/rfc/rfc4122) defines the version 5 derivation used above.

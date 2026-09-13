@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ArrowLabel } from "@/components/Icon";
+
 import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
@@ -43,7 +45,14 @@ export const metadata: Metadata = createPageMetadata({
  * identifier, interface or quantity belonging to anybody's deployed system.
  */
 export default function ReliableKnowledgeSystemsPage() {
-  const relatedWriting = getPublishedWritingForProject("reliable-knowledge-systems");
+  /*
+   * At most three.
+   *
+   * The public-safe model is named by eight tutorials, and rendering all eight closed that case
+   * study with more cards than it had sections. Three is what the tutorial routes already show
+   * each other; /learn/all is one click from every card.
+   */
+  const relatedWriting = getPublishedWritingForProject("reliable-knowledge-systems").slice(0, 3);
 
   return (
     <PageShell current="/work">
@@ -221,6 +230,18 @@ export default function ReliableKnowledgeSystemsPage() {
             The engineering above is real and is what I spend my time on. The machine that
             illustrates it was invented for this page, and every quantity in it was chosen because
             it is legible on a screen.
+          </p>
+          {/*
+            The other direction.
+
+            /architecture has always offered "read the synthetic model" and pointed here; nothing
+            here pointed back, so a reader who started on the model had no way to the version with
+            the particulars in it short of the navigation.
+          */}
+          <p className="hero-actions">
+            <Link className="button button-secondary" href="/architecture">
+              <ArrowLabel kind="forward">The same work, named</ArrowLabel>
+            </Link>
           </p>
         </section>
         {/* The tutorials written from this work, so the link graph runs in both directions. */}

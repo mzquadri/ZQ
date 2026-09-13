@@ -52,7 +52,7 @@ Retrieval fails quietly. A dense-only index returns the passage that is closest 
 
 Hybrid retrieval addresses one part of this — lexical recall — and introduces its own set of quiet failures. This article is about both.
 
-<Callout title="The principle">
+<Callout title="Degrade loudly, or not at all">
   Every stage that can degrade should either refuse or report. A retrieval system whose failure mode is "slightly worse results" is a system whose failures you will never find.
 </Callout>
 
@@ -178,6 +178,6 @@ class RetrievalResult:
 - **Fusion does not repair a bad chunking strategy.** If the answer spans two chunks and neither contains it, no amount of fusion will find it.
 - **None of this is an evaluation.** Build a labelled set of real queries and measure, or you are tuning parameters against intuition.
 
-## Related
+## A measured version of this
 
 The [InsureAssist retrieval case study](/work/insureassist-rag) reports a measured held-out result for a system of this shape, including the gap between the score that selected the configuration and the score on held-out data. [Refusal paths in production AI systems](/learn/refusal-paths-in-production-ai-systems) covers what to do when `below_floor` is true.

@@ -43,7 +43,7 @@ Replay is usually discovered rather than designed. Something goes wrong, someone
 
 It is cheaper to decide up front that re-running a stream is an ordinary operation. Four decisions get you most of the way, and they are all on the consumer side.
 
-<Callout title="The target property">
+<Callout title="What has to be true">
   Re-processing an event that has already been processed changes nothing. Not "is skipped" — changes nothing. A skip depends on a lookup; a harmless repeat does not.
 </Callout>
 
@@ -160,6 +160,6 @@ If your system has no such sweep, the honest position after a replay is that you
 - Every generation records the rules that produced it.
 - A reconcile sweep follows every replay.
 
-## Related
+## The write side, and the operator side
 
 [Idempotent ingestion across heterogeneous stores](/learn/idempotent-ingestion-across-heterogeneous-stores) is the write-side half of this: replay is only safe because the writes converge. [Re-ingest, verify, reconcile, withdraw](/learn/reingest-verify-reconcile-withdraw) covers the operator actions that surround it.

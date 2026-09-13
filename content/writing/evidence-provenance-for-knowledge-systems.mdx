@@ -161,6 +161,6 @@ CREATE TABLE generation (
 
 The `ON DELETE RESTRICT` is doing real work: a capture that any generation still references cannot be deleted, so the evidence outlives every attempt to tidy up. The unique constraint means re-running the same rules over the same capture is a no-op rather than a duplicate row, which makes the whole thing safely repeatable.
 
-## Related
+## The same idea, applied to models
 
 [Equal counts do not prove two stores agree](/learn/equal-counts-do-not-prove-two-stores-agree) places provenance as the top rung of the integrity ladder. The [MLOps reference pipeline](/work/mlops-reference-pipeline) applies the same idea to models: hash-based data versions and a transformation fitted once, so training and serving cannot diverge.

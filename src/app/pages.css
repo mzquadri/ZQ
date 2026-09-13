@@ -68,7 +68,7 @@
 
 .page-stage-meta dt {
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--stage-ink-soft);
@@ -389,7 +389,7 @@
 .spine-stage {
   margin: 0 0 0.2rem;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--accent);
@@ -473,7 +473,7 @@
 
 .page-stage .research-audience span {
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--accent);
@@ -795,7 +795,7 @@
 .thesis-readout-row { display: grid; gap: 0.1rem; }
 
 .thesis-readout dt {
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #6d7b86;
@@ -872,7 +872,7 @@
 }
 
 .thesis-reliability-key span {
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #6d7b86;
@@ -1035,7 +1035,7 @@
 .world-readout-row { display: grid; gap: 0.1rem; }
 
 .world-readout dt {
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--world-muted);
@@ -1283,7 +1283,7 @@
   display: flex;
   gap: 0.75rem;
   margin: 0.5rem 0 0;
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -2150,7 +2150,7 @@
  * The way onward from a project.
  *
  * A dark band at the end of a case study, carrying the next system's own object rather than a
- * link list. The order is the reel's running order and it wraps; it is an offer, not a carousel.
+ * link list. It follows the manifest order and wraps; it is an offer, not a carousel.
  * ------------------------------------------------------------------------------------------- */
 
 .next-system {
@@ -2544,7 +2544,7 @@
 .gw-limits li { font-size: 0.9rem; line-height: 1.6; color: var(--ink); }
 
 @media (max-width: 640px) {
-  .gw-bars-axis { font-size: 0.62rem; }
+  .gw-bars-axis { font-size: var(--label-dense); }
   .gw-row-label { font-size: 0.78rem; }
   .gw-value { font-size: 0.72rem; padding: 0 0.3rem; }
 }

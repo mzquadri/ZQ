@@ -59,7 +59,7 @@ A heatmap over an image, warm where the model "looked". It is the most persuasiv
 
 Here is what a gradient-based attribution map actually is: a weighted combination of convolutional feature maps, upsampled to the input size. It tells you which spatial regions of the final feature maps had gradient influence on a class score. That is a statement about activations. It is not a statement about reasoning, and the gap between the two is where the trouble lives.
 
-<Callout title="The distinction">
+<Callout title="Where, not why">
   A saliency map can show where evidence was. It cannot show that the evidence was used correctly, that it was sufficient, or that the model would have decided differently without it.
 </Callout>
 
@@ -144,6 +144,6 @@ The practical position I hold: attribution maps are useful for **model debugging
 
 If your system needs to justify itself to a person who will act on it, the justification has to come from something with a measurable error rate.
 
-## Related
+## What sits beside the map
 
 The [medical imaging prototype](/work/medico) is where this work sits, and publishes no clinical performance figure by design. [Calibration is not classification accuracy](/learn/calibration-is-not-classification-accuracy) covers the confidence number the map sits beside. The [sanity checks paper](https://arxiv.org/abs/1810.03292) is the one to read first.

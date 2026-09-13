@@ -61,10 +61,16 @@ export default function AboutPage() {
            */}
           <div className="about-identity">
             <ProfilePortrait variant="feature" />
+            {/*
+              The name only.
+
+              The stage directly above already states the role and the location as two of its three
+              meta pairs, and the paragraph beside this used to open by giving the location a third
+              time. A portrait wants a name under it; it does not want the page's own header
+              repeated at a smaller size.
+            */}
             <p className="portrait-caption">
               <strong>{site.name}</strong>
-              <span>{site.role}</span>
-              <span>{site.location}</span>
             </p>
           </div>
         </div>
@@ -80,9 +86,8 @@ export default function AboutPage() {
             The available record states: {thesis.status}. No later education status is published.
           </p>
           <p>
-            I am based in {site.location}. {site.availability}, including roles across Machine
-            Learning Engineering, Applied AI, reliable ML, scientific computing, GNNs, MLOps,
-            and data/AI engineering.
+            {site.availability}, including roles across Machine Learning Engineering, Applied AI,
+            reliable ML, scientific computing, GNNs, MLOps, and data/AI engineering.
           </p>
         </div>
       </section>

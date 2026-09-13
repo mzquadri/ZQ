@@ -47,7 +47,7 @@
   bottom: 0.6rem;
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -196,7 +196,7 @@
 
 .detailStatus {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--teal-dark);

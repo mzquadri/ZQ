@@ -48,7 +48,7 @@ Ordinary software has a vocabulary for this: exceptions, 4xx and 5xx, `null`, `R
 
 The engineering work is putting the vocabulary back.
 
-<Callout title="The claim">
+<Callout title="Put the vocabulary back">
   Every stage that can degrade needs a way to say so. A pipeline whose only output is an answer converts every failure into a wrong answer, and wrong answers are invisible.
 </Callout>
 
@@ -144,6 +144,6 @@ So decide early:
 
 Each row is a place where the system can know that it does not know. The engineering is making sure it has somewhere to put that.
 
-## Related
+## Row by row
 
 [Selective prediction](/learn/selective-prediction-when-models-should-abstain) covers the inference row in depth. [Hybrid retrieval without silent failure](/learn/hybrid-retrieval-without-silent-failure) covers the retrieval row. [Re-ingest, verify, reconcile, withdraw](/learn/reingest-verify-reconcile-withdraw) covers what an operator does once a stage has refused.

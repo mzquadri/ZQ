@@ -108,6 +108,27 @@ async function scan(roots, patterns, label) {
 const buildOnly = process.argv.includes("--build-only");
 const offences = [];
 
+/*
+ * A missing build is not a clean build.
+ *
+ * `scan` skips a root it cannot stat, so on a fresh clone - or after `rm -rf .next` - the build
+ * tier had nothing to read and this printed "privacy scan clean". The whole guarantee about the
+ * withheld case study lives in that tier, and reporting it as satisfied when it never ran is the
+ * one failure mode a privacy check cannot have. A negative control found it.
+ *
+ * CI builds before scanning, so this changes nothing there. It changes what a developer sees.
+ */
+const builtRoots = [];
+for (const root of BUILD_ROOTS) {
+  if (await stat(root).catch(() => null)) builtRoots.push(root);
+}
+if (builtRoots.length === 0) {
+  console.error("PRIVACY SCAN INCONCLUSIVE");
+  console.error(`  no build output at ${BUILD_ROOTS.join(" or ")}`);
+  console.error("  the build tier had nothing to read. Run `npm run build` first.");
+  process.exit(2);
+}
+
 if (!buildOnly) offences.push(...(await scan(SOURCE_ROOTS, ALWAYS, "[always]")));
 offences.push(...(await scan(BUILD_ROOTS, ALWAYS, "[always]")));
 offences.push(...(await scan(BUILD_ROOTS, BUILD_ONLY, "[build] ")));

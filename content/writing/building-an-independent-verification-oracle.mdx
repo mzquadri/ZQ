@@ -60,7 +60,7 @@ Four axes, and all four matter:
 1. **No shared application code.** Not one import. Not a constants module, not a "small helper", not the schema definitions.
 2. **A different library.** If both sides use the same parser library, a bug in that library is common to both.
 3. **A different traversal model.** Same library, different approach still leaves you sharing the library's model of the document. Full-tree materialisation and streaming events fail differently.
-4. **Different text assembly.** How character data is gathered — including what happens to text between and after child elements — is a classic source of quiet disagreement, and it is worth having the two sides do it differently on purpose.
+4. **Different text assembly.** How character data is gathered — including what happens to text between and after child elements — is a classic source of quiet disagreement, so the two sides should do it differently on purpose.
 
 In the system above, production used the standard library's tree parser with a hardened loader and a full-tree walk. The oracle uses a different library entirely, in streaming mode, with an explicit tag stack, accumulating character data from each element's own text and its trailing text separately. Its complete import list is three standard-library modules plus that one parser. Zero application imports.
 
@@ -157,6 +157,6 @@ A second implementation is expensive. It is worth it when:
 
 It is not worth it for most business logic, where failures are loud and cheap. It was worth it here because a corpus that has drifted from its source produces confident citations of text the publisher no longer serves, and nobody downstream can tell.
 
-## Related
+## The honest counterweight
 
 [Equal counts do not prove two stores agree](/learn/equal-counts-do-not-prove-two-stores-agree) sets out the ladder of comparisons this oracle supplies the denominator for. Knight and Leveson's experiment on multiversion programming is the honest counterweight to all of this: independently written implementations still correlate their failures more than the theory predicts, which is an argument for choosing different libraries and models rather than merely different authors.

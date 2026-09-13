@@ -24,6 +24,41 @@
   --sans: var(--font-geist-sans), Arial, sans-serif;
   --mono: var(--font-geist-mono), Consolas, monospace;
   --serif: Georgia, "Times New Roman", serif;
+
+  /*
+   * The label scale.
+   *
+   * Small type on this site is nearly all the same job - a mono, tracked, usually uppercase label
+   * naming the thing beside it - and it had drifted across nine hand-picked rem values between
+   * 0.58 and 0.74. An audit found 111 rendered strings under 11px, and the smallest were not
+   * decoration: table headers, definition terms, the category a repository sits in, the text
+   * inside a navigation link.
+   *
+   * Three steps, chosen by what the text is for rather than by how it looked in one figure:
+   *
+   *   --label-strong  something the reader has to read to use the page: a column header, a term
+   *                   in a definition list, a category, the words inside a control
+   *   --label         metadata beside content that already says the same thing in full: a date,
+   *                   a reading time, an eyebrow, a section index
+   *   --label-dense   annotation inside a figure, where the drawing genuinely constrains the box.
+   *                   Still above eleven pixels; nothing on this site needs to be smaller
+   *
+   * Hierarchy is preserved by keeping three steps rather than raising everything to one size.
+   */
+  --label-strong: 0.78rem;
+  --label: 0.72rem;
+  --label-dense: 0.7rem;
+
+  /*
+   * One size for a section title.
+   *
+   * There were three, and they were three because they grew in three places rather than because
+   * they meant three things: 5.5rem for `SectionHeading`, 5rem for the writing and article
+   * headers, 4.25rem for the standalone ones on /about and /contact. At 1440 that rendered the
+   * same kind of heading at 82, 72 and 65 pixels depending on which page you were reading, and
+   * nothing about the content explained the difference.
+   */
+  --section-title: clamp(2.5rem, 5vw, 5rem);
 }
 
 *,
@@ -203,7 +238,7 @@ ol {
   place-items: center;
   background: var(--ink);
   color: var(--paper);
-  font-size: 0.66rem;
+  font-size: var(--label);
 }
 
 .wordmark-name {
@@ -513,7 +548,7 @@ ol {
 }
 
 .section-heading h2 {
-  font-size: clamp(2.8rem, 5.7vw, 5.5rem);
+  font-size: var(--section-title);
 }
 
 .section-intro {
@@ -612,7 +647,7 @@ ol {
 .metric > span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -663,7 +698,7 @@ ol {
   padding: 0.28rem 0.55rem;
   background: rgba(255, 255, 255, 0.3);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label-strong);
 }
 
 .capability-grid {
@@ -880,7 +915,7 @@ ol {
 .standalone-heading,
 .research-links h2 {
   margin-top: 1.5rem;
-  font-size: clamp(2.3rem, 4.5vw, 4.25rem);
+  font-size: var(--section-title);
 }
 
 .case-section p:not(.section-index),
@@ -1075,7 +1110,7 @@ ol {
 .research-meta dt {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -1150,7 +1185,7 @@ ol {
 
 .protocol-table thead th {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -1412,7 +1447,7 @@ ol {
   .protocol-table td::before {
     content: attr(data-label);
     font-family: var(--mono);
-    font-size: 0.66rem;
+    font-size: var(--label-strong);
     font-weight: 700;
     text-transform: uppercase;
   }
@@ -1733,7 +1768,7 @@ ol {
 .research-finding-grid article > span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -1812,7 +1847,7 @@ ol {
   padding: 0.35rem 0.55rem;
   border: 1px solid var(--line-strong);
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--label-strong);
 }
 
 .research-theme-links {
@@ -1947,7 +1982,7 @@ ol {
 .research-figure > figcaption strong {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -1970,7 +2005,7 @@ ol {
 .method-matrix-grid article > span {
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
 }
 
 .method-question {
@@ -1998,7 +2033,7 @@ ol {
 .selective-output dt {
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   text-transform: uppercase;
 }
 
@@ -2099,7 +2134,7 @@ ol {
   align-items: center;
   padding: 0.75rem;
   font-family: var(--mono);
-  font-size: 0.67rem;
+  font-size: var(--label-dense);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -2194,7 +2229,7 @@ ol {
 
 .research-data-table thead th {
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--label-strong);
   text-transform: uppercase;
 }
 
@@ -2363,7 +2398,7 @@ ol {
 
 .thesis-next-section > div:first-child h2 {
   margin-top: 1.5rem;
-  font-size: clamp(2.3rem, 4.5vw, 4.25rem);
+  font-size: var(--section-title);
 }
 
 .thesis-next-section .research-record-actions {
@@ -2434,7 +2469,7 @@ ol {
 
   .decision-bar span {
     padding: 0.55rem;
-    font-size: 0.58rem;
+    font-size: var(--label-dense);
   }
 
   .chart-visual {
@@ -2479,7 +2514,7 @@ ol {
   }
 
   .research-data-table thead th {
-    font-size: 0.68rem;
+    font-size: var(--label-strong);
   }
 }
 
@@ -2523,7 +2558,7 @@ ol {
 .article-references > h2 {
   max-width: 56rem;
   margin-top: 1rem;
-  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-size: var(--section-title);
 }
 
 /*
@@ -2552,9 +2587,14 @@ ol {
   text-transform: uppercase;
 }
 
+/*
+ * Two columns was right for a collection of one or two. With a dozen it is five rows of very wide
+ * cards, so the grid takes a third column where there is room for one - measured against the card,
+ * not against a breakpoint, so the library can grow without this needing a new rule.
+ */
 .writing-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
   border-top: 2px solid var(--ink);
   border-left: 1px solid var(--line);
 }
@@ -2575,7 +2615,7 @@ ol {
   gap: 1rem;
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -2642,7 +2682,7 @@ ol {
   padding: 0.45rem 0.7rem;
   border: 1px solid var(--line-strong);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
 }
 
 .article-header {
@@ -2897,7 +2937,7 @@ ol {
 .article-related-grid article > p {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   text-transform: uppercase;
 }
 
@@ -2961,7 +3001,7 @@ ol {
 
   .nav-list a {
     padding-inline: 0.14rem;
-    font-size: 0.66rem;
+    font-size: var(--label-strong);
   }
 
   .workflow-list {
@@ -3109,7 +3149,7 @@ ol {
 .case-facts dt {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -3365,7 +3405,7 @@ ol {
   gap: 0.5rem 1rem;
   align-items: baseline;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -3480,7 +3520,7 @@ ol {
   border: 1px solid var(--line-strong);
   background: var(--paper-raised);
   font-family: var(--mono);
-  font-size: 0.67rem;
+  font-size: var(--label);
   overflow-wrap: anywhere;
 }
 
@@ -3509,7 +3549,7 @@ ol {
 .terminal-figure figcaption strong,
 .result-figure figcaption strong {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -3577,7 +3617,7 @@ ol {
 
 .figure-label {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -3594,7 +3634,7 @@ ol {
 .confusion-matrix th {
   padding: 0.5rem 0.6rem;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -3697,7 +3737,7 @@ ol {
 @media (max-width: 440px) {
   .confusion-matrix th {
     /* Was 0.58rem, which rendered at 9.3px. The matrix stays inside the viewport at this size. */
-    font-size: 0.66rem;
+    font-size: var(--label-strong);
     overflow-wrap: anywhere;
     white-space: normal;
   }
@@ -3732,7 +3772,7 @@ ol {
   flex-wrap: wrap;
   gap: 0.5rem 1.25rem;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -3772,7 +3812,7 @@ ol {
 
 .writing-feature-toc p {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -3799,7 +3839,7 @@ ol {
 .writing-feature-toc li::before {
   content: counter(toc, decimal-leading-zero);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   color: var(--orange-text);
 }
 
@@ -4068,7 +4108,7 @@ ol {
 
 .article-pager span {
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -4239,7 +4279,7 @@ ol {
 
 .legal-count-steps span {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4265,7 +4305,7 @@ ol {
 .legal-fanout-source span {
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -4302,7 +4342,7 @@ ol {
 .legal-fanout-grid article > span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -4331,7 +4371,7 @@ ol {
 .legal-states dt {
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -4377,7 +4417,7 @@ ol {
 
 .legal-convergence span {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4407,7 +4447,7 @@ ol {
 .legal-convergence-retained span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -4458,7 +4498,7 @@ ol {
   content: counter(rung, decimal-leading-zero) " ";
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   font-weight: 400;
 }
 
@@ -4580,7 +4620,7 @@ ol {
   background: var(--paper);
   border: 1px solid var(--line-strong);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -4763,7 +4803,7 @@ ol {
 .legal-fanout-source-copy > span {
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -5194,7 +5234,7 @@ ol {
 .legal-generation header span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -5225,7 +5265,7 @@ ol {
   border-top: 3px solid var(--line-strong);
   background: var(--paper);
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -5318,7 +5358,7 @@ ol {
   right: 1.2rem;
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -5351,7 +5391,7 @@ ol {
 .legal-orders dt {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -5380,7 +5420,7 @@ ol {
   left: 0;
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
 }
 
 .legal-orders dd > p {
@@ -5618,7 +5658,7 @@ ol {
 .legal-dock-count {
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   letter-spacing: 0.08em;
 }
 
@@ -5644,7 +5684,7 @@ ol {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.05em;
   cursor: pointer;
 }
@@ -5771,7 +5811,7 @@ ol {
 .legal-closing-row > span {
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -5845,7 +5885,7 @@ ol {
   background: var(--paper-raised);
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.06em;
 }
 
@@ -5868,7 +5908,7 @@ ol {
 .systems-ladder-figure > figcaption strong {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -5965,7 +6005,7 @@ ol {
 .systems-source-copy > span {
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -5987,7 +6027,7 @@ ol {
   background: var(--ink);
   color: var(--paper);
   font-family: var(--mono);
-  font-size: 0.6rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   scale: 1;
@@ -6048,7 +6088,7 @@ ol {
 .systems-grid article > span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -6101,7 +6141,7 @@ ol {
 .systems-ladder dt {
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -6228,7 +6268,7 @@ ol {
   background: var(--paper);
   border: 1px solid var(--line-strong);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -6248,7 +6288,7 @@ ol {
 
 .systems-count-steps span {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -6294,7 +6334,7 @@ ol {
 .systems-generation header span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -6317,7 +6357,7 @@ ol {
   border-top: 3px solid var(--line-strong);
   background: var(--paper);
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--ink-soft);
@@ -6386,7 +6426,7 @@ ol {
   right: 1.2rem;
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.58rem;
+  font-size: var(--label-dense);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -6415,7 +6455,7 @@ ol {
 
 .systems-dispositions span {
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -6453,7 +6493,7 @@ ol {
   content: counter(rung, decimal-leading-zero) " ";
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   font-weight: 400;
 }
 

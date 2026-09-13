@@ -51,7 +51,7 @@ Extracting structured fields from documents with a language model is easy to dem
 
 This article is about the scaffolding around the model call, which is where nearly all of the engineering is.
 
-<Callout title="The shape">
+<Callout title="Four stages, and only one may be uncertain">
   Classify, then extract against a template, then validate against a schema, then fall back deterministically. The model is one stage of four, and it is the only one allowed to be uncertain.
 </Callout>
 
@@ -76,7 +76,7 @@ def looks_corrupted(text: str) -> bool:
 
 When corruption is detected, do not proceed. Route the document to an OCR path that rasterises and re-reads it. That is slower and usually better than the broken text layer, and it turns a silent data-quality problem into a branch you can count.
 
-A related repair worth having: some encoders reliably mangle specific characters in recoverable ways. A targeted repair table for the language you handle is unglamorous and effective. Keep it small, keep it tested, and log every time it fires — a rising repair rate means an upstream change you want to know about.
+One more repair, unglamorous and effective: some encoders mangle specific characters in recoverable ways. A targeted repair table for the language you handle costs almost nothing. Keep it small, keep it tested, and log every time it fires — a rising repair rate means an upstream change you want to know about.
 
 ## Classify before you extract
 
@@ -199,6 +199,6 @@ None of these require a labelled corpus of thousands. A few hundred documents la
 
 This pattern suits documents with a **known family and a stable field set**. It does not suit open-ended understanding, documents whose structure you cannot enumerate, or anything where the interesting content is not a field. And extraction accuracy is not comprehension: a correctly extracted liability limit says nothing about whether the clause qualifying it was noticed.
 
-## Related
+## Before extraction, and after it
 
 [Hybrid retrieval without silent failure](/learn/hybrid-retrieval-without-silent-failure) covers what happens after extraction, when the documents have to be found again. The [InsureAssist case study](/work/insureassist-rag) is a public reference implementation over insurance policy documents.

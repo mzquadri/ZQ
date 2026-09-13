@@ -95,9 +95,9 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       "Three lanes of traffic reach a boundary and get three different answers: pass, stop, or strip and continue.",
     scale: "flagship",
     /*
-     * No legacy figure. This chapter was built after the procedural scene runtime, so SCENES is
-     * the only rendering it has ever had and WorkChapters takes that branch. The field is
-     * required by the manifest, so it returns nothing rather than pretending to a second figure.
+     * No legacy figure. This project was added after the procedural scene runtime, so SCENES is
+     * the only rendering it has ever had. The field is required by the manifest, so it returns
+     * nothing rather than pretending to a second figure.
      */
     scene: () => null,
     seam: {
