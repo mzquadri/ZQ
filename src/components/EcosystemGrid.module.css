@@ -251,3 +251,23 @@
 }
 
 .evidenceState[data-state="withheld"] { border-left-color: var(--orange-ink); }
+
+
+/*
+ * Card actions as touch targets.
+ *
+ * The card title is the link a reader taps to open the project and the footer link is its
+ * secondary action; both measured 21-23px on a phone. The extra height is padding, so the type
+ * and the card's own rhythm are unchanged.
+ */
+.title a,
+.caseLink,
+.detail summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.detail summary {
+  padding-block: 0.2rem;
+}

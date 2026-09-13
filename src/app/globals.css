@@ -832,9 +832,20 @@ ol {
   gap: 0.7rem;
 }
 
+/*
+ * A footer link is a standalone control, not a word in a sentence, so it needs a target a
+ * thumb can hit. These were 20px tall on every page - under the 24px minimum, and on the one
+ * surface a reader reaches for when they have decided to act. The padding grows the hit area
+ * without moving the text, and the negative margin keeps the column spacing it had.
+ */
 .footer-links a {
   color: var(--paper-raised);
   font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding-block: 0.25rem;
+  margin-block: -0.25rem;
 }
 
 .page-hero,
@@ -2508,6 +2519,22 @@ ol {
   max-width: 56rem;
   margin-top: 1rem;
   font-size: clamp(2.5rem, 5vw, 5rem);
+}
+
+/*
+ * Standalone links that sit on their own line rather than inside a sentence, so they are touch
+ * targets in their own right. They measured 18-21px on a phone; the padding grows the target
+ * without changing the type.
+ */
+.rss-link,
+.article-back,
+.back-link,
+.capability-table ul a,
+.research-theme-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding-block: 0.2rem;
 }
 
 .rss-link,
@@ -6563,4 +6590,17 @@ ol {
   margin: 0.15rem 0 0;
   font-size: 0.84rem;
   color: var(--ink-soft);
+}
+
+
+/*
+ * Taxonomy chips are links, and they were 15px tall - the smallest targets on the site. The
+ * chip already has horizontal padding; this gives it the vertical half so the whole chip is
+ * the target rather than just its text.
+ */
+.topic-chips a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding-block: 0.2rem;
 }

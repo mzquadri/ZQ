@@ -228,6 +228,10 @@
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--teal-dark);
+  /* The card's primary action, and it measured 22px tall on a phone. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
 }
 
 @media (max-width: 520px) {
@@ -253,4 +257,24 @@
   text-align: center;
   font-size: 0.9rem;
   color: var(--ink-soft);
+}
+
+
+/*
+ * Card actions as touch targets.
+ *
+ * The card title is the link a reader taps to open the project and the footer link is its
+ * secondary action; both measured 21-23px on a phone. The extra height is padding, so the type
+ * and the card's own rhythm are unchanged.
+ */
+.title a,
+.caseLink,
+.detail summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.detail summary {
+  padding-block: 0.2rem;
 }
