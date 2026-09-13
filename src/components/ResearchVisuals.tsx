@@ -187,7 +187,7 @@ export function SelectiveRiskChart() {
           </g>
         </svg>
       </div>
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>Six selected audited operating points; values are observed, not interpolated</caption>
           <thead><tr><th scope="col">Retained</th><th scope="col">Accepted-set MAE</th><th scope="col">Review queue</th></tr></thead>

@@ -44,7 +44,7 @@ export function ThesisArchitecture() {
         ))}
       </ol>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>
             Layer sizes read from {architectureSource}, not from the write-up
@@ -128,7 +128,7 @@ export function ThesisBaselineComparison() {
         selective-review result is built on. The tree carries no notion of the network at all.
       </p>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>
             All rows: 80/10/10 scenario-level split, seed 42, {graph.scenarios} held-out scenarios,{" "}
@@ -190,7 +190,7 @@ export function ThesisTrialLog() {
         })}
       </ol>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>Source: {trialsSource}</caption>
           <thead>
