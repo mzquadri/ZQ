@@ -1,24 +1,52 @@
 # Portfolio Integrity v1
 
-## Frozen Baseline
+## Current Operational Snapshot
 
-The production baseline was recorded before the integrity changes on August 20, 2026.
+**Verified: 2026-09-13**, against the application state at `40b207a` — the commit this document
+was written against, named once here rather than repeated, so that editing the document does not
+immediately invalidate its own claim.
 
-| Item | Baseline |
+| Item | Current |
 |---|---|
 | Repository | `https://github.com/mzquadri/ZQ` |
 | Deployment branch | `main` (`origin/HEAD` and `origin/main`) |
-| Commit | `4682564de4165b232590acc123fc881ae4a916eb` |
-| Production URL | `https://mzquadri.de` |
-| Runtime | Node.js 20.20.1, npm 10.8.2 |
-| Framework | Next.js 14.2.35, React 18.3.1 |
+| Production URL | `https://mzquadri.de` — HTTP 200 |
+| Continuous integration | GitHub Actions: success |
 | Working tree | Clean and aligned with `origin/main` |
+| Runtime | Node.js 24.12.0, npm 11.6.4 (`engines`: `node >=24 <25`) |
+| Framework | Next.js 16.3.1, React 19.2.8 |
+| Tooling | TypeScript 5.9.3, ESLint 9.39.1, Playwright 1.62.1 |
 
-The live production URL returned the content represented by this commit. Baseline lint,
-type checking, content validation, compilation, and all 34 Playwright checks passed. The
-dependency audit reported five high-severity vulnerable package entries and no critical
-entries. No baseline tag was created because repository commits and tags are only written
-with explicit release approval.
+### Current verification
+
+Every figure below was measured by running the command named, not carried forward from a previous
+snapshot.
+
+| Check | Command | Result |
+|---|---|---|
+| Content validation | `npm run validate:content` | 28 truth facts, 8 projects, 1 published writing entry, 5 capability groups, 17 route files |
+| Lint, types, build | `npm run check` | Passed |
+| End-to-end | `npx playwright test` | 390 passed, 14 skipped, 0 failed |
+| Privacy scan | `npm run privacy:scan` | Clean, against a production build |
+| Route and accessibility audit | `node tools/audit-site.mjs` | 18 routes × 6 viewports; 0 critical, 0 high, 0 axe violations at WCAG 2.1 AA |
+| Journeys | `node tools/check-journeys.mjs https://mzquadri.de` | All passed against production |
+| WebGL worlds | `node tools/check-worlds.mjs https://mzquadri.de` | All 8 correct on the software and hardware paths |
+| Dependency audit | `npm audit` | **4 advisories: 1 critical, 2 high, 1 low**, across 693 dependencies |
+
+The audit result is not clean and is recorded as measured rather than as hoped. The critical
+advisory is [GHSA-p293-qw3h-jr36](https://github.com/advisories/GHSA-p293-qw3h-jr36), CVSS 9.0,
+unauthenticated remote code execution on Windows-hosted servers, affecting Next.js `>=16.0.0
+<16.3.3`; this site runs 16.3.1 and the fix is 16.3.5. Production is served by Vercel on Linux,
+which is not the affected host platform, but the upgrade is outstanding and is a code change
+rather than a documentation one. The two high advisories (`js-yaml`, `sharp`) and the low
+(`postcss-selector-parser`) are transitive.
+
+The two remaining audit findings are cosmetic and long-standing: one tap target whose *width* is
+short because the link text is a three-letter repository name, and 109 small-label instances at
+10.2–10.9px, which is the design's label scale rather than a defect.
+
+The August 20, 2026 integrity baseline — Node 20, Next.js 14.2.35, React 18.3.1, 34 Playwright
+checks — is preserved in Git history; this document reports the current verified state.
 
 ## Source Hierarchy
 
@@ -82,33 +110,45 @@ before the move were:
 Unresolved or unpublished facts must not be inferred into page copy, metadata, structured data,
 repository descriptions, or social copy.
 
-## Security Migration Result
+## Framework Migration
 
-A dated record of what was verified in August 2026, kept as written. The counts, the runtime
-versions in the frozen baseline above, and the `resume` route named below describe the site as it
-was on those dates; where they disagree with the conflict register, the register is current and
-this section is history. The `/resume` route and every CV download have since been withdrawn.
+**2026-08 — Next.js 14 to 16, React 18 to 19.** The migration moved the site from Next.js 14.2.35
+and React 18.3.1 to 16.3.1 and 19.2.8, with ESLint 9.39.1 and the matching Next.js configuration.
+It migrated asynchronous App Router parameters and removed the deprecated Edge runtime
+declaration from the generated Open Graph image.
 
-The integrity changes upgrade to Next.js 16.3.1, React 19.2.8, ESLint 9.39.1, and the matching
-Next.js ESLint configuration. It also migrates asynchronous App Router parameters and removes
-the deprecated Edge runtime declaration from the generated Open Graph image.
+The decision and its scope are the durable part and are kept. The operational figures that
+accompanied it are not: the four stage-by-stage Playwright counts recorded at the time (39, 47,
+55 and 63 passed, each with one desktop-only skip) described intermediate states of a suite that
+now reports 390 passed, and the `npm audit` result recorded alongside them has since changed. The
+current numbers, including the audit, are in the operational snapshot at the top of this document,
+measured rather than carried forward.
 
-After migration:
+One consequence is worth stating plainly rather than leaving implied: that migration's clean audit
+result is what the snapshot now contradicts. A dependency audit is a statement about a moment, and
+this one stopped being true without anything in this repository changing.
 
-- `npm audit --audit-level=high`: zero vulnerabilities;
-- `npm run check`: passed;
-- Portfolio Integrity v1 `npm run test:e2e`: 39 passed and one expected desktop-only skip.
-- Recruiter Core v1 local verification: 47 passed and one expected desktop-only skip across desktop
-  and mobile Chromium, including 320 px reflow and resume coverage.
-- Content Foundation v1 local verification: 55 passed and one expected desktop-only skip, including
-  Learn routes, RSS, article metadata, static code and equations, axe scans, and 320 px reflow.
-- Research Experience v1 local verification: 63 passed and one expected desktop-only skip, including
-  the research index, thesis record, discrete selective-prediction control, scholarly metadata,
-  axe scans, and 320 px reflow.
-- Public website, GitHub profile, project repositories, and credited contributor profiles:
-  resolved successfully on August 20, 2026. LinkedIn's exact profile path was manually
-  verified because automated requests receive its anti-bot status.
+## Documentation Freshness
 
-Recruiter Core v1 was deployed from commit `95d7b7d4c0622aff6229a4f803cc34950f98d310`.
-GitHub Actions passed all checks, both configured production deployments succeeded, and the live
-home, resume, and MLOps case-study routes were smoke-tested on August 20, 2026.
+The problem this convention exists to prevent is the one that produced this rewrite: a document
+that reported August figures in September, confidently, because the numbers had been copied
+forward rather than measured.
+
+- **Operational snapshots carry a `Verified:` date.** A figure without one is not a claim about
+  today, and should be read as history.
+- **Counts are measured, never copied.** Every number in the snapshot above names the command that
+  produced it, so the next person can re-run it rather than trust it.
+- **Dated decisions are immutable.** A decision recorded on a date stays as written; it is
+  superseded by a later dated entry, never edited to match the present. `docs/EVIDENCE_AND_PRIVACY.md`
+  keeps its decision log on these terms.
+- **Git is the archive.** Previous operational snapshots do not need to be reproduced here to be
+  preserved; `git log -p` on this file is the record, which is why the August baseline table was
+  removed rather than kept alongside its replacement.
+- **The snapshot names one commit, once.** Recording the documentation commit's own hash would
+  make every documentation change instantly self-invalidating, so the snapshot is anchored to the
+  application state it was verified against.
+
+`npm run check:docs` compares the framework and runtime versions stated in the snapshot against
+what is actually installed, and fails when the `Verified:` date is missing or older than ninety
+days. It checks staleness, not correctness: it cannot tell whether a test count is right, only
+whether the document still claims to be current.
