@@ -111,3 +111,19 @@ __pycache__/
 # Scratch HTML the CV generator writes and removes; listed so an interrupted run cannot
 # leave one committed.
 /.cv-render.html
+
+# Assistant configuration. tools/check-authorship.sh fails the build if any of these is tracked,
+# on the reasoning that a tool's own config is not part of this work - but it assumed a global
+# core.excludesFile was keeping them out, and on at least one machine there is none. They are
+# regenerated on demand, so ignoring them here costs nothing and closes the gap between the rule
+# and what enforces it.
+/CLAUDE.md
+/CLAUDE.local.md
+/AGENTS.md
+/.claude/
+/.cursorrules
+/.mcp.json
+
+# Output from tools/audit-site.mjs. Derived from a build; regenerate with
+# `node tools/audit-site.mjs <origin> <dir>`.
+/audit*/
