@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+# Reject an attribution trailer or an assistant session link before the commit exists.
+#
+# This runs the same checker CI runs, in its --msg mode, so a message refused here would be
+# refused by CI and a message accepted here will not be caught out later. There is no second
+# copy of the rules to drift.
+#
+# Installed by `npm run hooks:install`, which points core.hooksPath at this directory. Hooks
+# are not copied into .git/hooks: that directory is untracked, so a copy is invisible to
+# review and goes stale the moment the checker changes.
+set -euo pipefail
+
+exec "$(git rev-parse --show-toplevel)/tools/check-authorship.sh" --msg "$1"
