@@ -15,7 +15,7 @@ import type { Surface } from "../surface";
 /**
  * CIFAR: one number covering ten.
  *
- * The object is a matrix, and nothing else in the reel is. Ten by ten, every cell a real count
+ * The object is a matrix, and no other scene is. Ten by ten, every cell a real count
  * from the tracked confusion matrix, and the whole sequence is that one grid being read in six
  * different ways rather than being replaced by anything.
  *

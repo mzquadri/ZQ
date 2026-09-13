@@ -70,7 +70,7 @@ export default async function TopicPage({ params }: TopicPageProps) {
             : "Nothing is published on this topic yet. The route exists so it can be linked and indexed once something is."}
         </p>
         <div className="work-jump">
-          <Link href="/learn">
+          <Link className="taxonomy-back" href="/learn">
             <ArrowLabel kind="forward">All writing</ArrowLabel>
           </Link>
         </div>

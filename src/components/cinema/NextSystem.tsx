@@ -9,7 +9,7 @@ import { SCENES } from "@/components/sequence/scenes";
  *
  * Reaching the end of a case study used to leave a reader with one route: back to /work, and then
  * a decision about which of twenty-five repositories to open next. That is a fine ending for
- * someone who came for one project and a poor one for someone reading the reel, who has just
+ * someone who came for one project and a poor one for someone reading through several, who has just
  * finished a system and is most likely to want the next.
  *
  * The order is the homepage's running order - curatorial, not chronological, and stated as such.

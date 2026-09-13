@@ -20,7 +20,7 @@ import type { Surface } from "../surface";
 /**
  * Hydrology: the same model, and two very different kinds of wrong.
  *
- * This chapter is a single curve, and it is the only chapter in the reel that is. There is no
+ * This scene is a single curve, and it is the only one that is. There is no
  * network, no pipeline and no field of objects - just a stage-discharge relationship and two
  * intervals projected through it, because that projection *is* the finding and anything else in
  * the frame would be decoration around it.

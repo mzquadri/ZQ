@@ -2691,7 +2691,8 @@ test("navigating to a flagship does not smooth-scroll the whole page past the re
 
 test("the transport page publishes the baseline that beats its own surrogate", async ({ page }) => {
   await page.goto("/work/transport-uq");
-  const text = await page.locator("article").innerText();
+  /* The case study's own article, not the writing cards the related-tutorials band renders. */
+  const text = await page.locator("main > article").first().innerText();
   /*
    * The comparison the surrogate loses. It was absent from this site until a second audit of the
    * implementation repository, and a page that shows the surrogate's scores without it is making

@@ -6,6 +6,8 @@ import SceneIdentity from "@/components/sequence/SceneIdentity";
 import MedicoWorld from "@/components/medico-world/MedicoWorld";
 import MedicoWorldFlat from "@/components/medico-world/MedicoWorldFlat";
 import PageShell from "@/components/PageShell";
+import WritingCard from "@/components/writing/WritingCard";
+import { getPublishedWritingForProject } from "@/content/writing/repository";
 import { ArrowLabel } from "@/components/Icon";
 import { config, evaluation, findings, limits, sources } from "@/content/medico-world";
 import { coverage } from "@/components/medico-world/geometry";
@@ -31,6 +33,8 @@ const REPOSITORY = "https://github.com/mzquadri/medico";
  * what the loss does with labels that three different corpora disagree about.
  */
 export default function MedicoPage() {
+  const relatedWriting = getPublishedWritingForProject("medico");
+
   return (
     <PageShell current="/work">
       <article>
@@ -41,8 +45,8 @@ export default function MedicoPage() {
 
           {/*
             The object from the homepage chapter, at the same resting beat. This route had no
-            opening figure at all, so a click from the reel arrived on prose and the thing that had
-            just been on screen was nowhere in the first viewport.
+            opening figure at all, so a click from the index arrived on prose and the subject of the
+            project was nowhere in the first viewport.
 
             Directly after the title, so a phone sees it without scrolling. At desktop widths the
             hero is a two-column grid and this is placed into the second column regardless of where
@@ -151,6 +155,19 @@ export default function MedicoPage() {
             stored, or published.
           </p>
         </section>
+        {/* The tutorials written from this work, so the link graph runs in both directions. */}
+        {relatedWriting.length > 0 ? (
+          <section className="section-wrap article-related" aria-labelledby="related-writing-title">
+            <p className="section-index"><span>Learn</span>The reasoning, written up</p>
+            <h2 id="related-writing-title">
+              {relatedWriting.length === 1 ? "A tutorial from this work" : "Tutorials from this work"}
+            </h2>
+            <div className="writing-grid">
+              {relatedWriting.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
+            </div>
+          </section>
+        ) : null}
+
         <NextSystem slug="medico" />
       </article>
     </PageShell>

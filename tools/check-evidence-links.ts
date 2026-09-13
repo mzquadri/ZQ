@@ -83,6 +83,21 @@ for (const [name, module] of Object.entries(MODULES)) {
 }
 
 /*
+ * Links the pages build rather than store.
+ *
+ * `collect` walks exported string values, and a repository link is not one: the index computes it
+ * from the repository's `name` when it renders. Twenty-four published links were therefore outside
+ * this tool's reach, and one of them - a profile README repository that does not exist - had been
+ * returning 404 to every reader who clicked it. Anything else that is assembled at render time
+ * rather than written down belongs here beside it.
+ */
+for (const repository of ecosystem.ecosystemRepositories) {
+  const url = ecosystem.repositoryUrl(repository);
+  if (!urls.has(url)) urls.set(url, new Set());
+  urls.get(url)!.add(`ecosystem.repositoryUrl(${repository.name})`);
+}
+
+/*
  * 999 is LinkedIn refusing an automated request and 403/429 are usually the same thing from behind
  * a bot filter. Reporting those as breakage would make this noisy on every run and it would be
  * switched off within a week - the failure mode the header warns about. They are reported as

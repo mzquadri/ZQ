@@ -2581,3 +2581,15 @@
   gap: 0.85rem;
   align-items: flex-start;
 }
+
+/* ---- The way back from a taxonomy page -------------------------------------------------------
+ *
+ * A standalone text link is the only control on these pages, and at 105 x 19 it was under the
+ * 24px target-size floor. The padding grows the box a thumb has to hit without changing the type.
+ */
+.taxonomy-back {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.4rem;
+  min-height: 2.75rem;
+}

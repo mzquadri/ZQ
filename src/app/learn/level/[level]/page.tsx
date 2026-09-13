@@ -64,7 +64,7 @@ export default async function LevelPage({ params }: LevelPageProps) {
             : "Nothing is published at this level yet. The route exists so it can be linked and indexed once something is."}
         </p>
         <div className="work-jump">
-          <Link href="/learn">
+          <Link className="taxonomy-back" href="/learn">
             <ArrowLabel kind="forward">All writing</ArrowLabel>
           </Link>
         </div>

@@ -27,6 +27,8 @@ export function RepositoryCard({ repository }: { repository: EcosystemRepository
         <span className={styles.language}>{repository.language}</span>
       </div>
 
+      {/* h3 under the category h2, so a repository reads as inside its category rather than
+          beside it. Both were h3 while the catalogue was a section of another page. */}
       <h3 className={styles.title}>
         <a href={repositoryUrl(repository)}>
           <ArrowLabel>{repository.title}</ArrowLabel>
@@ -110,7 +112,7 @@ export function EcosystemGroups({
       {groups.map((group) => (
         <section aria-labelledby={`ecosystem-${group.id.toLowerCase()}`} className={styles.group} key={group.id}>
           <div className={styles.groupHead}>
-            <h3 id={`ecosystem-${group.id.toLowerCase()}`}>{group.id}</h3>
+            <h2 id={`ecosystem-${group.id.toLowerCase()}`}>{group.id}</h2>
             <p>{group.summary}</p>
           </div>
           <RepositoryCardGrid repositories={group.repositories} />

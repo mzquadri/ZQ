@@ -14,7 +14,7 @@ import type { Surface } from "../surface";
 /**
  * Medico: three corpora that disagree about what they can label.
  *
- * This chapter is deliberately the quietest in the reel. It is almost monochrome - the accent
+ * This scene is deliberately the quietest of the set. It is almost monochrome - the accent
  * appears on perhaps a dozen marks in the whole sequence - because a chest film is a grey image
  * and because a glowing medical interface would be making a confidence claim the repository does
  * not support. Everything else on the page is a coloured instrument; this one is a light box.
@@ -52,7 +52,7 @@ const COVERAGE = sources.map((src) =>
 /** A synthetic thorax, as contours. No corpus sample, no scan, and no pathology. */
 function thorax(s: Surface, p: Palette, cx: number, cy: number, r: number, alpha: number) {
   if (alpha <= 0.01) return;
-  /* Raised after watching the reel at reading speed: at 0.75 the film read as an empty frame. */
+  /* Raised after watching the scene at reading speed: at 0.75 the film read as an empty frame. */
   const ink = { stroke: p.soft, width: 1.5, alpha: alpha * 0.95 };
 
   /* Chest wall, as two mirrored curves. */

@@ -15,7 +15,7 @@ import type { Surface } from "../surface";
 /**
  * The gateway: a boundary, and what crosses it.
  *
- * Every other chapter in the reel opens an object or fills a field. This one draws a *line* and
+ * Every other scene opens an object or fills a field. This one draws a *line* and
  * then shows things arriving at it from the left, which is the only honest picture of what the
  * project is: a checkpoint between two processes, where three different kinds of traffic get three
  * different answers.
