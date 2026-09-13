@@ -2,7 +2,7 @@
 
 ## Current Operational Snapshot
 
-**Verified: 2026-09-13**, against the application state at `40b207a` — the commit this document
+**Verified: 2026-09-13**, against the application state at `4de9a51` — the commit this document
 was written against, named once here rather than repeated, so that editing the document does not
 immediately invalidate its own claim.
 
@@ -24,12 +24,14 @@ snapshot.
 
 | Check | Command | Result |
 |---|---|---|
-| Content validation | `npm run validate:content` | 28 truth facts, 8 projects, 1 published writing entry, 5 capability groups, 17 route files |
+| Content validation | `npm run validate:content` | 28 truth facts, 8 projects, 13 published writing entries, 5 capability groups, 17 route files |
 | Lint, types, build | `npm run check` | Passed |
-| End-to-end | `npx playwright test` | 390 passed, 14 skipped, 0 failed |
+| End-to-end | `npx playwright test` | 376 passed, 14 skipped, 0 failed |
 | Privacy scan | `npm run privacy:scan` | Clean, against a production build |
-| Route and accessibility audit | `node tools/audit-site.mjs` | 18 routes × 6 viewports; 0 critical, 0 high, 0 axe violations at WCAG 2.1 AA |
-| Journeys | `node tools/check-journeys.mjs https://mzquadri.de` | All passed against production |
+| Route and accessibility audit | `node tools/audit-site.mjs` | 17 routes × 6 viewports; 0 critical, 0 high, 0 medium, 0 axe violations at WCAG 2.1 AA |
+| Content tests | `npm run test:content` | 78 passed, 0 failed |
+| Published links | `npx tsx tools/check-evidence-links.ts` | 63 checked, 63 resolve; 1 unverifiable (LinkedIn blocks automated requests) |
+| Journeys | `node tools/check-journeys.mjs https://mzquadri.de` | All six passed against production |
 | WebGL worlds | `node tools/check-worlds.mjs https://mzquadri.de` | All 8 correct on the software and hardware paths |
 | Dependency audit | `npm audit` | 0 vulnerabilities, across 693 dependencies |
 | Dependency audit, production | `npm audit --omit=dev` | 0 vulnerabilities |

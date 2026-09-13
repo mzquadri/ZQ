@@ -15,14 +15,16 @@ no contact form, no remote font, and no third-party client script.
 
 | Route | Purpose |
 |---|---|
-| `/` | Current focus, selected work, systems graph, research, repository index, experience, capabilities, writing |
-| `/work` | Case-study index plus a catalogue of 24 public repositories |
+| `/` | Identity, an index of the selected work, then short previews of research, tutorials and experience |
+| `/work` | Three indexes - selected work, employer surfaces, supporting projects - and a pointer to the catalogue |
+| `/work/repositories` | Every public repository, grouped by portfolio status |
+| `/work/engineering-model` | The synthetic systems model and the capability graph |
 | `/work/[slug]` | Problem, contribution, workflow, evidence, quality controls, and limitations |
 | `/work/medico` | Standalone case study with its own scene |
 | `/work/reliable-knowledge-systems` | Standalone case study with its own scene |
 | `/research` | Research overview: primary, supporting, and emerging directions |
 | `/research/thesis` | Thesis record with methods, aggregate findings, limits, and provenance |
-| `/learn`, `/learn/[slug]` | Technical notes from a typed local MDX collection |
+| `/learn`, `/learn/[slug]` | A tutorial library from a typed local MDX collection: featured, the full list, and the taxonomy |
 | `/learn/level/[level]`, `/learn/topic/[topic]` | Taxonomy indexes derived from published entries |
 | `/about`, `/contact` | Status and working principles; verified GitHub and LinkedIn only |
 | `/rss.xml`, `/sitemap.xml`, `/robots.txt` | Feed and metadata endpoints |
@@ -35,7 +37,7 @@ Withdrawing the document changed nothing about the record. The roles and the per
 education, the thesis, certifications and languages are all rendered as pages from
 `src/content/truth.ts`, which is where they were read from to build the PDF in the first place.
 
-Eight case studies are authored. Seven render in production. The eighth describes employer work,
+Eight case studies are authored and seven render in production. The eighth describes employer work,
 cannot be backed by a public repository, and is held as a draft: a production build excludes it
 entirely until a real approval is recorded against it, and the content validator fails the build
 rather than publish an unapproved one. See `docs/LEGAL_KB_CASE_STUDY.md`.
@@ -43,17 +45,18 @@ rather than publish an unapproved one. See `docs/LEGAL_KB_CASE_STUDY.md`.
 ## Scenes
 
 Two drawing layers, both fed from the same evidence modules the prose cites, so neither can drift
-from the numbers beside it.
+from the numbers beside it. Both live on the detail routes. The index pages carry no renderer at
+all, which is deliberate: a page someone is choosing from should be cheap.
 
-On `/work`, nine chapters are drawn with the canvas 2D API from a shared scene description in
-`src/components/sequence`. On the detail routes, eight projects carry a 3D scene built with
+Each project's detail route opens on a scene drawn with the canvas 2D API from a shared
+description in `src/components/sequence`, and eight of them then carry a 3D scene built with
 three.js through react-three-fiber.
 
-Neither layer is the content of record. Every chapter renders a static figure or table that
-carries the same facts, stays in the document, and works with JavaScript disabled. A scene is
-added on top of that, and only when three gates pass:
+Neither layer is the content of record. Every route renders a static figure or table that carries
+the same facts, stays in the document, and works with JavaScript disabled. A scene is added on top
+of that, and only when three gates pass:
 
-- the viewport is at least 1000px wide (900px for the repository assemblies on `/work`),
+- the viewport is at least 1000px wide,
 - the reader has not asked for reduced motion,
 - the section has reached the upper two thirds of the viewport.
 

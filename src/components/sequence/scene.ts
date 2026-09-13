@@ -10,7 +10,7 @@ import type { Surface } from "./surface";
  *
  * The eight scenes share this contract, the staging helpers in `worlds/choreography`, the loading
  * and accessibility shell, and nothing else. Composition, camera, palette, the object being opened
- * and the number of beats are each scene's own, because the point of the reel is that eight
+ * and the number of beats are each scene's own, because the point is that eight
  * different engineering systems look like eight different engineering systems.
  */
 

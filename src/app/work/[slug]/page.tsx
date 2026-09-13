@@ -18,6 +18,8 @@ import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import NextSystem from "@/components/cinema/NextSystem";
+import WritingCard from "@/components/writing/WritingCard";
+import { getPublishedWritingForProject } from "@/content/writing/repository";
 import RatingAmplification from "@/components/research/RatingAmplification";
 import {
   GatewayBypass,
@@ -90,6 +92,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Only this case study has a guided run, so only it pays for the controller.
   const guided = project.slug === "legal-knowledge-platform";
+  const relatedWriting = getPublishedWritingForProject(project.slug);
 
   return (
     <PageShell current="/work">
@@ -376,6 +379,25 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </Link>
           </div>
         </section>
+        {/*
+          The tutorials written from this work.
+
+          The link graph was one-directional: a tutorial named the projects it came from, and no
+          project said which reasoning had been written up. A reader who wanted the engineering
+          behind a case study had no way from here to the piece that explains it.
+        */}
+        {relatedWriting.length > 0 ? (
+          <section className="section-wrap article-related" aria-labelledby="related-writing-title">
+            <p className="section-index"><span>Learn</span>The reasoning, written up</p>
+            <h2 id="related-writing-title">
+              {relatedWriting.length === 1 ? "A tutorial from this work" : "Tutorials from this work"}
+            </h2>
+            <div className="writing-grid">
+              {relatedWriting.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
+            </div>
+          </section>
+        ) : null}
+
         {/* The way onward is the next system, not the index. */}
         <NextSystem slug={project.slug} />
       </ArticleShell>

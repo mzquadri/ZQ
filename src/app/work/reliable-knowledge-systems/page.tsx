@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import PageShell from "@/components/PageShell";
+import WritingCard from "@/components/writing/WritingCard";
+import { getPublishedWritingForProject } from "@/content/writing/repository";
 import NextSystem from "@/components/cinema/NextSystem";
 import { VerbScene } from "@/components/cinema/scenes";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
@@ -41,6 +43,8 @@ export const metadata: Metadata = createPageMetadata({
  * identifier, interface or quantity belonging to anybody's deployed system.
  */
 export default function ReliableKnowledgeSystemsPage() {
+  const relatedWriting = getPublishedWritingForProject("reliable-knowledge-systems");
+
   return (
     <PageShell current="/work">
       <article>
@@ -219,6 +223,19 @@ export default function ReliableKnowledgeSystemsPage() {
             it is legible on a screen.
           </p>
         </section>
+        {/* The tutorials written from this work, so the link graph runs in both directions. */}
+        {relatedWriting.length > 0 ? (
+          <section className="section-wrap article-related" aria-labelledby="related-writing-title">
+            <p className="section-index"><span>Learn</span>The reasoning, written up</p>
+            <h2 id="related-writing-title">
+              {relatedWriting.length === 1 ? "A tutorial from this work" : "Tutorials from this work"}
+            </h2>
+            <div className="writing-grid">
+              {relatedWriting.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
+            </div>
+          </section>
+        ) : null}
+
         <NextSystem slug="reliable-knowledge-systems" />
       </article>
     </PageShell>

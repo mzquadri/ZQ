@@ -185,6 +185,39 @@ outstanding rather than the point at which review begins.
 recorded against the project as `publication: { status: "approved", … }`. Until that exists, the
 page cannot reach production, and this note should not be read as suggesting that it may.
 
+**2026-09-13 — a withheld case study's narration was reaching production, and has stopped.**
+
+The confidential case study is excluded from production builds by the publication gate, and the
+route was correctly absent. Its *walkthrough script* was not. The guided-run controller is a client
+component loaded through `next/dynamic`, which keeps it out of the initial payload but still emits
+it as a separately fetchable chunk — and the controller imported the script, so the study's title
+and its eleven step captions were served as a static asset to anyone who requested that file.
+
+The copy was sanitised: generic reasoning about counts, captures and evidence, with no service
+name, no corpus content and no employer identifier. The defect is not what it said. It is that an
+unapproved page was readable in pieces from an approved build, which is the thing the gate exists
+to prevent.
+
+Fixed structurally rather than by redaction. The script is now a prop passed down from the server
+component that renders the walkthrough, and that component only renders for a project the
+publication gate has allowed. A production build has nothing to emit, verified against
+`.next/static` directly.
+
+*How it was found, and what changed in the check.* `tools/privacy-scan.mjs` had two tiers: terms
+that may never appear anywhere, and a build-only tier holding five store technologies — Neo4j,
+MinIO, PostgreSQL, Apache Kafka, BGE-M3 — on the reasoning that those words appear in the draft
+and nowhere else. That tier was wrong in both directions. It was weaker than it looked, since a
+leak of the draft carries its title, its provisions and its employer framing, and matching five
+product names is a poor way to notice. And it was over-broad, because those names are not employer
+secrets: the architecture case-study site publishes them against this same work under its own
+redaction review, and a tutorial here that cannot write "Kafka" is not protecting anything. Qdrant
+was already exempted on exactly that reasoning.
+
+The tier now asserts the withheld study's own route, slug, title and role line are absent from
+anything a browser can fetch. That is the property the gate is for, and it is what caught this.
+Everything genuinely employer-identifying — repository names, internal hosts, internal service,
+table and state names, local filesystem paths — stays in the always-tier, unchanged and unrelaxed.
+
 **2026-09-13 — contact address and employment periods published; downloadable CV withdrawn.**
 
 Three decisions, recorded together because they were taken together and one of them was reversed.

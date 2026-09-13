@@ -6,7 +6,8 @@ import JsonLd from "@/components/JsonLd";
 import PageShell from "@/components/PageShell";
 import MdxContent from "@/components/writing/MdxContent";
 import WritingCard from "@/components/writing/WritingCard";
-import { getProject, site } from "@/content/portfolio";
+import { site } from "@/content/portfolio";
+import { getLinkableWork } from "@/content/work-routes";
 import {
   getPublishedLearnWriting,
   getPublishedWritingEntry,
@@ -54,7 +55,17 @@ export default async function LearnEntryPage({ params }: { params: Promise<{ slu
   if (!entry) notFound();
 
   const related = getRelatedWriting(entry);
-  const relatedProjects = entry.projectSlugs.map((projectSlug) => getProject(projectSlug)!).filter(Boolean);
+  /*
+   * Resolved through `getLinkableWork` rather than the project registry.
+   *
+   * Two of the routes a tutorial can be about - the public-safe employer model and the medical
+   * imaging prototype - have a page but deliberately no registry entry, so the registry lookup
+   * returned undefined and the whole "related engineering work" band silently disappeared from
+   * every tutorial that named one.
+   */
+  const relatedProjects = entry.projectSlugs
+    .map((projectSlug) => getLinkableWork(projectSlug))
+    .filter((work): work is NonNullable<typeof work> => Boolean(work));
   const { previous, next } = getWritingNeighbours(slug);
   const canonicalUrl = `${site.domain}${entry.path}`;
 

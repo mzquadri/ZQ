@@ -18,7 +18,7 @@ import type { Surface } from "../surface";
  * The object here is a single artifact and it persists through the whole sequence. It is built,
  * carried to the gate, refused, carried back, rebuilt, passed, and finally moved into staging and
  * then production - and it is the same rectangle the entire time, at a position the reader can
- * follow. Nothing else in the reel moves one object along a track like this; every other chapter
+ * follow. No other scene moves one object along a track like this; every other one
  * either opens something in place or fills a field.
  *
  *   rest   an empty track, four gate plates, three registry stages

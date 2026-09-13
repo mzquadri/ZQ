@@ -168,16 +168,28 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     boundary:
       "An event-specific design artifact, not a reusable event-management system. The host and venue details are deliberately particular to the original invitation.",
   },
+  /*
+   * The profile README repository was listed here and does not exist.
+   *
+   * `github.com/mzquadri/mzquadri` returns 404 and the account's repository listing does not
+   * contain it, so this index published a broken link and, worse, published it while claiming to
+   * be a complete audit of the profile. It was not caught because repository links are computed
+   * from `name` at render time rather than written out as strings, and the link checker only ever
+   * walked string values. It walks these now too.
+   *
+   * Replaced by the architecture case-study repository, which does exist, was missing, and is the
+   * one the site links to most.
+   */
   {
-    name: "mzquadri",
-    title: "Profile README",
+    name: "ai-engineering-portfolio",
+    title: "Architecture case studies",
     category: "Reference",
-    language: "Markdown",
-    topics: ["Documentation", "Evidence Boundaries"],
+    language: "HTML",
+    topics: ["Architecture", "Documentation", "Evidence Boundaries"],
     description:
-      "The GitHub profile landing page: a short statement of focus and a table of selected work in which every row carries its own evidence boundary.",
+      "The separate case-study site: architecture diagrams of the employer systems contributed to, an interactive walkthrough, and a written record of what each claim rests on, published under its own redaction review.",
     boundary:
-      "Documentation. It makes no claim of its own beyond pointing at the repositories that do.",
+      "Documentation of systems built elsewhere, not an implementation. It states a contribution level for every component and claims no authorship of the platform it describes.",
   },
   {
     name: "ml_surrogates_for_agent_based_transport_models",

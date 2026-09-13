@@ -23,7 +23,7 @@ import { getProject, type Project } from "@/content/portfolio";
  * the eye into the next chapter.
  *
  * Two entries here were previously bolted on elsewhere. Reliable knowledge systems was a section
- * further down the page, after the reel had already ended; medico was appended after the sequence
+ * further down the page, after the sequence had already ended; medico was appended after it
  * closed. Both are flagship work with complete detail worlds, and both now sit in the running
  * order at the position the work deserves rather than where the page happened to grow.
  *
@@ -237,7 +237,10 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 };
 
 /**
- * The running order of the reel.
+ * The running order.
+ *
+ * It was the homepage reel's order. The reel is gone and the order survived it, because it is the
+ * order the index presents these in and the order the seams between detail routes assume.
  *
  * Research, then what I do now, then the applied systems, then the three studies about measurement
  * and error. Not the order of the case studies and not alphabetical: it is the order that makes

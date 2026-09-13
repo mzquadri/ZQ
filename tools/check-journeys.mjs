@@ -152,6 +152,86 @@ const browser = await chromium.launch();
   await page.close();
 }
 
+/* ------------------------------------------------------------------- engineering manager --- */
+{
+  console.log("\n== Engineering manager: what do they actually build, and can I read the reasoning ==");
+  const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+
+  await page.goto(ORIGIN + "/work", { waitUntil: "networkidle" });
+  const professional = page.locator("nav[aria-label='Professional engineering'] a");
+  check((await professional.count()) >= 2, "work index names the employer surfaces", "not found");
+
+  await page.getByRole("link", { name: /Architecture case studies/ }).first().click();
+  await page.waitForURL(/\/architecture$/);
+  check(true, "professional engineering reaches /architecture");
+
+  const subjects = await page
+    .locator("nav[aria-label='Architecture case studies'] a")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href") || ""));
+  check(subjects.length >= 7, "the architecture index exposes every subject", `${subjects.length} found`);
+  for (const anchor of ["#legal", "#trust", "#events", "#query", "#documents", "#compliance", "#radiology"]) {
+    check(
+      subjects.some((href) => href.endsWith(anchor)),
+      `architecture index offers ${anchor}`,
+      "missing",
+    );
+  }
+
+  /* The reasoning behind the employer work is written up where anyone can read it. */
+  await page.goto(ORIGIN + "/work", { waitUntil: "networkidle" });
+  const toLearn = page.getByRole("link", { name: /Technical tutorials/ });
+  check((await toLearn.count()) === 1, "work index offers the tutorials", "no link to /learn");
+  await toLearn.click();
+  await page.waitForURL(/\/learn$/);
+  const tutorials = await page.locator("#all .writing-grid article").count();
+  check(tutorials >= 8, "the library is a library", `${tutorials} tutorials`);
+  await page.close();
+}
+
+/* ----------------------------------------------------------------------------------- learn --- */
+{
+  console.log("\n== Learn: a tutorial, the work behind it, and the next thing to read ==");
+  const page = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+
+  await page.goto(ORIGIN + "/learn", { waitUntil: "networkidle" });
+  await page.locator("#all .writing-grid article h2 a, #all .writing-grid article h3 a").first().click();
+  await page.waitForURL(/\/learn\/[a-z0-9-]+$/);
+  const slug = new URL(page.url()).pathname;
+  check(true, "the library opens a tutorial", slug);
+
+  const heading = await page.locator("h1").first().innerText();
+  check(heading.length > 8, "the tutorial names itself in an h1", heading.slice(0, 40));
+
+  /* The knowledge graph: a tutorial reaches the work it is about, and the next thing to read. */
+  const related = page.locator(".article-related a");
+  check((await related.count()) > 0, "the tutorial links onward", "no related material");
+
+  const project = page.locator('.article-related a[href^="/work/"]').first();
+  if ((await project.count()) > 0) {
+    const href = await project.getAttribute("href");
+    const response = await page.request.get(ORIGIN + href);
+    check(response.status() === 200, `related work resolves (${href})`, `HTTP ${response.status()}`);
+  } else {
+    check(false, "the tutorial reaches related engineering work", "no project link");
+  }
+
+  const next = page.locator('.article-related a[href^="/learn/"]').first();
+  if ((await next.count()) > 0) {
+    const href = await next.getAttribute("href");
+    check(href !== slug, `the next tutorial is a different one (${href})`, "links to itself");
+    const response = await page.request.get(ORIGIN + href);
+    check(response.status() === 200, "the next tutorial resolves", `HTTP ${response.status()}`);
+  } else {
+    check(false, "the tutorial offers a next one", "no related writing");
+  }
+
+  /* And the work points back at the writing, so the graph is not one-directional. */
+  await page.goto(ORIGIN + "/work/insureassist-rag", { waitUntil: "networkidle" });
+  const back = await page.locator('a[href^="/learn/"]').count();
+  check(back > 0, "a case study reaches the tutorials written from it", "no link back to /learn");
+  await page.close();
+}
+
 /* --------------------------------------------------------------------------- 404 + misc --- */
 {
   console.log("\n== Error states and metadata ==");
