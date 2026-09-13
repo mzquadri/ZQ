@@ -14,11 +14,11 @@ import type { Frame } from "./InsureAssistWorldScene";
 /**
  * The host for the InsureAssist world.
  *
- * Four gates, all of which must pass before anything is downloaded: wide enough for an
- * eleven-state sequence to be legible, motion not declined, the machine able to render it
- * without a software rasteriser, and the section actually on screen. Until then the retriever
- * comparison is the page - a complete figure, not a placeholder - so the renderer buys depth
- * rather than meaning.
+ * Four gates, all of which must pass before anything is downloaded: wide enough for an eleven-
+ * state sequence to be legible, motion not declined, the machine able to render it without a
+ * software rasteriser, and the section actually on screen. Until then the retriever comparison
+ * is the page - a complete figure, not a placeholder - so the renderer buys depth rather than
+ * meaning.
  *
  * The fourth gate is the one that was missing. `ShowcaseCanvas` has always asked whether WebGL
  * is worth running; the worlds asked only whether the viewport was wide. See

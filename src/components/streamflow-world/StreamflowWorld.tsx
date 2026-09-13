@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useStageVisibility } from "@/components/world/stage-visibility";
+import { worldRenderingIsWorthIt } from "@/components/world/webgl-support";
 
 import Readout from "./Readout";
 import { STATES, active } from "./states";
@@ -12,10 +13,11 @@ import type { Frame } from "./StreamflowWorldScene";
 /**
  * The host for the streamflow world.
  *
- * Same three gates as every other world: wide enough for a twelve-state sequence to be legible,
- * motion not declined, and the section actually on screen. Until all three pass, the leaderboard
- * and its three mismatched tasks are the page as a static figure, so a reader who never triggers
- * the renderer still gets the finding rather than a placeholder.
+ * Same four gates as every other world: wide enough for a twelve-state sequence to be legible,
+ * motion not declined, a renderer that is not a software rasteriser, and the section actually on
+ * screen. Until all four pass, the leaderboard and its three mismatched tasks are the page as a
+ * static figure, so a reader who never triggers the renderer still gets the finding rather than
+ * a placeholder.
  */
 
 const WorldCanvas = dynamic(() => import("./StreamflowWorldCanvas"), { ssr: false });
@@ -34,7 +36,8 @@ export default function StreamflowWorld({ flat }: { flat: ReactNode }) {
   useEffect(() => {
     const wide = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`);
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const evaluate = () => setEligible(wide.matches && !still.matches);
+    const evaluate = () =>
+      setEligible(wide.matches && !still.matches && worldRenderingIsWorthIt());
     evaluate();
     wide.addEventListener("change", evaluate);
     still.addEventListener("change", evaluate);

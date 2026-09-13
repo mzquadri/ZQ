@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useStageVisibility } from "@/components/world/stage-visibility";
+import { worldRenderingIsWorthIt } from "@/components/world/webgl-support";
 
 import Readout from "./Readout";
 import { STATES, active } from "./states";
@@ -12,10 +13,11 @@ import type { Frame } from "./CifarWorldScene";
 /**
  * The host for the CIFAR world.
  *
- * Same three gates as every other world: wide enough for a twelve-state sequence to be legible,
- * motion not declined, and the section actually on screen. Until all three pass, the architecture,
- * the per-class spread and the confusion matrix are the page as a static figure - the whole
- * argument, so nothing is withheld from a reader who never triggers the renderer.
+ * Same four gates as every other world: wide enough for a twelve-state sequence to be legible,
+ * motion not declined, a renderer that is not a software rasteriser, and the section actually on
+ * screen. Until all four pass, the architecture, the per-class spread and the confusion matrix
+ * are the page as a static figure - the whole argument, so nothing is withheld from a reader who
+ * never triggers the renderer.
  */
 
 const WorldCanvas = dynamic(() => import("./CifarWorldCanvas"), { ssr: false });
@@ -34,7 +36,8 @@ export default function CifarWorld({ flat }: { flat: ReactNode }) {
   useEffect(() => {
     const wide = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`);
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const evaluate = () => setEligible(wide.matches && !still.matches);
+    const evaluate = () =>
+      setEligible(wide.matches && !still.matches && worldRenderingIsWorthIt());
     evaluate();
     wide.addEventListener("change", evaluate);
     still.addEventListener("change", evaluate);

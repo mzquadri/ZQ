@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 import { ecosystemRepositories } from "../src/content/ecosystem";
 import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
@@ -2949,6 +2949,7 @@ test("a flagship world holds its caption still while it scrubs", async ({ page }
 test("the release page never presents its staged refusal as a recorded failure", async ({ page }) => {
   test.slow();
   await page.emulateMedia({ reducedMotion: "no-preference" });
+  await presentAHardwareRenderer(page);
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/work/mlops-reference-pipeline", { waitUntil: "networkidle" });
 
@@ -3112,9 +3113,49 @@ test("the amplification makes no forecasting claim", async ({ page }) => {
  * is rasterising it - so this guard means the same thing on the software renderer CI uses as it
  * does on a real adapter.
  */
+/**
+ * Make the renderer gate see a hardware adapter.
+ *
+ * Two guards in this file assert what a world does while it is *running*: that it stops issuing
+ * draw calls once it leaves the viewport, and that the release scene labels its staged refusal.
+ * Both need the scene to mount, and since `worldRenderingIsWorthIt()` started declining software
+ * rasterisers they could not mount under the browser CI uses - the draw-call guard, which exists
+ * because a parked hydrology renderer once kept issuing about 4,700 calls a second, would have
+ * quietly stopped running.
+ *
+ * So the name is stubbed rather than the gate. `WEBGL_debug_renderer_info` is the only place the
+ * adapter is named, so returning a hardware-sounding name from it is enough to let the scene
+ * mount, and nothing in the application is changed or made aware of the test. Everything after
+ * that point is the real renderer doing real work.
+ */
+async function presentAHardwareRenderer(page: Page) {
+  await page.addInitScript(() => {
+    const UNMASKED_RENDERER = 0x9246;
+    for (const Ctx of [window.WebGLRenderingContext, window.WebGL2RenderingContext]) {
+      if (!Ctx) continue;
+      const proto = Ctx.prototype as unknown as Record<string, unknown>;
+
+      const getExtension = proto.getExtension as (this: unknown, name: string) => unknown;
+      proto.getExtension = function (this: unknown, name: string) {
+        if (name === "WEBGL_debug_renderer_info") {
+          return { UNMASKED_RENDERER_WEBGL: UNMASKED_RENDERER, UNMASKED_VENDOR_WEBGL: 0x9245 };
+        }
+        return getExtension.call(this, name);
+      };
+
+      const getParameter = proto.getParameter as (this: unknown, p: number) => unknown;
+      proto.getParameter = function (this: unknown, parameter: number) {
+        if (parameter === UNMASKED_RENDERER) return "Test Hardware Adapter";
+        return getParameter.call(this, parameter);
+      };
+    }
+  });
+}
+
 for (const slug of ["hydrology-uq", "reliable-knowledge-systems", "medico"]) {
   test(`the ${slug} world stops drawing once it is off screen`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
+    await presentAHardwareRenderer(page);
     await page.addInitScript(() => {
       (window as unknown as { __draws: number }).__draws = 0;
       const names = ["drawArrays", "drawElements", "drawArraysInstanced", "drawElementsInstanced"];
@@ -3278,87 +3319,133 @@ test("published links do not point at a deleted repository", async ({ page }) =>
   ).toHaveCount(1);
 });
 
-test("a software rasteriser gets the flat figure, not a 3D scene", async ({ browser }, testInfo) => {
-  /*
-   * The world hosts gated on width, motion and visibility, and never on whether the machine could
-   * render the scene without a software rasteriser. On /work/insureassist-rag the cost of that was
-   * visible: ANGLE reported "GPU stall due to ReadPixels" for the first frames after the drawing
-   * buffer was allocated, and the page took six long tasks rather than one.
-   *
-   * This test builds its own context, which is the only way it can reach the thing it tests. Both
-   * projects in playwright.config.ts set `reducedMotion: "reduce"`, and the motion gate comes
-   * first, so a world never mounts anywhere else in this suite - two earlier drafts of this test
-   * passed with the fix reverted, reporting "no canvas" for the wrong reason. It also needs a
-   * viewport at or above the world's 1000px minimum.
-   *
-   * Playwright's headless browser is itself a software rasteriser (SwiftShader), so on a default
-   * run this exercises the software branch; on a machine with a GPU it exercises the other.
-   */
-  testInfo.skip(testInfo.project.name !== "desktop-chromium", "one browser is enough");
+/* ============================================================================================
+ * The WebGL worlds, and the renderer they are willing to run on.
+ *
+ * Eight hosts, one gate, one test shape. Each world is a scroll-driven scene that renders
+ * continuously while it is on screen, and until now none of them asked whether the machine had a
+ * GPU: on a software rasteriser /work/cifar10-cnn reported "GPU stall due to ReadPixels" and
+ * /research/thesis spent 2.4 seconds of main thread in long tasks. The flat figure under each one
+ * is a complete drawing, which is what makes declining to render an acceptable answer rather
+ * than a degraded one.
+ * ========================================================================================== */
 
-  const context = await browser.newContext({
-    viewport: { width: 1440, height: 900 },
-    reducedMotion: "no-preference",
-  });
-  const page = await context.newPage();
+const WORLDS = [
+  { name: "cifar", route: "/work/cifar10-cnn" },
+  { name: "hydrology", route: "/work/hydrology-uq" },
+  { name: "insureassist", route: "/work/insureassist-rag" },
+  { name: "medico", route: "/work/medico" },
+  { name: "mlops", route: "/work/mlops-reference-pipeline" },
+  { name: "reliable", route: "/work/reliable-knowledge-systems" },
+  { name: "streamflow", route: "/work/streamflow-forecasting" },
+  { name: "thesis", route: "/research/thesis" },
+] as const;
 
-  const warnings: string[] = [];
-  page.on("console", (message) => {
-    if (/ReadPixels|GPU stall/i.test(message.text())) warnings.push(message.text());
-  });
+/* The thesis world predates the shared `world-stage` class and keeps its own. */
+const WORLD_STAGE = ".world-stage, .thesis-world";
+const WORLD_CANVAS = ".world-canvas canvas, .thesis-world-canvas canvas";
 
-  try {
-    await page.goto("/work/insureassist-rag");
-    await page.waitForLoadState("networkidle");
+/** The renderer names the gate treats as "no GPU is doing this". */
+const SOFTWARE_RENDERER =
+  /swiftshader|llvmpipe|softpipe|basic render|software adapter|generic renderer/i;
 
-    const software = await page.evaluate(() => {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
-      if (!gl) return true;
-      const info = gl.getExtension("WEBGL_debug_renderer_info");
-      if (!info) return false;
-      const name = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? "").toLowerCase();
-      return ["swiftshader", "llvmpipe", "softpipe", "basic render", "software adapter"].some((s) =>
-        name.includes(s),
-      );
+for (const world of WORLDS) {
+  test(`the ${world.name} world matches its renderer`, async ({ browser }, testInfo) => {
+    /*
+     * Its own context, and that detail is the test. Both projects in playwright.config.ts set
+     * `reducedMotion: "reduce"`, and the motion gate comes first, so a world never mounts
+     * anywhere else in this suite - two earlier drafts of this passed with the fix reverted,
+     * reporting "no canvas" for the wrong reason. It also needs a viewport at or above the
+     * 1000px minimum every host shares.
+     *
+     * Playwright's headless browser is itself a software rasteriser, so a default run exercises
+     * the software branch; a run on a machine with a GPU exercises the other. Both are asserted,
+     * so neither path can rot.
+     */
+    testInfo.skip(testInfo.project.name !== "desktop-chromium", "one browser is enough");
+
+    const context = await browser.newContext({
+      viewport: { width: 1440, height: 900 },
+      reducedMotion: "no-preference",
     });
 
-    const stage = page.locator(".world-stage.insureassist-world");
-    await expect(stage).toHaveCount(1);
+    /* Count application-side readbacks. There were never any; this keeps it that way. */
+    await context.addInitScript(() => {
+      (window as unknown as { __readbacks: number }).__readbacks = 0;
+      for (const Ctx of [window.WebGLRenderingContext, window.WebGL2RenderingContext]) {
+        if (!Ctx) continue;
+        for (const method of ["readPixels", "getBufferSubData"] as const) {
+          const original = (Ctx.prototype as unknown as Record<string, unknown>)[method];
+          if (typeof original !== "function") continue;
+          (Ctx.prototype as unknown as Record<string, unknown>)[method] = function (
+            this: unknown,
+            ...args: unknown[]
+          ) {
+            (window as unknown as { __readbacks: number }).__readbacks += 1;
+            return (original as (...a: unknown[]) => unknown).apply(this, args);
+          };
+        }
+      }
+    });
 
-    /* Satisfy the visibility gate, so only the renderer gate decides the outcome. */
-    await stage.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(1500);
+    const page = await context.newPage();
+    const stalls: string[] = [];
+    page.on("console", (message) => {
+      if (/ReadPixels|GPU stall/i.test(message.text())) stalls.push(message.text());
+    });
 
-    /* The flat figure is the content of record and renders whichever way the gate falls. */
-    await expect(stage.locator(".world-stage-line")).toBeVisible();
+    try {
+      await page.goto(world.route);
+      await page.waitForLoadState("networkidle");
 
-    if (software) {
-      await expect(
-        page.locator(".world-canvas canvas"),
-        "a software rasteriser must not be asked to render the world",
-      ).toHaveCount(0);
-      expect(warnings, `GPU stall warnings: ${warnings.join(" | ")}`).toHaveLength(0);
-    } else {
-      await expect(
-        page.locator(".world-canvas canvas"),
-        "a machine with a GPU should still get the scene",
-      ).toHaveCount(1);
+      const renderer = await page.evaluate(() => {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+        if (!gl) return "none";
+        const info = gl.getExtension("WEBGL_debug_renderer_info");
+        if (!info) return "unknown";
+        return String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? "unknown");
+      });
+      const software = renderer === "none" || SOFTWARE_RENDERER.test(renderer);
+
+      const stage = page.locator(WORLD_STAGE).first();
+      await expect(stage).toHaveCount(1);
+
+      /* Satisfy the visibility gate, so only the renderer gate decides the outcome. */
+      await stage.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(1200);
+
+      /* The flat figure is the content of record and is present whichever way the gate falls. */
+      const stageText = (await stage.innerText()).trim();
+      expect(stageText.length, `${world.name} lost its flat figure`).toBeGreaterThan(40);
+
+      const canvases = page.locator(WORLD_CANVAS);
+      if (software) {
+        await expect(canvases, `${world.name} must not render through ${renderer}`).toHaveCount(0);
+        expect(stalls, `${world.name} GPU stalls: ${stalls.join(" | ")}`).toHaveLength(0);
+      } else {
+        await expect(
+          canvases,
+          `${world.name} should still get its scene on ${renderer}`,
+        ).toHaveCount(1);
+      }
+
+      const readbacks = await page.evaluate(
+        () => (window as unknown as { __readbacks: number }).__readbacks,
+      );
+      expect(readbacks, `${world.name} performed ${readbacks} application readback(s)`).toBe(0);
+    } finally {
+      await context.close();
     }
-  } finally {
-    await context.close();
-  }
-});
+  });
+}
 
-test("no world scene performs a GPU readback of its own", async ({ browser }, testInfo) => {
+test("the renderer probe creates one context and hands it back", async ({ browser }, testInfo) => {
   /*
-   * The stall was never an application readback - readPixels, getBufferSubData, getImageData,
-   * toDataURL, toBlob and drawImage were all instrumented and all sat at zero. This keeps it that
-   * way: a scene that started reading pixels back per frame, to do picking or to capture a
-   * thumbnail, would fail here. That is the regression worth guarding against, and unlike a
-   * driver message it is a property of this code rather than of a rasteriser.
-   *
-   * Its own context, for the same reason as the test above.
+   * Every world host calls the probe, so a page carrying one must still spend only a single probe
+   * context - browsers cap live WebGL contexts, and a page that spends them on probes can find
+   * itself unable to create the one it wants to draw with. The module memoises its answer and
+   * releases the probe through WEBGL_lose_context; this asserts the budget that depends on both.
    */
   testInfo.skip(testInfo.project.name !== "desktop-chromium", "one browser is enough");
 
@@ -3367,35 +3454,28 @@ test("no world scene performs a GPU readback of its own", async ({ browser }, te
     reducedMotion: "no-preference",
   });
   await context.addInitScript(() => {
-    (window as unknown as { __readbacks: number }).__readbacks = 0;
-    for (const Ctx of [window.WebGLRenderingContext, window.WebGL2RenderingContext]) {
-      if (!Ctx) continue;
-      for (const method of ["readPixels", "getBufferSubData"] as const) {
-        const original = (Ctx.prototype as unknown as Record<string, unknown>)[method];
-        if (typeof original !== "function") continue;
-        (Ctx.prototype as unknown as Record<string, unknown>)[method] = function (
-          this: unknown,
-          ...args: unknown[]
-        ) {
-          (window as unknown as { __readbacks: number }).__readbacks += 1;
-          return (original as (...a: unknown[]) => unknown).apply(this, args);
-        };
-      }
-    }
+    (window as unknown as { __made: number }).__made = 0;
+    const original = HTMLCanvasElement.prototype.getContext;
+    (HTMLCanvasElement.prototype as unknown as Record<string, unknown>).getContext = function (
+      this: HTMLCanvasElement,
+      type: string,
+      attrs?: unknown,
+    ) {
+      if (/webgl/.test(type)) (window as unknown as { __made: number }).__made += 1;
+      return (original as (...a: unknown[]) => unknown).call(this, type, attrs);
+    };
   });
-  const page = await context.newPage();
 
+  const page = await context.newPage();
   try {
-    for (const route of ["/work/insureassist-rag", "/work/hydrology-uq", "/research/thesis"]) {
-      await page.goto(route);
-      await page.waitForLoadState("networkidle");
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
-      await page.waitForTimeout(1200);
-      const readbacks = await page.evaluate(
-        () => (window as unknown as { __readbacks: number }).__readbacks,
-      );
-      expect(readbacks, `${route} performed ${readbacks} GPU readback(s)`).toBe(0);
-    }
+    await page.goto("/research/thesis");
+    await page.waitForLoadState("networkidle");
+    await page.locator(WORLD_STAGE).first().scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1200);
+
+    const made = await page.evaluate(() => (window as unknown as { __made: number }).__made);
+    /* One probe, plus at most the scene's own context where the gate allowed one. */
+    expect(made, `${made} WebGL contexts requested on one document`).toBeLessThanOrEqual(2);
   } finally {
     await context.close();
   }
