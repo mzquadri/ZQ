@@ -1710,7 +1710,14 @@
 
 .sw-repo { margin: 0; }
 
+/*
+ * A repository name is the whole point of its row and is tapped directly, so it is a standalone
+ * target rather than a link inside prose. It measured 17px tall.
+ */
 .sw-repo a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   font-family: var(--mono);
   font-size: 0.78rem;
   color: var(--stage-ink);
@@ -2058,12 +2065,21 @@
 }
 
 /*
- * The two routes whose hero is on paper get the object as a framed panel. It is the same drawing
- * on the same ground; only the page around it is lighter.
+ * The two routes that carry the object in their hero get it as a framed panel.
+ *
+ * The comment here used to say those heroes were on paper, and the caption above was left on the
+ * paper ink for that reason. They are not: both render on rgb(11, 15, 20), so the caption was
+ * #354149 on near-black at 1.83:1 - a serious contrast failure on /work/medico and
+ * /work/reliable-knowledge-systems, and the only two axe violations on the site. The caption
+ * takes the stage's soft ink here for the same reason the case stage does.
  */
 .page-hero .scn-identity {
   margin-top: clamp(2rem, 4vw, 3rem);
   max-width: 46rem;
+}
+
+.page-hero .scn-identity figcaption {
+  color: var(--stage-ink-soft);
 }
 
 @media (max-width: 999px) {
