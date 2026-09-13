@@ -487,10 +487,20 @@ ol {
   }
 }
 
+/*
+ * A fixed 2rem square, sized for the two-digit numeral every call site passes - except one.
+ * The article's related-work section labels its index "Project", which needed 58px in a 30px
+ * box: the word broke out of its border and printed on top of the label beside it, reading as
+ * "PROJECOONTINUE EXPLORING" on the live page.
+ *
+ * min-width keeps the square for a numeral, which is narrower than 2rem and so is unaffected,
+ * and lets a word have the room it needs instead of overlapping its neighbour.
+ */
 .section-index span {
   display: inline-grid;
-  width: 2rem;
+  min-width: 2rem;
   height: 2rem;
+  padding-inline: 0.4rem;
   place-items: center;
   border: 1px solid currentColor;
 }
@@ -2035,11 +2045,18 @@ ol {
 }
 
 .method-matrix dt,
+/*
+ * Label sizes were raised from 0.62-0.63rem to 0.68rem here and at the other definition-list
+ * labels in this file. They rendered at 9.9-10.1px, under the point where an uppercase mono
+ * label with wide tracking stays comfortable to read; 0.68rem is the step already used by the
+ * rest of the small-label scale, so nothing new is introduced. The 10.2-10.9px tier is left
+ * alone: that is the scale, not a mistake.
+ */
 .calibration-figure dt,
 .selective-output dt {
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
 }
 
@@ -2175,10 +2192,40 @@ ol {
   font-size: 1.65rem;
 }
 
+/*
+ * A scrollable table should say so. The fade appears only when there is something to the right
+ * of the edge - `scroll-driven` via a background-attachment shadow pair, so it costs no
+ * JavaScript and disappears once the reader reaches the end.
+ */
+/*
+ * The wrapper is focusable (tabIndex={0} in the components), because a scrollable region that
+ * cannot be reached by keyboard cannot be scrolled by keyboard - axe's scrollable-region-focusable,
+ * and the reason the table suite failed the moment this container started doing its job. A
+ * focusable element needs a visible ring.
+ */
+.research-table-wrap:focus-visible {
+  outline: 2px solid var(--teal-dark);
+  outline-offset: 3px;
+}
+
 .research-table-wrap {
   width: 100%;
+  /*
+   * Required, not cosmetic. A grid or flex item's automatic minimum is min-content, so a table
+   * with a min-width pushes its own scroll container wider than the page instead of scrolling
+   * inside it - which is how giving the table a readable floor broke the 320px reflow tests.
+   * The same fix is documented on .section-index for the same reason.
+   */
+  min-width: 0;
+  max-width: 100%;
   margin-top: 1rem;
   overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--paper) 30%, rgba(242, 240, 232, 0)) left center / 2.5rem 100% no-repeat,
+    linear-gradient(to left, var(--paper) 30%, rgba(242, 240, 232, 0)) right center / 2.5rem 100% no-repeat,
+    radial-gradient(farthest-side at 0 50%, rgba(17, 24, 32, 0.16), rgba(17, 24, 32, 0)) left center / 1rem 100% no-repeat,
+    radial-gradient(farthest-side at 100% 50%, rgba(17, 24, 32, 0.16), rgba(17, 24, 32, 0)) right center / 1rem 100% no-repeat;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .research-data-table {
@@ -2457,24 +2504,40 @@ ol {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /*
+   * The wrapper keeps its scroll here.
+   *
+   * This used to force `overflow-x: visible`, which was consistent with the old approach: the
+   * table shrank to fit, so there was nothing to scroll and a scroll container would only have
+   * clipped the focus ring. Now that the table keeps a readable floor, visible overflow means
+   * the table pushes the page instead - 428px of document inside a 320px viewport.
+   */
   .research-table-wrap {
-    overflow-x: visible;
+    overflow-x: auto;
   }
 
+  /*
+   * The table scrolls rather than shrinks.
+   *
+   * `min-width: 0` with `table-layout: fixed` made the table squeeze into 390px, which it did by
+   * taking the header down to 9.3px - small enough that the column labels on a results table
+   * stopped being readable, which is the one thing the table is for. .research-table-wrap already
+   * provides `overflow-x: auto`; it was simply never allowed to do anything. Giving the table a
+   * readable floor hands the overflow back to the wrapper, and the fade below says it is there.
+   */
   .research-data-table {
-    min-width: 0;
-    table-layout: fixed;
+    min-width: 26rem;
   }
 
   .research-data-table th,
   .research-data-table td {
-    padding: 0.55rem 0.25rem;
-    font-size: 0.66rem;
+    padding: 0.55rem 0.35rem;
+    font-size: 0.72rem;
     overflow-wrap: anywhere;
   }
 
   .research-data-table thead th {
-    font-size: 0.58rem;
+    font-size: 0.68rem;
   }
 }
 
@@ -3701,7 +3764,8 @@ ol {
 
 @media (max-width: 440px) {
   .confusion-matrix th {
-    font-size: 0.58rem;
+    /* Was 0.58rem, which rendered at 9.3px. The matrix stays inside the viewport at this size. */
+    font-size: 0.66rem;
     overflow-wrap: anywhere;
     white-space: normal;
   }
@@ -4336,7 +4400,7 @@ ol {
 .legal-states dt {
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -5201,7 +5265,7 @@ ol {
 .legal-generation header span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.63rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -5625,7 +5689,7 @@ ol {
 .legal-dock-count {
   color: var(--orange-text);
   font-family: var(--mono);
-  font-size: 0.63rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
 }
 
@@ -5778,7 +5842,7 @@ ol {
 .legal-closing-row > span {
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.63rem;
+  font-size: 0.68rem;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
@@ -6108,7 +6172,7 @@ ol {
 .systems-ladder dt {
   color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -6301,7 +6365,7 @@ ol {
 .systems-generation header span {
   color: var(--teal-dark);
   font-family: var(--mono);
-  font-size: 0.63rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }

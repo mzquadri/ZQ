@@ -168,7 +168,7 @@ export default function RatingAmplification() {
         measurement uncertainty pushed through a fitted stage-discharge relationship.
       </p>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>
             Evaluated from the seminar&rsquo;s own fitted parameters. Source: {" "}

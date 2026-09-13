@@ -76,7 +76,7 @@ export default function RetrievalSelection() {
 
       <p className="research-note">{selectionGap.note}</p>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>
             Development sweep over {selectionGap.devQuestions} answerable questions. The frozen

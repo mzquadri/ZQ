@@ -50,7 +50,7 @@ export default function SelectivePredictionExplorer() {
         </dl>
       </div>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table selective-table">
           <caption>All six observed operating points</caption>
           <thead>

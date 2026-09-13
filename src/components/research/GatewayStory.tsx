@@ -49,7 +49,7 @@ export function TrustBoundary() {
         before anyone runs anything?
       </figcaption>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>
             The third row is the one this project exists for. A document carrying an instruction did
@@ -171,7 +171,7 @@ export function GatewayControls() {
         that have a decidable answer; one has to make a judgement.
       </figcaption>
 
-      <div className="research-table-wrap">
+      <div className="research-table-wrap" tabIndex={0} role="group">
         <table className="research-data-table">
           <caption>
             Counts sum to more than {verdict.attacks} because several cases are caught by more than
