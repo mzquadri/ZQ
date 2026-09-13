@@ -2301,7 +2301,17 @@
   font-variant-numeric: tabular-nums;
 }
 
-.rating-amp-controls input[type="range"] { width: 100%; accent-color: var(--teal-dark); }
+/*
+ * The track was 16px tall, which is a fiddly drag on a phone. Height plus a transparent
+ * background grows the pointer area without drawing anything new; the coarse stop buttons
+ * below remain the way to set a value without dragging at all.
+ */
+.rating-amp-controls input[type="range"] {
+  width: 100%;
+  accent-color: var(--teal-dark);
+  min-height: 28px;
+  background: transparent;
+}
 
 .rating-amp-controls input[type="range"]:focus-visible {
   outline: 2px solid var(--ink);
