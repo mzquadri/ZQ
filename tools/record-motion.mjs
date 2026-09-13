@@ -50,32 +50,22 @@ const detailCut = (slug) => [
 ];
 
 const CUTS = {
+  /*
+   * The homepage cut, re-shot for an index.
+   *
+   * It used to scroll roughly thirty-five thousand pixels through eight full-viewport chapters.
+   * The page is six and a half thousand now and has no chapters in it, so every one of those
+   * marks landed in the footer and the recording was a still of the bottom of the page.
+   */
   home: [
-    { goto: "/", hold: 2.6, label: "open on the hero, at rest" },
-    { scroll: 1400, speed: "scrub", label: "hero scrub" },
-    { hold: 1.2, label: "hero rest frame" },
-    { scroll: 1600, speed: "transit", label: "into the reel" },
-    { scroll: 3200, speed: "scrub", label: "chapter one" },
+    { goto: "/", hold: 2.4, label: "open on the hero, at rest" },
+    { scroll: 340, speed: "scrub", label: "the hero sequence, all five beats" },
+    { hold: 1.4, label: "hero rest frame" },
+    { scroll: 1000, speed: "transit", label: "into the work index" },
+    { hold: 1.6, label: "the index, whole" },
+    { scroll: 1400, speed: "read", label: "research and tutorials" },
     { hold: 1.2 },
-    { scroll: 3200, speed: "scrub", label: "chapter two" },
-    { hold: 1.2 },
-    { scroll: 3200, speed: "scrub", label: "chapter three" },
-    { hold: 1.2 },
-    { scroll: 3200, speed: "scrub", label: "chapter four" },
-    { hold: 1.2 },
-    { scroll: 3200, speed: "scrub", label: "chapter five" },
-    { hold: 1.2 },
-    { scroll: 3200, speed: "scrub", label: "chapter six" },
-    { hold: 1.2 },
-    { scroll: 3200, speed: "scrub", label: "chapter seven" },
-    { hold: 1.2 },
-    { scroll: 3200, speed: "scrub", label: "chapter eight" },
-    { hold: 1.2 },
-    { scroll: 4200, speed: "read", label: "out of the reel" },
-    { hold: 1.2, label: "rest after the reel" },
-    { scroll: 4200, speed: "read", label: "the engineering sections" },
-    { hold: 1.2 },
-    { scroll: 7000, speed: "read", label: "down to the ending" },
+    { scroll: 1600, speed: "read", label: "experience, then the ending" },
     { hold: 2.4, label: "ending, at the bottom" },
   ],
   transport: detailCut("transport-uq"),

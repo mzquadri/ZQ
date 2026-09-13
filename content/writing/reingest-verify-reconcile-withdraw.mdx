@@ -36,7 +36,7 @@ Most content pipelines ship with one verb: ingest. Everything afterwards — a b
 
 A system that is going to be operated needs its repair paths designed rather than improvised. Four actions cover almost everything, and the design work is not in implementing them. It is in deciding what each one is *allowed to touch*.
 
-<Callout title="The organising rule">
+<Callout title="Measuring and mutating are different jobs">
   Separate the thing that measures from the thing that mutates. A component that can both judge a record and repair it can mark its own homework, and eventually will.
 </Callout>
 
@@ -160,6 +160,6 @@ With a fallback chain, a component that failed to read its configuration could q
 - Evidence is append-only, referenced with `RESTRICT`, and recoverable.
 - Writes are double-gated; the interface has exactly one backend.
 
-## Related
+## What verify computes, and what follows it
 
 [Building an independent verification oracle](/learn/building-an-independent-verification-oracle) covers what verify should actually compute. [Refusal paths in production AI systems](/learn/refusal-paths-in-production-ai-systems) is the same instinct applied to inference: name the state where the system declines, rather than inventing an answer.

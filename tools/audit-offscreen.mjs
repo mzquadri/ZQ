@@ -1,8 +1,8 @@
 /**
  * Does anything keep painting after it leaves the screen?
  *
- * The continuous motion capture turned up an inversion worth explaining: the eight canvas
- * chapters hold ~60 fps and drop 3-5% of frames, while the plain prose sections *below* the reel
+ * The continuous motion capture turned up an inversion worth explaining: the canvas scenes
+ * hold ~60 fps and drop 3-5% of frames, while the plain prose sections beside them
  * drop 7-11%. Heavier work running smoother than lighter work is not a rendering result, it is a
  * bookkeeping result - something above the fold line is still drawing while the reader has moved
  * on to text that draws nothing.

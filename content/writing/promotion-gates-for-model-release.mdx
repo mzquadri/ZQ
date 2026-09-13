@@ -53,11 +53,11 @@ references:
 featured: false
 ---
 
-Most pipeline diagrams draw promotion as an arrow: train, evaluate, register, deploy. The arrow implies that a model which finished evaluation is a model that should ship.
+Pipeline diagrams nearly always draw promotion as an arrow: train, evaluate, register, deploy. The arrow implies that a model which finished evaluation is a model that should ship.
 
 It is more useful to draw promotion as a gate with several independent conditions, all of which must hold. The change in shape matters because it makes the *conjunction* explicit: a candidate that improves the headline metric and fails a schema check has not half-passed. It is stopped.
 
-<Callout title="The rule">
+<Callout title="A conjunction, not a sequence">
   Promotion is a conjunction. Every check can veto, no check can compensate for another, and the report names which one failed.
 </Callout>
 
@@ -190,8 +190,8 @@ A single boolean tells whoever reads it to go and find the logs. Four results te
 - A behaviour suite only covers cases someone wrote down. It is a ratchet against known failures, not a proof of correctness.
 - Reproducibility is not correctness. A reliably rebuildable bad model is still a bad model.
 
-The gates are a floor. They are worth having because without them the floor is wherever the last person's attention happened to stop.
+The gates are a floor. Without them the floor is wherever the last person's attention happened to stop.
 
-## Related
+## What the performance gate should measure
 
 The [MLOps reference pipeline](/work/mlops-reference-pipeline) is a public implementation of this shape, with hash-based data versions and a transformation fitted once. [Calibration is not classification accuracy](/learn/calibration-is-not-classification-accuracy) covers what the performance gate should actually measure when confidence feeds a decision.

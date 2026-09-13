@@ -29,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/research/thesis",
     "/architecture",
     "/learn",
+    "/learn/all",
     "/about",
     "/contact",
   ];

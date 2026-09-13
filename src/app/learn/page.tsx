@@ -26,12 +26,18 @@ export const metadata: Metadata = createPageMetadata({
  * which only existed inside the feature's side panel, went with it. The topic and level routes
  * then had nothing linking to them from anywhere on the site.
  *
- * Four sections now: a few pieces to start with, the full list, the ways to filter it, and other
- * people's work kept visibly separate from mine. The single-feature layout stays for the case
- * where the collection shrinks again, and the taxonomy is rendered outside it either way.
+ * The order is: three to start with, the ways to filter, the six newest, then other people's work
+ * kept visibly separate from mine. The complete list is a route of its own - showing all thirteen
+ * here put the browse band below eight screens of cards at a laptop height and eleven on a phone,
+ * which is a list to scroll rather than a library to choose from.
+ *
+ * The single-feature layout stays for the case where the collection shrinks again, and the
+ * taxonomy is rendered outside it either way.
  */
 const GRID_THRESHOLD = 3;
 const FEATURED_SHOWN = 3;
+/* Enough rows to show the collection has range; not so many that the page becomes the list. */
+const LATEST_SHOWN = 6;
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("en", {
@@ -49,6 +55,13 @@ export default function LearnPage() {
   const useGrid = entries.length >= GRID_THRESHOLD;
   const featured = entries.filter((entry) => entry.featured).slice(0, FEATURED_SHOWN);
   const leadWithFeatured = useGrid && featured.length > 0;
+  /*
+   * The list below the featured band excludes what is already in it. Without this, two of the
+   * three featured pieces reappeared four cards later, which reads as a rendering fault rather
+   * than as emphasis.
+   */
+  const promoted = new Set(featured.map((entry) => entry.slug));
+  const latest = entries.filter((entry) => !promoted.has(entry.slug)).slice(0, LATEST_SHOWN);
 
   return (
     <PageShell current="/learn">
@@ -64,8 +77,9 @@ export default function LearnPage() {
       >
         <div className="work-jump">
           {leadWithFeatured ? <a href="#featured">Start here</a> : null}
-          <a href="#all">Every tutorial</a>
           <a href="#browse">Browse by topic</a>
+          <a href="#all">Newest</a>
+          <Link href="/learn/all">Every tutorial</Link>
         </div>
       </StageHero>
 
@@ -83,18 +97,72 @@ export default function LearnPage() {
         </section>
       ) : null}
 
+      {/*
+        The taxonomy, outside the feature that used to own it.
+
+        Only filters that lead somewhere are offered - `getWritingTaxonomy` returns the vocabulary
+        that something published actually uses - so a chip here is never a route to a page whose
+        whole content is a sentence saying nothing is published yet. Recurring themes are listed
+        without links, because tags deliberately have no route.
+      */}
+      <section className="section-wrap writing-browse" aria-labelledby="browse-writing" id="browse">
+        <div className="writing-index-header">
+          <div>
+            <p className="section-index"><span>{leadWithFeatured ? "02" : "01"}</span>Browse</p>
+            <h2 id="browse-writing">By subject, or by how much you already know</h2>
+          </div>
+        </div>
+
+        <div className="writing-browse-groups">
+          <div>
+            <p className="figure-label">Topics</p>
+            <ul className="topic-chips">
+              {topics.map((topic) => (
+                <li key={topic.slug} data-kind="category">
+                  <Link href={`/learn/topic/${topic.slug}`}>{topic.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="figure-label">Levels</p>
+            <ul className="topic-chips">
+              {levels.map((level) => (
+                <li key={level.slug}>
+                  <Link href={`/learn/level/${level.slug}`}>{level.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <p className="figure-label">Recurring themes</p>
+            <ul className="topic-chips">
+              {tags.map((tag) => (
+                <li key={tag.slug}>{tag.label}</li>
+              ))}
+            </ul>
+            <p className="writing-side-note">
+              The library grows deliberately. A piece is published when the underlying work is
+              finished and its limitations are known, not on a schedule.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="section-wrap writing-index" aria-labelledby="latest-writing" id="all">
         <div className="writing-index-header">
           <div>
-            <p className="section-index"><span>{leadWithFeatured ? "02" : "01"}</span>Published</p>
-            <h2 id="latest-writing">{useGrid ? "Every tutorial, newest first" : "Latest tutorial"}</h2>
+            <p className="section-index"><span>{leadWithFeatured ? "03" : "02"}</span>Published</p>
+            <h2 id="latest-writing">{useGrid ? "More from the library" : "Latest tutorial"}</h2>
           </div>
           <a className="rss-link" href="/rss.xml">RSS feed</a>
         </div>
 
         {useGrid ? (
           <div className="writing-grid">
-            {entries.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
+            {latest.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
           </div>
         ) : feature ? (
           <article className="writing-feature">
@@ -136,60 +204,14 @@ export default function LearnPage() {
             {rest.map((entry) => <WritingCard entry={entry} key={entry.slug} />)}
           </div>
         ) : null}
-      </section>
 
-      {/*
-        The taxonomy, outside the feature that used to own it.
-
-        Only filters that lead somewhere are offered - `getWritingTaxonomy` returns the vocabulary
-        that something published actually uses - so a chip here is never a route to a page whose
-        whole content is a sentence saying nothing is published yet. Recurring themes are listed
-        without links, because tags deliberately have no route.
-      */}
-      <section className="section-wrap writing-browse" aria-labelledby="browse-writing" id="browse">
-        <div className="writing-index-header">
-          <div>
-            <p className="section-index"><span>{leadWithFeatured ? "03" : "02"}</span>Browse</p>
-            <h2 id="browse-writing">By subject, or by how much you already know</h2>
-          </div>
-        </div>
-
-        <div className="writing-browse-groups">
-          <div>
-            <p className="figure-label">Topics</p>
-            <ul className="topic-chips">
-              {topics.map((topic) => (
-                <li key={topic.slug} data-kind="category">
-                  <Link href={`/learn/topic/${topic.slug}`}>{topic.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <p className="figure-label">Levels</p>
-            <ul className="topic-chips">
-              {levels.map((level) => (
-                <li key={level.slug}>
-                  <Link href={`/learn/level/${level.slug}`}>{level.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <p className="figure-label">Recurring themes</p>
-            <ul className="topic-chips">
-              {tags.map((tag) => (
-                <li key={tag.slug}>{tag.label}</li>
-              ))}
-            </ul>
-            <p className="writing-side-note">
-              The library grows deliberately. A piece is published when the underlying work is
-              finished and its limitations are known, not on a schedule.
-            </p>
-          </div>
-        </div>
+        {useGrid && entries.length > featured.length + latest.length ? (
+          <p className="section-action">
+            <Link className="button button-primary" href="/learn/all">
+              <ArrowLabel kind="forward">{`All ${entries.length} tutorials`}</ArrowLabel>
+            </Link>
+          </p>
+        ) : null}
       </section>
 
       <ResearchFeed />

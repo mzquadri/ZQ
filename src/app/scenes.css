@@ -249,7 +249,7 @@
 
 .scene-stage-index {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--label);
   letter-spacing: 0.14em;
   color: var(--accent);
 }
@@ -621,7 +621,7 @@
 
 .case-stage-facts dt {
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--label-strong);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--stage-ink-soft);

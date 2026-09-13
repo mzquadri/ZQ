@@ -17,13 +17,25 @@
   /*
    * The scroll distance the sequence runs over.
    *
-   * It was three and a bit viewports, which was chosen when the page below it was a fifty-screen
-   * reel and an unhurried opening cost nothing in proportion. The page is now an index, and on a
-   * nine-screen page the hero's own scroll track was a third of the total. Two and a fifth still
-   * gives each of the five beats close to half a viewport of scroll - enough to read as a
-   * deliberate move rather than a transition - and returns a screen and a half to the rest.
+   * It was three and a bit viewports, chosen when the page below was a fifty-screen reel and an
+   * unhurried opening cost nothing in proportion, then two and a fifth. Both were still most of a
+   * screen of scrolling spent before the first project, on a page whose whole job is to get
+   * someone to a project.
+   *
+   * One and seven tenths, and that number came from measurement rather than preference.
+   *
+   * The pinned screen is one viewport of it, so the sequence runs over the remainder - and every
+   * `contain` percentage below is a fraction of that remainder. Which makes the sticky header's
+   * 68px offset a *share* of the track rather than a constant. Cut to 140vh it was nineteen per
+   * cent of the scrub: at scroll zero the run was already a fifth finished, the identity block -
+   * the name, the standing line, the four calls to action - sat at 0.71 opacity, and it was gone
+   * by 150px. A reader who had not scrolled yet was already watching the hero leave.
+   *
+   * At 170vh the offset is a tenth of the scrub, every range below starts after it, and the
+   * identity holds until the reader has asked for the sequence. Shorter than the 220vh this
+   * replaced; long enough that the opening is readable at rest, which is the part that matters.
    */
-  min-height: 220vh;
+  min-height: 170vh;
   position: relative;
   background: var(--stage);
   color: var(--stage-ink);
@@ -205,7 +217,9 @@
   justify-content: center;
   gap: 0.5rem 1.35rem;
   font-family: var(--mono);
-  font-size: clamp(0.68rem, 1.15vw, 0.82rem);
+  /* Floor raised to the label scale: at 900px this resolved to 10.9px for four words that
+     are the first thing said about what I do. */
+  font-size: clamp(var(--label), 1.15vw, 0.82rem);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--stage-ink-soft);
@@ -246,7 +260,15 @@
   font-size: clamp(0.72rem, 1.1vw, 0.8rem);
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--stage-ink) 62%, transparent);
+  /*
+   * 72%, not 62%.
+   *
+   * This is the line that states the role, the city and the availability - the three facts a
+   * recruiter reads first - and at 62% of the stage ink it measured 4.02:1 against the stage at
+   * 12.8px, under the 4.5 that normal-size text needs. It was quiet to the point of being the
+   * least legible text in the hero.
+   */
+  color: color-mix(in oklab, var(--stage-ink) 72%, transparent);
 }
 
 /*
@@ -306,7 +328,7 @@
   transform: translateX(-50%);
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: var(--label);
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--stage-ink-soft);
@@ -331,7 +353,7 @@
     .cine-identity {
       animation: cine-identity-recede 1s linear both;
       animation-timeline: --hero;
-      animation-range: contain 4% contain 26%;
+      animation-range: contain 16% contain 36%;
     }
 
     @keyframes cine-identity-recede {
@@ -356,10 +378,18 @@
       }
     }
 
+    /*
+     * The fade-out starts later than it used to.
+     *
+     * The range is a percentage of the pinned track's contain phase, and shortening that track
+     * from 220vh to 140vh moved where scroll zero falls inside it: the hint was already at 0.39
+     * opacity before the reader had scrolled at all, which measured 2.13:1 against the stage. It
+     * now holds until the sequence is genuinely under way.
+     */
     .cine-scroll-hint {
       animation: cine-hint-out 1s linear both;
       animation-timeline: --hero;
-      animation-range: contain 2% contain 14%;
+      animation-range: contain 20% contain 32%;
     }
 
     @keyframes cine-hint-out {
@@ -371,7 +401,7 @@
     .cine-instrument-svg {
       animation: cine-figure-focus 1s linear both;
       animation-timeline: --hero;
-      animation-range: contain 6% contain 30%;
+      animation-range: contain 14% contain 32%;
     }
 
     @keyframes cine-figure-focus {
@@ -384,7 +414,7 @@
       stroke-dasharray: 100;
       animation: mz-connect 1s linear both;
       animation-timeline: --hero;
-      animation-range: contain 10% contain 30%;
+      animation-range: contain 16% contain 32%;
       --path-length: 100;
     }
 
@@ -392,7 +422,7 @@
     .cine-band-cal {
       animation: cine-band-calibrate 1s var(--ease-precise) both;
       animation-timeline: --hero;
-      animation-range: contain 44% contain 62%;
+      animation-range: contain 46% contain 60%;
     }
 
     @keyframes cine-band-calibrate {
@@ -410,7 +440,7 @@
         cine-band-open 1s linear both,
         cine-band-recede 1s linear both;
       animation-timeline: --hero, --hero;
-      animation-range: contain 26% contain 44%, contain 46% contain 60%;
+      animation-range: contain 30% contain 46%, contain 46% contain 58%;
     }
 
     @keyframes cine-band-recede {
@@ -422,7 +452,7 @@
     .cine-marks {
       animation: cine-observe 1s linear both;
       animation-timeline: --hero;
-      animation-range: contain 60% contain 78%;
+      animation-range: contain 58% contain 74%;
     }
 
     @keyframes cine-observe {
@@ -434,7 +464,7 @@
       transform-origin: center;
       animation: cine-decline-in 1s linear both;
       animation-timeline: --hero;
-      animation-range: contain 80% contain 96%;
+      animation-range: contain 76% contain 88%;
     }
 
     @keyframes cine-decline-in {
@@ -456,13 +486,14 @@
       86%, 100% { opacity: 0; transform: translate3d(0, -0.6rem, 0); }
     }
 
-    .cine-beat[data-beat="0"] { animation-range: contain 4% contain 26%; }
-    .cine-beat[data-beat="1"] { animation-range: contain 26% contain 46%; }
-    .cine-beat[data-beat="2"] { animation-range: contain 46% contain 62%; }
-    .cine-beat[data-beat="3"] { animation-range: contain 62% contain 80%; }
+    /* From zero, so the caption is not blank while the hero sits at rest. */
+    .cine-beat[data-beat="0"] { animation-range: contain 0% contain 30%; }
+    .cine-beat[data-beat="1"] { animation-range: contain 30% contain 46%; }
+    .cine-beat[data-beat="2"] { animation-range: contain 46% contain 60%; }
+    .cine-beat[data-beat="3"] { animation-range: contain 60% contain 76%; }
     .cine-beat[data-beat="4"] {
       animation-name: cine-beat-last;
-      animation-range: contain 80% contain 100%;
+      animation-range: contain 76% contain 94%;
     }
 
     @keyframes cine-beat-last {
@@ -571,7 +602,7 @@
  * ========================================================================================== */
 
 @media (max-width: 900px) {
-  .cine-hero { min-height: 190vh; }
+  .cine-hero { min-height: 150vh; }
   .cine-instrument-svg { height: min(42vh, 20rem); }
   .cine-identity { padding-bottom: 4rem; }
 }

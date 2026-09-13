@@ -183,6 +183,15 @@ const browser = await chromium.launch();
   check((await toLearn.count()) === 1, "work index offers the tutorials", "no link to /learn");
   await toLearn.click();
   await page.waitForURL(/\/learn$/);
+
+  /*
+   * The index is a shortlist and the complete list is its own route, so the count that matters is
+   * the one behind "All N tutorials" rather than the one on the index.
+   */
+  const shortlist = await page.locator(".writing-grid article").count();
+  check(shortlist >= 6, "the index offers a shortlist", `${shortlist} shown`);
+  await page.getByRole("link", { name: /All \d+ tutorials/ }).click();
+  await page.waitForURL(/\/learn\/all$/);
   const tutorials = await page.locator("#all .writing-grid article").count();
   check(tutorials >= 8, "the library is a library", `${tutorials} tutorials`);
   await page.close();

@@ -33,7 +33,14 @@ const REPOSITORY = "https://github.com/mzquadri/medico";
  * what the loss does with labels that three different corpora disagree about.
  */
 export default function MedicoPage() {
-  const relatedWriting = getPublishedWritingForProject("medico");
+  /*
+   * At most three.
+   *
+   * The public-safe model is named by eight tutorials, and rendering all eight closed that case
+   * study with more cards than it had sections. Three is what the tutorial routes already show
+   * each other; /learn/all is one click from every card.
+   */
+  const relatedWriting = getPublishedWritingForProject("medico").slice(0, 3);
 
   return (
     <PageShell current="/work">

@@ -92,7 +92,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Only this case study has a guided run, so only it pays for the controller.
   const guided = project.slug === "legal-knowledge-platform";
-  const relatedWriting = getPublishedWritingForProject(project.slug);
+  /*
+   * At most three.
+   *
+   * The public-safe model is named by eight tutorials, and rendering all eight closed that case
+   * study with more cards than it had sections. Three is what the tutorial routes already show
+   * each other; /learn/all is one click from every card.
+   */
+  const relatedWriting = getPublishedWritingForProject(project.slug).slice(0, 3);
 
   return (
     <PageShell current="/work">
