@@ -142,46 +142,6 @@ export function DomainsScene() {
 }
 
 /* ============================================================================================
- * Research - the argument as a staircase
- *
- * The research page is the deeper explanation, not a second trailer, so its figure is structural
- * rather than illustrative: the sequence of things that have to be established before a fast
- * approximation is allowed to influence a decision. Each step is only reachable from the one
- * below it, which is the actual claim.
- * ========================================================================================== */
-
-export function ResearchLadderScene({ steps }: { steps: readonly string[] }) {
-  const width = 900;
-  const rowHeight = 62;
-  const height = steps.length * rowHeight + 40;
-
-  return (
-    <svg
-      className="scene-svg scene-research-ladder"
-      role="img"
-      aria-label={`A staircase of things that must hold in order, each reachable only from the one below it: ${steps.join(", ")}.`}
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="xMidYMid meet"
-    >
-      {steps.map((step, i) => {
-        const y = height - 30 - i * rowHeight;
-        const x = 40 + i * ((width - 260) / Math.max(1, steps.length - 1));
-        const range = `contain ${8 + i * 13}% contain ${30 + i * 13}%`;
-        return (
-          <g className="ladder-step" key={step} style={{ "--range": range } as React.CSSProperties}>
-            <line className="ladder-riser" x1={x} x2={x} y1={y} y2={y - rowHeight + 16} />
-            <line className="ladder-tread" x1={x} x2={x + 150} y1={y - rowHeight + 16} y2={y - rowHeight + 16} />
-            <text className="ladder-label" x={x + 10} y={y - rowHeight + 4}>
-              {step}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-/* ============================================================================================
  * Contact - the ending
  *
  * One mark rather than a scene. A slow ring that closes: the site has been arguing that a system

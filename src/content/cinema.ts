@@ -54,21 +54,21 @@ export const chapters = {
     eyebrow: "Selected work",
     title: "Each system, as the thing it actually is",
     introduction:
-      "Eight worlds, in running order. Every one is drawn as its own mechanism rather than as a card, because a graph surrogate and a retrieval benchmark do not resemble each other and should not be presented as though they do. Each opens into a case study carrying its evidence and its limits.",
-  },
-  engineering: {
-    index: "02",
-    eyebrow: "Current engineering",
-    title: "Ingest, represent, verify, observe",
-    introduction:
-      "The shape of the work I do now, drawn synthetically. It describes a class of problem common to data platforms rather than any particular system, and every figure in it is an illustrative model.",
+      "Nine projects, in order of what they can prove. Each carries its own mark rather than a stock icon, because a graph surrogate and a retrieval benchmark do not resemble each other and should not be presented as though they do, and each opens into a case study carrying its evidence and its limits.",
   },
   research: {
-    index: "03",
+    index: "02",
     eyebrow: "Research",
     title: "What has to be true before a fast approximation is allowed to matter",
     introduction:
       "A surrogate that is wrong quickly is worse than a simulation that is slow. The research record is about the evidence that closes that gap.",
+  },
+  learn: {
+    index: "03",
+    eyebrow: "Learn",
+    title: "The parts worth writing down",
+    introduction:
+      "Short technical pieces on the ideas these projects lean on, written for someone who has to implement one rather than cite it.",
   },
   experience: {
     index: "04",

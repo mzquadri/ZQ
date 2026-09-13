@@ -239,7 +239,6 @@ ol {
 .kicker,
 .section-index,
 .classification,
-.project-meta,
 .case-meta,
 .hero-visual-label {
   font-family: var(--mono);
@@ -633,29 +632,6 @@ ol {
   margin-top: 2.5rem;
 }
 
-.project-list {
-  border-top: 2px solid var(--ink);
-  list-style: none;
-}
-
-.project-row {
-  display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 1.5rem;
-  padding: 2rem 0;
-  border-bottom: 1px solid var(--line-strong);
-}
-
-.project-number {
-  padding-top: 0.35rem;
-  color: var(--orange-text);
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.project-meta,
 .case-meta {
   display: flex;
   gap: 1rem;
@@ -664,28 +640,6 @@ ol {
 
 .classification {
   color: var(--teal-dark);
-}
-
-.project-main h3 {
-  max-width: 44rem;
-  margin-top: 0.6rem;
-  font-family: var(--sans);
-  font-size: clamp(1.7rem, 3.4vw, 2.75rem);
-  font-weight: 500;
-}
-
-.project-main h3 a {
-  text-decoration: none;
-}
-
-.project-main h3 a:hover {
-  color: var(--teal-dark);
-}
-
-.project-main > p {
-  max-width: 49rem;
-  margin-top: 0.7rem;
-  color: var(--ink-soft);
 }
 
 .tool-list {
@@ -702,17 +656,6 @@ ol {
   background: rgba(255, 255, 255, 0.3);
   font-family: var(--mono);
   font-size: 0.66rem;
-}
-
-.row-action {
-  display: flex;
-  min-width: 8rem;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-top: 0.35rem;
-  color: var(--teal-dark);
-  font-size: 0.82rem;
-  font-weight: 750;
 }
 
 .capability-grid {
@@ -1564,16 +1507,9 @@ ol {
     min-height: 11rem;
   }
 
-  .project-row {
-    grid-template-columns: 2rem minmax(0, 1fr);
-    gap: 0.75rem;
-  }
+  
 
-  .row-action {
-    grid-column: 2;
-    min-width: 0;
-    justify-content: flex-start;
-  }
+  
 
   .capability-grid article,
   .capability-grid article:nth-child(4),
@@ -1724,8 +1660,6 @@ ol {
   .case-stage,
   .cine-section,
   .cine-closing,
-  .chapters,
-  .chapter,
   .case-story,
   .ending {
     background: white !important;
@@ -3040,15 +2974,6 @@ ol {
   color: var(--ink-soft);
 }
 
-.project-role {
-  margin-top: 0.8rem;
-  color: var(--teal-dark) !important;
-  font-family: var(--mono);
-  font-size: 0.72rem !important;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
 .career-section,
 .education-section,
 .artifact-section {
@@ -3265,7 +3190,6 @@ ol {
   padding-left: 1rem;
   border-left: 3px solid var(--orange);
 }
-
 
 /* Website Completion v1 */
 
@@ -3901,7 +3825,6 @@ ol {
     background: var(--paper);
   }
 }
-
 
 .topic-chips {
   display: flex;
@@ -4700,8 +4623,6 @@ ol {
 .legal-count-stage[data-step="2"] .legal-count-steps li[data-phase="3"] > * {
   visibility: hidden;
 }
-
-
 
 /* --- Fan-out: one source, three representations in depth ----------------------------------
  *
@@ -6600,7 +6521,6 @@ ol {
   .systems-source-copy .systems-name { font-size: 1.5rem; }
 }
 
-
 /* ---- career periods, certifications and languages ---------------------------------------
  *
  * Added with the CV integration. The period is set in the mono face at a small size because it
@@ -6655,7 +6575,6 @@ ol {
   font-size: 0.84rem;
   color: var(--ink-soft);
 }
-
 
 /*
  * Taxonomy chips are links, and they were 15px tall - the smallest targets on the site. The

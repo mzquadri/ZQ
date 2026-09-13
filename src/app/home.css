@@ -157,6 +157,30 @@
   color: var(--stage-ink);
 }
 
+/*
+ * The verbs on paper.
+ *
+ * They were drawn for the dark homepage stage. They are now inside the case study they were
+ * always about, one section above the invariants they decompose into, and that section is paper.
+ * Only the ground changes: each mark keeps the route's accent.
+ */
+.case-section .verb {
+  border-color: var(--line);
+  background: var(--paper-raised);
+}
+
+.case-section .verb:not(:last-child)::after {
+  background: var(--line);
+}
+
+.case-section .verb-name {
+  color: var(--ink);
+}
+
+.case-section .verb-track {
+  margin-top: clamp(1.5rem, 3vh, 2.25rem);
+}
+
 /* ---- Research: numbers, quietly -------------------------------------------------------------- */
 
 .research-standfirst {

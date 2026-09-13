@@ -11,7 +11,7 @@
     "validate:content": "tsx scripts/validate-content.ts",
     "check:docs": "tsx scripts/check-docs-freshness.ts",
     "check:security": "tsx scripts/check-dependency-security.ts",
-    "test:content": "tsx --test tests/content-foundation.test.ts tests/ecosystem.test.ts tests/assembly.test.ts tests/confidential-project.test.ts tests/walkthrough.test.ts tests/systems-showcase.test.ts tests/strong-work.test.ts tests/gateway-evidence.test.ts",
+    "test:content": "tsx --test tests/content-foundation.test.ts tests/ecosystem.test.ts tests/confidential-project.test.ts tests/walkthrough.test.ts tests/systems-showcase.test.ts tests/strong-work.test.ts tests/gateway-evidence.test.ts",
     "test:e2e": "npm run build && playwright test",
     "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build",
     "hooks:install": "git config core.hooksPath .githooks",

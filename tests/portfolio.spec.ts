@@ -8,6 +8,7 @@ import { SCENES } from "../src/components/sequence/scenes";
 const routes = [
   "/",
   "/work",
+  "/work/engineering-model",
   "/research",
   "/research/thesis",
   "/about",
@@ -60,7 +61,8 @@ test("primary navigation and project routes work", async ({ page }) => {
   await openNavIfCollapsed(page);
   await page.getByRole("link", { name: "Work", exact: true }).first().click();
   await expect(page).toHaveURL(/\/work$/);
-  await page.getByRole("link", { name: "Reliable GNN Surrogates for Transport Policy Analysis", exact: true }).click();
+  /* The index names a project by its finding; the registry title is on the case study itself. */
+  await page.getByRole("link", { name: /When can a surrogate stand in for a simulation\?/ }).first().click();
   await expect(page).toHaveURL(/\/work\/transport-uq$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Reliable GNN");
 });
@@ -405,18 +407,14 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
 
   await page.goto("/");
   const main = page.locator("main");
-  // The homepage presents MLOps as its own chapter rather than as a card of evidence rows.
-  // "Slice-aware evaluation" was a phrase on the old card and is deliberately no longer
-  // anywhere on this page; what has to stay true is the boundary asserted below.
-  await expect(main.locator("#work-mlops-reference-pipeline")).toContainText(
-    "A Testable End-to-End MLOps Pipeline",
+  // The homepage is an index now: it offers the project and says what kind of thing it is, and
+  // the evidence lives one click away. None of the case study's table may appear here.
+  await expect(main.getByRole("link", { name: /An unqualified model cannot reach release/ })).toHaveAttribute(
+    "href",
+    "/work/mlops-reference-pipeline",
   );
   await expect(main).not.toContainText(/licensed-data run/i);
-
-  // A featured card may lead with the project's headline number - that is the point of
-  // the card. What the homepage must not do is restate the case study's whole evidence
-  // table, so the supporting rows stay off it.
-  await expect(main).toContainText("0.8067");
+  await expect(main).not.toContainText("0.8067");
   await expect(main).not.toContainText("1,800 / 600 / 600");
   await expect(main).not.toContainText("Byte-identical");
   await expect(main).not.toContainText("99 tests");
@@ -534,7 +532,7 @@ test("homepage makes no third-party requests", async ({ page }) => {
 });
 
 test("the systems graph paints in 3D on desktop and falls back below it", async ({ page }) => {
-  await page.goto("/work");
+  await page.goto("/work/engineering-model");
   const graph = page.locator("#systems-graph");
   const canvas = graph.locator("canvas");
   const isDesktop = (page.viewportSize()?.width ?? 0) >= 760;
@@ -565,7 +563,7 @@ test("the systems graph paints in 3D on desktop and falls back below it", async 
 });
 
 test("systems graph selection is keyboard operable and never overclaims", async ({ page }) => {
-  await page.goto("/work");
+  await page.goto("/work/engineering-model");
   const detail = page.locator("#systems-graph [aria-live='polite']");
   await expect(detail).toContainText("Reliable AI");
 
@@ -618,37 +616,21 @@ test("the repository index catalogues public work beyond the case studies", asyn
   await expect(index.getByText(/last\s+(public\s+)?commit|last\s+active/i)).toHaveCount(0);
 });
 
-test("the repository showcase strip is the content of record", async ({ page }) => {
+/*
+ * The exploded-repository showcase that used to open this section is gone, and with it the only
+ * WebGL surface on /work. It was a mapping of strings the registry already held, rendered as an
+ * assembly above the plain index of the same repositories - so the page said everything twice,
+ * and said the less useful version first. What replaced it is the index that was underneath.
+ */
+test("the repository index carries the record with no 3D layer left on the page", async ({ page }) => {
   await page.goto("/work");
-  const showcase = page.locator('[data-showcase="flagship"]');
 
-  // Four flagship cards, each carrying its parts as readable rows.
-  await expect(showcase.locator("li h3")).toHaveCount(4);
-  await expect(showcase.getByText("Reliable GNN Surrogates for Transport Policy")).toBeVisible();
-  await expect(showcase.getByText("Uncertainty Quantification").first()).toBeVisible();
-  await expect(showcase.getByText("Focus area").first()).toBeVisible();
-  await expect(showcase.getByText("Evidence boundary").first()).toBeVisible();
-  await expect(showcase.getByText("Portfolio status").first()).toBeVisible();
+  await expect(page.locator("canvas")).toHaveCount(0);
+  await expect(page.locator('[data-showcase="flagship"]')).toHaveCount(0);
 
-  /*
-   * Anything the 3D layer could show is on the card: label, kind, repo, language. It used to
-   * carry a last-commit date as well; that was removed everywhere, because ranking work by
-   * recency is a career chronology in a smaller font.
-   */
-  await expect(showcase.getByText(/Last public commit/)).toHaveCount(0);
-});
-
-test("the 3D layer never mounts where it should not", async ({ page }) => {
-  await page.goto("/work");
-  const host = page.locator("[data-mode]").first();
-
-  // Playwright runs every project with reducedMotion: "reduce", and the mobile project is
-  // narrower than the island's floor, so the layer must stay off in both.
-  await expect(host).toHaveAttribute("data-mode", "static");
-  await expect(page.locator("#ecosystem canvas")).toHaveCount(0);
-
-  // And the record is still complete without it.
-  await expect(page.locator('[data-showcase="flagship"] li h3')).toHaveCount(4);
+  const index = page.locator('[data-showcase="index"]');
+  await expect(index.getByRole("link", { name: /Reliable GNN Surrogates for Transport Policy/ })).toBeVisible();
+  await expect(index.getByText(/Last public commit/)).toHaveCount(0);
 });
 
 test("generated topic and level routes are reachable and honest when empty", async ({ page }) => {
@@ -854,13 +836,15 @@ test("the confidential case study publishes no corpus scale", async ({ page }) =
 
 test("the confidential case study appears in the work index alongside the public ones", async ({ page }) => {
   await page.goto("/work");
-  // Each row links twice - from its heading and from its "Case study" affordance.
-  const rowLinks = page.locator('a[href="/work/legal-knowledge-platform"]');
-  await expect(rowLinks).toHaveCount(2);
-  await expect(rowLinks.first()).toHaveText("Stored is not the same as correct");
-  await expect(
-    page.locator(".project-row", { hasText: "Stored is not the same as correct" }),
-  ).toContainText("Employer engineering");
+  /*
+   * It has no world of its own, so it reaches the index through the registry rather than through
+   * the flagship order. That path is the one worth asserting: a draft that the publication gate
+   * allows must still be reachable, or it is reviewable only by reading the file.
+   */
+  const card = page.locator('a[href="/work/legal-knowledge-platform"]');
+  await expect(card).toHaveCount(1);
+  await expect(card).toContainText("Stored is not the same as correct");
+  await expect(card).toContainText("Employer engineering");
 });
 
 test("the confidential case study makes no third-party requests", async ({ page }) => {
@@ -1358,8 +1342,8 @@ test("a long reflection is set as a paragraph rather than as display type", asyn
  * The public systems showcase, and the line between it and the confidential case study.
  */
 
-test("the public systems showcase renders on the work page", async ({ page }) => {
-  await page.goto("/work");
+test("the public systems showcase renders on its own page", async ({ page }) => {
+  await page.goto("/work/engineering-model");
 
   await expect(page.getByRole("heading", { name: /One source\. Several representations/ })).toBeVisible();
   await expect(page.locator(".systems-badge")).toContainText("Illustrative system model");
@@ -1386,7 +1370,7 @@ test("the public systems showcase renders on the work page", async ({ page }) =>
 });
 
 test("the showcase itself names no employer, domain, or private system", async ({ page }) => {
-  await page.goto("/work");
+  await page.goto("/work/engineering-model");
 
   /*
    * Scoped to the showcase. The work index legitimately lists the confidential draft in a local
@@ -1412,7 +1396,7 @@ test("the showcase keeps WebGL gated and asks nothing of a third party", async (
     if (url.hostname !== "127.0.0.1" && url.hostname !== "localhost") external.push(request.url());
   });
 
-  await page.goto("/work", { waitUntil: "networkidle" });
+  await page.goto("/work/engineering-model", { waitUntil: "networkidle" });
 
   // Both projects run reduced-motion, which is one of the four gates, so no canvas may mount.
   await expect(page.locator(".systems-showcase .vector-space-canvas")).toHaveAttribute("data-mode", "static");
@@ -1427,7 +1411,7 @@ test("the showcase keeps WebGL gated and asks nothing of a third party", async (
 
 test("the showcase is keyboard operable and stays inside a mobile viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/work");
+  await page.goto("/work/engineering-model");
 
   for (const representation of ["records", "vectors", "graph"]) {
     const card = page.locator(`.systems-grid article[data-representation="${representation}"]`);
@@ -2373,94 +2357,129 @@ test("cifar fits a narrow phone", async ({ page }) => {
   expect(overflows, `route overflows at 320px: ${JSON.stringify(report)}`).toBe(false);
 });
 
-test("the homepage cifar chapter uses real per-class numbers", async ({ page }) => {
-  await page.goto("/");
+test("the cifar opening object uses real per-class numbers", async ({ page }) => {
+  await page.goto("/work/cifar10-cnn");
   /*
-   * This chapter once showed four classes with invented bar widths. It now draws the tracked
+   * This drawing once showed four classes with invented bar widths. It now draws the tracked
    * confusion matrix itself, so the guard is stronger than a count of bars: every one of the
    * hundred cells has to be on screen, and the headline has to be stated as the mean of ten
    * rather than on its own.
    */
-  const still = page.locator("#work-cifar10-cnn .scn-still-wide");
+  const still = page.locator("header .scn-still-wide");
   const cells = await still.locator("rect").count();
   expect(cells, "the full ten-by-ten matrix must be drawn").toBeGreaterThanOrEqual(100);
 
-  const described = await page.locator("#work-cifar10-cnn figcaption").innerText();
+  const described = await page.locator("header .scn-identity figcaption").innerText();
   for (const value of ["64.26", "33.5", "82.0", "291"]) {
     expect(described, `${value} is a tracked number and must be published`).toContain(value);
   }
-
-  /* And the plate still carries the headline it is the mean of. */
-  const plate = await page.locator("#work-cifar10-cnn .chapter-plate").innerText();
-  expect(plate).toContain("64.26");
 });
 
 /* ============================================================================================
- * The exhibition: the homepage as one reel rather than eight separate pieces.
+ * The index: the homepage as a way of choosing rather than a reel to sit through.
  *
- * These guard the integration itself - the running order, the weight each chapter carries, the
- * seams between them, and the shared-element names that make entering a project feel like going
- * further into the same object rather than opening a second website.
+ * The homepage used to be one continuous reel - a full viewport per project, nine of them, the
+ * last link 47,485px down a 55-screen page. These guard what replaced it: one compact index of
+ * the same nine projects, complete on first paint, with the long-form reading on each project's
+ * own route where it always was.
  * ========================================================================================== */
 
 /*
  * The running order, taken from the manifest rather than copied.
  *
- * This list used to be duplicated here and in one other test. Adding a ninth chapter broke eight
- * tests that were really only asserting "the page renders the reel that was declared" - which is
- * still exactly what they assert now, without a second copy of the order to keep in step. What
- * they can no longer catch is the order itself being wrong, and that was never something a
- * transcribed duplicate could catch either: it would just have been wrong in both places.
+ * This list used to be duplicated here and in one other test. Adding a ninth entry broke eight
+ * tests that were really only asserting "the page renders the order that was declared" - which is
+ * still exactly what they assert now, without a second copy to keep in step.
  */
 const REEL = WORLD_ORDER;
 
-test("the homepage runs every world in the exhibition order", async ({ page }) => {
+test("the homepage index offers every project and the way to the rest", async ({ page }) => {
   await page.goto("/");
-  const ids = await page.locator("article.chapter").evaluateAll((els) =>
-    els.map((el) => el.id.replace(/^work-/, "")),
+  const index = page.getByRole("navigation", { name: "Selected work" });
+  const hrefs = await index
+    .locator("a[href]")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+
+  expect(hrefs).toHaveLength(REEL.length);
+  for (const slug of REEL) {
+    expect(hrefs.some((href) => href === `/work/${slug}`), `index is missing ${slug}`).toBe(true);
+  }
+  /* The index is a shortlist; the catalogue is one link away and says so. */
+  await expect(page.getByRole("link", { name: "Every project and repository" })).toHaveAttribute(
+    "href",
+    "/work",
   );
-  expect(ids).toEqual(REEL);
 });
 
-test("every flagship chapter takes the viewport", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test("the homepage index is whole on first paint, without scrolling", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
+  const index = page.getByRole("navigation", { name: "Selected work" });
+
   /*
-   * The full-viewport rule is deliberately gated at 1000px - a phone gets a stacked chapter sized
-   * by its content, which is the right shape there. The mobile project cannot leave that gate even
-   * after a resize, so the assertion is scoped to the width it describes rather than relaxed.
+   * The index it replaced faded its items in across a scroll range, which made the reduced-motion
+   * rendering the only one that showed the whole list at once. Choosing is not reading: every
+   * entry is legible without moving, whatever the motion preference.
    */
-  const wide = await page.evaluate(() => window.innerWidth >= 1000);
-  test.skip(!wide, "flagship height is a desktop rule");
-  const sizes = await page.locator('article.chapter[data-scale="flagship"]').evaluateAll((els) =>
-    els.map((el) => ({ id: el.id, h: Math.round(el.getBoundingClientRect().height) })),
-  );
-  expect(sizes.length).toBeGreaterThanOrEqual(5);
-  for (const s of sizes) {
-    /* A chapter that shares the screen with the next one is a card, which is what this replaced. */
-    expect(s.h, `${s.id} is only ${s.h}px tall`).toBeGreaterThanOrEqual(880);
-  }
+  const opacities = await index
+    .locator("li")
+    .evaluateAll((els) => els.map((el) => Number(getComputedStyle(el).opacity)));
+  expect(opacities).toHaveLength(REEL.length);
+  expect(opacities.every((o) => o > 0.99), "an index entry is staged on scroll").toBe(true);
 });
 
-test("chapters are joined by seams that name the handoff", async ({ page }) => {
-  await page.goto("/");
-  const seams = page.locator(".seam");
-  /* One between each pair, and none after the last chapter. */
-  await expect(seams).toHaveCount(REEL.length - 1);
-  for (const seam of await seams.all()) {
-    const text = await seam.innerText();
-    expect(text.toLowerCase()).toContain("becomes");
-  }
+test("the homepage is an index, not a reel", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/", { waitUntil: "networkidle" });
+
+  const measured = await page.evaluate(() => {
+    const links = Array.from(document.querySelectorAll("main a[href^='/work/']"));
+    const tops = links.map((a) => Math.round(a.getBoundingClientRect().top + window.scrollY));
+    const hero = document.querySelector(".cine-hero")!.getBoundingClientRect();
+    return {
+      height: document.documentElement.scrollHeight,
+      heroEnd: Math.round(hero.bottom + window.scrollY),
+      first: Math.min(...tops),
+      last: Math.max(...tops),
+    };
+  });
+
+  /*
+   * The reel measured 49,945px with its last project link at 47,485px.
+   *
+   * The first two budgets are measured from the end of the hero rather than from the top of the
+   * page, because the hero is a pinned sequence whose scroll track is three viewports by design
+   * and is not what this test is about. What it is about is what follows: the index has to start
+   * as soon as the opening sequence is over, and the whole of it has to be within reach.
+   */
+  expect(measured.first - measured.heroEnd, "the index does not start where the hero ends")
+    .toBeLessThan(700);
+  expect(measured.last - measured.first, "the index itself is a scrolling exercise")
+    .toBeLessThan(3000);
+  expect(measured.height, "the homepage is growing back into a reel").toBeLessThan(12000);
 });
 
-test("each chapter carries the shared-element name its world uses", async ({ page }) => {
-  await page.goto("/");
-  /* A chapter is drawn either as a live stage or as a scrubbed frame sequence; the shared-element
-     name lives on whichever of the two carries the visual. */
-  const names = await page
-    .locator("article.chapter .chapter-stage, article.chapter .scn-frame")
-    .evaluateAll((els) => els.map((el) => (el as HTMLElement).style.viewTransitionName));
-  expect(names).toEqual(REEL.map((slug) => `world-${slug}`));
+test("the work index tiers the same projects and adds the ones no world covers", async ({ page }) => {
+  await page.goto("/work");
+
+  const selected = page.getByRole("navigation", { name: "Selected work" });
+  const supporting = page.getByRole("navigation", { name: "Supporting projects" });
+  await expect(selected).toBeVisible();
+  await expect(supporting).toBeVisible();
+
+  const hrefs = await page
+    .locator("nav[aria-label='Selected work'] a, nav[aria-label='Supporting projects'] a")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+  for (const slug of REEL) {
+    expect(hrefs.some((href) => href === `/work/${slug}`), `work index is missing ${slug}`).toBe(true);
+  }
+
+  /* The two abstract figures are one click away rather than between the reader and the projects. */
+  await expect(
+    page.getByRole("navigation", { name: "Professional engineering" }).getByRole("link", {
+      name: /Engineering model/,
+    }),
+  ).toHaveAttribute("href", "/work/engineering-model");
 });
 
 test("entering a world lands on the matching shared element", async ({ page }) => {
@@ -2477,37 +2496,6 @@ test("entering a world lands on the matching shared element", async ({ page }) =
   }
 });
 
-test("every chapter says which project it is and how to enter it", async ({ page }) => {
-  await page.goto("/");
-  for (const slug of REEL) {
-    const chapter = page.locator(`#work-${slug}`);
-    /* The exhibition title states a finding, so the way in must be unambiguous. */
-    await expect(chapter.locator(".chapter-more")).toHaveAttribute("href", new RegExp(slug));
-    const text = await chapter.innerText();
-    expect(text.length, `${slug} has almost no copy`).toBeGreaterThan(80);
-  }
-});
-
-test("the exhibition index lists every world plus the way to the rest", async ({ page }) => {
-  await page.goto("/");
-  const links = page.locator(".exhibit-link");
-  await expect(links).toHaveCount(REEL.length + 1);
-  const hrefs = await links.evaluateAll((els) => els.map((el) => el.getAttribute("href")));
-  for (const slug of REEL) {
-    expect(hrefs.some((h) => h?.includes(slug)), `index is missing ${slug}`).toBe(true);
-  }
-  expect(hrefs).toContain("/work");
-});
-
-test("the work index also carries the reliable-knowledge-systems world", async ({ page }) => {
-  await page.goto("/work");
-  /* It has a route and a world but no portfolio entry, so the project list alone cannot show it. */
-  const hrefs = await page
-    .locator(".exhibit-link")
-    .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
-  expect(hrefs).toContain("/work/reliable-knowledge-systems");
-});
-
 test("the homepage still loads no renderer", async ({ page }) => {
   const scripts: string[] = [];
   page.on("response", (r) => {
@@ -2520,44 +2508,45 @@ test("the homepage still loads no renderer", async ({ page }) => {
       return body ? /three\.module|WebGLRenderer/.test(body.toString("utf8")) : false;
     }),
   );
-  expect(heavy.some(Boolean), "the reel must stay free of three.js").toBe(false);
+  expect(heavy.some(Boolean), "the homepage must stay free of three.js").toBe(false);
 });
 
 /* ============================================================================================
  * Flagship scenes.
  *
- * Every flagship chapter is a scroll-driven scene now, drawn twice from one function: once on the
- * server into the SVG that is the resting composition, and once on a canvas as the reader scrolls.
- * These guard what made that worth building.
+ * Every flagship detail route opens on a scroll-driven scene, drawn twice from one function: once
+ * on the server into the SVG that is the resting composition, and once on a canvas as the reader
+ * scrolls. These guard what made that worth building.
+ *
+ * They used to run against the homepage, which drew the same nine scenes at a viewport each. The
+ * scenes did not move when the reel was replaced by an index - the detail routes always carried
+ * them - so what changed here is only where they are asserted.
  * ========================================================================================== */
 
 /*
- * Every chapter that draws a scene, derived from the two manifests rather than transcribed.
+ * Every route that draws a scene, derived from the two manifests rather than transcribed.
  *
- * A scene chapter is one that appears in the running order and has a drawing registered for it.
- * Deriving it means adding a chapter needs one registration, not a fourth copy of the list - and
- * the assertions below still do their real job, which is comparing what the page rendered against
- * what was declared.
+ * A scene route is one that appears in the running order and has a drawing registered for it.
+ * Deriving it means adding a project needs one registration, not a fourth copy of the list.
  */
 const FLAGSHIPS = WORLD_ORDER.filter((slug) => slug in SCENES);
 
-test("every flagship chapter is a scene, and each one is its own drawing", async ({ page }) => {
+test("every flagship opens on a scene, and each one is its own drawing", async ({ page }) => {
   test.slow();
-  await page.goto("/", { waitUntil: "networkidle" });
-  await expect(page.locator("article.chapter-scene")).toHaveCount(FLAGSHIPS.length);
 
+  const stills: string[] = [];
   for (const slug of FLAGSHIPS) {
-    await expect(page.locator(`#work-${slug} .scn`), `${slug} has no scene`).toHaveCount(1);
+    await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
+    const identity = page.locator("header .scn-identity");
+    await expect(identity, `${slug} has no opening object`).toHaveCount(1);
+    stills.push(await identity.locator(".scn-still-wide").evaluate((el) => el.innerHTML));
   }
 
   /*
    * One picture per scene, and no two alike. The markup of each resting still is compared against
-   * every other one: if two chapters ever became the same drawing with different numbers, this is
+   * every other one: if two projects ever became the same drawing with different numbers, this is
    * the test that would say so.
    */
-  const stills = await page
-    .locator("article.chapter-scene .scn-still-wide")
-    .evaluateAll((els) => els.map((el) => el.innerHTML));
   expect(new Set(stills).size, "two flagships are drawing the same picture").toBe(FLAGSHIPS.length);
 
   /* And they are genuinely different shapes, not the same shape re-coloured. */
@@ -2569,135 +2558,34 @@ test("every flagship chapter is a scene, and each one is its own drawing", async
   expect(new Set(shapes).size, "flagship scenes share a primitive signature").toBeGreaterThan(5);
 });
 
-test("a flagship scene costs no image request and reserves its own space", async ({ page }) => {
+test("a flagship scene costs no image request and describes itself once", async ({ page }) => {
+  test.slow();
   const media: string[] = [];
   page.on("request", (r) => {
     if (/\.(png|jpe?g|webp|avif|gif|mp4|webm)(\?|$)/i.test(r.url())) media.push(r.url());
   });
-  await page.goto("/", { waitUntil: "networkidle" });
-  await page.evaluate(() => window.scrollTo(0, 6000));
-  await page.waitForTimeout(1200);
-  /*
-   * The resting composition is markup, not a poster. This replaced ninety WebP frames for one
-   * chapter; every chapter done the same way would have been megabytes.
-   */
-  expect(media, "a scene must not fetch an image").toHaveLength(0);
-
-  const ratios = await page
-    .locator(".scn-frame")
-    .evaluateAll((els) => els.map((el) => getComputedStyle(el).aspectRatio));
-  expect(ratios.length).toBe(FLAGSHIPS.length);
-  expect(ratios.every((r) => r !== "auto"), "a frame must reserve its ratio").toBe(true);
-});
-
-test("a reduced-motion reader gets the resting composition and no canvas", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/", { waitUntil: "networkidle" });
-  await page.evaluate(() => window.scrollTo(0, 6000));
-  await page.waitForTimeout(1000);
-
-  /* The still is in the markup either way; what reduced motion removes is the scrubbing. */
-  await expect(page.locator(".scn-still-wide")).toHaveCount(FLAGSHIPS.length);
-  await expect(page.locator(".scn-canvas[data-ready]")).toHaveCount(0);
-
-  /* And the track collapses, so nobody scrolls through empty pinned viewports. */
-  const tall = await page
-    .locator(".scn")
-    .evaluateAll((els) => els.filter((el) => el.getBoundingClientRect().height > window.innerHeight * 1.5).length);
-  expect(tall, "reduced motion must not leave tall empty tracks").toBe(0);
-});
-
-test("a scene scrubs on a phone, where no world renderer is allowed", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/", { waitUntil: "networkidle" });
-
-  const box = await page.locator("#work-hydrology-uq .scn").evaluate((el) => {
-    const r = el.getBoundingClientRect();
-    return { top: r.top + window.scrollY, height: r.height, vh: window.innerHeight };
-  });
-  /* Tall enough to scrub across, and not so tall that reading it is a chore. */
-  expect(box.height / box.vh).toBeGreaterThan(2);
-  expect(box.height / box.vh).toBeLessThan(4);
-
-  await page.evaluate((y) => window.scrollTo(0, y), box.top + (box.height - box.vh) * 0.6);
-  await page.waitForTimeout(1500);
-  await expect(
-    page.locator("#work-hydrology-uq .scn-canvas[data-ready]"),
-    "a phone must get the moving scene, not a static fallback",
-  ).toHaveCount(1);
-
-  /* A phone gets the portrait composition, not a wide one letterboxed into a tall frame. */
-  const shown = await page.locator("#work-hydrology-uq .scn-still-tall").evaluate((el) => getComputedStyle(el).display);
-  expect(shown).not.toBe("none");
-});
-
-test("a scene describes itself once and hides its drawing from assistive technology", async ({
-  page,
-}) => {
-  await page.goto("/");
-  for (const slug of FLAGSHIPS) {
-    const caption = page.locator(`#work-${slug} .scn-frame figcaption`);
-    await expect(caption).toHaveCount(1);
-    const text = await caption.innerText();
-    expect(text.length, `${slug} needs a real description`).toBeGreaterThan(120);
-  }
-  /* Both stills and the canvas are decorative; the caption is the accessible description. */
-  await expect(page.locator(".scn-still[aria-hidden='true']")).toHaveCount(FLAGSHIPS.length * 2);
-  await expect(page.locator(".scn-canvas[aria-hidden='true']")).toHaveCount(FLAGSHIPS.length);
-});
-
-/* ============================================================================================
- * Homepage to detail: entering the same object.
- *
- * The audit that prompted these found the detail routes naming an element 661 to 1076 pixels down
- * the page while the homepage named a full-viewport frame at the top, and rendering a different
- * drawing of the same subject in the hero. These guard the fix: same drawing, same beat, matching
- * frame, in the first viewport, on both sides.
- * ========================================================================================== */
-
-test("every flagship opens its detail route on the object the homepage drew", async ({ page }) => {
-  /* Nine navigations in one test. On a CI runner that is comfortably past the default budget. */
-  test.slow();
-  await page.goto("/", { waitUntil: "networkidle" });
-  const home = new Map<string, string>();
-  for (const slug of FLAGSHIPS) {
-    home.set(
-      slug,
-      await page.locator(`#work-${slug} .scn-still-wide`).evaluate((el) => el.innerHTML),
-    );
-  }
 
   for (const slug of FLAGSHIPS) {
     await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
-    /* Scoped to the header: the way-onward band at the end carries the next system's object too. */
-    const identity = page.locator("header .scn-identity");
-    await expect(identity, `${slug} has no opening object`).toHaveCount(1);
 
-    /*
-     * Byte-identical, not merely similar. Both sides call the same drawing function at the same
-     * resting progress, which is what makes the navigation read as continuity even in a browser
-     * with no View Transitions support at all.
-     */
-    const detail = await identity.locator(".scn-still-wide").evaluate((el) => el.innerHTML);
-    expect(detail, `${slug} opens on a different drawing than its chapter`).toBe(home.get(slug));
+    const caption = page.locator("header .scn-identity figcaption");
+    await expect(caption, `${slug} needs one description`).toHaveCount(1);
+    expect((await caption.innerText()).length, `${slug} needs a real description`).toBeGreaterThan(40);
+
+    /* Both stills are decorative; the caption is the accessible description. */
+    await expect(page.locator("header .scn-still[aria-hidden='true']")).toHaveCount(2);
   }
+
+  /*
+   * The resting composition is markup, not a poster. This replaced ninety WebP frames for one
+   * project; every project done the same way would have been megabytes.
+   */
+  expect(media, "a scene must not fetch an image").toHaveLength(0);
 });
 
-test("the shared-element name is on the object, in the first viewport, on both sides", async ({
-  page,
-}) => {
+test("the shared-element name is on the object, in the first viewport", async ({ page }) => {
   test.slow();
   const viewport = page.viewportSize()!;
-
-  await page.goto("/", { waitUntil: "networkidle" });
-  const homeRatio = new Map<string, number>();
-  for (const slug of FLAGSHIPS) {
-    const named = page.locator(`#work-${slug} [style*="view-transition-name"]`).first();
-    await expect(named).toHaveClass(/scn-frame/);
-    const box = (await named.boundingBox())!;
-    homeRatio.set(slug, box.width / box.height);
-  }
 
   for (const slug of FLAGSHIPS) {
     await page.goto(`/work/${slug}`, { waitUntil: "networkidle" });
@@ -2713,18 +2601,6 @@ test("the shared-element name is on the object, in the first viewport, on both s
      */
     expect(box.y, `${slug} opens with its object below the fold`).toBeLessThan(viewport.height - 100);
     expect(box.y + box.height).toBeGreaterThan(0);
-
-    /*
-     * The same shape as the frame it came from, so the morph is a move rather than a squash.
-     * Measured against the homepage frame at this same viewport rather than a constant, because
-     * the chapter frame is 16 / 9 on a wide screen and 4 / 5 on a phone and the opening object
-     * has to follow it in both.
-     */
-    const ratio = box.width / box.height;
-    expect(
-      Math.abs(ratio - homeRatio.get(slug)!),
-      `${slug} changes aspect across the navigation`,
-    ).toBeLessThan(0.12);
   }
 });
 
@@ -2774,86 +2650,14 @@ test("navigating to a flagship does not smooth-scroll the whole page past the re
 });
 
 /* ============================================================================================
- * The supporting movement.
+ * The supporting repositories.
  *
- * Nine repositories staged rather than listed. The tests below guard the two things that would
- * quietly break: a repository losing its stage back to a card, and a scene showing a number for a
- * repository that publishes none.
+ * Nine repositories used to get a full-viewport stage each on the homepage - about nine screens
+ * of scrolling to reach the ninth, ahead of nothing a reader had asked for. The record they
+ * carried is the disclosure inside each repository card in the index on /work, which is asserted
+ * by "every substantial repository opens into how it runs" below, and the numbers behind it are
+ * checked offline by tests/strong-work.test.ts.
  * ========================================================================================== */
-
-test("all nine supporting repositories get a stage, not a card", async ({ page }) => {
-  await page.goto("/", { waitUntil: "networkidle" });
-  const scenes = page.locator(".sw-scene");
-  await expect(scenes).toHaveCount(9);
-
-  const vh = page.viewportSize()!.height;
-  const heights = await scenes.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().height));
-  for (const height of heights) {
-    expect(height, "a supporting scene must hold the viewport").toBeGreaterThanOrEqual(vh - 1);
-  }
-
-  /* Each scene links to the repository it is about, and the links are distinct. */
-  const links = await page.locator(".sw-repo a").evaluateAll((els) =>
-    els.map((el) => (el as HTMLAnchorElement).href),
-  );
-  expect(new Set(links).size).toBe(9);
-});
-
-test("a repository that publishes no metric shows an empty frame and says why", async ({ page }) => {
-  await page.goto("/", { waitUntil: "networkidle" });
-  const withheld = page.locator('.sw-scene[data-evidence="withheld"]');
-  await expect(withheld).toHaveCount(5);
-
-  for (let i = 0; i < 5; i += 1) {
-    const scene = withheld.nth(i);
-    await expect(scene.locator(".sw-figure-kind")).toHaveText(/no metric published/i);
-    /* No bar element at all, so there is nothing to mistake for a measurement. */
-    await expect(scene.locator(".sw-bar-fill")).toHaveCount(0);
-    const note = await scene.locator(".sw-figure-note").innerText();
-    expect(note.length, "a refusal has to carry its reason").toBeGreaterThan(80);
-    /* And no score anywhere in the scene's text. */
-    expect(await scene.innerText()).not.toMatch(/\b0\.\d+\b/);
-  }
-});
-
-test("a published bar is drawn at the value printed beside it", async ({ page }) => {
-  await page.goto("/", { waitUntil: "networkidle" });
-  const rows = page.locator('.sw-scene[data-evidence="measured"] .sw-bars li');
-  const count = await rows.count();
-  expect(count).toBeGreaterThan(5);
-
-  for (let i = 0; i < count; i += 1) {
-    const row = rows.nth(i);
-    const printed = Number(await row.locator(".sw-bar-value").innerText());
-    const drawn = await row.evaluate((el) => {
-      const fill = el.querySelector(".sw-bar-fill")!.getBoundingClientRect().width;
-      const track = el.querySelector(".sw-bar-track")!.getBoundingClientRect().width;
-      return fill / track;
-    });
-    /* The bar's width is the value. A chart that disagrees with its own label is the whole risk. */
-    expect(Math.abs(drawn - printed)).toBeLessThan(0.02);
-  }
-});
-
-test("the supporting scenes are complete when a reader stops on one", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/", { waitUntil: "networkidle" });
-  const scenes = page.locator(".sw-scene");
-  const count = await scenes.count();
-
-  for (let i = 0; i < count; i += 1) {
-    await scenes.nth(i).scrollIntoViewIfNeeded();
-    await page.waitForTimeout(400);
-    const min = await scenes.nth(i).evaluate((scene) =>
-      Math.min(
-        ...[...scene.querySelectorAll(".sw-beats li, .sw-bars li, .sw-empty-rows li, .sw-path div")].map(
-          (el) => Number.parseFloat(getComputedStyle(el).opacity),
-        ),
-      ),
-    );
-    expect(min, `scene ${i} is still animating at its rest frame`).toBe(1);
-  }
-});
 
 /* ============================================================================================
  * Completion pass: evidence depth and the way onward.

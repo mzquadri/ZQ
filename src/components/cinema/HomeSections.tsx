@@ -1,21 +1,22 @@
 import Link from "next/link";
 
-import { VerbScene } from "@/components/cinema/scenes";
 import { chapters, closing, problemClasses } from "@/content/cinema";
+import { getPublishedWriting } from "@/content/writing/repository";
+import WritingCard from "@/components/writing/WritingCard";
 import { site, thesis } from "@/content/portfolio";
 import { getProject } from "@/content/portfolio";
-import { invariants } from "@/content/reliable-knowledge-world";
 
 /*
- * The sections after the work sequence.
+ * The sections after the work index.
  *
- * These carry the same dark stage as the chapters so the homepage reads as one continuous
+ * These carry the same dark stage as the index above them so the homepage reads as one continuous
  * document rather than two designs stapled together, and they use the same scrub vocabulary.
  *
- * On the current-employer section specifically: everything visible is either already-approved
- * public text taken from the truth registry, or a synthetic figure that names nothing. The four
- * verbs are a general description of what data platforms have to do; they are not a system's
- * architecture, and no service, dataset, topic, store or identifier appears anywhere in it.
+ * Each is a preview rather than a copy: enough of the research, the tutorials, the roles and the
+ * closing to tell a reader whether the page behind it is the one they came for. Everything
+ * visible here is either already-approved public text taken from the truth registry, or a
+ * synthetic figure that names nothing - no service, dataset, topic, store or identifier appears
+ * anywhere in it.
  */
 
 function SectionHead({ chapter }: { chapter: { index: string; eyebrow: string; title: string; introduction: string } }) {
@@ -26,70 +27,6 @@ function SectionHead({ chapter }: { chapter: { index: string; eyebrow: string; t
       <h2 className="cine-section-title">{chapter.title}</h2>
       <p className="cine-section-lede">{chapter.introduction}</p>
     </header>
-  );
-}
-
-/* -------------------------------------------------------------------------------------------
- * Current engineering.
- *
- * The four verbs are kept - they are a fair summary of what a platform like this has to do - but
- * they are no longer the whole chapter. What the work is actually about is the return direction:
- * every derived representation gets asked whether it still agrees with the evidence it came from,
- * and the four invariants below are what that question decomposes into.
- *
- * The branching figure used to open this section. It is now the reliable-knowledge-systems chapter
- * in the reel above, where that work belongs, so what is left here is the part the reel does not
- * carry: the four verbs a platform of this kind has to perform, and the four questions a check on
- * one has to answer. Keeping the figure in both places made the page argue the same point twice.
- * ----------------------------------------------------------------------------------------- */
-export function EngineeringSection() {
-  const verbs = problemClasses[0].verbs;
-
-  return (
-    <section className="cine-section cine-engineering" id="engineering">
-      <div className="cine-section-inner">
-        <SectionHead chapter={chapters.engineering} />
-
-        <ol className="verb-track" aria-label="Four things a data platform has to do">
-          {verbs.map((verb, i) => (
-            <li className="verb" key={verb} style={{ "--i": i } as React.CSSProperties}>
-              <span className="verb-mark" aria-hidden="true">
-                <VerbScene verb={verb} />
-              </span>
-              <p className="verb-name">{verb}</p>
-            </li>
-          ))}
-        </ol>
-
-        {/*
-          The four questions the verification has to answer. This is the part of the work that is
-          not obvious from the verbs: a single indicator answers none of them, and the useful
-          output names which one failed.
-        */}
-        <ol className="invariant-track" aria-label="What a check on this kind of system has to answer">
-          {invariants.map((invariant) => (
-            <li key={invariant.key}>
-              <strong>{invariant.label}</strong>
-              <span>{invariant.question}</span>
-            </li>
-          ))}
-        </ol>
-
-        <p className="cine-note">
-          Illustrative model. Synthetic throughout; it describes a class of problem rather than any
-          particular system.
-        </p>
-
-        <p className="cine-section-action">
-          <Link className="chapter-more mz-interactive" href="/work/reliable-knowledge-systems">
-            Open the machine
-          </Link>
-          <Link className="chapter-more mz-interactive" href="/work#systems">
-            See the systems showcase
-          </Link>
-        </p>
-      </div>
-    </section>
   );
 }
 
@@ -173,6 +110,38 @@ export function ExperienceSection() {
         <p className="cine-section-action">
           <Link className="chapter-more mz-interactive" href="/about">
             Experience and education context
+          </Link>
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------------------------
+ * Learn, as a preview rather than a library.
+ *
+ * The homepage never offered a way into the tutorials, so the only route to them was the
+ * navigation. Three entries is enough to say what kind of writing this is and to get a reader who
+ * wants it to the index; the index itself is /learn.
+ * ----------------------------------------------------------------------------------------- */
+export function HomeLearn() {
+  const latest = getPublishedWriting().slice(0, 3);
+  if (latest.length === 0) return null;
+
+  return (
+    <section className="cine-section cine-learn" id="learn">
+      <div className="cine-section-inner">
+        <SectionHead chapter={chapters.learn} />
+
+        <div className="home-learn-grid">
+          {latest.map((entry) => (
+            <WritingCard entry={entry} key={entry.slug} />
+          ))}
+        </div>
+
+        <p className="cine-section-action">
+          <Link className="chapter-more mz-interactive" href="/learn">
+            Every tutorial
           </Link>
         </p>
       </div>

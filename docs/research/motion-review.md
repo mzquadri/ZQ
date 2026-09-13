@@ -95,7 +95,7 @@ Audited across both rendering paths; the caps are consistent and deliberate.
 | WebGL worlds (8) | `dpr={[1, 1.75]}` | each `*WorldCanvas.tsx` |
 | Procedural scenes | `min(devicePixelRatio, 2)` | `sequence/SceneCanvas.tsx` |
 | Pinned 2D stage | `min(devicePixelRatio, 1.75)` | `scene/CanvasStage.tsx` |
-| Graph / assembly | `min(devicePixelRatio, 2)` | `SystemGraph.tsx`, `AssemblyScene.tsx` |
+| Systems graph | `min(devicePixelRatio, 2)` | `SystemGraph.tsx` |
 
 Uncapped DPR on a 3x phone quadruples fragment work for detail no one can resolve at reading
 distance. Nothing here is uncapped.
