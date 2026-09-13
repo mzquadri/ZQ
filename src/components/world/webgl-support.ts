@@ -50,6 +50,14 @@ const SOFTWARE_RENDERERS = [
   "generic renderer",
 ];
 
+/**
+ * One answer per document, computed on first ask.
+ *
+ * Every world host calls this, so without the cache a page carrying several of them would create
+ * several probe contexts - and browsers cap the number of live WebGL contexts, so a page that
+ * spends them on probes can find itself unable to create the one it actually wants to draw with.
+ * The probe also hands its context back explicitly rather than waiting to be collected.
+ */
 let cached: boolean | null = null;
 
 export function worldRenderingIsWorthIt(): boolean {
@@ -81,9 +89,4 @@ export function worldRenderingIsWorthIt(): boolean {
   })();
 
   return cached;
-}
-
-/** Test seam: lets a spec assert both sides of the gate without a second browser. */
-export function __resetWorldRenderingCache() {
-  cached = null;
 }

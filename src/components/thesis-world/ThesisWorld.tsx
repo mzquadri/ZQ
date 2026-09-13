@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useStageVisibility } from "@/components/world/stage-visibility";
+import { worldRenderingIsWorthIt } from "@/components/world/webgl-support";
 
 import ReliabilityPanel from "./ReliabilityPanel";
 import Readout from "./Readout";
@@ -13,11 +14,12 @@ import type { Frame } from "./ThesisWorldScene";
 /**
  * The host for the thesis world.
  *
- * Three gates decide whether any of this runs, and all three have to pass: the viewport has to be
- * wide enough for a scene with nine states to be legible, the reader must not have asked for less
- * motion, and the section has to actually be on screen. Until then the flat figure is the page,
- * and it is a complete figure rather than a placeholder - so nothing here is load-bearing for
- * meaning, which is also what keeps the WebGL payload honest: it buys depth, not information.
+ * Four gates decide whether any of this runs, and all four have to pass: the viewport has to be
+ * wide enough for a scene with nine states to be legible, the reader must not have asked for
+ * less motion, the renderer must not be a software rasteriser, and the section has to actually
+ * be on screen. Until then the flat figure is the page, and it is a complete figure rather than
+ * a placeholder - so nothing here is load-bearing for meaning, which is also what keeps the
+ * WebGL payload honest: it buys depth, not information.
  *
  * Scroll is sampled per animation frame against the track element rather than through an
  * intersection observer, because the scene needs continuous position, not a handful of threshold
@@ -44,7 +46,8 @@ export default function ThesisWorld({ flat }: { flat: ReactNode }) {
   useEffect(() => {
     const wide = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`);
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const evaluate = () => setEligible(wide.matches && !still.matches);
+    const evaluate = () =>
+      setEligible(wide.matches && !still.matches && worldRenderingIsWorthIt());
     evaluate();
     wide.addEventListener("change", evaluate);
     still.addEventListener("change", evaluate);

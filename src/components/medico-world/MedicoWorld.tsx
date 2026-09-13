@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useStageVisibility } from "@/components/world/stage-visibility";
+import { worldRenderingIsWorthIt } from "@/components/world/webgl-support";
 
 import Readout from "./Readout";
 import { STATES, active } from "./states";
@@ -11,10 +12,10 @@ import { STATES, active } from "./states";
 /**
  * The host for the medico world.
  *
- * Three gates, all of which must pass before anything is downloaded: wide enough for an
- * eleven-state sequence to be legible, motion not declined, and the section actually on screen.
- * Until then the coverage matrix is the page - a complete figure, not a placeholder - so the
- * renderer buys depth rather than meaning.
+ * Four gates, all of which must pass before anything is downloaded: wide enough for an eleven-
+ * state sequence to be legible, motion not declined, a renderer that is not a software
+ * rasteriser, and the section actually on screen. Until then the coverage matrix is the page - a
+ * complete figure, not a placeholder - so the renderer buys depth rather than meaning.
  *
  * Scroll is sampled per frame into a ref. Only the caption and the readout re-render, and only
  * when the state changes.
@@ -47,7 +48,8 @@ export default function MedicoWorld({ flat }: { flat: ReactNode }) {
   useEffect(() => {
     const wide = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`);
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const evaluate = () => setEligible(wide.matches && !still.matches);
+    const evaluate = () =>
+      setEligible(wide.matches && !still.matches && worldRenderingIsWorthIt());
     evaluate();
     wide.addEventListener("change", evaluate);
     still.addEventListener("change", evaluate);
