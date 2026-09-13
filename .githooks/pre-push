@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+# Check everything about to be pushed: identities, trailers, messages, tracked artifacts.
+#
+# The commit-msg hook sees one message at a time and cannot see an amended author or a
+# rebase that reintroduces an old commit. This pass covers the range as a whole.
+#
+# Git passes the remote name as $1, which the checker would read as a revision range, so the
+# arguments are dropped here and the checker's default applies: whatever this branch adds on
+# top of its upstream.
+set -euo pipefail
+
+exec "$(git rev-parse --show-toplevel)/tools/check-authorship.sh"

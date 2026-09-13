@@ -66,10 +66,15 @@ pre-rendered to video.
 
 ```bash
 npm ci
+npm run hooks:install
 npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+`hooks:install` points `core.hooksPath` at the tracked `.githooks/` directory. It is one
+command rather than a copy into `.git/hooks` because that directory is untracked: a copy is
+invisible to review and goes stale the moment the checker changes. Run it once per clone.
 
 ## Verify
 
@@ -83,6 +88,29 @@ npx tsx tools/check-evidence-links.ts
 `npm run check` runs lint, TypeScript, content validation, the content test suite, and a
 production build. Playwright exercises the public routes at desktop and mobile sizes with
 reduced-motion emulation and axe accessibility analysis.
+
+### Commit messages
+
+`tools/check-authorship.sh` is the one implementation of the attribution policy, and the hook,
+the pre-push check and CI all call it.
+
+```bash
+npm run check:authorship            # commits this branch adds on top of its upstream
+bash tools/check-authorship.sh --all
+bash tools/check-authorship.sh --msg .git/COMMIT_EDITMSG
+```
+
+It refuses an assistant recorded as an author, committer or co-author; assistant configuration
+tracked in the repository; a trailer that asserts machine authorship; and a link back to an
+assistant session. It reads Git metadata and commit messages only, never file content, so a
+commit message may discuss an assistant, a vendor or this policy itself -- and several in this
+history do. What fails is a trailer or a session link, not a word.
+
+The commit-message rules are range-scoped. One published commit, `1ca31d9`, carries a session
+trailer from before the policy existed, so the full-history pass in CI runs with
+`--skip-message-policy` and a second step checks the commits each push or pull request actually
+adds. Scanning every commit forever would fail every build on something that cannot be fixed
+without rewriting published history, and a check that always fails gets deleted.
 
 `check-evidence-links.ts` resolves every external link the site publishes by importing the content
 modules and walking their values, so a pinned path is checked as the page renders it rather than as

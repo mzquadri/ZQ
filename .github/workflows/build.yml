@@ -16,11 +16,46 @@ jobs:
           # The authorship guard reads commit metadata, so it needs the commits.
           fetch-depth: 0
 
-      # Metadata only: author, committer and trailer identities. It deliberately does not
-      # read file content, so documentation and dependency notices that name an AI vendor
-      # are unaffected -- what fails is an assistant recorded as having authored the work.
-      - name: Authorship
-        run: bash tools/check-authorship.sh --all
+      # Metadata and tracked artifacts, over the whole history. Deliberately does not read
+      # file content, so documentation and dependency notices that name an AI vendor are
+      # unaffected -- what fails is an assistant recorded as having authored the work.
+      #
+      # --skip-message-policy is what keeps this pass able to run over --all. One published
+      # commit, 1ca31d9, carries a session trailer from before the policy existed. Scanning
+      # every commit for it forever would fail every build on a commit nobody can fix
+      # without rewriting published history, and a check that always fails gets deleted.
+      # New commits are checked by range in the step below instead.
+      - name: Authorship (identities and tracked artifacts, full history)
+        run: bash tools/check-authorship.sh --all --skip-message-policy
+
+      # The commit-message policy, over the commits this push or pull request actually adds.
+      # This is the check that would have caught 1ca31d9 when it was made.
+      #
+      # The range is resolved defensively. A new branch reports an all-zero "before", a force
+      # push can report a commit the runner does not have, and a pull request has to be
+      # measured against its merge base rather than against the branch tip. In any case where
+      # a range cannot be resolved, it falls back to the single head commit rather than to
+      # nothing: a guard that silently checks zero commits is worse than no guard.
+      - name: Commit messages (new commits only)
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "pull_request" ]; then
+            base=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+            range="${base}..${HEAD_SHA}"
+          elif [ -n "${BEFORE:-}" ]             && [ "$BEFORE" != "0000000000000000000000000000000000000000" ]             && git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            range="${BEFORE}..${HEAD_SHA}"
+          else
+            echo "No resolvable predecessor; checking the head commit only."
+            range="${HEAD_SHA}~1..${HEAD_SHA}"
+            git cat-file -e "${HEAD_SHA}~1^{commit}" 2>/dev/null || range="$HEAD_SHA"
+          fi
+          echo "Checking commit messages in: ${range}"
+          bash tools/check-authorship.sh "$range"
 
       - uses: actions/setup-node@v7
         with:
