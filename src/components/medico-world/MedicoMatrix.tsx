@@ -44,12 +44,21 @@ export default function MedicoMatrix() {
                   width={CELL}
                   x={LEFT + f * (CELL + GAP)}
                   y={TOP + s * (CELL + GAP)}
-                >
-                  <title>
-                    {finding.display} &middot; {source.name} &middot;{" "}
-                    {maskMatrix[s][f] === 1 ? "supplied" : "not supplied, masked"}
-                  </title>
-                </rect>
+                  /*
+                   * The cell is named with aria-label rather than an SVG <title> child.
+                   *
+                   * React 19 treats <title> as document metadata and hoists it to <head> wherever
+                   * it is rendered, including inside an SVG. On this page that produced a
+                   * hydration mismatch on every load - the server sent the title inside the rect
+                   * and the client did not - and the accessible name never attached to the cell
+                   * it was written for. aria-label states the same thing where a screen reader
+                   * will actually read it.
+                   */
+                  role="img"
+                  aria-label={`${finding.display}, ${source.name}, ${
+                    maskMatrix[s][f] === 1 ? "supplied" : "not supplied, masked"
+                  }`}
+                />
               ))}
               <text
                 className="medico-flat-count"

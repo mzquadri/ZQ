@@ -8,9 +8,20 @@ import {
 import { writingLevels, writingTopics } from "@/content/writing/schema";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  /*
+   * Routes with their own page file rather than a registry entry.
+   *
+   * `projectRoutes` below is built from the project registry, so the two work pages that are not
+   * registry projects were live, linked and reachable, and in no sitemap: /work/medico, which is
+   * deliberately not filed as a case study, and /work/reliable-knowledge-systems, which is the
+   * public-safe model of the employer work. Both are substantive pages and both were invisible
+   * to a crawler.
+   */
   const routes = [
     "",
     "/work",
+    "/work/medico",
+    "/work/reliable-knowledge-systems",
     "/research",
     "/research/thesis",
     "/architecture",
