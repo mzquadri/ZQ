@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useStageVisibility } from "@/components/world/stage-visibility";
+import { worldRenderingIsWorthIt } from "@/components/world/webgl-support";
 
 import RetrieverPanel from "./RetrieverPanel";
 import Readout from "./Readout";
@@ -13,10 +14,16 @@ import type { Frame } from "./InsureAssistWorldScene";
 /**
  * The host for the InsureAssist world.
  *
- * Three gates, all of which must pass before anything is downloaded: wide enough for an
- * eleven-state sequence to be legible, motion not declined, and the section actually on screen.
- * Until then the retriever comparison is the page - a complete figure, not a placeholder - so the
- * renderer buys depth rather than meaning.
+ * Four gates, all of which must pass before anything is downloaded: wide enough for an
+ * eleven-state sequence to be legible, motion not declined, the machine able to render it
+ * without a software rasteriser, and the section actually on screen. Until then the retriever
+ * comparison is the page - a complete figure, not a placeholder - so the renderer buys depth
+ * rather than meaning.
+ *
+ * The fourth gate is the one that was missing. `ShowcaseCanvas` has always asked whether WebGL
+ * is worth running; the worlds asked only whether the viewport was wide. See
+ * `@/components/world/webgl-support` for what that costs and what was ruled out before adding
+ * it.
  *
  * Scroll is sampled per frame into a ref. Only the caption and the readout re-render, and only
  * when the state changes.
@@ -40,7 +47,8 @@ export default function InsureAssistWorld({ flat }: { flat: ReactNode }) {
   useEffect(() => {
     const wide = window.matchMedia(`(min-width: ${MIN_WIDTH}px)`);
     const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const evaluate = () => setEligible(wide.matches && !still.matches);
+    const evaluate = () =>
+      setEligible(wide.matches && !still.matches && worldRenderingIsWorthIt());
     evaluate();
     wide.addEventListener("change", evaluate);
     still.addEventListener("change", evaluate);
