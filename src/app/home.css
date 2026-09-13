@@ -12,7 +12,7 @@
   background: var(--stage);
   color: var(--stage-ink);
   border-top: 1px solid var(--stage-line);
-  padding: clamp(4.5rem, 11vh, 8rem) 0;
+  padding: clamp(3.5rem, 8vh, 6rem) 0;
 }
 
 .cine-section-inner {
@@ -344,7 +344,7 @@
 .cine-closing {
   background: var(--stage-deep);
   color: var(--stage-ink);
-  padding: clamp(5rem, 14vh, 10rem) 0;
+  padding: clamp(4rem, 10vh, 7rem) 0;
   border-top: 1px solid var(--stage-line);
   --accent: var(--accent-graph);
 }

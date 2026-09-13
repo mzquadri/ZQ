@@ -1,0 +1,149 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "What a Saliency Map Does Not Prove"
+description: "Grad-CAM++ shows where activations were, not why a decision was made. How to use attribution honestly, and the test that tells you whether yours means anything."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: explainable-ai
+level: applied
+tags:
+  - slug: interpretability
+    label: Interpretability
+  - slug: computer-vision
+    label: Computer Vision
+  - slug: model-evaluation
+    label: Model Evaluation
+projectSlugs:
+  - medico
+relatedSlugs:
+  - calibration-is-not-classification-accuracy
+  - refusal-paths-in-production-ai-systems
+references:
+  - id: gradcampp
+    title: "Grad-CAM++: Generalized Gradient-Based Visual Explanations for Deep Convolutional Networks"
+    authors:
+      - Aditya Chattopadhay
+      - Anirban Sarkar
+      - Prantik Howlader
+      - Vineeth N Balasubramanian
+    year: 2018
+    publisher: WACV
+    url: https://arxiv.org/abs/1710.11063
+  - id: sanity-checks
+    title: "Sanity Checks for Saliency Maps"
+    authors:
+      - Julius Adebayo
+      - Justin Gilmer
+      - Michael Muelly
+      - Ian Goodfellow
+      - Moritz Hardt
+      - Been Kim
+    year: 2018
+    publisher: NeurIPS
+    url: https://arxiv.org/abs/1810.03292
+  - id: rudin
+    title: "Stop Explaining Black Box Machine Learning Models for High Stakes Decisions and Use Interpretable Models Instead"
+    authors:
+      - Cynthia Rudin
+    year: 2019
+    publisher: "Nature Machine Intelligence"
+    url: https://arxiv.org/abs/1811.10154
+featured: false
+---
+
+A heatmap over an image, warm where the model "looked". It is the most persuasive artefact in applied machine learning and one of the most over-read.
+
+Here is what a gradient-based attribution map actually is: a weighted combination of convolutional feature maps, upsampled to the input size. It tells you which spatial regions of the final feature maps had gradient influence on a class score. That is a statement about activations. It is not a statement about reasoning, and the gap between the two is where the trouble lives.
+
+<Callout title="The distinction">
+  A saliency map can show where evidence was. It cannot show that the evidence was used correctly, that it was sufficient, or that the model would have decided differently without it.
+</Callout>
+
+## Grad-CAM++ in one paragraph
+
+Grad-CAM weights each feature map by its globally average-pooled gradient, then combines and rectifies. It works well when one instance of a class dominates the frame, and degrades when several instances of the same class appear — the averaging lets the strongest one absorb the attribution.
+
+Grad-CAM++ replaces that global average with pixel-wise positive weights derived from higher-order gradient terms, which gives better localisation for multiple occurrences.
+
+```python
+def grad_cam_pp(activations, gradients):
+    """
+    activations: (C, H, W) from the target convolutional layer
+    gradients:   (C, H, W) of the class score w.r.t. those activations
+    """
+    grads_2, grads_3 = gradients ** 2, gradients ** 3
+    denom = 2.0 * grads_2 + (activations * grads_3).sum(axis=(1, 2), keepdims=True)
+    alpha = np.divide(grads_2, denom, out=np.zeros_like(grads_2), where=denom != 0)
+
+    weights = (alpha * np.maximum(gradients, 0)).sum(axis=(1, 2))
+    cam = np.maximum((weights[:, None, None] * activations).sum(axis=0), 0)
+    return cam / (cam.max() + 1e-8)
+```
+
+That `where=denom != 0` guard is not decoration. The denominator is genuinely zero for feature maps with no gradient response, and an unguarded divide gives you NaNs that propagate into a map which renders as a confident, entirely meaningless blob.
+
+## Run the sanity checks before you believe anything
+
+Adebayo et al. showed that several widely used saliency methods produce visually convincing maps that are **independent of the model's parameters**. A map that looks equally sensible from a randomly initialised network is an edge detector, not an explanation.
+
+Two tests, both cheap, and neither optional:
+
+**Model randomisation.** Progressively randomise layers from the output backwards, recomputing the map each time. If the map barely changes, it is not telling you about your trained model.
+
+**Label randomisation.** Retrain on shuffled labels. The model memorises; the maps should become incoherent. If they still look plausible, they are describing the input, not the decision.
+
+```python
+def randomisation_sensitivity(model, image, target, layers):
+    baseline = grad_cam_pp(*capture(model, image, target))
+    scores = {}
+    for name in layers:                      # output-side first
+        reinitialise(model, name)
+        scores[name] = correlation(baseline, grad_cam_pp(*capture(model, image, target)))
+    return scores                            # should fall sharply; if flat, do not ship the map
+```
+
+I would not present an attribution map to a reviewer without having run these. Publishing a heatmap that survives model randomisation is publishing a picture of the input with extra steps.
+
+## Priors: the temptation to make the picture nicer
+
+On a multi-label chest-radiograph prototype, I implemented a per-finding anatomical region prior — a boost applied to attribution inside the region where a finding is anatomically expected.
+
+It made the maps look substantially better.
+
+It is disabled, with the reason recorded beside the flag. The reason is straightforward: a prior that boosts attribution where the finding *should* be makes the map agree with anatomy regardless of what the network did. The map stops being evidence about the model and becomes a restatement of the prior. If the network is attending to the wrong region — the precise failure the map exists to reveal — the prior hides it.
+
+Keeping the code with the flag off and the reason written down is better than deleting it, because it records a decision someone will otherwise make again.
+
+## Separate the things a map is asked to carry
+
+A single heatmap is often asked to answer three different questions at once. Keep them apart in the output:
+
+- **Presence** — is the finding there? A thresholded comparison per class.
+- **Confidence** — how strong is the evidence? The calibrated score.
+- **Urgency** — how quickly should a human look? A policy decision, not a model output.
+
+Deriving urgency from the raw score conflates a modelling question with an operational one. If urgency is a fixed banding over confidence, say so explicitly, so that changing the banding does not look like changing the model.
+
+## What to write beside every map
+
+For a research prototype, the caption should carry its own limits:
+
+> This map shows regions of the final convolutional layer whose activations had gradient influence on this class score. It does not show that the model used anatomically valid evidence, that the region is sufficient for the finding, or that a clinician would agree. No clinical validation has been performed and no accuracy figure is published for this prototype.
+
+That is not hedging. Each clause corresponds to a specific inference a reader would otherwise make, and each is one the method does not support.
+
+## The honest alternative
+
+Rudin's argument is worth engaging with rather than citing politely: for high-stakes decisions, an interpretable model is often better than a black box with a post-hoc explanation, because the explanation is an approximation of the model and its errors are unmeasured.
+
+The practical position I hold: attribution maps are useful for **model debugging**, where you are looking for gross failures — attending to the text burned into a scan, to a scanner artefact, to the border. They are not useful as a **justification** presented to a decision-maker, because their failure modes are invisible in exactly the cases that matter.
+
+If your system needs to justify itself to a person who will act on it, the justification has to come from something with a measurable error rate.
+
+## Related
+
+The [medical imaging prototype](/work/medico) is where this work sits, and publishes no clinical performance figure by design. [Calibration is not classification accuracy](/learn/calibration-is-not-classification-accuracy) covers the confidence number the map sits beside. The [sanity checks paper](https://arxiv.org/abs/1810.03292) is the one to read first.

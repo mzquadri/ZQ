@@ -40,8 +40,18 @@ const ALWAYS = [
   /\/home\/[a-z]+\//i,
 ];
 
-/** Never in anything a browser can fetch. Present in source only via the excluded draft. */
-const BUILD_ONLY = [/\bneo4j\b/i, /\bminio\b/i, /\bpostgres/i, /apache kafka/i, /bge-m3/i];
+/**
+ * Never in anything a browser can fetch: the withheld case study.
+ *
+ * Its route, its slug, its title, and two sentences that exist in no other file. Any one of them
+ * reaching a build means the publication gate has stopped working.
+ */
+const BUILD_ONLY = [
+  /legal-knowledge-platform/i,
+  /Stored is not the same as correct/i,
+  /Verification for a multilingual legal corpus/i,
+  /Engineer on the verification, ingestion and reporting services/i,
+];
 
 /*
  * Tests are not scanned in the source pass, and the reason is not convenience.

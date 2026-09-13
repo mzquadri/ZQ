@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import test from "node:test";
 import researchFeed from "../src/content/research-feed.json";
 import { writingLevels, writingTopics } from "../src/content/writing/schema";
@@ -11,23 +13,71 @@ import {
   parseWritingSource,
 } from "../src/content/writing/repository";
 import { createRssFeed, escapeXml } from "../src/content/writing/rss";
+import { getLinkableWork, standaloneWork } from "../src/content/work-routes";
 
-test("published learning content has stable routing and taxonomy", () => {
+/*
+ * The library, asserted as a library rather than as one article.
+ *
+ * These used to pin the published count to exactly one and name that one article's slug, table row
+ * and topic. That was accurate when there was one, and it meant every addition to the collection
+ * broke two tests that were not about the addition. What is worth holding is the shape: enough
+ * entries to be a library at all, no empty ones, unique routes, and a taxonomy where every offered
+ * filter leads somewhere.
+ */
+const MINIMUM_LIBRARY = 8;
+
+test("the learn collection is a library, and every entry in it is real", () => {
   const entries = getPublishedLearnWriting();
-  assert.equal(entries.length, 1);
-  assert.equal(entries[0].path, "/learn/selective-prediction-when-models-should-abstain");
-  assert.ok(entries[0].readingTime >= 4);
-  assert.ok(entries[0].tableOfContents.some((item) => item.id === "risk-and-coverage"));
-  assert.match(entries[0].body, /\| 10% \| 1\.05 veh\/h \|/);
-  assert.deepEqual(
-    getPublishedWritingForProject("transport-uq").map((entry) => entry.slug),
-    ["selective-prediction-when-models-should-abstain"],
+  assert.ok(
+    entries.length >= MINIMUM_LIBRARY,
+    `${entries.length} published tutorials; a library needs at least ${MINIMUM_LIBRARY}`,
   );
 
-  const taxonomy = getWritingTaxonomy();
-  assert.deepEqual(taxonomy.topics.map((item) => item.slug), ["uncertainty-quantification"]);
-  assert.deepEqual(taxonomy.levels.map((item) => item.slug), ["applied"]);
-  assert.ok(taxonomy.tags.some((item) => item.slug === "selective-prediction"));
+  const slugs = entries.map((entry) => entry.slug);
+  assert.equal(new Set(slugs).size, slugs.length, "two entries share a slug");
+
+  const paths = entries.map((entry) => entry.path);
+  assert.equal(new Set(paths).size, paths.length, "two entries share a route");
+
+  for (const entry of entries) {
+    assert.equal(entry.path, `/learn/${entry.slug}`, `${entry.slug} routes somewhere unexpected`);
+    assert.ok(entry.publishedAt, `${entry.slug} is published with no date`);
+    assert.ok(entry.wordCount >= 500, `${entry.slug} is ${entry.wordCount} words; too thin to publish`);
+    assert.ok(entry.readingTime >= 3, `${entry.slug} claims a ${entry.readingTime} minute read`);
+    assert.ok(
+      entry.tableOfContents.length >= 3,
+      `${entry.slug} has ${entry.tableOfContents.length} headings; a tutorial needs a structure`,
+    );
+    assert.ok(entry.description.length >= 40, `${entry.slug} has no real description`);
+    assert.ok(entry.tags.length >= 1, `${entry.slug} carries no tags`);
+  }
+});
+
+test("every related link in the collection resolves", () => {
+  const entries = getPublishedLearnWriting();
+  const published = new Set(entries.map((entry) => entry.slug));
+
+  for (const entry of entries) {
+    for (const related of entry.relatedSlugs) {
+      assert.ok(published.has(related), `${entry.slug} relates to ${related}, which is not published`);
+    }
+    for (const project of entry.projectSlugs) {
+      assert.ok(getLinkableWork(project), `${entry.slug} relates to unknown work ${project}`);
+    }
+  }
+});
+
+test("the collection reaches the work it is about, and the work reaches back", () => {
+  // The tutorials exist to explain the engineering in the case studies, so the graph has to join
+  // up in both directions: a project a tutorial names must be able to find that tutorial again.
+  const entries = getPublishedLearnWriting();
+  const referenced = new Set(entries.flatMap((entry) => entry.projectSlugs));
+  assert.ok(referenced.size >= 4, "the tutorials between them name fewer than four pieces of work");
+
+  for (const slug of referenced) {
+    const back = getPublishedWritingForProject(slug);
+    assert.ok(back.length > 0, `${slug} is named by a tutorial but finds none`);
+  }
 });
 
 test("level and topic come from the closed vocabularies", () => {
@@ -53,10 +103,15 @@ test("the taxonomy only offers filters that lead somewhere", () => {
 });
 
 test("the scaffold stays a draft so it cannot inflate the published count", () => {
-  const scaffold = getAllWriting().find((entry) => entry.slug.includes("scaffold"));
+  const all = getAllWriting();
+  const scaffold = all.find((entry) => entry.slug.includes("scaffold"));
   assert.ok(scaffold, "the scaffold article is missing");
   assert.equal(scaffold.status, "draft");
-  assert.equal(getPublishedLearnWriting().length, 1);
+  assert.equal(
+    getPublishedLearnWriting().length,
+    all.filter((entry) => entry.status === "published" && entry.section === "learn").length,
+  );
+  assert.ok(!getPublishedLearnWriting().some((entry) => entry.slug.includes("scaffold")));
 });
 
 test("the research feed publishes metadata only, never a summary", () => {
@@ -292,4 +347,16 @@ test("RSS escapes content and includes canonical URLs", () => {
   });
   assert.match(feed, /<rss version="2.0">/);
   assert.match(feed, /https:\/\/mzquadri\.de\/learn\/selective-prediction/);
+});
+
+test("every route a link can point at exists on disk", () => {
+  // `standaloneWork` is the lookup that lets a tutorial relate to a page with no registry entry.
+  // If one of those pages is ever deleted, the lookup keeps resolving and the link 404s.
+  for (const work of standaloneWork) {
+    assert.ok(
+      existsSync(resolve(`src/app/work/${work.slug}/page.tsx`)),
+      `${work.slug} is linkable but has no route`,
+    );
+    assert.ok(work.title.length > 4 && work.summary.length > 40, `${work.slug} has no usable copy`);
+  }
 });

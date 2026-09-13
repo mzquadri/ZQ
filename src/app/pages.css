@@ -2561,3 +2561,23 @@
 @media (max-width: 760px) {
   .gw-control-what { display: none; }
 }
+
+/* ---- The browse band ------------------------------------------------------------------------
+ *
+ * The taxonomy used to live in the feature layout's side column, which only rendered while the
+ * collection was small enough to have a feature. It is its own band now, so the topic and level
+ * routes are linked whatever the library's size.
+ */
+.writing-browse-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: clamp(1.5rem, 4vw, 2.75rem);
+  margin-top: clamp(1.5rem, 3vh, 2.25rem);
+}
+
+.writing-browse-groups > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  align-items: flex-start;
+}

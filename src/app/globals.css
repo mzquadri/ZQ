@@ -230,10 +230,18 @@ ol {
   border-color: var(--orange);
 }
 
+/*
+ * The paper page's section rhythm.
+ *
+ * Trimmed from clamp(3.25rem, 6vw, 5.5rem). At 1440 that was 88px above and below every section,
+ * and the index pages carry more sections than the case studies this spacing was set for - on
+ * /about it came to 1,400px of padding across eight sections, a screen and a half of nothing.
+ * The sections still separate clearly; there is simply less runway between them.
+ */
 .section-wrap {
   width: min(var(--content), calc(100% - 2.5rem));
   margin: 0 auto;
-  padding-block: clamp(3.25rem, 6vw, 5.5rem);
+  padding-block: clamp(2.75rem, 5vw, 4.5rem);
 }
 
 .kicker,

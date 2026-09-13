@@ -1,0 +1,166 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Evidence Provenance for Knowledge Systems"
+description: "What a stored generation has to carry so a claim about it can be re-checked later: captured bytes, ruleset digests, and the difference between recorded and installed."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: reliable-ai-systems
+level: applied
+tags:
+  - slug: provenance
+    label: Provenance
+  - slug: data-integrity
+    label: Data Integrity
+  - slug: reproducibility
+    label: Reproducibility
+projectSlugs:
+  - reliable-knowledge-systems
+  - mlops-reference-pipeline
+relatedSlugs:
+  - equal-counts-do-not-prove-two-stores-agree
+  - building-an-independent-verification-oracle
+references:
+  - id: nist-sha2
+    title: "FIPS 180-4: Secure Hash Standard"
+    authors:
+      - "National Institute of Standards and Technology"
+    year: 2015
+    publisher: NIST
+    url: https://doi.org/10.6028/NIST.FIPS.180-4
+featured: false
+---
+
+A record in your corpus says it was extracted successfully. Six months later the extractor has been corrected twice, a dependency has shifted, and someone asks whether that record is still trustworthy.
+
+You can re-run extraction and compare. But comparing against *what* — the current extractor, or the one that produced the record? If the answer is "the current one", you are not checking the record. You are checking whether the current extractor agrees with itself.
+
+Provenance is what closes that gap. It has three parts, and each is a separate decision.
+
+<Callout title="The three parts">
+  Captured bytes: what the record was built from. Ruleset digests: what built it. Recorded versus installed: whether those rules are still the ones running.
+</Callout>
+
+## Part one: capture the bytes
+
+Before parsing, before validation, before anything: store the exact bytes you received, and never touch them again.
+
+```python
+import hashlib
+from datetime import datetime, timezone
+
+
+def capture(document_key: str, payload: bytes, url: str) -> Capture:
+    digest = hashlib.sha256(payload).hexdigest()
+    evidence_store.put(
+        key=f"{document_key}/{digest}",
+        body=payload,          # verbatim; no normalisation, no re-encoding
+        immutable=True,
+    )
+    return Capture(
+        document_key=document_key,
+        sha256=digest,
+        retrieved_at=datetime.now(timezone.utc),
+        retrieved_from=url,
+    )
+```
+
+Three things are easy to get wrong here.
+
+**Do not normalise.** Not line endings, not encoding, not whitespace. The moment you transform the payload before storing it, your evidence is a derivative and every later comparison inherits your transformation's bugs.
+
+**Store it before you know it is good.** A payload that fails to parse is exactly the payload you most need to keep, because someone will need to look at it.
+
+**Make it immutable in the storage layer.** Object-lock retention, or an append-only table, or both. "We agreed not to modify that bucket" is not a property; it is a hope with a deployment key.
+
+## Part two: digest the rules
+
+The captured source tells you what went in. It says nothing about what processed it.
+
+So alongside every stored generation, record a digest of the rules that produced it. Which files count as "the rules" is a judgement call you make once and write down — for a parsing pipeline it is typically the parser, whatever extracts relationships, and the registry declaring what is in scope.
+
+```python
+import hashlib
+from pathlib import Path
+
+
+def ruleset_digest(paths: list[Path]) -> str:
+    """
+    SHA-256 over file bytes, length-prefixed so concatenation cannot collide.
+
+    Without the length prefix, ("ab", "c") and ("a", "bc") hash identically, and two
+    genuinely different rule sets would be indistinguishable.
+    """
+    h = hashlib.sha256()
+    for path in sorted(paths):
+        data = path.read_bytes()
+        h.update(str(len(data)).encode("ascii"))
+        h.update(b":")
+        h.update(data)
+    return h.hexdigest()
+```
+
+Two decisions inside that function are the whole article.
+
+**Length-prefixing.** Concatenating file contents before hashing is a classic collision hazard. Prefixing each file's length removes it, and costs nothing.
+
+**Hashing bytes, not meaning.** No AST comparison, no tokenisation, no formatting-insensitive digest. A reformatting-only change *will* invalidate provenance, and that is correct: the check is not "did the logic change", it is "is this the same artefact". You cannot claim an artefact reproduces under rules you cannot identify byte for byte.
+
+If your rules differ by input family — one set for one document type, a larger set for another — declare the surface per family and digest each separately. Hashing everything together means a change in one family invalidates records in the other, and the noise teaches people to ignore the signal.
+
+## Part three: recorded versus installed
+
+Storing the digest is inert until something compares it.
+
+```python
+def provenance_status(generation: Generation, installed: str) -> str:
+    if generation.ruleset_digest == installed:
+        return "current"          # produced by the rules running now
+    return "superseded"           # produced by different rules; re-derivation required
+```
+
+This turns a vague "might be stale" into a fact. `superseded` is not a failure — it is the accurate statement that a record was built by rules that are no longer installed, and that any claim about it needs re-deriving before it can be quoted.
+
+The same shape applies to ML systems. A model artefact should carry a digest of the feature transformation and the training configuration that produced it, so "does this model's preprocessing match what the serving path runs" stops being a question you answer by reading two files.
+
+## The version number that did not move
+
+A warning from my own code, documented in the code rather than quietly fixed.
+
+Verdicts carried a checker version so that results from different checker generations could be told apart. A gate's semantics changed — what it counted, not what it was named — and the version constant was not bumped. Verdicts either side of that change are now indistinguishable.
+
+The lesson is not "remember to bump the version". People do not remember. The lesson is that a hand-maintained version number is not provenance, because provenance has to be *derived from the artefact*, exactly like the digest above. If the checker version were a digest of the checker's own source, the problem could not have occurred.
+
+Where a manual version is unavoidable, at least make the failure visible: record both the manual version and a digest, and flag disagreement between them.
+
+## What provenance still does not give you
+
+Be precise about the boundary, because provenance is easy to oversell.
+
+- It shows a record was produced by a declared process. It does not show the process was correct.
+- It shows the source bytes are unchanged since capture. It does not show they were the right bytes to capture.
+- It shows rules are identical or different. It does not show a difference was an improvement.
+
+In a corpus I worked on, `complete` meant *this document was extracted and preserved faithfully from its captured source under declared rules*. It did not mean the document had been interpreted correctly, and no record anywhere was human-certified. Writing that distinction down, in the same place as the status, is what stops a machine-structural claim from being read as an expert opinion.
+
+## A minimal schema
+
+```sql
+CREATE TABLE generation (
+    id              BIGSERIAL PRIMARY KEY,
+    document_key    TEXT        NOT NULL,
+    capture_sha256  CHAR(64)    NOT NULL REFERENCES capture(sha256) ON DELETE RESTRICT,
+    ruleset_digest  CHAR(64)    NOT NULL,
+    produced_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (document_key, capture_sha256, ruleset_digest)
+);
+```
+
+The `ON DELETE RESTRICT` is doing real work: a capture that any generation still references cannot be deleted, so the evidence outlives every attempt to tidy up. The unique constraint means re-running the same rules over the same capture is a no-op rather than a duplicate row, which makes the whole thing safely repeatable.
+
+## Related
+
+[Equal counts do not prove two stores agree](/learn/equal-counts-do-not-prove-two-stores-agree) places provenance as the top rung of the integrity ladder. The [MLOps reference pipeline](/work/mlops-reference-pipeline) applies the same idea to models: hash-based data versions and a transformation fitted once, so training and serving cannot diverge.

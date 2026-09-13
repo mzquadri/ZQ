@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { EcosystemGroups, SnapshotNote } from "@/components/EcosystemGrid";
 import { StageHero } from "@/components/cinema/PageStages";
 import PortfolioIndex from "@/components/index/PortfolioIndex";
 import PageShell from "@/components/PageShell";
@@ -14,26 +13,22 @@ import { ArrowLabel } from "@/components/Icon";
 export const metadata: Metadata = createPageMetadata({
   title: "Selected Work",
   description:
-    "Evidence-rich case studies plus a catalogued index of public repositories across reliable ML, graph neural networks, MLOps, AI applications, and scientific computing.",
+    "Evidence-rich case studies across reliable knowledge systems, agent security, retrieval, MLOps and uncertainty quantification, plus a catalogued index of public repositories.",
   path: "/work",
 });
 
 /*
  * The work index.
  *
- * This page used to describe the same nine projects twice in a row - once as marks, once as a list
- * - and then spend eight screens on two abstract figures: a synthetic systems model and a node
- * graph of how the work connects. Measured, it came to 18,197px, twenty screens, with the last
- * project link at 16,894px.
+ * Two rounds of work got this page from twenty screens to five. The first moved the case studies
+ * ahead of the two abstract figures and then moved those figures to a page of their own. The
+ * second moved the repository catalogue to /work/repositories, which is what this comment is
+ * about: at 390px the catalogue was most of an eighteen-screen page, so a visitor who came to see
+ * the work scrolled past thirty repository cards to reach the end, and a visitor who came for the
+ * catalogue could not link to it. A route serves both.
  *
- * Both figures are good, and neither is navigation. Someone who has opened /work has already
- * decided to look at projects; asking them to read a conceptual model first answers a question
- * they did not ask. They now have their own page, /work/engineering-model, reached from the index
- * like anything else. Nothing was cut.
- *
- * What is left is four lists, tiered by what they can prove: the work with the strongest evidence,
- * the employer surfaces published under their own review, the coursework and experiments, and the
- * repository catalogue at the bottom where a catalogue belongs.
+ * What is left is three indexes and two pointers. Nothing here restates a project; each entry says
+ * what kind of thing it is and what question it answers, and the case study carries the evidence.
  */
 
 /**
@@ -84,7 +79,7 @@ export default function WorkPage() {
           <a href="#selected">Selected work</a>
           <a href="#professional">Professional engineering</a>
           <a href="#supporting">Supporting projects</a>
-          <a href="#ecosystem">Repository index</a>
+          <Link href="/work/repositories">Repository index</Link>
         </div>
       </StageHero>
 
@@ -118,33 +113,39 @@ export default function WorkPage() {
         <PortfolioIndex items={supporting} label="Supporting projects" numbered={false} />
       </section>
 
-      <section className="section-wrap ecosystem-index" id="ecosystem">
+      {/*
+        The catalogue is a destination, not a section. A recruiter should be able to finish this
+        page without meeting thirty repository cards, and anyone who wants them should be able to
+        send someone a link.
+      */}
+      <section className="section-wrap work-onward" id="repositories">
         <SectionHeading
           index="04"
-          eyebrow="Repository index"
-          title="Every public repository"
-          introduction="Categories describe status, not technical quality. Experiments are never presented as production systems, and a repository that carries no evidence says so in its own entry."
+          eyebrow="Everything else"
+          title="The public repositories, catalogued"
+          introduction={`Beyond the case studies there are ${ecosystemRepositories.length} public repositories in ${groups.length} categories, each labelled by portfolio status rather than by technical quality.`}
         />
-        <div className="ecosystem-index-rest" data-showcase="index">
-          <EcosystemGroups groups={groups} />
-          <SnapshotNote />
-        </div>
-        <div className="section-action">
-          <a className="text-link" href={site.github}>
-            <ArrowLabel>Full GitHub profile</ArrowLabel>
+        <p className="hero-actions">
+          <Link className="button button-primary" href="/work/repositories">
+            <ArrowLabel kind="forward">Explore all public repositories</ArrowLabel>
+          </Link>
+          <a className="button button-secondary" href={site.github}>
+            <ArrowLabel>GitHub profile</ArrowLabel>
           </a>
-        </div>
+        </p>
       </section>
 
       <section className="closing-section section-wrap">
-        <p className="kicker">Reading the labels</p>
-        <h2>Not every repository is flagship work, and none of them pretend to be.</h2>
+        <p className="kicker">Where the reasoning is written down</p>
+        <h2>The patterns behind this work have their own explanations.</h2>
         <p>
-          Reference and experiment repositories are kept public because the reasoning in them is
-          useful, not because they carry production evidence. Where a claim needs proof, the case
-          study links directly to the artifact.
+          Idempotent ingestion, independent verification, refusal paths, retrieval that reports its
+          own degradation: the engineering decisions these case studies rest on are written up as
+          tutorials, with original code and stated limitations.
         </p>
-        <Link className="button button-primary" href="/research"><ArrowLabel kind="forward">Research record</ArrowLabel></Link>
+        <Link className="button button-primary" href="/learn">
+          <ArrowLabel kind="forward">Technical tutorials</ArrowLabel>
+        </Link>
       </section>
     </PageShell>
   );

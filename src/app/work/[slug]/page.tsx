@@ -42,6 +42,7 @@ import {
   StoredIsNotCorrect,
 } from "@/components/legal-kb/LegalKbVisuals";
 import GuidedArticle from "@/components/legal-kb/GuidedArticle";
+import { walkthroughSteps } from "@/content/legal-kb-walkthrough";
 import WalkthroughLauncher from "@/components/legal-kb/WalkthroughLauncher";
 import { getProject, isEmployerConfidential, projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
@@ -71,10 +72,15 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 }
 
 
-/** Wraps the article in the walkthrough controller, but only where a walkthrough exists. */
+/**
+ * Wraps the article in the walkthrough controller, but only where a walkthrough exists.
+ *
+ * The script is read here, on the server, and handed down. It is the only place it is read from,
+ * so a build with no guided project emits none of it.
+ */
 function ArticleShell({ guided, children }: { guided: boolean; children: React.ReactNode }) {
   if (!guided) return <article>{children}</article>;
-  return <GuidedArticle>{children}</GuidedArticle>;
+  return <GuidedArticle steps={walkthroughSteps}>{children}</GuidedArticle>;
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {

@@ -1,0 +1,143 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Equal Counts Do Not Prove Two Stores Agree"
+description: "Why a matching row count is the weakest possible integrity check, and what a ladder of comparisons on identity, content and provenance actually rules out."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: reliable-ai-systems
+level: foundations
+tags:
+  - slug: data-integrity
+    label: Data Integrity
+  - slug: verification
+    label: Verification
+projectSlugs:
+  - reliable-knowledge-systems
+relatedSlugs:
+  - building-an-independent-verification-oracle
+  - evidence-provenance-for-knowledge-systems
+references:
+  - id: kleppmann-ddia
+    title: "Designing Data-Intensive Applications"
+    authors:
+      - Martin Kleppmann
+    year: 2017
+    publisher: "O'Reilly"
+featured: true
+---
+
+Twelve records written. Twelve vectors indexed. The dashboard is green.
+
+This is the most common integrity check in data platforms, and it is close to the weakest one available. Remove one record and add another, and the total never moves. Every downstream reader now sees a corpus that reports itself as consistent and is not.
+
+The useful question is not *does this check pass* but *what does passing rule out, and what does it leave open?*
+
+<Callout title="The framing">
+  Treat integrity checks as a ladder. Each rung rules out a class of failure and leaves the rungs above it untouched. A check that does not state what it leaves open is being read as stronger than it is.
+</Callout>
+
+## The ladder
+
+Here are five comparisons, weakest first. The value of writing them out is that each one names its own blind spot.
+
+| Comparison | Rules out | Still open |
+| --- | --- | --- |
+| Quantity | A view that is obviously incomplete or duplicated | Which records are present, and whether any says the right thing |
+| Identity | A substitution that preserves the total | Whether the content behind a correct name matches its source |
+| Content | Stored text that does not reproduce its source bytes | Whether those bytes were the right thing to capture |
+| Relationships | An edge the current extraction no longer produces | Whether an edge that reproduces cleanly points at the right target |
+| Provenance | A version built by an undeclared or mixed pipeline | Whether declaring that pipeline was the correct decision |
+
+Nothing on this ladder is proof. The top rung still leaves a question open, and saying so is what keeps the whole structure honest.
+
+## Quantity
+
+```python
+def quantity_matches(records, index, document_key) -> bool:
+    return len(records) == index.count(filter={"document_key": document_key})
+```
+
+Worth having. It catches partial writes, client-side batching that silently dropped a page, and the case where a projection never ran at all.
+
+What it cannot catch is any transformation that preserves cardinality — and re-ingestion after an extractor change is exactly such a transformation. That is the situation where you most want a check and least want this one.
+
+## Identity
+
+Compare the *sets*, not the sizes.
+
+```python
+def identity_diff(records, index, document_key):
+    expected = {r.unit_id for r in records}
+    stored = {p.payload["unit_id"] for p in index.scroll(filter={"document_key": document_key})}
+    return {"missing": expected - stored, "unexpected": stored - expected}
+```
+
+This is a large step up for very little work, and it changes the failure report from a number to a list of names. "Three units are missing and two are unexpected" tells an operator where to look; "expected 12, found 12" tells them nothing at all.
+
+Set comparison needs a stable identifier that both sides can produce. If your stores mint their own keys you cannot do this, which is one more reason to [derive identifiers from content](/learn/idempotent-ingestion-across-heterogeneous-stores).
+
+## Content
+
+Identity equality still permits the right names carrying the wrong text. To close that, compare a digest of the content against a digest taken from the captured source.
+
+```python
+import hashlib
+
+
+def content_digest(text: str) -> str:
+    # Normalise nothing. A normalising digest hides exactly the drift you are looking for.
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+```
+
+The temptation is to normalise whitespace, case, or punctuation first, so that "cosmetic" differences do not trip the check. Resist it for the integrity digest. A publisher re-flowing a paragraph *is* a change to what the document says, and the moment your digest forgives it you have lost the ability to detect it. Normalise in a separate, clearly-named comparison if you want a lenient view as well.
+
+This is also where the *source* has to be a fixed object rather than a live fetch. If the check re-downloads the document, it is comparing today's store against today's publisher, and a store that was corrupted yesterday against a publisher who also changed yesterday can pass. Capture the bytes once, keep them, and compare against the capture.
+
+## Relationships
+
+Structured corpora carry references between records — a cross-reference, a citation, a foreign key. These are their own failure surface, because they can break without either endpoint changing.
+
+Compare the edge set produced by re-running extraction on the captured source against the edge set stored in the graph. Report the difference in both directions. An edge that exists only in the store is a stale relationship from a previous extraction; an edge that exists only in the re-run is one the store never received.
+
+## Provenance
+
+The last rung asks a different kind of question: *was this version built by the pipeline it claims?*
+
+Record, alongside every stored generation, a digest of the rules that produced it — the parser, the extractors, the registry of what was in scope. Then a check can say whether the installed rules still match the recorded ones. This is what turns "the data looks right" into "the data was produced by a declared process, and that process has not silently changed underneath it". It gets its [own article](/learn/evidence-provenance-for-knowledge-systems), because getting the digest itself right has a few sharp edges.
+
+## Report the rungs separately
+
+The single most valuable design decision here is not any individual check. It is refusing to merge them.
+
+A combined status has to pick one colour for five different questions, and the colour it picks is the worst one, so an operator sees *red* and has to go read logs to learn which rung failed. Worse, the reverse also happens: four strong checks and one weak one collapse into *green*, and the weak one is doing none of the work the green badge implies.
+
+Keep them separate in the data model, in the API and in the interface:
+
+```python
+@dataclass(frozen=True)
+class IntegrityReport:
+    quantity: CheckResult
+    identity: CheckResult
+    content: CheckResult
+    relationships: CheckResult
+    provenance: CheckResult
+```
+
+There is one further distinction worth building in from the start: *not applicable* is not the same as *not run*. A check that does not apply to a given record type has passed as far as that record is concerned; a check that never executed has told you nothing. Rendering both as a grey dash invites the reading that a fully-verified record was half-verified, which I have watched happen.
+
+## What to take away
+
+- A matching count rules out the crudest failures and nothing else. Keep it; never quote it as agreement.
+- Set comparison on derived identifiers is cheap and turns a number into a list.
+- Digest content without normalising, and compare against captured bytes rather than a live fetch.
+- Compare relationships in both directions.
+- Record what produced each version, and check the record against what is installed.
+- Report every rung separately, and distinguish *not applicable* from *not run*.
+
+## Related
+
+The [reliable knowledge systems model](/work/reliable-knowledge-systems) is a synthetic walk through a system built around this ladder. [Building an independent verification oracle](/learn/building-an-independent-verification-oracle) addresses the failure the ladder cannot see on its own: a checker that shares a defect with the thing it is checking.

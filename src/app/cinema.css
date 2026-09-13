@@ -15,10 +15,15 @@
 
 .cine-hero {
   /*
-   * The scroll distance the sequence runs over. Three and a bit viewports is enough for five
-   * beats to breathe without the reader feeling trapped - they can flick past it in one gesture.
+   * The scroll distance the sequence runs over.
+   *
+   * It was three and a bit viewports, which was chosen when the page below it was a fifty-screen
+   * reel and an unhurried opening cost nothing in proportion. The page is now an index, and on a
+   * nine-screen page the hero's own scroll track was a third of the total. Two and a fifth still
+   * gives each of the five beats close to half a viewport of scroll - enough to read as a
+   * deliberate move rather than a transition - and returns a screen and a half to the rest.
    */
-  min-height: 340vh;
+  min-height: 220vh;
   position: relative;
   background: var(--stage);
   color: var(--stage-ink);
@@ -566,7 +571,7 @@
  * ========================================================================================== */
 
 @media (max-width: 900px) {
-  .cine-hero { min-height: 260vh; }
+  .cine-hero { min-height: 190vh; }
   .cine-instrument-svg { height: min(42vh, 20rem); }
   .cine-identity { padding-bottom: 4rem; }
 }

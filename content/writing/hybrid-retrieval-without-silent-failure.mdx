@@ -1,0 +1,183 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Hybrid Retrieval Without Silent Failure"
+description: "Dense and sparse retrieval fused server-side, embedding contracts that are checked rather than assumed, and refusing to index rather than storing a truncated vector."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: retrieval-and-grounded-generation
+level: applied
+tags:
+  - slug: retrieval
+    label: Retrieval
+  - slug: embeddings
+    label: Embeddings
+  - slug: rag
+    label: RAG
+projectSlugs:
+  - insureassist-rag
+  - reliable-knowledge-systems
+relatedSlugs:
+  - refusal-paths-in-production-ai-systems
+  - template-driven-document-extraction
+references:
+  - id: rrf
+    title: "Reciprocal Rank Fusion Outperforms Condorcet and Individual Rank Learning Methods"
+    authors:
+      - Gordon V. Cormack
+      - Charles L. A. Clarke
+      - Stefan Buettcher
+    year: 2009
+    publisher: SIGIR
+    url: https://doi.org/10.1145/1571941.1572114
+  - id: bge-m3
+    title: "BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embeddings"
+    authors:
+      - Jianlv Chen
+      - Shitao Xiao
+      - Peitian Zhang
+      - Kun Luo
+      - Defu Lian
+      - Zheng Liu
+    year: 2024
+    publisher: arXiv
+    url: https://arxiv.org/abs/2402.03216
+featured: true
+---
+
+Retrieval fails quietly. A dense-only index returns the passage that is closest in embedding space, and if the right passage contained a rare identifier the model never learned, that passage is not in the top fifty. Nothing errors. The generator produces a fluent answer from the wrong source.
+
+Hybrid retrieval addresses one part of this — lexical recall — and introduces its own set of quiet failures. This article is about both.
+
+<Callout title="The principle">
+  Every stage that can degrade should either refuse or report. A retrieval system whose failure mode is "slightly worse results" is a system whose failures you will never find.
+</Callout>
+
+## Why hybrid, specifically
+
+Dense and sparse retrieval fail on different inputs, which is the whole argument for running both.
+
+- **Dense** embeds query and passage into one space and compares by distance. It handles paraphrase and synonymy. It is weak on rare tokens: identifiers, section numbers, product codes, proper nouns outside its training distribution.
+- **Sparse** matches terms with weights. It nails exact tokens. It fails when the user's words and the document's words differ.
+
+A query like *"what does clause 4.2(b) say about late notification"* needs both: the exact reference, and the semantics of "late notification" which the clause may phrase differently.
+
+## Fuse on the server, not in the client
+
+The naive integration runs two searches in the application and merges the results. That means two round trips, two result sets over the wire, and a merge whose correctness is your problem.
+
+Prefer a store that accepts a hybrid query and fuses server-side:
+
+```python
+results = client.query_points(
+    collection_name="corpus",
+    prefetch=[
+        Prefetch(query=dense_vector, using="dense", limit=prefetch_limit),
+        Prefetch(query=sparse_vector, using="sparse", limit=prefetch_limit),
+    ],
+    query=FusionQuery(fusion=Fusion.RRF),
+    limit=limit,
+    with_payload=True,
+)
+```
+
+**Set the prefetch limit above the final limit.** This is the parameter people leave at the default and then wonder why fusion changes nothing. Reciprocal rank fusion combines *rankings*: if each branch only returns the same ten items the other one did, there is nothing to fuse. Ask each branch for meaningfully more than you intend to keep.
+
+```python
+prefetch_limit = max(limit, 20)
+```
+
+A floor of twenty is a reasonable starting point for a top-five answer. Tune it against your own evaluation set rather than inheriting mine.
+
+## Reciprocal rank fusion, and why it is the sane default
+
+RRF scores each document by its *position* in each ranking, not by the raw score:
+
+$$
+\operatorname{RRF}(d) = \sum_{r \in R} \frac{1}{k + \operatorname{rank}_r(d)}
+$$
+
+with $k$ a small constant, conventionally 60.
+
+Using ranks rather than scores is the point. Cosine similarity and a term-weighting score are not on the same scale, are not comparable between queries, and normalising them requires knowing distributions you do not have at query time. Ranks are directly comparable. RRF gives up the information in the magnitudes and gains robustness, which for a production default is the right trade.
+
+If you have labelled data, a learned fusion will beat it. Most systems do not have labelled data, and a weighted sum of unnormalised scores is worse than either branch alone often enough to be dangerous.
+
+## The embedding contract
+
+A vector store will happily accept a vector of the wrong dimension, from a different model, or produced by different preprocessing. Nothing rejects it. Queries just get worse.
+
+So state the contract and check it at the boundary:
+
+```python
+@dataclass(frozen=True)
+class EmbeddingContract:
+    model_id: str
+    dimension: int
+    max_tokens: int
+    normalised: bool
+
+
+def validate(vector: list[float], contract: EmbeddingContract) -> None:
+    if len(vector) != contract.dimension:
+        raise EmbeddingContractViolation(
+            f"expected {contract.dimension} dimensions, got {len(vector)}"
+        )
+    if contract.normalised and abs(math.sqrt(sum(v * v for v in vector)) - 1.0) > 1e-3:
+        raise EmbeddingContractViolation("vector is not unit-normalised")
+```
+
+Store the `model_id` in the payload of every point. When you change models you then have a query that tells you which points are stale, rather than a migration you perform on faith.
+
+## Refuse rather than truncate
+
+This is the decision I feel most strongly about.
+
+Embedding models have a maximum input length. The default behaviour of nearly every client library is to truncate silently. The result is a vector that represents the first part of the document and is indexed as though it represented the whole thing — and there is no way, later, to tell that point apart from a correct one.
+
+```python
+def embed_or_refuse(text: str, contract: EmbeddingContract) -> list[float]:
+    tokens = tokenizer.encode(text)
+    if len(tokens) > contract.max_tokens:
+        raise InputTooLong(
+            f"{len(tokens)} tokens exceeds {contract.max_tokens}; "
+            "chunk upstream rather than storing a partial representation"
+        )
+    return model.encode(text)
+```
+
+Refusing means an ingestion failure that someone has to look at. That is the correct outcome. The alternative is a corpus containing points that quietly misrepresent their documents, and you will find them by noticing that answers about long documents are bad — eventually, and without knowing why.
+
+Chunking is the real answer, and chunk boundaries should follow the document's own structure where it has one. For legal text I chunk on provisions and index only currently-active sections, because a retrieval hit on a repealed provision is worse than no hit.
+
+## Make the failure modes reportable
+
+A retrieval call should be able to say what happened, not only what it found:
+
+```python
+@dataclass
+class RetrievalResult:
+    hits: list[Hit]
+    dense_available: bool       # embedding service reachable
+    sparse_available: bool      # lexical index queryable
+    degraded: bool              # one branch ran, not both
+    below_floor: bool           # best score under the usable threshold
+```
+
+`degraded` is what turns "results got worse this week" into "the sparse index has been unavailable since Tuesday". Without it, a half-working hybrid search is indistinguishable from a working one that is having a bad day.
+
+`below_floor` feeds the generation step. If nothing retrieved is good enough, the honest output is *I could not find this*, not a fluent paragraph assembled from the least-bad passage.
+
+## What this does not solve
+
+- **Retrieval quality is not answer quality.** Correct passages can still be summarised wrongly.
+- **A citation is only as good as what it points at.** If it points at a document version the publisher no longer serves, the answer is confidently wrong — which is why the corpus behind retrieval needs its own [integrity ladder](/learn/equal-counts-do-not-prove-two-stores-agree).
+- **Fusion does not repair a bad chunking strategy.** If the answer spans two chunks and neither contains it, no amount of fusion will find it.
+- **None of this is an evaluation.** Build a labelled set of real queries and measure, or you are tuning parameters against intuition.
+
+## Related
+
+The [InsureAssist retrieval case study](/work/insureassist-rag) reports a measured held-out result for a system of this shape, including the gap between the score that selected the configuration and the score on held-out data. [Refusal paths in production AI systems](/learn/refusal-paths-in-production-ai-systems) covers what to do when `below_floor` is true.

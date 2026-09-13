@@ -5,7 +5,7 @@ import remarkMdx from "remark-mdx";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
-import { getProject } from "@/content/portfolio";
+import { getLinkableWork } from "@/content/work-routes";
 import {
   type TableOfContentsItem,
   type WritingEntry,
@@ -145,7 +145,17 @@ export function parseWritingSource(fileName: string, source: string): WritingEnt
   const frontmatter = writingFrontmatterSchema.parse(parse(match[1]));
   const body = source.slice(match[0].length).trim();
   if (!body) throw new Error(`${fileName}: body is empty`);
-  if (/^#\s+/m.test(body)) throw new Error(`${fileName}: the route owns the only h1`);
+  /*
+   * The route renders the title as the page's only h1, so the body must not add one.
+   *
+   * Tested against the body with fenced code removed, because `# ` at the start of a line is a
+   * comment in Python, shell, YAML and half a dozen other languages. Scanning the raw body made
+   * any example carrying a top-level comment unpublishable, which is a rule about Markdown
+   * enforced against code.
+   */
+  if (/^#\s+/m.test(body.replace(/^```[\s\S]*?^```/gm, ""))) {
+    throw new Error(`${fileName}: the route owns the only h1`);
+  }
   validateMdxBody(fileName, body);
   if (frontmatter.status === "published" && !frontmatter.publishedAt) {
     throw new Error(`${fileName}: published content requires publishedAt`);
@@ -167,7 +177,8 @@ export function parseWritingSource(fileName: string, source: string): WritingEnt
   if (new Set(referenceIds).size !== referenceIds.length) throw new Error(`${fileName}: duplicate reference id`);
   if (frontmatter.relatedSlugs.includes(slug)) throw new Error(`${fileName}: cannot relate to itself`);
   for (const projectSlug of frontmatter.projectSlugs) {
-    if (!getProject(projectSlug)) throw new Error(`${fileName}: unknown project ${projectSlug}`);
+    // Registry projects, and the two routes that have a page but no registry entry.
+    if (!getLinkableWork(projectSlug)) throw new Error(`${fileName}: unknown project ${projectSlug}`);
   }
 
   const tableOfContents = extractTableOfContents(body);

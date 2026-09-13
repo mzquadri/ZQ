@@ -94,3 +94,87 @@ export const architectureEntries: readonly ArchitectureEntry[] = [
     duration: "About 3 minutes",
   },
 ];
+
+/**
+ * The subjects on the case-study site, as an index.
+ *
+ * These are the section headings of that site's own navigation and the contribution classes of its
+ * own published contribution map - both already public there, under its redaction review. Nothing
+ * here adds a service name, a topic, a store, an identifier or a quantity that is not already
+ * published on the other side of the link, which is the rule this module has always been under.
+ *
+ * The value of listing them is that a reader chooses a subject before leaving rather than being
+ * handed one undifferentiated outbound link and a promise that it is interesting.
+ */
+export const architectureSubjects = [
+  {
+    slug: "arch-legal",
+    title: "Legal knowledge database",
+    kind: "Primary implementation / Browse",
+    summary:
+      "Published law turned into verifiable machine-readable knowledge: capture, structure, projection and a control plane. An eleven-step guided walkthrough runs through the same page in the order the work is best explained out loud.",
+    href: `${architecture.site}#legal`,
+    accent: "var(--accent-retrieval)",
+    external: true,
+  },
+  {
+    slug: "arch-trust",
+    title: "Trust and verification",
+    kind: "Primary implementation / About 10 minutes",
+    summary:
+      "How a stored representation is checked back against the bytes the publisher served, and why a checker that shares its subject's assumptions cannot falsify anything.",
+    href: `${architecture.site}#trust`,
+    accent: "var(--accent-graph)",
+    external: true,
+  },
+  {
+    slug: "arch-events",
+    title: "Event-driven systems",
+    kind: "Primary implementation / Ingestion",
+    summary:
+      "How a document moves between services without any of them holding a distributed transaction, and what has to be true for redelivery to be harmless.",
+    href: `${architecture.site}#events`,
+    accent: "var(--accent-pipeline)",
+    external: true,
+  },
+  {
+    slug: "arch-query",
+    title: "Retrieval and answering",
+    kind: "Primary implementation / Retrieval",
+    summary:
+      "Dense and sparse retrieval over a verified corpus, and what a citation has to point at before it is worth having.",
+    href: `${architecture.site}#query`,
+    accent: "var(--accent-corpus)",
+    external: true,
+  },
+  {
+    slug: "arch-documents",
+    title: "Document intelligence",
+    kind: "Significant contribution / Extraction",
+    summary:
+      "Extraction over insurance paperwork with a deterministic fallback beside the model, corruption detected before the text is trusted, and the fields that failed kept visible.",
+    href: `${architecture.site}#documents`,
+    accent: "var(--accent-steel)",
+    external: true,
+  },
+  {
+    slug: "arch-compliance",
+    title: "AI compliance",
+    kind: "Integration / shared",
+    summary:
+      "A questionnaire-based assessment product built by colleagues, whose results reach the knowledge layer through an ingestion path inside a service I implemented. The product is not mine and the page says so.",
+    href: `${architecture.site}#compliance`,
+    accent: "var(--accent-systems)",
+    external: true,
+  },
+  {
+    slug: "arch-radiology",
+    title: "Medical imaging",
+    kind: "Significant contribution / Research-grade",
+    summary:
+      "A multi-label chest-radiograph model with per-finding calibrated thresholds and gradient-based attribution. Research-grade only: no certified device, no regulatory clearance, no clinical accuracy figure.",
+    href: `${architecture.site}#radiology`,
+    accent: "var(--accent-flow)",
+    external: true,
+  },
+] as const;

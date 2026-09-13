@@ -5,7 +5,8 @@ import { StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import SectionHeading from "@/components/SectionHeading";
 import { ArrowLabel, ExternalArrow } from "@/components/Icon";
-import { architecture, architectureEntries } from "@/content/architecture";
+import { architecture, architectureEntries, architectureSubjects } from "@/content/architecture";
+import PortfolioIndex from "@/components/index/PortfolioIndex";
 import { disclosure } from "@/content/reliable-knowledge-world";
 import { createPageMetadata } from "@/lib/metadata";
 import styles from "./Architecture.module.css";
@@ -130,9 +131,27 @@ export default function ArchitecturePage() {
         </p>
       </StageHero>
 
-      <section className="section-wrap">
+      {/*
+        The subjects, before the routes.
+        *
+        * This page used to open on four "ways in" - the whole thing, and the three questions it
+        * gets asked most - which answers "how long do you have" and not "what is in there". A
+        * reader deciding whether to follow an outbound link wants the second question answered
+        * first, and the index is also the one visual language the rest of the site now uses.
+        */}
+      <section className="section-wrap work-index" id="subjects">
         <SectionHeading
           index="01"
+          eyebrow="The case studies"
+          title="Seven subjects, each with its own contribution level"
+          introduction="Every one of these is on the separate case-study site. The class beside each title is the contribution level that site publishes for it, and two of the seven are deliberately not claimed as mine."
+        />
+        <PortfolioIndex items={architectureSubjects} label="Architecture case studies" numbered={false} />
+      </section>
+
+      <section className="section-wrap" id="routes">
+        <SectionHeading
+          index="02"
           eyebrow="Ways in"
           title="Four routes, ordered by how long you have"
           introduction="The first is the whole thing. The other three are the questions it gets asked most, each opening at the section that answers it."
@@ -161,7 +180,7 @@ export default function ArchitecturePage() {
 
       <section className="section-wrap">
         <SectionHeading
-          index="02"
+          index="03"
           eyebrow="Scope"
           title="What that material is, and what it is not"
           introduction="Worth reading before the diagrams rather than after. The case-study site makes a narrow claim carefully, and the narrowness is the point."
@@ -189,7 +208,7 @@ export default function ArchitecturePage() {
 
       <section className="section-wrap">
         <SectionHeading
-          index="03"
+          index="04"
           eyebrow="The other treatment"
           title="Two public versions of the same work, on purpose"
           introduction="This site and the case-study site publish the same employer work at different levels, and it is worth knowing which one you are reading."

@@ -124,3 +124,4 @@ __pycache__/
 # Output from tools/audit-site.mjs. Derived from a build; regenerate with
 # `node tools/audit-site.mjs <origin> <dir>`.
 /audit*/
+.register.mjs

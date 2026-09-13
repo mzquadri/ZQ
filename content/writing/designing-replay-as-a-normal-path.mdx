@@ -1,0 +1,165 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Designing Replay as a Normal Path"
+description: "Offset handling, publish-then-commit ordering, and broker confirmation before HTTP success — the consumer-side decisions that make re-running a stream routine rather than an incident."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: distributed-systems
+level: applied
+tags:
+  - slug: event-driven
+    label: Event-Driven Systems
+  - slug: idempotency
+    label: Idempotency
+  - slug: operations
+    label: Operations
+projectSlugs:
+  - reliable-knowledge-systems
+relatedSlugs:
+  - idempotent-ingestion-across-heterogeneous-stores
+  - reingest-verify-reconcile-withdraw
+references:
+  - id: kafka-docs
+    title: "Apache Kafka Documentation: Consumer Position and Offset Management"
+    authors:
+      - "Apache Software Foundation"
+    year: 2026
+    publisher: "Apache Kafka"
+    url: https://kafka.apache.org/documentation/
+  - id: kleppmann-ddia
+    title: "Designing Data-Intensive Applications"
+    authors:
+      - Martin Kleppmann
+    year: 2017
+    publisher: "O'Reilly"
+featured: false
+---
+
+Replay is usually discovered rather than designed. Something goes wrong, someone resets a consumer group, and the team finds out over the next hour which of their assumptions were load-bearing.
+
+It is cheaper to decide up front that re-running a stream is an ordinary operation. Four decisions get you most of the way, and they are all on the consumer side.
+
+<Callout title="The target property">
+  Re-processing an event that has already been processed changes nothing. Not "is skipped" — changes nothing. A skip depends on a lookup; a harmless repeat does not.
+</Callout>
+
+## 1. Commit offsets for events you skip
+
+The subtlest way to wedge a partition is to be selective about what you commit.
+
+A consumer subscribed to a shared topic will see events it does not handle. The natural-looking code ignores them:
+
+```python
+# Wedges the partition.
+for record in consumer.poll():
+    if record.value["type"] != "document.captured":
+        continue                 # no commit
+    handle(record)
+    consumer.commit(record)
+```
+
+The offset never advances past the foreign event. On restart the consumer re-reads from it, skips it again, and never moves. One event of a type you do not handle stalls the partition indefinitely, and the symptom is not an error — it is a consumer that looks healthy and processes nothing.
+
+```python
+for record in consumer.poll():
+    if record.value["type"] == "document.captured":
+        handle(record)
+    consumer.commit(record)      # advance regardless: seen is seen
+```
+
+Committing means *I have seen this*, not *I have acted on it*. Those are different statements and only the first belongs in an offset.
+
+## 2. Publish before you commit
+
+Two orderings, and only one is safe.
+
+**Commit then publish.** A crash between them loses the event permanently. Your consumer has recorded that it handled a message whose downstream effect never happened, and nothing will ever retry it.
+
+**Publish then commit.** A crash between them redelivers the input, and the downstream event is emitted twice.
+
+The second is strictly better, because a duplicate is absorbable and a loss is not. It only works if the duplicate really is absorbed — which is what [derived identifiers](/learn/idempotent-ingestion-across-heterogeneous-stores) are for. Publish-then-commit without downstream idempotence just moves the failure.
+
+```python
+def process(record):
+    result = transform(record.value)
+    producer.send("document.structured", key=result.document_key, value=result.payload)
+    producer.flush()             # broker has acknowledged before we claim progress
+    consumer.commit(record)
+```
+
+The `flush()` matters. A buffered send that has not been acknowledged is not a publication, and committing after it means a broker-side failure looks like success.
+
+## 3. Confirm publication before returning success
+
+The same reasoning applies at the system's edge. An HTTP endpoint that accepts a document and publishes an event should not return `200` until the broker has confirmed.
+
+```python
+@app.post("/documents")
+async def submit(document: Document):
+    capture = await evidence_store.put(document.bytes)
+    try:
+        await producer.send_and_wait("document.captured", key=document.key, value=capture.ref)
+    except KafkaError as exc:
+        raise HTTPException(502, "capture stored; publication failed") from exc
+    return {"status": "accepted", "capture": capture.sha256}
+```
+
+Without the await, `200` means *probably published*, and the caller has no way to tell the difference. Returning 502 with the capture reference is more useful than either a silent success or a bare failure: it tells the caller the evidence is safe and only the notification needs retrying.
+
+## 4. Key partitions by entity, not by message
+
+Ordering guarantees are per partition. If two versions of the same document land on different partitions, they can be processed concurrently and the older one can finish last.
+
+```python
+# Wrong: distributes one entity's events across partitions.
+producer.send(topic, key=str(uuid.uuid4()), value=payload)
+
+# Right: one entity, one partition, ordered.
+producer.send(topic, key=document.key, value=payload)
+```
+
+This is a one-line change and a real defect I have had to fix. The failure is intermittent, load-dependent, and invisible in any single-threaded test — which is a good description of most partitioning bugs.
+
+The trade-off is honest: keying by entity means a hot entity is a hot partition. Accept it, or shard the key with a bounded suffix and give up cross-version ordering deliberately rather than accidentally.
+
+## Making replay boring
+
+With those four in place, replay becomes a configuration change rather than an event:
+
+1. **Stop the consumer.** Not strictly required if the work is idempotent, but it keeps the logs readable.
+2. **Reset the group to a timestamp or an offset.** A timestamp is usually what you actually mean.
+3. **Restart and watch lag drain.**
+4. **Reconcile afterwards** — see below.
+
+What makes this safe is that every step of the pipeline recomputes the same identifiers and upserts over the same rows. Replaying a week of events produces the state that week's events would have produced, not a week of duplicates.
+
+## Two things replay does not fix
+
+**Removal.** If an event stream expresses only additions and updates, replaying it converges everything that exists and leaves behind anything that was deleted. Deletions need either their own events or a post-replay prune step that removes what the replay did not touch.
+
+**Rule changes.** Replaying with a corrected parser produces different output from the original run — which is usually the point, but it means the resulting records were built by different rules from their neighbours. Record which rules produced each generation so that difference is visible rather than invisible. That is the subject of [evidence provenance](/learn/evidence-provenance-for-knowledge-systems).
+
+## Reconcile after every replay
+
+Replay is when partial state is most likely, so it is exactly when a read-only cross-store comparison is worth running. Not a count — counts survive a substitution. Compare the identifier sets and report what is missing and what is unexpected.
+
+If your system has no such sweep, the honest position after a replay is that you believe it worked.
+
+## Checklist
+
+- Offsets commit for every record seen, handled or not.
+- Publish and flush before committing.
+- Endpoints confirm broker acknowledgement before reporting success.
+- Partition keys are entity identity.
+- Downstream writes are idempotent, so duplicates are harmless rather than skipped.
+- Deletions have their own path; replay does not perform them.
+- Every generation records the rules that produced it.
+- A reconcile sweep follows every replay.
+
+## Related
+
+[Idempotent ingestion across heterogeneous stores](/learn/idempotent-ingestion-across-heterogeneous-stores) is the write-side half of this: replay is only safe because the writes converge. [Re-ingest, verify, reconcile, withdraw](/learn/reingest-verify-reconcile-withdraw) covers the operator actions that surround it.

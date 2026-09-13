@@ -59,16 +59,16 @@ test("captions stay short enough to read aloud in their own step", () => {
 test("a step and beat produce the same scene states however they are reached", () => {
   for (let step = 0; step < walkthroughSteps.length; step += 1) {
     for (let beat = 0; beat < walkthroughSteps[step].beats.length; beat += 1) {
-      assert.deepEqual(sceneStatesAt(step, beat), sceneStatesAt(step, beat));
+      assert.deepEqual(sceneStatesAt(walkthroughSteps, step, beat), sceneStatesAt(walkthroughSteps, step, beat));
     }
   }
 });
 
 test("scenes never rewind as the run advances", () => {
-  let previous = sceneStatesAt(0, 0);
+  let previous = sceneStatesAt(walkthroughSteps, 0, 0);
   for (let step = 0; step < walkthroughSteps.length; step += 1) {
     for (let beat = 0; beat < walkthroughSteps[step].beats.length; beat += 1) {
-      const current = sceneStatesAt(step, beat);
+      const current = sceneStatesAt(walkthroughSteps, step, beat);
       for (const scene of walkthroughScenes) {
         assert.ok(
           current[scene] >= previous[scene],
@@ -81,13 +81,13 @@ test("scenes never rewind as the run advances", () => {
 });
 
 test("the run opens at the beginning and ends with every scene finished", () => {
-  const opening = sceneStatesAt(0, 0);
+  const opening = sceneStatesAt(walkthroughSteps, 0, 0);
   assert.equal(opening.fanout, 0);
   assert.equal(opening.generations, 0);
   assert.equal(opening.ladder, 0);
 
   const last = walkthroughSteps.length - 1;
-  const closing = sceneStatesAt(last, walkthroughSteps[last].beats.length - 1);
+  const closing = sceneStatesAt(walkthroughSteps, last, walkthroughSteps[last].beats.length - 1);
   assert.deepEqual(closing, { fanout: 4, count: 3, generations: 3, ladder: 7 });
 });
 

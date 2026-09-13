@@ -1,0 +1,170 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Calibration Is Not Classification Accuracy"
+description: "A model can be accurate and badly calibrated, or well calibrated and useless. What each property means, how to measure both, and why per-class thresholds are a decision rather than a result."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: machine-learning
+level: foundations
+tags:
+  - slug: model-evaluation
+    label: Model Evaluation
+  - slug: calibration
+    label: Calibration
+projectSlugs:
+  - medico
+  - transport-uq
+relatedSlugs:
+  - selective-prediction-when-models-should-abstain
+  - what-a-saliency-map-does-not-prove
+references:
+  - id: guo-calibration
+    title: "On Calibration of Modern Neural Networks"
+    authors:
+      - Chuan Guo
+      - Geoff Pleiss
+      - Yu Sun
+      - Kilian Q. Weinberger
+    year: 2017
+    publisher: ICML
+    url: https://arxiv.org/abs/1706.04599
+  - id: youden
+    title: "Index for Rating Diagnostic Tests"
+    authors:
+      - W. J. Youden
+    year: 1950
+    publisher: Cancer
+  - id: niculescu-mizil
+    title: "Predicting Good Probabilities with Supervised Learning"
+    authors:
+      - Alexandru Niculescu-Mizil
+      - Rich Caruana
+    year: 2005
+    publisher: ICML
+    url: https://doi.org/10.1145/1102351.1102430
+featured: false
+---
+
+"The model is 94% accurate." It is the number that gets quoted, and on its own it tells you almost nothing about whether the model's confidence can be used for anything.
+
+Accuracy and calibration are different properties. A model can have either without the other, and systems that route work based on confidence depend on the second one, not the first.
+
+<Callout title="The two questions">
+  Accuracy: when the model commits to an answer, is it right? Calibration: when the model says 0.8, is it right about 80% of the time?
+</Callout>
+
+## They come apart in both directions
+
+**Accurate, badly calibrated.** Modern deep networks are systematically overconfident — Guo et al. showed that as architectures got deeper and more accurate, calibration got *worse*. A network that is right 94% of the time while reporting 0.99 on nearly everything is accurate and its confidence is worthless for triage.
+
+**Well calibrated, useless.** A model that predicts the base rate for every input is perfectly calibrated. If 12% of cases are positive and it always says 0.12, its stated probabilities are exactly right and it has learned nothing. Calibration alone is not a quality measure.
+
+Both properties have to be reported. Either one alone can be made to look good while the system fails.
+
+## Measuring calibration
+
+Bin predictions by confidence, then compare the mean confidence in each bin against the observed accuracy in that bin.
+
+```python
+import numpy as np
+
+
+def reliability(probs, labels, bins=10):
+    edges = np.linspace(0.0, 1.0, bins + 1)
+    rows = []
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        mask = (probs > lo) & (probs <= hi)
+        if not mask.any():
+            continue
+        rows.append({
+            "range": (lo, hi),
+            "n": int(mask.sum()),
+            "confidence": float(probs[mask].mean()),
+            "observed": float(labels[mask].mean()),
+        })
+    return rows
+
+
+def expected_calibration_error(rows, n_total):
+    return sum(r["n"] / n_total * abs(r["confidence"] - r["observed"]) for r in rows)
+```
+
+Two cautions about expected calibration error, because it is the number everyone reports:
+
+- **It is bin-count dependent.** Fewer bins gives a smaller number. Report the bin count or the comparison is meaningless.
+- **It averages away the region you care about.** Most predictions usually sit at the confident end, so ECE is dominated by bins where little is at stake. Always look at the reliability table itself, not only its summary.
+
+## Fixing calibration without retraining
+
+Calibration is usually repairable after the fact, on held-out data, without touching the model.
+
+**Temperature scaling** divides the logits by a single learned scalar $T$:
+
+$$
+\hat{p}_i = \operatorname{softmax}\!\left(\frac{z_i}{T}\right)
+$$
+
+One parameter, fitted on a validation set by minimising negative log-likelihood. It cannot change the ranking of predictions, so accuracy is exactly unchanged — which is what makes it safe.
+
+**Isotonic regression** fits a monotonic mapping from score to probability. More flexible, needs more data, and can overfit a small validation set.
+
+The order matters: fit calibration on a set the model never saw, and evaluate calibration on a *third* set. Fitting and reporting on the same data gives you a number that describes your fit rather than your model.
+
+## Thresholds are a decision
+
+For multi-label problems, each class gets its own operating point, and choosing it is a policy question wearing a statistical costume.
+
+Youden's J statistic picks the point maximising sensitivity plus specificity minus one:
+
+$$
+J = \operatorname{sensitivity} + \operatorname{specificity} - 1
+$$
+
+```python
+def youden_threshold(scores, labels, grid=np.linspace(0.01, 0.99, 99)):
+    best, best_j = 0.5, -1.0
+    for t in grid:
+        pred = scores >= t
+        tpr = (pred & (labels == 1)).sum() / max((labels == 1).sum(), 1)
+        tnr = (~pred & (labels == 0)).sum() / max((labels == 0).sum(), 1)
+        if (j := tpr + tnr - 1) > best_j:
+            best, best_j = float(t), j
+    return best, best_j
+```
+
+Youden weights a false positive and a false negative equally. That is almost never the real cost structure. On a screening task a missed finding costs far more than a false alarm, and the right threshold is lower than Youden's.
+
+So the practice I follow is: compute Youden's J as a **starting point**, record it as the provenance of the threshold, and adjust deliberately against the actual cost asymmetry. Thresholds in a shared library should carry a comment saying what set they were fitted on and by what rule, because otherwise they become magic constants nobody dares change.
+
+Three consequences that surprise people:
+
+- **Per class, not global.** Optimal thresholds differ by class by large margins, driven by base rate and separability. A single global threshold is leaving performance on the table for every class but one.
+- **They expire.** A threshold fitted on one population is a property of that population. Prevalence shifts move it.
+- **They are not calibration.** Moving a threshold changes which predictions are positive. It does nothing to whether the reported probabilities mean what they say.
+
+## Multi-label needs sigmoid, not softmax
+
+If several labels can be true at once, the output layer is a per-class sigmoid, and each class is its own binary problem with its own threshold and its own calibration curve.
+
+Softmax forces the scores to sum to one, which encodes "exactly one of these is true". Applied to a multi-label problem it makes a second finding necessarily reduce the confidence in the first, which is not what the data says.
+
+## What to report
+
+For any classifier whose confidence feeds a decision:
+
+1. Accuracy, or the task-appropriate equivalent, on held-out data.
+2. A reliability table, with the bin count stated.
+3. ECE as a summary, never as the whole picture.
+4. Per-class thresholds with the rule and the fitting set that produced them.
+5. Whether calibration was fitted, on what, and evaluated on what.
+6. The subgroups checked, because aggregate calibration hides per-group failure.
+
+Six lines. A model card with these is more useful than one with a single headline number, and it is the difference between a confidence score that can route work and one that can only decorate an interface.
+
+## Related
+
+[Selective prediction](/learn/selective-prediction-when-models-should-abstain) is what a calibrated confidence is *for*: deciding which predictions to accept, review or defer. [What a saliency map does not prove](/learn/what-a-saliency-map-does-not-prove) covers the other artefact that gets over-read. The [transport uncertainty research](/research/thesis) treats calibration and ranking as separate properties and reports both.

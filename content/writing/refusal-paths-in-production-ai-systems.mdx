@@ -1,0 +1,149 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Production AI Systems Need Refusal Paths"
+description: "Every stage that can degrade should be able to decline. A synthesis across ingestion, retrieval, extraction and inference of where refusal belongs and what it costs to leave it out."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: reliable-ai-systems
+level: advanced
+tags:
+  - slug: system-design
+    label: System Design
+  - slug: reliability
+    label: Reliability
+  - slug: operations
+    label: Operations
+projectSlugs:
+  - reliable-knowledge-systems
+  - insureassist-rag
+  - transport-uq
+relatedSlugs:
+  - selective-prediction-when-models-should-abstain
+  - hybrid-retrieval-without-silent-failure
+references:
+  - id: nygard-release-it
+    title: "Release It! Design and Deploy Production-Ready Software"
+    authors:
+      - Michael T. Nygard
+    year: 2018
+    publisher: "Pragmatic Bookshelf"
+  - id: selective-classification
+    title: "Selective Classification for Deep Neural Networks"
+    authors:
+      - Yonatan Geifman
+      - Ran El-Yaniv
+    year: 2017
+    publisher: NeurIPS
+    url: https://arxiv.org/abs/1705.08500
+featured: true
+---
+
+The defining property of a machine learning system is that it answers. Given any input it produces an output, and the output is shaped like a correct answer whether or not it is one.
+
+Ordinary software has a vocabulary for this: exceptions, 4xx and 5xx, `null`, `Result::Err`. Inference does not. A model asked about something outside its training distribution returns a confident number. A retrieval system with nothing relevant returns its least-irrelevant passage. An extractor given a corrupted page returns fields.
+
+The engineering work is putting the vocabulary back.
+
+<Callout title="The claim">
+  Every stage that can degrade needs a way to say so. A pipeline whose only output is an answer converts every failure into a wrong answer, and wrong answers are invisible.
+</Callout>
+
+## Where refusal belongs
+
+Across the systems I have worked on, the same four stages keep needing it.
+
+### Ingestion: refuse to store what you cannot describe
+
+If a document does not parse into a structure you recognise, the choices are to store it partially or to refuse it.
+
+Partial storage looks helpful and is not. A record that has been ingested is a record downstream systems will retrieve, cite and reason over, and a partial one is indistinguishable from a complete one unless every consumer checks a flag that most will not.
+
+Refusal moves the failure to the moment of ingestion, where there is an operator, a source document and a stack trace. I front this with a pre-flight check: before a document enters the pipeline at all, confirm its structure is one the extractors recognise. A document with unrecognised structure is blocked *before* ingestion rather than ingested and reviewed afterwards, because reviewing afterwards means it was live in the meantime.
+
+### Embedding: refuse rather than truncate
+
+An input longer than the model's window gets silently cut by nearly every client library. The resulting vector represents the first part of the document and is stored as though it represented all of it.
+
+Refusing produces an ingestion error someone has to handle. That is the correct cost. The alternative is a corpus with points that misrepresent their documents and no way to identify them afterwards.
+
+### Retrieval: report degradation, and report nothing-found
+
+Two separate refusals, and both get skipped.
+
+**Degradation.** If a hybrid search ran one branch because the other was unavailable, the results are not wrong but they are not what was asked for. A `degraded` flag on the response turns "search got worse this month" into "the lexical index has been down since Tuesday".
+
+**Nothing good enough.** If the best result is below a usable score, say so rather than returning it. Everything downstream treats a returned passage as relevant.
+
+```python
+@dataclass
+class Retrieval:
+    hits: list[Hit]
+    degraded: bool
+    below_floor: bool
+
+    def usable(self) -> bool:
+        return bool(self.hits) and not self.below_floor
+```
+
+### Inference: abstain, and route
+
+This is the best-studied refusal. A model produces a prediction and an uncertainty score; a separate policy accepts, reviews or defers. The evidence needed to set the threshold is a risk-coverage curve, which has [its own article](/learn/selective-prediction-when-models-should-abstain).
+
+The part worth repeating here: deferral has a cost. A policy that sends half of all predictions to a human may improve accuracy while making the system unusable. Report workload alongside risk, always.
+
+## Refusal is not error handling
+
+A refusal is a *considered outcome*, not an exception. The difference shows up in three places.
+
+**It is in the type.** A refusal is a value the caller must handle, not an exception they may catch.
+
+```python
+class Outcome(str, Enum):
+    ANSWERED = "answered"
+    NO_EVIDENCE = "no_evidence"        # nothing relevant found
+    LOW_CONFIDENCE = "low_confidence"  # found, but below the floor
+    DEGRADED = "degraded"              # a dependency was unavailable
+    REFUSED = "refused"                # input outside the supported envelope
+```
+
+**It is in the interface.** "I could not find this" is a legitimate thing for a product to say. Hiding it behind a generic error message makes an honest outcome look like a bug.
+
+**It is counted.** Refusals are a first-class metric. A rising `NO_EVIDENCE` rate is the earliest signal that a corpus has drifted from the questions being asked of it. If refusals are logged as errors they are drowned in real errors and nobody sees the trend.
+
+## Make declining structurally possible
+
+The recurring design mistake is building a system where refusal cannot be expressed. A function returning `float` has no way to say *I do not know*. A schema with a required `answer` string has no way to omit it. By the time someone wants the refusal, the change touches every layer.
+
+So decide early:
+
+- Return types carry an outcome, not just a value.
+- Schemas make the answer optional and the outcome required.
+- Interfaces have a designed state for "no answer", not an empty container.
+- Thresholds live in configuration, so the operating point is a deployment decision rather than a release.
+
+## What refusal cannot fix
+
+- **It does not improve the model.** It bounds the damage from a model that is already wrong in the cases it declines.
+- **It shifts load onto humans.** Unbudgeted, that is how a system quietly stops being used.
+- **A calibrated threshold is only as good as the data it was fitted on.** Distribution shift moves it, and nothing tells you.
+- **Over-refusal is its own failure.** A system that declines a third of requests has not solved the problem it was built for. Report coverage as prominently as accuracy.
+
+## The pattern in one table
+
+| Stage | Refusal | Cost of omitting it |
+| --- | --- | --- |
+| Ingestion | Block unrecognised structure before storing | Partial records that read as complete |
+| Embedding | Reject over-length input | Vectors that misrepresent their documents |
+| Retrieval | Report degraded and below-floor | Fluent answers from irrelevant sources |
+| Verification | Distinguish *not applicable* from *not run* | Unverified read as verified |
+| Inference | Abstain and route to review | Confident predictions where confidence is unwarranted |
+
+Each row is a place where the system can know that it does not know. The engineering is making sure it has somewhere to put that.
+
+## Related
+
+[Selective prediction](/learn/selective-prediction-when-models-should-abstain) covers the inference row in depth. [Hybrid retrieval without silent failure](/learn/hybrid-retrieval-without-silent-failure) covers the retrieval row. [Re-ingest, verify, reconcile, withdraw](/learn/reingest-verify-reconcile-withdraw) covers what an operator does once a stage has refused.

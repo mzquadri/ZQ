@@ -58,7 +58,7 @@
 .chapter-intro {
   background: var(--stage);
   color: var(--stage-ink);
-  padding: clamp(5rem, 12vh, 9rem) 0 clamp(1rem, 3vh, 2rem);
+  padding: clamp(3.5rem, 8vh, 6rem) 0 clamp(1rem, 3vh, 2rem);
 }
 
 .chapter-intro-inner {
@@ -84,11 +84,13 @@
   color: var(--accent);
 }
 
+/* Same scale as `.cine-section-title`: the work chapter is a section like the others, and it was
+   the only one setting its own, larger, display size. */
 .chapter-intro-title {
   margin: 0 0 1.1rem;
   font-family: var(--sans);
-  font-size: clamp(2rem, 5.2vw, 3.9rem);
-  line-height: 1.03;
+  font-size: clamp(1.9rem, 4.8vw, 3.5rem);
+  line-height: 1.05;
   letter-spacing: -0.035em;
   font-weight: 700;
 }
