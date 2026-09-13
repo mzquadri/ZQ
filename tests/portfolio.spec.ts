@@ -3177,3 +3177,103 @@ for (const slug of ["hydrology-uq", "reliable-knowledge-systems", "medico"]) {
     expect(after - before, "an off-screen world must not draw").toBeLessThanOrEqual(2);
   });
 }
+
+/* ============================================================================================
+ * Regressions from the end-to-end audit of 13 Sep 2026.
+ *
+ * Each of these failed on the live site before it was fixed. They are written against behaviour
+ * a reader would notice rather than against pixel positions, so they survive a redesign of the
+ * thing they guard.
+ * ========================================================================================== */
+
+test("no page raises a hydration error", async ({ page }) => {
+  /*
+   * /work/medico threw React #418 on every load. The cause was an SVG <title> child used to name
+   * a matrix cell: React 19 treats <title> as document metadata and hoists it to <head> wherever
+   * it is rendered, so the server markup and the client tree disagreed - and the accessible name
+   * never reached the cell it was written for. The rule this locks in is the general one.
+   */
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+
+  for (const route of ["/", "/work", "/work/medico", "/work/reliable-knowledge-systems", "/research/thesis"]) {
+    await page.goto(route);
+    await page.waitForLoadState("networkidle");
+  }
+
+  expect(errors, `page errors: ${errors.join(" | ")}`).toHaveLength(0);
+});
+
+test("SVG shapes are named with aria-label, not a title child", async ({ page }) => {
+  await page.goto("/work/medico");
+  await expect(page.locator("svg title")).toHaveCount(0);
+  await expect(page.locator("rect.medico-flat-cell[aria-label]").first()).toHaveCount(1);
+});
+
+test("captions on a dark hero use the stage ink", async ({ page }) => {
+  /*
+   * .scn-identity figcaption took the paper ink on these two routes because the dark override was
+   * scoped to .case-stage and neither page uses it. It measured 1.83:1 against the hero, and was
+   * the only serious axe violation on the site.
+   */
+  for (const route of ["/work/medico", "/work/reliable-knowledge-systems"]) {
+    await page.goto(route);
+    const colors = await page.locator("header.page-hero figcaption").first().evaluate((el) => ({
+      text: getComputedStyle(el).color,
+      background: getComputedStyle(document.body).backgroundColor,
+    }));
+    /* #354149 is the paper ink and is unreadable here; the stage ink is #9aa7b2. */
+    expect(colors.text, `${route} caption colour`).not.toBe("rgb(53, 65, 73)");
+  }
+});
+
+test("every live route is in the sitemap", async ({ request }) => {
+  /*
+   * /work/medico and /work/reliable-knowledge-systems have their own page files rather than
+   * registry entries, so the generated sitemap - built from the project registry - omitted both.
+   * They were linked, reachable, and invisible to a crawler.
+   */
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  for (const route of ["/work/medico", "/work/reliable-knowledge-systems", "/architecture"]) {
+    expect(sitemap, `${route} missing from the sitemap`).toContain(`https://mzquadri.de${route}`);
+  }
+});
+
+test("standalone controls are big enough to tap", async ({ page, isMobile }) => {
+  /*
+   * The footer links were 20px tall on every page, and the card actions, taxonomy chips and
+   * back-links were between 15px and 23px. A link inside a sentence is exempt - WCAG 2.5.8 says
+   * so, and enlarging one would break the paragraph - so only standalone controls are measured.
+   */
+  test.skip(!isMobile, "target size is a touch concern");
+
+  for (const route of ["/", "/work", "/learn", "/about"]) {
+    await page.goto(route);
+    await page.waitForLoadState("networkidle");
+
+    const small = await page.evaluate(() => {
+      const out: string[] = [];
+      for (const el of document.querySelectorAll<HTMLElement>("footer a, .topic-chips a, .rss-link, .back-link")) {
+        const rect = el.getBoundingClientRect();
+        if (!rect.height) continue;
+        if (rect.height < 24) out.push(`${(el.textContent || "").trim().slice(0, 24)} ${Math.round(rect.height)}px`);
+      }
+      return out;
+    });
+
+    expect(small, `${route} has targets under 24px: ${small.join(", ")}`).toHaveLength(0);
+  }
+});
+
+test("published links do not point at a deleted repository", async ({ page }) => {
+  /*
+   * The selective-prediction article cited mzquadri/ml-surrogates-thesis in its frontmatter and
+   * in its prose. That repository was deleted rather than archived, so both answered 404 - the
+   * only broken outbound link on the site.
+   */
+  await page.goto("/learn/selective-prediction-when-models-should-abstain");
+  await expect(page.locator('a[href*="ml-surrogates-thesis"]')).toHaveCount(0);
+  await expect(
+    page.locator('a[href*="ml_surrogates_for_agent_based_transport_models"]').first(),
+  ).toHaveCount(1);
+});
