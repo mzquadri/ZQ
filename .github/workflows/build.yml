@@ -62,6 +62,23 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+
+      # Two layers, and they answer different questions.
+      #
+      # check:security is offline and asserts that the installed version of a package meets the
+      # minimum patch recorded for its release line. It cannot learn about a new advisory, but it
+      # cannot be defeated by a stale lockfile, a revert, or a resolution that quietly moves
+      # backwards either - which is how 16.3.1 would have returned.
+      #
+      # npm audit is the half that learns. It needs the network and it fails only on production
+      # high and critical findings: a dev-only advisory should be visible in the log without
+      # blocking a deployment that cannot be affected by it.
+      - name: Dependency security floors
+        run: npm run check:security
+
+      - name: Dependency audit (production, high and above)
+        run: npm audit --omit=dev --audit-level=high
+
       - run: npm run check
 
       # The confidential draft is withheld by `draftsAreVisible`, which only excludes it
