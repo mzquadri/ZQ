@@ -25,8 +25,8 @@ const ENGINES = [
 const MUST_SEE = [
   ["/", ".cine-name", "the name"],
   ["/", ".cine-beat", "hero caption beats"],
-  ["/", ".chapter-title", "project titles"],
-  ["/", ".verb-name", "engineering verbs"],
+  ["/", "nav[aria-label='Selected work'] a", "the work index"],
+  ["/work/reliable-knowledge-systems", ".verb-name", "engineering verbs"],
   ["/", ".cine-closing-line", "the closing line"],
   ["/work", ".page-stage-title", "work title"],
   ["/work/transport-uq", ".case-story-text", "case narrative beats"],

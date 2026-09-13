@@ -1,0 +1,207 @@
+/*
+ * The index grid.
+ *
+ * One hairline lattice rather than a set of floating cards: the 1px gap over a line-coloured
+ * background draws every border exactly once, so the grid reads as a contents page rather than as
+ * a dashboard of tiles. That is the distinction the homepage was already making well, and it is
+ * the part worth carrying to the other four indexes.
+ *
+ * The card is a subgrid: mark on the left spanning the rows, then number, title, kind and summary
+ * stacked beside it. Cards in a row therefore align on their title baseline whatever the length of
+ * the text beneath, which is what stops an auto-fit grid looking ragged.
+ *
+ * The hairlines are drawn as a 1px shadow around each card rather than as a coloured ground behind
+ * a 1px gap. Both give the same lattice where there are cards; only this one leaves nothing behind
+ * when there are not. Five cards in a three-column grid used to end on a filled grey rectangle
+ * where the sixth would have gone, which read as a card that had failed to render.
+ */
+
+.index {
+  margin-top: clamp(1.75rem, 4vh, 2.75rem);
+}
+
+.list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* 19rem fits a title and a summary line without the third column collapsing at 1440. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+}
+
+.item {
+  /* The mark's colour. Text never uses it: several project accents are warm mid-tones that sit at
+     about 1.9:1 on the paper ground, which is fine for a 1.4px line drawing and nowhere near
+     legible for an 11px number. */
+  --card-accent: var(--ink);
+  --card-ink: var(--ink);
+  --card-ink-soft: var(--ink-soft);
+}
+
+.link {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "mark number"
+    "mark title"
+    "mark kind"
+    "summary summary";
+  align-content: start;
+  gap: 0.15rem 0.9rem;
+  height: 100%;
+  padding: 1.15rem 1.2rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 160ms ease;
+}
+
+.mark {
+  grid-area: mark;
+  display: block;
+  width: 2.9rem;
+}
+
+.mark svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  fill: none;
+  stroke: var(--card-accent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Two fills and a dash, so a mark can say "this one is different" without another colour. */
+.mark :global(.mark-fill) {
+  fill: var(--card-accent);
+  stroke: none;
+}
+.mark :global(.mark-fill-soft) {
+  fill: color-mix(in oklab, var(--card-accent) 30%, transparent);
+  stroke: none;
+}
+.mark :global(.mark-dash) {
+  stroke-dasharray: 2 2;
+  opacity: 0.6;
+}
+.mark :global(.mark-window) {
+  stroke-dasharray: 3 2;
+  opacity: 0.75;
+}
+
+.number {
+  grid-area: number;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--card-ink-soft);
+}
+
+.title {
+  grid-area: title;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.kind {
+  grid-area: kind;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.summary {
+  grid-area: summary;
+  margin-top: 0.7rem;
+  max-width: 42ch;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.external {
+  grid-area: summary;
+  margin-top: 0.35rem;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* ---- paper ground: /work, /research, /architecture, /learn ------------------------------- */
+
+.index[data-tone="paper"] .list {
+  border: 1px solid var(--line);
+}
+
+.index[data-tone="paper"] .item {
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.index[data-tone="paper"] .title {
+  color: var(--ink);
+}
+
+.index[data-tone="paper"] .kind,
+.index[data-tone="paper"] .summary {
+  color: var(--ink-soft);
+}
+
+.index[data-tone="paper"] .link:hover,
+.index[data-tone="paper"] .link:focus-visible {
+  background: color-mix(in oklab, var(--card-accent) 7%, var(--paper-raised));
+}
+
+/* ---- dark stage: the homepage ------------------------------------------------------------ */
+
+.index[data-tone="stage"] .item {
+  --card-ink: var(--stage-ink);
+  --card-ink-soft: var(--stage-ink-soft);
+  background: var(--stage);
+  box-shadow: 0 0 0 1px var(--stage-line);
+}
+
+.index[data-tone="stage"] .list {
+  border: 1px solid var(--stage-line);
+}
+
+.index[data-tone="stage"] .title {
+  color: var(--stage-ink);
+}
+
+.index[data-tone="stage"] .kind,
+.index[data-tone="stage"] .summary {
+  color: var(--stage-ink-soft);
+}
+
+.index[data-tone="stage"] .link:hover,
+.index[data-tone="stage"] .link:focus-visible {
+  background: color-mix(in oklab, var(--card-accent) 9%, var(--stage));
+}
+
+/* The ring has to clear the hairline lattice, so it sits inside the card rather than around it.
+   It is drawn in ink rather than in the card's accent, because a focus indicator has a contrast
+   requirement of its own and some of the accents do not meet it on paper. */
+.link:focus-visible {
+  outline: 2px solid var(--card-ink);
+  outline-offset: -3px;
+}
+
+@media (max-width: 560px) {
+  .link {
+    padding: 1rem 1.05rem 1.1rem;
+  }
+
+  /* On a phone the summary is the first thing worth dropping: the title and the category already
+     answer "what is this", and a third line per card turns a nine-item index back into a scroll. */
+  .summary {
+    display: none;
+  }
+}

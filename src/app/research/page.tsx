@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
-import { ResearchLadderScene, StageHero } from "@/components/cinema/PageStages";
+import { StageHero } from "@/components/cinema/PageStages";
 import PageShell from "@/components/PageShell";
 import SectionHeading from "@/components/SectionHeading";
 import WritingCard from "@/components/writing/WritingCard";
@@ -61,21 +61,21 @@ export default function ResearchPage() {
         accent="var(--accent-graph)"
         eyebrow="Research / Reliable ML / Scientific modelling"
         title="From fast predictions to decisions that expose uncertainty."
-        standfirst="My primary research asks how an ML surrogate can report more than a point estimate: where error is likely, whether uncertainty is calibrated, and when a prediction should enter a review queue."
-        figure={
-          <ResearchLadderScene
-            steps={["Approximate", "Quantify", "Calibrate", "Verify", "Decline"]}
-          />
-        }
+        standfirst="My primary research asks how an ML surrogate can report more than a point estimate: where error is likely, whether uncertainty is calibrated, and when a prediction should enter a review queue. Approximate, quantify, calibrate, verify, decline — each step is only reachable from the one below it."
       >
         <div className="research-audience" aria-label="Ways into the research">
           <div><span>Recruiter</span><strong>What did the work establish?</strong></div>
           <div><span>Engineer</span><strong>How does uncertainty change a system decision?</strong></div>
           <div><span>Researcher / student</span><strong>Which protocol supports each claim?</strong></div>
         </div>
+        <div className="work-jump">
+          <a href="#focus">Research focus</a>
+          <a href="#primary">Primary record</a>
+          <a href="#supporting">Supporting work</a>
+        </div>
       </StageHero>
 
-      <section className="section-wrap research-focus-section">
+      <section className="section-wrap research-focus-section" id="focus">
         <SectionHeading
           index="01"
           eyebrow="Research focus"
@@ -105,7 +105,7 @@ export default function ResearchPage() {
         </div>
       </section>
 
-      <section className="section-wrap primary-research-section">
+      <section className="section-wrap primary-research-section" id="primary">
         <SectionHeading
           index="02"
           eyebrow="Primary record"
@@ -133,7 +133,7 @@ export default function ResearchPage() {
         </article>
       </section>
 
-      <section className="section-wrap supporting-research-section">
+      <section className="section-wrap supporting-research-section" id="supporting">
         <SectionHeading
           index="03"
           eyebrow="Supporting work"

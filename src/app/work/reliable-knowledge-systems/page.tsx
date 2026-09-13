@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import PageShell from "@/components/PageShell";
 import NextSystem from "@/components/cinema/NextSystem";
+import { VerbScene } from "@/components/cinema/scenes";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import ReliableWorld from "@/components/reliable-world/ReliableWorld";
 import ReliableWorldFlat from "@/components/reliable-world/ReliableWorldFlat";
@@ -16,6 +17,7 @@ import {
   principles,
   representations,
 } from "@/content/reliable-knowledge-world";
+import { problemClasses } from "@/content/cinema";
 import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
@@ -110,6 +112,26 @@ export default function ReliableKnowledgeSystemsPage() {
             with what it was built from? Each derived view gets asked, and the answer is a
             conjunction rather than a light.
           </p>
+
+          {/*
+            The four verbs, and then what a check on them decomposes into.
+
+            These used to open a section of their own on the homepage, a screen above the chapter
+            that carried this work. That was the same argument made twice on one page, and the
+            half that had the evidence was the one further down. They read better here, directly
+            above the invariants they turn into.
+          */}
+          <ol className="verb-track" aria-label="Four things a data platform has to do">
+            {problemClasses[0].verbs.map((verb, i) => (
+              <li className="verb" key={verb} style={{ "--i": i } as React.CSSProperties}>
+                <span className="verb-mark" aria-hidden="true">
+                  <VerbScene verb={verb} />
+                </span>
+                <p className="verb-name">{verb}</p>
+              </li>
+            ))}
+          </ol>
+
           <ol className="reliable-invariants">
             {invariants.map((invariant) => (
               <li key={invariant.key}>

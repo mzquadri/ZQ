@@ -3,35 +3,32 @@ import Link from "next/link";
 import HeroStage from "@/components/cinema/HeroStage";
 import {
   ClosingSection,
-  EngineeringSection,
   ExperienceSection,
+  HomeLearn,
   ResearchSection,
 } from "@/components/cinema/HomeSections";
-import ExhibitionIndex from "@/components/cinema/ExhibitionIndex";
-import WorkChapters from "@/components/cinema/WorkChapters";
+import PortfolioIndex from "@/components/index/PortfolioIndex";
 import PageShell from "@/components/PageShell";
-import StrongWorkBand from "@/components/cinema/StrongWork";
+import { flagshipItems } from "@/content/index-items";
 import { chapters } from "@/content/cinema";
 
 /*
- * The homepage is one continuous stage.
+ * The homepage is a router, not a copy of the site.
  *
- * It opens by drawing the argument the rest of the site is about, then runs eight projects as a
- * reel - each one a full stage rather than a card - and then the approach, the research and the
- * roles behind them. The order is deliberate: a visitor should be able to stop after any chapter
- * and have taken something real from it.
+ * It used to be one continuous reel: the hero, then nine projects at a full viewport each, then
+ * the approach, the research and the roles. Measured, it came to 49,945px - fifty-five screens -
+ * with the last project link at 47,485px. A reader who arrived for one specific project had to
+ * scroll past eight others to learn whether it was there, and a reader who wanted an overview
+ * never got one, because no single screen held more than a single project.
  *
- * Two chapters used to sit outside that reel. Medico was appended after the sequence had closed,
- * and the current-engineering work was a section further down the page, which meant the two pieces
- * of work a visitor most needs to see were the two furthest from the top. Both are now in the
- * running order.
+ * The reel was good at the wrong job. Choosing and reading want different shapes: a compact index
+ * to choose from, then a page long enough to read properly. Nothing was thrown away - the stages
+ * moved to each project's own detail page, which is where the method, the evidence and the
+ * limitations already lived.
  *
- * Everything here is server-rendered, and the page ships no animation JavaScript at all.
- *
- * Two surfaces that used to live here now live where they are more useful rather than being
- * duplicated: the repository catalogue is the third section of /work, and the capability and
- * systems-graph material is covered by the work sequence and the systems showcase. The closing
- * links to both.
+ * What is left is one screen of identity, one of choice, then short previews of the other three
+ * things a visitor might have come for. Everything is server-rendered and nothing is staged on
+ * scroll, so the index is complete on first paint rather than assembled as the reader descends.
  */
 
 export default function Home() {
@@ -45,27 +42,19 @@ export default function Home() {
           <p className="chapter-intro-eyebrow">{chapters.work.eyebrow}</p>
           <h2 className="chapter-intro-title">{chapters.work.title}</h2>
           <p className="chapter-intro-lede">{chapters.work.introduction}</p>
-          <ExhibitionIndex />
+
+          <PortfolioIndex items={flagshipItems} label="Selected work" tone="stage" />
+
+          <p className="chapter-intro-action">
+            <Link className="cine-cta cine-cta-quiet mz-interactive" href="/work">
+              Every project and repository
+            </Link>
+          </p>
         </div>
       </section>
 
-      <WorkChapters />
-
-      {/*
-        The second movement. Eight flagships run above; these nine repositories are the rest of
-        the public work, and they are staged rather than listed because each has an end-to-end
-        story. What they are organised by is what each one can actually prove.
-      */}
-      <StrongWorkBand />
-
-      <section className="chapter-outro">
-        <Link className="cine-cta cine-cta-quiet mz-interactive" href="/work">
-          View the full portfolio
-        </Link>
-      </section>
-
-      <EngineeringSection />
       <ResearchSection />
+      <HomeLearn />
       <ExperienceSection />
       <ClosingSection />
     </PageShell>

@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EcosystemGroups, SnapshotNote } from "@/components/EcosystemGrid";
-import ExhibitionIndex from "@/components/cinema/ExhibitionIndex";
 import { StageHero } from "@/components/cinema/PageStages";
+import PortfolioIndex from "@/components/index/PortfolioIndex";
 import PageShell from "@/components/PageShell";
-import RepoShowcase from "@/components/repo-assembly/RepoShowcase";
-import ProjectList from "@/components/ProjectList";
 import SectionHeading from "@/components/SectionHeading";
-import SystemGraph from "@/components/SystemGraph";
-import SystemsShowcase from "@/components/systems-showcase/SystemsShowcase";
 import { ecosystemRepositories, getPopulatedCategories } from "@/content/ecosystem";
-import { showcase } from "@/content/systems-showcase";
+import { registryItems, selectedItems, supportingItems } from "@/content/index-items";
 import { projects, site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 import { ArrowLabel } from "@/components/Icon";
@@ -22,9 +18,55 @@ export const metadata: Metadata = createPageMetadata({
   path: "/work",
 });
 
+/*
+ * The work index.
+ *
+ * This page used to describe the same nine projects twice in a row - once as marks, once as a list
+ * - and then spend eight screens on two abstract figures: a synthetic systems model and a node
+ * graph of how the work connects. Measured, it came to 18,197px, twenty screens, with the last
+ * project link at 16,894px.
+ *
+ * Both figures are good, and neither is navigation. Someone who has opened /work has already
+ * decided to look at projects; asking them to read a conceptual model first answers a question
+ * they did not ask. They now have their own page, /work/engineering-model, reached from the index
+ * like anything else. Nothing was cut.
+ *
+ * What is left is four lists, tiered by what they can prove: the work with the strongest evidence,
+ * the employer surfaces published under their own review, the coursework and experiments, and the
+ * repository catalogue at the bottom where a catalogue belongs.
+ */
+
+/**
+ * The employer surfaces that are not themselves case studies on this site.
+ *
+ * The two employer case studies that do have detail pages are in the selected index above, so
+ * naming them again here would rebuild the duplication this page was rewritten to remove.
+ */
+const PROFESSIONAL = [
+  {
+    slug: "architecture-site",
+    title: "Architecture case studies",
+    kind: "BP-ITCS / Separate site",
+    summary:
+      "Twenty diagrams of the systems contributed to at BP-ITCS, published under their own redaction review, with a contribution map that says what was and was not mine.",
+    href: "/architecture",
+    accent: "var(--accent-corpus)",
+  },
+  {
+    slug: "engineering-model",
+    title: "Engineering model",
+    kind: "Public-safe model / Synthetic",
+    summary:
+      "One source, several representations, independently checked: the problem class the employer work sits in, modelled with synthetic data and no real system named.",
+    href: "/work/engineering-model",
+    accent: "var(--accent-pipeline)",
+  },
+] as const;
+
 export default function WorkPage() {
   const groups = getPopulatedCategories();
   const caseStudyCount = projects.length.toString().padStart(2, "0");
+  const supporting = [...supportingItems, ...registryItems(projects)];
 
   return (
     <PageShell current="/work">
@@ -39,72 +81,51 @@ export default function WorkPage() {
         ]}
       >
         <div className="work-jump">
-          <a href="#case-studies">Case studies</a>
-          <a href="#systems">Systems model</a>
-          <a href="#connections">How the work connects</a>
+          <a href="#selected">Selected work</a>
+          <a href="#professional">Professional engineering</a>
+          <a href="#supporting">Supporting projects</a>
           <a href="#ecosystem">Repository index</a>
         </div>
       </StageHero>
 
-      {/*
-        * Case studies first, deliberately.
-        *
-        * The systems model and the connection graph are context for this work, and having them
-        * ahead of it meant a reader met two long abstract sections before a single real project.
-        * Whoever opens this page came to see what was built; the framing is worth more once they
-        * have something to attach it to.
-        */}
-      <section className="section-wrap work-index" id="case-studies">
+      <section className="section-wrap work-index" id="selected">
         <SectionHeading
           index="01"
-          eyebrow="Featured case studies"
+          eyebrow="Selected work"
           title="The work written up in full"
           introduction="Each case study states the problem, my contribution, the versioned evidence, the quality controls, and the limitations that bound the claim."
         />
-
-        {/*
-          The eight worlds first, as the marks they are drawn with on the homepage, so a reader who
-          arrives here from the reel recognises what they are looking at. It also carries the one
-          project the list below cannot: reliable knowledge systems has a route and a world but no
-          entry in the portfolio registry, because the case study it stands in for is confidential.
-        */}
-        <ExhibitionIndex />
-
-        <ProjectList projects={projects} />
+        <PortfolioIndex items={selectedItems} label="Selected work" />
       </section>
 
-      <section className="section-wrap systems-showcase-section" id="systems">
+      <section className="section-wrap work-index" id="professional">
         <SectionHeading
           index="02"
-          eyebrow={showcase.eyebrow}
-          title={showcase.title}
-          introduction={showcase.introduction}
+          eyebrow="Professional engineering"
+          title="Employer work, at the level it can be published"
+          introduction="What can be shown of the BP-ITCS systems is published two ways: as named architecture on a separate site with its own approval, and as a synthetic model here where the class of problem is the content rather than the system."
         />
-        <SystemsShowcase />
+        <PortfolioIndex items={PROFESSIONAL} label="Professional engineering" numbered={false} />
       </section>
 
-      {/* No reveal animation here: a transform on the section would become the containing
-          block for the sticky graph viewport inside it. */}
-      <section className="section-wrap systems-section" id="connections">
+      <section className="section-wrap work-index" id="supporting">
         <SectionHeading
           index="03"
-          eyebrow="How the work connects"
-          title="From data to a decision someone can act on"
-          introduction="Select any node to see what it means here and which public artifact backs it. Dashed nodes are directions of study with no public project yet."
+          eyebrow="Supporting projects"
+          title="Coursework, references and experiments"
+          introduction="Smaller in scope and weaker in evidence than the work above, and labelled that way rather than presented as equivalent. Each one still says what it establishes and what it does not."
         />
-        <SystemGraph />
+        <PortfolioIndex items={supporting} label="Supporting projects" numbered={false} />
       </section>
 
       <section className="section-wrap ecosystem-index" id="ecosystem">
         <SectionHeading
           index="04"
           eyebrow="Repository index"
-          title="The repositories, taken apart"
-          introduction="The flagship repositories are shown as assemblies: one part for each focus area the registry records, plus its portfolio status and its evidence boundary. Categories describe status, not technical quality, and experiments are never presented as production systems."
+          title="Every public repository"
+          introduction="Categories describe status, not technical quality. Experiments are never presented as production systems, and a repository that carries no evidence says so in its own entry."
         />
-        <RepoShowcase />
         <div className="ecosystem-index-rest" data-showcase="index">
-          <p className="section-index"><span>05</span>Every public repository</p>
           <EcosystemGroups groups={groups} />
           <SnapshotNote />
         </div>
