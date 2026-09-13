@@ -43,20 +43,24 @@ source reference, verification date, visibility, and, for current facts, a revie
 
 The sole canonical destination is:
 
-`https://github.com/mzquadri/ml-surrogates-thesis`
+`https://github.com/mzquadri/ml_surrogates_for_agent_based_transport_models`
 
-The submitted thesis PDF remains immutable. Corrections are labelled as post-submission
-corrigenda or reproducibility updates. The two local migration sources reviewed for the
-canonical repository were:
+This section previously named `ml-surrogates-thesis` as the canonical destination and described
+consolidation as outstanding. Both statements are now wrong, and the first was a link that
+answered 404. The consolidation happened: the work moved into the fork of the upstream
+repository on 1 September 2026 and `ml-surrogates-thesis` was archived, then deleted on
+4 September 2026 rather than left archived. `src/content/truth.ts` records the move and the
+reason, and every citation on the site was repointed at the surviving repository.
+
+The submitted thesis PDF remains immutable and is intentionally public at its pinned path in
+that repository. Corrections are labelled as post-submission corrigenda or reproducibility
+updates rather than applied silently to the submitted artifact. The two local sources reviewed
+before the move were:
 
 | Source | Reviewed commit | Disposition |
 |---|---|---|
-| `ml_surrogates_for_agent_based_transport_models` | `fdb4ef0c9c736576ae34d5e331d8b66a7a6d877a` | Merge audited evidence, tests, CI, limitations, and corrections |
-| `ml_surrogates_thesis_final` | `4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428` | Preserve submitted thesis artifact and canonical public slug |
-
-Repository consolidation itself is a separate release operation. Until it is completed, the
-portfolio points only to the agreed canonical destination and does not describe either local
-source as canonical.
+| `ml_surrogates_for_agent_based_transport_models` | `fdb4ef0c9c736576ae34d5e331d8b66a7a6d877a` | Became the canonical repository; holds audited evidence, tests, CI, limitations, and corrections |
+| `ml_surrogates_thesis_final` | `4b95a3d8aca5929bb88b84bb7f7ae86c48e2f428` | Submitted thesis artifact preserved in the canonical repository |
 
 ## Conflict Register
 
@@ -67,17 +71,23 @@ source as canonical.
 | Dataset scope | 100 held-out scenarios and 3,163,500 cached road-link predictions within a fixed 1,000-scenario subset | Not a claim about all MATSim data or fresh raw-data replay |
 | Defect status | Do not publish “zero bugs” | Tests and audits bound known checks; they cannot prove absence of defects |
 | Experience titles | Approved titles and organizations published in Recruiter Core v1 | No private duties, client details, or quantified employment impact inferred |
-| Experience dates | Dates omitted; only the approved current BP status is shown | No employment dates are published |
+| Experience dates | The five approved periods are published, in one format, from the registry | Each period is transcribed from the privately held curriculum vitae; `validate:content` fails on any rendered range that is not one of them |
 | Education | TUM M.Sc. program with thesis submitted; AMU B.Sc. (Hons.) Mathematics | No claim of TUM defense, grade, graduation, or degree conferral |
-| Contact email | Not published | No durable address has passed privacy review |
-| Resume | None published | A generated, web-safe PDF was published for a time and has been withdrawn; the facts it carried are rendered as pages instead |
-| Repository status | `ml-surrogates-thesis` is the only canonical destination | It preserves the submitted artifact and separates post-submission corrections and audited evidence |
+| Contact email | The approved personal address is published on `/contact` and in the footer | It is the address already carried by public commit history, so publishing it discloses nothing new; `validate:content` fails on any other address |
+| Resume | None published; `/resume`, `/cv` and every PDF path return 404 | A generated, web-safe PDF was published for a time and has been withdrawn. The facts it carried are rendered as pages; the privately held source document is evidence and is not served |
+| Repository status | `ml_surrogates_for_agent_based_transport_models` is the only canonical destination | Consolidation completed on 1 September 2026; `ml-surrogates-thesis` was deleted on 4 September 2026 and no longer resolves |
+| Personal identifiers | No phone number, street address, or private identifier is published | The portrait is the only personal identifier approved, on 22 August 2026; `validate:content` fails on a telephone number in the rendered source |
 | Services | No public services offer | Services remain inactive until a real offer and operating boundary are approved |
 
 Unresolved or unpublished facts must not be inferred into page copy, metadata, structured data,
 repository descriptions, or social copy.
 
 ## Security Migration Result
+
+A dated record of what was verified in August 2026, kept as written. The counts, the runtime
+versions in the frozen baseline above, and the `resume` route named below describe the site as it
+was on those dates; where they disagree with the conflict register, the register is current and
+this section is history. The `/resume` route and every CV download have since been withdrawn.
 
 The integrity changes upgrade to Next.js 16.3.1, React 19.2.8, ESLint 9.39.1, and the matching
 Next.js ESLint configuration. It also migrates asynchronous App Router parameters and removes
