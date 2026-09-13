@@ -108,9 +108,6 @@ __pycache__/
 # against-production output directories, which is the pair that actually gets used.
 /qa*/
 
-# Scratch HTML the CV generator writes and removes; listed so an interrupted run cannot
-# leave one committed.
-/.cv-render.html
 
 # Assistant configuration. tools/check-authorship.sh fails the build if any of these is tracked,
 # on the reasoning that a tool's own config is not part of this work - but it assumed a global

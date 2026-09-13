@@ -145,6 +145,13 @@ export default function HeroStage() {
               <span>{site.availability}</span>
             </p>
 
+            {/*
+             * Four actions, and the fourth is contact rather than a download.
+             *
+             * It was a CV, which has been withdrawn. Dropping the slot would have left the hero
+             * with three ways to read more and no way to get in touch, so it now carries the
+             * destination the CV was standing in front of.
+             */}
             <div className="cine-actions">
               <Link className="cine-cta mz-interactive" href="/work">
                 {heroStage.primaryAction}
@@ -155,9 +162,9 @@ export default function HeroStage() {
               <Link className="cine-cta cine-cta-quiet mz-interactive" href="/research/thesis">
                 {heroStage.secondaryAction}
               </Link>
-              <a className="cine-cta cine-cta-quiet mz-interactive" href={site.cv} download>
-                Curriculum vitae
-              </a>
+              <Link className="cine-cta cine-cta-quiet mz-interactive" href="/contact">
+                Contact
+              </Link>
             </div>
           </div>
 

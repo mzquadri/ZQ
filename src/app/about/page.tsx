@@ -162,7 +162,6 @@ export default function AboutPage() {
         <div className="hero-actions">
           <Link className="button button-primary" href="/work"><ArrowLabel kind="forward">Selected work</ArrowLabel></Link>
           <Link className="button button-secondary" href="/architecture"><ArrowLabel kind="forward">Architecture</ArrowLabel></Link>
-          <a className="button button-secondary" href={site.cv} download><ArrowLabel kind="forward">Curriculum vitae (PDF)</ArrowLabel></a>
           <Link className="button button-secondary" href="/contact">Contact</Link>
         </div>
       </section>

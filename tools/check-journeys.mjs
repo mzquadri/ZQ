@@ -39,22 +39,33 @@ const browser = await chromium.launch();
       name: seen(/Mohd\s*Zamin\s*Quadri|MohdZaminQuadri/),
       role: seen(/AI\/ML Engineer|AI Engineer/),
       location: seen(/Munich/),
-      cv: seen(/Curriculum vitae/i),
       work: seen(/Examine the work|Selected work/i),
       architecture: seen(/architecture/i),
+      contact: seen(/^Contact$/i),
     };
   });
   for (const [key, value] of Object.entries(firstView)) {
     check(value, `first viewport shows ${key}`, "not visible above the fold");
   }
 
-  await page.getByRole("link", { name: /Curriculum vitae/i }).first().click({ trial: true });
-  const cvHref = await page.getByRole("link", { name: /Curriculum vitae/i }).first().getAttribute("href");
-  check(cvHref === "/mohd-zamin-quadri-cv.pdf", "hero CV link points at the canonical PDF", cvHref);
-
+  /*
+   * The recruiter route no longer ends in a download. It used to offer a generated CV, which has
+   * been withdrawn, so the fourth hero action is contact and the record a recruiter wants - roles
+   * and periods, education, certifications, languages - is read on /about instead of fetched.
+   */
   const cv = await page.request.get(ORIGIN + "/mohd-zamin-quadri-cv.pdf");
-  check(cv.status() === 200, "CV downloads", `HTTP ${cv.status()}`);
-  check((cv.headers()["content-type"] || "").includes("pdf"), "CV is served as a PDF", cv.headers()["content-type"]);
+  check(cv.status() === 404, "no CV is downloadable", `HTTP ${cv.status()}`);
+
+  await page.goto(ORIGIN + "/about", { waitUntil: "networkidle" });
+  const about = await page.locator("main").innerText();
+  for (const [label, re] of [
+    ["roles with their periods", /Apr 2025 - Present/],
+    ["education", /Mathematics in Science and Engineering/],
+    ["certifications", /DeepLearning\.AI/],
+    ["languages", /Full professional proficiency/],
+  ]) {
+    check(re.test(about), `/about carries ${label}`, "not found on the page");
+  }
 
   await page.goto(ORIGIN + "/contact", { waitUntil: "networkidle" });
   const mailto = await page.locator('a[href^="mailto:"]').first().getAttribute("href");
