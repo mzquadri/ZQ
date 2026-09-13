@@ -1,0 +1,204 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Template-Driven Document Extraction With LLMs"
+description: "Schema-validated extraction with a deterministic fallback, corruption detection before the model sees the text, and a contract that survives replacing the model."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: document-intelligence
+level: applied
+tags:
+  - slug: document-processing
+    label: Document Processing
+  - slug: llm-engineering
+    label: LLM Engineering
+  - slug: ocr
+    label: OCR
+projectSlugs:
+  - insureassist-rag
+relatedSlugs:
+  - hybrid-retrieval-without-silent-failure
+  - refusal-paths-in-production-ai-systems
+references:
+  - id: docling
+    title: "Docling Technical Report"
+    authors:
+      - Christoph Auer
+      - Maksym Lysak
+      - Ahmed Nassar
+      - Michele Dolfi
+      - Nikolaos Livathinos
+      - Peter Staar
+    year: 2024
+    publisher: arXiv
+    url: https://arxiv.org/abs/2408.09869
+  - id: json-schema
+    title: "JSON Schema: A Media Type for Describing JSON Documents"
+    authors:
+      - Austin Wright
+      - Henry Andrews
+      - Ben Hutton
+    year: 2022
+    publisher: IETF
+    url: https://json-schema.org/
+featured: false
+---
+
+Extracting structured fields from documents with a language model is easy to demonstrate and hard to operate. The demonstration works because you chose the document. Production fails on a scanned fax, a document in the wrong language, and a PDF whose text layer was produced by an encoder that mangled every umlaut.
+
+This article is about the scaffolding around the model call, which is where nearly all of the engineering is.
+
+<Callout title="The shape">
+  Classify, then extract against a template, then validate against a schema, then fall back deterministically. The model is one stage of four, and it is the only one allowed to be uncertain.
+</Callout>
+
+## Detect corruption before the model sees anything
+
+The failure that wastes the most time is a text layer that extracted "successfully" and is garbage. The model then produces confident, well-formed output from nonsense.
+
+Two cheap detectors catch most of it.
+
+**Replacement characters.** A run of U+FFFD means a decoding failure upstream.
+
+```python
+def mojibake_ratio(text: str) -> float:
+    return text.count("�") / max(len(text), 1)
+
+
+def looks_corrupted(text: str) -> bool:
+    return mojibake_ratio(text) > 0.002 or len(text.strip()) < 40
+```
+
+**Character-class implausibility.** A German document with no umlauts, or a page where over a third of characters are punctuation, is worth a second look.
+
+When corruption is detected, do not proceed. Route the document to an OCR path that rasterises and re-reads it. That is slower and usually better than the broken text layer, and it turns a silent data-quality problem into a branch you can count.
+
+A related repair worth having: some encoders reliably mangle specific characters in recoverable ways. A targeted repair table for the language you handle is unglamorous and effective. Keep it small, keep it tested, and log every time it fires — a rising repair rate means an upstream change you want to know about.
+
+## Classify before you extract
+
+A single prompt that handles every document type is a prompt that handles none of them well. Classify first, then select a template.
+
+Classification does not need the model for the easy cases. Many document families announce themselves in the first lines.
+
+```python
+TITLE_ANCHORS = {
+    "policy_terms": ("allgemeine bedingungen", "versicherungsbedingungen"),
+    "invoice": ("rechnung", "invoice"),
+}
+
+
+def classify(text: str) -> tuple[str, str]:
+    head = text[:1500].lower()
+    for doc_type, anchors in TITLE_ANCHORS.items():
+        if any(anchor in head for anchor in anchors):
+            return doc_type, "anchor"        # deterministic, free, auditable
+    return classify_with_model(text), "model"
+```
+
+Return *how* the classification was made, not just the answer. When a downstream field is wrong, the first question is always which template was used and why.
+
+The anchor path also gives you a free evaluation: sample documents where anchor and model disagree. Those are your interesting cases.
+
+## Templates are schemas, not prompt strings
+
+A template should be a data structure the pipeline can reason about — field names, types, whether each is required, and a description that goes into the prompt.
+
+```python
+@dataclass(frozen=True)
+class Field:
+    name: str
+    type: str                 # "string" | "number" | "date" | "enum"
+    required: bool
+    description: str
+    pattern: str | None = None
+
+
+POLICY_TERMS = (
+    Field("policy_number", "string", True, "The insurer's policy reference",
+          pattern=r"^[A-Z]{2,4}[-/ ]?\d{6,12}$"),
+    Field("effective_date", "date", True, "The date cover begins"),
+    Field("liability_limit", "number", False, "Maximum indemnity in EUR"),
+)
+```
+
+From one template you generate the prompt, the JSON schema for validation, and the database columns. One definition, three consumers — which is what stops the prompt from drifting away from the schema, a failure that produces valid-looking output the pipeline then rejects.
+
+## Validate structurally, then semantically
+
+Two separate gates.
+
+**Structural** — is the output well-formed against the schema? Wrong types, missing required fields, extra keys.
+
+**Semantic** — are the values plausible? Dates in a sane range, enums inside the vocabulary, patterns matching.
+
+```python
+def validate(raw: str, template: tuple[Field, ...]) -> Extraction:
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return Extraction.failed("malformed_json", str(exc))
+
+    errors = []
+    for field in template:
+        value = data.get(field.name)
+        if field.required and value in (None, ""):
+            errors.append(f"{field.name}: required field missing")
+        elif value is not None and field.pattern and not re.match(field.pattern, str(value)):
+            errors.append(f"{field.name}: does not match expected form")
+    return Extraction(data=data, errors=errors, complete=not errors)
+```
+
+Return the errors rather than raising. A document where nine of ten fields extracted cleanly is useful; discarding it because one failed throws away work you already paid for. Store the partial result with its error list and let the consumer decide.
+
+## Keep a deterministic fallback
+
+For fields with a stable surface form — reference numbers, dates, amounts — a regex is not a worse tool than a language model. It is a different tool with different failure modes, and running both is cheap.
+
+```python
+def extract_policy_number(text: str, model_value: str | None) -> tuple[str | None, str]:
+    matches = POLICY_NUMBER_RE.findall(text)
+    if model_value and model_value in matches:
+        return model_value, "agreed"          # both methods, same answer
+    if len(matches) == 1:
+        return matches[0], "regex_only"
+    if model_value:
+        return model_value, "model_only"
+    return None, "not_found"
+```
+
+Carry the provenance label into storage. `agreed` is worth more than `model_only`, and a shift in the ratio between them is an early signal that either the documents or the model have changed.
+
+Writing that regex against real documents is where the work is. Mine had to survive three specific failure modes I would not have predicted: the reference split across a line break, a lookalike number in the letterhead, and an optional separator that appeared in some insurers' formats and not others. Each was a real document, and each is now a test case.
+
+## Make the model replaceable
+
+Everything above is deliberately arranged so the model is a single, swappable stage.
+
+- The **template** defines the fields, not the prompt.
+- The **schema** validates the output, whatever produced it.
+- The **fallback** covers the deterministic fields.
+- The **provenance label** records which method produced each value.
+
+Swapping models becomes an experiment you can measure: run both over a held-out set, compare per-field accuracy and the `agreed` rate. Without that scaffolding, changing models is a change whose effect you find out about from users.
+
+## What to measure
+
+- Per-field extraction rate, and per-field *accuracy* against a labelled sample. These are different numbers and the first is often quoted as the second.
+- Classification agreement between the anchor and model paths.
+- Corruption-detection rate and OCR-fallback rate.
+- Schema-validation failure rate, split into structural and semantic.
+- The `agreed` / `model_only` / `regex_only` distribution.
+
+None of these require a labelled corpus of thousands. A few hundred documents labelled once will tell you more than any amount of prompt iteration.
+
+## Limitations
+
+This pattern suits documents with a **known family and a stable field set**. It does not suit open-ended understanding, documents whose structure you cannot enumerate, or anything where the interesting content is not a field. And extraction accuracy is not comprehension: a correctly extracted liability limit says nothing about whether the clause qualifying it was noticed.
+
+## Related
+
+[Hybrid retrieval without silent failure](/learn/hybrid-retrieval-without-silent-failure) covers what happens after extraction, when the documents have to be found again. The [InsureAssist case study](/work/insureassist-rag) is a public reference implementation over insurance policy documents.

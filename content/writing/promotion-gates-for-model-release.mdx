@@ -1,0 +1,197 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Promotion Gates for Model Release"
+description: "Promotion is not the next box along a diagram. It is a conjunction of independent checks, and one short check stops the candidate where it stands."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: mlops
+level: applied
+tags:
+  - slug: mlops
+    label: MLOps
+  - slug: model-evaluation
+    label: Model Evaluation
+  - slug: reproducibility
+    label: Reproducibility
+projectSlugs:
+  - mlops-reference-pipeline
+relatedSlugs:
+  - evidence-provenance-for-knowledge-systems
+  - calibration-is-not-classification-accuracy
+references:
+  - id: sculley-debt
+    title: "Hidden Technical Debt in Machine Learning Systems"
+    authors:
+      - D. Sculley
+      - Gary Holt
+      - Daniel Golovin
+      - Eugene Davydov
+      - Todd Phillips
+      - Dietmar Ebner
+      - Vinay Chaudhary
+      - Michael Young
+      - Jean-François Crespo
+      - Dan Dennison
+    year: 2015
+    publisher: NeurIPS
+    url: https://papers.nips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems
+  - id: breck-rubric
+    title: "The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction"
+    authors:
+      - Eric Breck
+      - Shanqing Cai
+      - Eric Nielsen
+      - Michael Salib
+      - D. Sculley
+    year: 2017
+    publisher: "IEEE Big Data"
+    url: https://doi.org/10.1109/BigData.2017.8258038
+featured: false
+---
+
+Most pipeline diagrams draw promotion as an arrow: train, evaluate, register, deploy. The arrow implies that a model which finished evaluation is a model that should ship.
+
+It is more useful to draw promotion as a gate with several independent conditions, all of which must hold. The change in shape matters because it makes the *conjunction* explicit: a candidate that improves the headline metric and fails a schema check has not half-passed. It is stopped.
+
+<Callout title="The rule">
+  Promotion is a conjunction. Every check can veto, no check can compensate for another, and the report names which one failed.
+</Callout>
+
+## Four independent conditions
+
+| Gate | Question | Typical veto |
+| --- | --- | --- |
+| Data | Is the input what the contract says? | Schema drift, distribution shift, unexpected nulls |
+| Performance | Is it better on held-out data? | Below the incumbent, or below an absolute floor |
+| Behaviour | Does it still do the things it must? | A known-case suite regresses |
+| Reproducibility | Can this artefact be rebuilt? | Data or code version not pinned |
+
+They are independent on purpose. A candidate that is better on average but fails a behavioural case has changed something you did not intend, and averaging that away is how models silently lose capabilities.
+
+## Data: validate before training, not after
+
+Schema and distribution checks belong before training starts. Training on malformed data and discovering it at evaluation wastes the run and, worse, sometimes produces a model that scores well.
+
+```python
+@dataclass(frozen=True)
+class ColumnSpec:
+    name: str
+    dtype: str
+    nullable: bool
+    minimum: float | None = None
+    maximum: float | None = None
+
+
+def validate_schema(frame, spec: list[ColumnSpec]) -> list[str]:
+    problems = []
+    for column in spec:
+        if column.name not in frame:
+            problems.append(f"{column.name}: missing")
+            continue
+        series = frame[column.name]
+        if not column.nullable and series.isna().any():
+            problems.append(f"{column.name}: {int(series.isna().sum())} nulls, none permitted")
+        if column.minimum is not None and series.min() < column.minimum:
+            problems.append(f"{column.name}: minimum {series.min()} below {column.minimum}")
+    return problems
+```
+
+Distribution drift is the harder half, because *some* drift is expected. The useful formulation is not "has the distribution changed" but "has it changed more than the amount this model was shown to tolerate" — which means you need a tolerance, established once, rather than a p-value you re-interpret each run.
+
+## Performance: fit the transformation once
+
+The most common silent defect in a pipeline is a transformation fitted separately in training and serving. Training scales with statistics from the training set; serving re-derives them from whatever it has. The model performs worse in production than in evaluation and nobody can say why.
+
+Fit once, persist the fitted object, load it at serving time.
+
+```python
+def build(train_frame):
+    transform = ColumnTransformer([...])
+    features = transform.fit_transform(train_frame)      # fitted exactly once
+    model = Estimator().fit(features, train_frame["target"])
+    return Artefact(transform=transform, model=model)    # persisted together
+
+
+def score(artefact, frame):
+    return artefact.model.predict(artefact.transform.transform(frame))   # transform only
+```
+
+`transform` at serving, never `fit_transform`. Persist the transformation *with* the model so they cannot be separated by a deployment.
+
+Then compare against the incumbent on identical held-out data, and hold two thresholds: better than the current model, and above an absolute floor. The second stops a slowly degrading series of "improvements" from walking the system downhill.
+
+## Behaviour: a suite of cases that must not regress
+
+Aggregate metrics hide capability loss. A model that gains a point of accuracy overall while losing an entire minority class has improved by the number and regressed by any measure that matters.
+
+Keep a suite of specific cases with expected outcomes — edge cases, known-hard examples, one per subgroup you care about, and one per bug you have previously fixed.
+
+```python
+def behaviour_suite(artefact, cases) -> list[str]:
+    failures = []
+    for case in cases:
+        got = score(artefact, case.frame)
+        if not case.holds(got):
+            failures.append(f"{case.name}: {case.describe(got)}")
+    return failures
+```
+
+The regression cases are the highest-value entries. A defect that has occurred once is a defect the training process can reintroduce, and the suite is the only thing that will notice.
+
+## Reproducibility: a candidate you cannot rebuild is not a candidate
+
+The fourth gate asks whether this artefact could be produced again.
+
+- **Data version.** A content hash of the training set, not a path and not a date. Paths are rewritten; dates are ambiguous.
+- **Code version.** The commit, and a dirty-tree check. A model trained from uncommitted changes is unreproducible by definition.
+- **Configuration digest.** Hyperparameters and preprocessing settings, hashed.
+- **Environment.** A resolved lockfile, not a range.
+
+```python
+def provenance(train_frame, config) -> dict:
+    return {
+        "data_sha256": hashlib.sha256(train_frame.to_parquet()).hexdigest(),
+        "code_commit": git_commit(),
+        "code_dirty": git_is_dirty(),
+        "config_sha256": hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest(),
+        "env_lock_sha256": hashlib.sha256(Path("uv.lock").read_bytes()).hexdigest(),
+    }
+```
+
+`code_dirty` is worth a veto on its own for anything going to production. It is the cheapest check in the list and it catches the "it worked on my machine" artefact before it acquires users.
+
+This is the same reasoning as [ruleset provenance in a knowledge system](/learn/evidence-provenance-for-knowledge-systems): an artefact has to carry the identity of what produced it, derived rather than declared.
+
+## Report the gates separately
+
+```python
+@dataclass
+class PromotionReport:
+    data: GateResult
+    performance: GateResult
+    behaviour: GateResult
+    reproducibility: GateResult
+
+    @property
+    def promoted(self) -> bool:
+        return all(g.passed for g in (self.data, self.performance, self.behaviour, self.reproducibility))
+```
+
+A single boolean tells whoever reads it to go and find the logs. Four results tell them what to fix. And when a gate is skipped — no incumbent to compare against, for a first model — record it as `skipped` with a reason rather than as a pass. A first release has not beaten anything, and the report should say so.
+
+## What gates do not give you
+
+- They do not make the model good. They make it *no worse on the things you thought to check*.
+- Held-out performance is not production performance. A gate cannot see distribution shift that has not happened yet.
+- A behaviour suite only covers cases someone wrote down. It is a ratchet against known failures, not a proof of correctness.
+- Reproducibility is not correctness. A reliably rebuildable bad model is still a bad model.
+
+The gates are a floor. They are worth having because without them the floor is wherever the last person's attention happened to stop.
+
+## Related
+
+The [MLOps reference pipeline](/work/mlops-reference-pipeline) is a public implementation of this shape, with hash-based data versions and a transformation fitted once. [Calibration is not classification accuracy](/learn/calibration-is-not-classification-accuracy) covers what the performance gate should actually measure when confidence feeds a decision.

@@ -17,7 +17,16 @@ export const heroStage = {
   positionPrefix: "AI Engineer",
   primaryAction: "Examine the work",
   secondaryAction: "Read the research",
-  scrollHint: "Scroll to run the sequence",
+  /*
+   * The hint names the destination, not the mechanism.
+   *
+   * It said "Scroll to run the sequence", which was written when the homepage was a reel and the
+   * sequence was most of what scrolling did. Two things are wrong with it now. The page below is
+   * an index, so the useful thing to tell someone is where scrolling takes them. And a reader with
+   * reduced motion, or a browser without scroll-driven animation, was being invited to run
+   * something that is already finished and will not move.
+   */
+  scrollHint: "Scroll for the work",
   figureDescription:
     "A predicted series is drawn, then surrounded by a wide uncorrected interval. The interval is calibrated so that it narrows where the signal is easy and stays wide where it is hard. Observations are then plotted against it, and the region where the model's confidence falls below a threshold is marked as one the system declines to answer in.",
   /*

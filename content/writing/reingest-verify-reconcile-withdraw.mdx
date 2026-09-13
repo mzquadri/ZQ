@@ -1,0 +1,165 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Re-ingest, Verify, Reconcile, Withdraw"
+description: "Four operator actions that make a knowledge system maintainable: what each one is allowed to mutate, why the boundaries matter, and how to make every outcome machine-readable."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: reliable-ai-systems
+level: applied
+tags:
+  - slug: operations
+    label: Operations
+  - slug: lifecycle
+    label: Lifecycle Design
+  - slug: api-design
+    label: API Design
+projectSlugs:
+  - reliable-knowledge-systems
+relatedSlugs:
+  - building-an-independent-verification-oracle
+  - refusal-paths-in-production-ai-systems
+references:
+  - id: nygard-release-it
+    title: "Release It! Design and Deploy Production-Ready Software"
+    authors:
+      - Michael T. Nygard
+    year: 2018
+    publisher: "Pragmatic Bookshelf"
+featured: false
+---
+
+Most content pipelines ship with one verb: ingest. Everything afterwards — a bad extraction, a publisher amendment, a document that should never have been loaded — becomes a database session and someone's careful `DELETE`.
+
+A system that is going to be operated needs its repair paths designed rather than improvised. Four actions cover almost everything, and the design work is not in implementing them. It is in deciding what each one is *allowed to touch*.
+
+<Callout title="The organising rule">
+  Separate the thing that measures from the thing that mutates. A component that can both judge a record and repair it can mark its own homework, and eventually will.
+</Callout>
+
+## The four actions
+
+| Action | Reads | Writes | Answers |
+| --- | --- | --- | --- |
+| Re-ingest | Source capture | Canonical + derived state | "Rebuild this from its source" |
+| Verify | Everything | Its own verdict only | "Does what is stored still hold up?" |
+| Reconcile | Canonical + derived | Nothing | "Do the stores agree right now?" |
+| Withdraw | Canonical | Removes canonical + derived | "Take this out of what is served" |
+
+Two of the four write nothing to the data. That is deliberate, and it is the property that makes them safe to run at any time, including automatically on a schedule.
+
+## Re-ingest
+
+Re-ingest rebuilds a record from its captured source. The critical design decision is that it **converges** rather than accumulates: after re-ingest, the state is what a first ingest of that source would have produced, not the union of the old state and the new.
+
+This falls out of deriving identifiers from content, because the new run computes the same ids and upserts over them. What does not fall out for free is removal: if the new extraction produces fewer units than the old one, the surplus must be pruned explicitly.
+
+```python
+def reingest(document_key: str) -> Outcome:
+    source = evidence_store.get_capture(document_key)   # bytes, not a re-download
+    units = parse(source)
+
+    with canonical.transaction():
+        canonical.replace_units(document_key, units)     # atomic: all units or none
+
+    projected = project_all(units)                        # derived stores, upsert by derived id
+    pruned = prune_surplus(document_key, keep=projected)  # the part people forget
+    return Outcome(units=len(units), pruned=pruned)
+```
+
+Re-ingest reads the *capture*, not the publisher. Re-downloading during a repair means you are rebuilding from a source that may itself have changed, which confuses two different events — a bad extraction and an amended document — that need different responses.
+
+## Verify
+
+Verify runs the checks and records the verdict. Its only write is its own result.
+
+The constraint is worth enforcing structurally rather than by convention: give the verifying service a database role that cannot write the canonical tables. Then the property is true because it is impossible to violate, not because everyone remembered.
+
+Verify should also be honest about what it did not do. Every check reports one of four states, and the last two are different:
+
+- `pass` — the check ran and held
+- `fail` — the check ran and did not hold
+- `not_applicable` — the check does not apply to this record type
+- `not_run` — the check did not execute
+
+Collapsing the last two into a grey dash is how a fully-verified record gets read as half-verified. It is a small modelling decision with a disproportionate effect on whether anyone trusts the interface.
+
+## Reconcile
+
+Reconcile is a read-only sweep asking whether the stores currently agree. It is separate from verify because it answers a *live* question: verify tells you a record was sound when it was checked, reconcile tells you the stores match right now.
+
+Three outcomes, and naming the third is what makes it useful:
+
+```python
+class ReconcileOutcome(str, Enum):
+    IN_SYNC = "in_sync"           # all stores agree
+    DIVERGED = "diverged"         # they disagree; the report names how
+    INDETERMINATE = "indeterminate"  # a store could not be read
+```
+
+`INDETERMINATE` is the one that gets left out, and leaving it out is what causes an unreachable store to be reported as a divergence. An operator then goes looking for a data problem that does not exist. A check that cannot run has not found anything.
+
+Run reconcile on startup as well as on demand. Startup is exactly when the previous process may have died mid-write.
+
+## Withdraw
+
+Withdraw is the only destructive action, and it needs the most structure.
+
+It spans services — canonical state in one place, projections in others — so it is an orchestration with a real possibility of partial failure. Two things make that tolerable:
+
+**A lifecycle lock per record.** Two concurrent withdrawals of the same record, or a withdrawal racing a re-ingest, must not interleave. The lock is per record rather than global so unrelated work continues.
+
+**Machine-readable outcomes, including the partial ones.**
+
+```python
+class WithdrawalOutcome(str, Enum):
+    WITHDRAWN = "withdrawn"                     # canonical and derived, all gone
+    ALREADY_ABSENT = "already_absent"           # idempotent repeat
+    PARTIAL_DERIVED_REMAINS = "partial_derived_remains"  # canonical gone, projections not
+    BLOCKED_BY_REFERENCE = "blocked_by_reference"        # something depends on it
+    LOCKED = "locked"                           # another lifecycle action holds the lock
+```
+
+`PARTIAL_DERIVED_REMAINS` is the honest name for the state everyone hopes will not happen. Reporting it as a failure invites a retry that will not help; reporting it as success is a lie. Naming it lets an operator run reconcile, see exactly which projections survived, and clear them.
+
+Make the repeat idempotent. Withdrawing an already-absent record should return `ALREADY_ABSENT`, not a 404 that an operator has to interpret.
+
+## Protect the evidence from all four
+
+None of these actions may delete the captured source. The capture is what every later claim is measured against; once it is gone, a record can never be verified again, only re-downloaded and hoped about.
+
+Make that structural too:
+
+- source evidence tables are append-only,
+- canonical records reference their capture with `ON DELETE RESTRICT`, so deleting a capture that is still referenced fails at the database rather than at review time,
+- the evidence bucket has object-lock retention and the write-ahead log is archived, so a mistaken delete is recoverable rather than merely regrettable.
+
+The theme is the same each time: make the wrong thing impossible rather than discouraged.
+
+## Two gates on every write
+
+Lifecycle writes are the actions most likely to be triggered by accident, so the operator surface should require two independent things to be true: the service is running in a mode where writes are permitted, *and* the specific action is enabled. Neither alone is sufficient.
+
+The practical effect is that a demonstration or a read-only deployment cannot mutate anything, whatever anyone clicks, and the reason it cannot is visible in configuration rather than buried in a handler.
+
+## Give the interface one source of truth
+
+When I built the operator interface for a system like this, the single most valuable decision was reducing it to **one** server-side variable naming the backend. Not one per component, not a client-side override, not a fallback chain.
+
+With a fallback chain, a component that failed to read its configuration could quietly ask a different backend and display a verdict the application never requested — and the interface would look entirely normal while doing it. One variable makes that impossible.
+
+## Summary
+
+- Four actions: re-ingest, verify, reconcile, withdraw.
+- Verify and reconcile write no data; verify writes only its own verdict.
+- Re-ingest converges from the *capture*, and prunes surplus explicitly.
+- Withdraw locks per record and returns machine-readable outcomes, partial states included.
+- Evidence is append-only, referenced with `RESTRICT`, and recoverable.
+- Writes are double-gated; the interface has exactly one backend.
+
+## Related
+
+[Building an independent verification oracle](/learn/building-an-independent-verification-oracle) covers what verify should actually compute. [Refusal paths in production AI systems](/learn/refusal-paths-in-production-ai-systems) is the same instinct applied to inference: name the state where the system declines, rather than inventing an answer.

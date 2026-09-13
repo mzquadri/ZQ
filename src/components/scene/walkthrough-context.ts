@@ -22,6 +22,9 @@ export interface WalkthroughValue {
   complete: boolean;
   stepIndex: number;
   totalSteps: number;
+  /* The dock renders these, so it never needs the script itself. */
+  stepTitle: string;
+  stepCaption: string;
   sceneStates: Record<WalkthroughScene, number> | null;
   start: () => void;
   exit: () => void;

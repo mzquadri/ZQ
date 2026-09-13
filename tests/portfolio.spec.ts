@@ -396,7 +396,7 @@ test("the MLOps case study publishes the released reference run, not the retired
 });
 
 test("the repository index and homepage stay concise about MLOps", async ({ page }) => {
-  await page.goto("/work");
+  await page.goto("/work/repositories");
   const index = page.locator('[data-showcase="index"]');
   const card = index.getByRole("heading", { name: /Testable End-to-End MLOps Pipeline/ });
   await expect(card).toBeVisible();
@@ -587,7 +587,7 @@ test("systems graph selection is keyboard operable and never overclaims", async 
 });
 
 test("the repository index catalogues public work beyond the case studies", async ({ page }) => {
-  await page.goto("/work");
+  await page.goto("/work/repositories");
   const index = page.locator('[data-showcase="index"]');
   await expect(index).toBeVisible();
 
@@ -623,40 +623,66 @@ test("the repository index catalogues public work beyond the case studies", asyn
  * and said the less useful version first. What replaced it is the index that was underneath.
  */
 test("the repository index carries the record with no 3D layer left on the page", async ({ page }) => {
+  /*
+   * The catalogue has its own route now. On /work it was most of an eighteen-screen page at phone
+   * width, so a reader who came for the case studies scrolled past thirty repository cards to
+   * reach the end. Both halves of the assertion still matter: the record is complete over there,
+   * and /work is an index that stops being one if the catalogue comes back.
+   */
   await page.goto("/work");
-
   await expect(page.locator("canvas")).toHaveCount(0);
   await expect(page.locator('[data-showcase="flagship"]')).toHaveCount(0);
+  await expect(page.locator('[data-showcase="index"]')).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Explore all public repositories/ })).toHaveAttribute(
+    "href",
+    "/work/repositories",
+  );
 
+  await page.goto("/work/repositories");
   const index = page.locator('[data-showcase="index"]');
   await expect(index.getByRole("link", { name: /Reliable GNN Surrogates for Transport Policy/ })).toBeVisible();
   await expect(index.getByText(/Last public commit/)).toHaveCount(0);
+  await expect(page.locator("canvas")).toHaveCount(0);
 });
 
-test("generated topic and level routes are reachable and honest when empty", async ({ page }) => {
-  await page.goto("/learn/topic/uncertainty-quantification");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Uncertainty Quantification");
-  await expect(page.getByText("1 published piece on this topic.")).toBeVisible();
-  await expect(page.locator(".writing-grid article")).toHaveCount(1);
-
-  // A vocabulary entry with nothing published still has a route, and says so plainly
-  // rather than rendering an empty grid.
-  await page.goto("/learn/topic/graph-neural-networks");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Graph Neural Networks");
-  await expect(page.getByText(/Nothing is published on this topic yet/)).toBeVisible();
-  await expect(page.locator(".writing-grid")).toHaveCount(0);
-
-  await page.goto("/learn/level/applied");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Applied");
-  await expect(page.locator(".writing-grid article")).toHaveCount(1);
-});
-
-test("the filter interface stays hidden at one published article", async ({ page }) => {
+test("every offered filter leads to a populated page", async ({ page }) => {
+  /*
+   * The vocabulary used to carry two entries nothing was published under, and their routes
+   * rendered a page whose entire content was a sentence saying so. They were removed rather than
+   * left as a promise the site had not kept, so the assertion is now the stronger one: every chip
+   * the browse band offers lands on a page with entries on it.
+   */
   await page.goto("/learn");
-  // The single-feature layout, not the grid.
-  await expect(page.locator(".writing-feature")).toHaveCount(1);
-  await expect(page.locator(".writing-grid")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Latest tutorial" })).toBeVisible();
+  const chips = page.locator("#browse .topic-chips a");
+  const hrefs = await chips.evaluateAll((els) => els.map((el) => el.getAttribute("href")!));
+  expect(hrefs.length).toBeGreaterThanOrEqual(8);
+
+  for (const href of hrefs) {
+    const response = await page.goto(href);
+    expect(response?.status(), `${href} does not resolve`).toBe(200);
+    await expect(page.locator(".writing-grid article").first(), `${href} is empty`).toBeVisible();
+    await expect(page.getByText(/Nothing is published on this (topic|level) yet/)).toHaveCount(0);
+  }
+});
+
+test("an unknown taxonomy value is a 404 rather than an empty page", async ({ page }) => {
+  for (const route of ["/learn/topic/quantum-alchemy", "/learn/level/wizard"]) {
+    const response = await page.goto(route);
+    expect(response?.status(), `${route} should not resolve`).toBe(404);
+  }
+});
+
+test("the learn index is a library, with a way in and a way to filter it", async ({ page }) => {
+  await page.goto("/learn");
+  // Grid mode, not the single-feature layout the page used when there was one article.
+  await expect(page.locator(".writing-feature")).toHaveCount(0);
+
+  const cards = page.locator("#all .writing-grid article");
+  expect(await cards.count()).toBeGreaterThanOrEqual(8);
+
+  await expect(page.locator("#featured .writing-grid article")).toHaveCount(3);
+  await expect(page.getByRole("heading", { name: "Every tutorial, newest first" })).toBeVisible();
+  await expect(page.locator("#browse")).toBeVisible();
 });
 
 test("the arXiv listing is unmistakably other people's work", async ({ page }) => {
@@ -2689,7 +2715,7 @@ test("the retrieval page shows the score that chose the configuration beside the
 });
 
 test("every substantial repository opens into how it runs", async ({ page }) => {
-  await page.goto("/work", { waitUntil: "networkidle" });
+  await page.goto("/work/repositories", { waitUntil: "networkidle" });
   const panels = page.locator("[data-showcase='index'] details");
   await expect(panels).toHaveCount(9);
 
@@ -3082,8 +3108,63 @@ test("every live route is in the sitemap", async ({ request }) => {
    * They were linked, reachable, and invisible to a crawler.
    */
   const sitemap = await (await request.get("/sitemap.xml")).text();
-  for (const route of ["/work/medico", "/work/reliable-knowledge-systems", "/architecture"]) {
+  for (const route of [
+    "/work/medico",
+    "/work/reliable-knowledge-systems",
+    "/work/engineering-model",
+    "/work/repositories",
+    "/architecture",
+  ]) {
     expect(sitemap, `${route} missing from the sitemap`).toContain(`https://mzquadri.de${route}`);
+  }
+});
+
+test("every published tutorial is in the sitemap and the feed", async ({ page, request }) => {
+  await page.goto("/learn");
+  const paths = await page
+    .locator("#all .writing-grid article h2 a, #all .writing-grid article h3 a")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("href")!));
+  expect(paths.length).toBeGreaterThanOrEqual(8);
+
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  const feed = await (await request.get("/rss.xml")).text();
+  for (const path of paths) {
+    expect(sitemap, `${path} missing from the sitemap`).toContain(`https://mzquadri.de${path}`);
+    expect(feed, `${path} missing from the feed`).toContain(`https://mzquadri.de${path}`);
+  }
+});
+
+test("no index page still describes the homepage as a reel", async ({ page }) => {
+  /*
+   * The homepage was a fifty-five screen reel of full-viewport projects and the copy said so. It
+   * is an index now, and an interaction that no longer exists must not still be described - a
+   * reader with reduced motion was being told to scroll to run a sequence that is already at rest.
+   */
+  for (const route of ["/", "/work", "/research", "/architecture", "/learn", "/about", "/contact"]) {
+    await page.goto(route);
+    const text = await page.locator("body").innerText();
+    for (const stale of [
+      /scroll to run the sequence/i,
+      /eight worlds/i,
+      /nine worlds/i,
+      /in running order/i,
+      /enter this world/i,
+    ]) {
+      expect(text, `${route} still carries ${stale}`).not.toMatch(stale);
+    }
+  }
+});
+
+test("no page publishes an employer address or offers a document download", async ({ page }) => {
+  for (const route of ["/", "/work", "/about", "/contact", "/learn", "/architecture"]) {
+    await page.goto(route);
+    const html = await page.content();
+    /* The approved personal address is the only one that may render. */
+    const addresses = html.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g) ?? [];
+    for (const address of addresses) {
+      expect(address.toLowerCase(), `${route} publishes ${address}`).toBe("mohdzaminquadri@gmail.com");
+    }
+    await expect(page.locator('a[download], a[href$=".pdf"], a[href$=".docx"]')).toHaveCount(0);
   }
 });
 

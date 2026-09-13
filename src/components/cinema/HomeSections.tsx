@@ -92,20 +92,16 @@ export function ExperienceSection() {
         </ol>
 
         {/*
-         * The approved public record, unchanged. Roles and the one sanitised practice line come
-         * from the truth registry; nothing is added to them here.
+         * The roles themselves are not repeated here.
+         *
+         * They were, as organisation and title, immediately under the problem classes - which is
+         * the same record /about renders in full, with the period each role ran for and the
+         * discipline grouping that makes five roles readable. Two renderings of one list, and the
+         * shorter one was the one a visitor met first.
+         *
+         * What stays is the framing the homepage adds and /about does not: the classes of problem,
+         * in the order I met them. The record is one link away.
          */}
-        <ul className="role-list" aria-label="Roles">
-          {site.experience.map((record) => (
-            <li className="role" key={record.id}>
-              <p className="role-org">{record.organization}</p>
-              <p className="role-title">{record.title}</p>
-              {"practice" in record && record.practice ? (
-                <p className="role-practice">{record.practice}</p>
-              ) : null}
-            </li>
-          ))}
-        </ul>
 
         <p className="cine-section-action">
           <Link className="chapter-more mz-interactive" href="/about">

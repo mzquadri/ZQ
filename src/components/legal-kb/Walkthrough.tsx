@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { sceneStatesAt, walkthroughSteps } from "@/content/legal-kb-walkthrough";
+import { sceneStatesAt, type WalkthroughStep } from "@/content/legal-kb-walkthrough";
 import { WalkthroughContext, useWalkthrough, type WalkthroughValue } from "@/components/scene/walkthrough-context";
 
 /**
@@ -21,7 +21,27 @@ function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function WalkthroughProvider({ children }: { children: ReactNode }) {
+export function WalkthroughProvider({
+  steps: walkthroughSteps,
+  children,
+}: {
+  /*
+   * The script arrives as a prop rather than as an import, and that is a privacy decision rather
+   * than a styling one.
+   *
+   * This controller is loaded through `next/dynamic`, which keeps it out of the initial payload -
+   * but a lazily loaded module is still an emitted, fetchable chunk. Importing the script here put
+   * the withheld case study's step titles and captions into that chunk, so a production build that
+   * correctly excluded the page still served its narration to anyone who asked for the asset. It
+   * was caught by the privacy scan asserting the withheld study's own title is absent from build
+   * output, which is the check that replaced a list of banned product names.
+   *
+   * As a prop it travels in the RSC payload of the one page that renders it. In production that
+   * page does not exist, so neither does the copy.
+   */
+  steps: readonly WalkthroughStep[];
+  children: ReactNode;
+}) {
   const [active, setActive] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [complete, setComplete] = useState(false);
@@ -44,8 +64,8 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const sceneStates = useMemo(
-    () => (active ? sceneStatesAt(position.step, position.beat) : null),
-    [active, position.step, position.beat],
+    () => (active ? sceneStatesAt(walkthroughSteps, position.step, position.beat) : null),
+    [active, walkthroughSteps, position.step, position.beat],
   );
 
   const step = walkthroughSteps[position.step];
@@ -88,7 +108,7 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
     }, beat.hold);
 
     return clearTimer;
-  }, [active, playing, position.step, position.beat, step, clearTimer]);
+  }, [active, playing, position.step, position.beat, step, clearTimer, walkthroughSteps]);
 
   // Reaching the last beat of the last step ends the run rather than looping.
   useEffect(() => {
@@ -102,7 +122,7 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       }, beat.hold);
       return () => clearTimeout(finish);
     }
-  }, [active, playing, position.step, position.beat]);
+  }, [active, playing, position.step, position.beat, walkthroughSteps]);
 
   const start = useCallback(() => {
     setComplete(false);
@@ -140,7 +160,7 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       }
       return { step: current.step + 1, beat: 0 };
     });
-  }, []);
+  }, [walkthroughSteps]);
 
   const previous = useCallback(() => {
     setPlaying(false);
@@ -151,7 +171,7 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       const target = current.step - 1;
       return { step: target, beat: walkthroughSteps[target].beats.length - 1 };
     });
-  }, []);
+  }, [walkthroughSteps]);
 
   const toggle = useCallback(() => {
     if (complete) {
@@ -261,7 +281,7 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       root.removeAttribute("data-walkthrough-step");
       root.removeAttribute("data-walkthrough-beat");
     };
-  }, [active, complete, position.step, position.beat]);
+  }, [active, complete, position.step, position.beat, walkthroughSteps]);
 
   /*
    * The control surface, published for anything driving the run from outside the React tree.
@@ -277,7 +297,7 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
     return () => {
       delete (window as unknown as Record<string, unknown>).zqWalkthrough;
     };
-  }, [start, exit, next, previous, toggle, restart, goTo]);
+  }, [start, exit, next, previous, toggle, restart, goTo, walkthroughSteps]);
 
   // Focus moves into the dock once, on start. It is not moved again on every step: a screen
   // reader hearing the step announced is better served by a live region than by being yanked.
@@ -292,6 +312,8 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       complete,
       stepIndex: position.step,
       totalSteps: walkthroughSteps.length,
+      stepTitle: step?.title ?? "",
+      stepCaption: step?.caption ?? "",
       sceneStates,
       start,
       exit,
@@ -303,7 +325,7 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       registerLauncher,
     }),
     [
-      active, playing, complete, position.step, sceneStates,
+      active, playing, complete, position.step, sceneStates, walkthroughSteps.length, step,
       start, exit, next, previous, toggle, restart, goTo, registerLauncher,
     ],
   );
@@ -317,9 +339,8 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
 }
 
 function WalkthroughDock({ dockRef }: { dockRef: React.RefObject<HTMLDivElement | null> }) {
-  const { stepIndex, totalSteps, playing, complete, next, previous, toggle, exit, restart } =
+  const { stepIndex, totalSteps, stepTitle, stepCaption, playing, complete, next, previous, toggle, exit, restart } =
     useWalkthrough();
-  const step = walkthroughSteps[stepIndex];
 
   return (
     <div
@@ -340,11 +361,11 @@ function WalkthroughDock({ dockRef }: { dockRef: React.RefObject<HTMLDivElement 
           <span className="legal-dock-count">
             {stepIndex + 1} / {totalSteps}
           </span>
-          <strong>{complete ? "Walkthrough complete" : step.title}</strong>
+          <strong>{complete ? "Walkthrough complete" : stepTitle}</strong>
           <span>
             {complete
               ? "You can carry on reading from here, run it again, or leave guided mode."
-              : step.caption}
+              : stepCaption}
           </span>
         </p>
 

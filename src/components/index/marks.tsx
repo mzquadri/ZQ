@@ -109,6 +109,86 @@ export function Mark({ slug }: { slug: string }) {
           <circle cx="28" cy="22" r="2.6" />
         </>
       );
+    /* ---- The architecture case studies ------------------------------------------------------
+     * These stand for subjects on the separate case-study site rather than for projects here, so
+     * they are drawn from the same vocabulary without repeating any project's own mark. No mark
+     * may appear twice on one page meaning two different things.
+     */
+    /* A source, and the three representations derived from it. */
+    case "arch-legal":
+      return (
+        <>
+          <rect className="mark-fill" height="7" width="7" x="4" y="11" />
+          <path d="M11 14 H16 M16 6 V22 M16 6 H21 M16 14 H21 M16 22 H21" />
+          <rect height="5" width="7" x="22" y="4" />
+          <rect height="5" width="7" x="22" y="11.5" />
+          <rect height="5" width="7" x="22" y="19" />
+        </>
+      );
+    /* A measurement running back against the thing it measures. */
+    case "arch-trust":
+      return (
+        <>
+          <rect height="14" width="10" x="5" y="4" />
+          <rect height="14" width="10" x="25" y="4" />
+          <path className="mark-dash" d="M35 22 H10 v-4" />
+          <path d="M6 18 L10 22 L14 18" />
+        </>
+      );
+    /* A log, and two consumers reading from it at their own positions. */
+    case "arch-events":
+      return (
+        <>
+          <path d="M4 9 H36" />
+          <rect className="mark-fill" height="4" width="4" x="9" y="7" />
+          <rect className="mark-fill" height="4" width="4" x="19" y="7" />
+          <rect height="4" width="4" x="29" y="7" />
+          <path className="mark-dash" d="M11 13 V20 M21 13 V20" />
+          <rect height="5" width="9" x="6.5" y="20" />
+          <rect height="5" width="9" x="16.5" y="20" />
+        </>
+      );
+    /* A query, and the passage it is grounded in. */
+    case "arch-query":
+      return (
+        <>
+          <circle cx="11" cy="12" r="6" />
+          <path d="M15.5 16.5 L20 21" />
+          <path d="M25 6 H36 M25 11 H36 M25 16 H31" />
+          <path className="mark-fill" d="M25 20 H33 v2 H25 Z" />
+        </>
+      );
+    /* A page, and the fields lifted out of it. */
+    case "arch-documents":
+      return (
+        <>
+          <rect height="18" width="13" x="4" y="5" />
+          <path d="M7 10 H17 M7 14 H17 M7 18 H13" />
+          <path className="mark-dash" d="M17 10 H24 M17 14 H24" />
+          <rect className="mark-fill" height="4" width="10" x="25" y="8" />
+          <rect height="4" width="10" x="25" y="16" />
+        </>
+      );
+    /* A questionnaire, and the flag one answer raises. */
+    case "arch-compliance":
+      return (
+        <>
+          <rect height="20" width="15" x="4" y="4" />
+          <path d="M7 10 H16 M7 14 H16 M7 18 H13" />
+          <circle className="mark-fill" cx="22" cy="14" r="2" />
+          <path d="M27 22 V6 H36 l-3 4 3 4 h-9" />
+        </>
+      );
+    /* A scan, with the region an explanation points at. */
+    case "arch-radiology":
+      return (
+        <>
+          <rect height="20" width="16" x="4" y="4" />
+          <path d="M12 4 V24 M8 9 q4 3 8 0 M8 15 q4 3 8 0" />
+          <rect className="mark-window" height="8" width="10" x="24" y="10" />
+          <circle className="mark-fill-soft" cx="29" cy="14" r="3" />
+        </>
+      );
     default:
       return (
         <>

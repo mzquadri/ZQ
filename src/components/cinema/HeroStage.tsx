@@ -9,8 +9,8 @@ import { site } from "@/content/portfolio";
 /*
  * The opening sequence.
  *
- * The reader's scroll is the time axis. Over roughly three viewports the hero builds the argument
- * that the rest of this site is about: a model produces a prediction; a prediction without a
+ * The reader's scroll is the time axis. Over a little more than two viewports the hero builds the
+ * argument that the rest of this site is about: a model produces a prediction; a prediction without a
  * calibrated interval is not yet usable; a calibrated interval can be checked against what
  * actually happened; and a system that knows where it is uncertain can decline to answer there.
  *

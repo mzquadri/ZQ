@@ -148,12 +148,16 @@ export function walkthroughDurationMs(): number {
  * recorder will need, and what makes stepping backwards land on the same picture as stepping
  * forwards.
  */
-export function sceneStatesAt(stepIndex: number, beatIndex: number): Record<WalkthroughScene, number> {
+export function sceneStatesAt(
+  steps: readonly WalkthroughStep[],
+  stepIndex: number,
+  beatIndex: number,
+): Record<WalkthroughScene, number> {
   const states: Record<WalkthroughScene, number> = { fanout: 0, count: 0, generations: 0, ladder: 0 };
-  for (let step = 0; step <= stepIndex && step < walkthroughSteps.length; step += 1) {
-    const last = step === stepIndex ? beatIndex : walkthroughSteps[step].beats.length - 1;
+  for (let step = 0; step <= stepIndex && step < steps.length; step += 1) {
+    const last = step === stepIndex ? beatIndex : steps[step].beats.length - 1;
     for (let beat = 0; beat <= last; beat += 1) {
-      const current = walkthroughSteps[step].beats[beat];
+      const current = steps[step].beats[beat];
       if (current?.scene && current.state !== undefined) states[current.scene] = current.state;
     }
   }

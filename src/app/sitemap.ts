@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/work",
     "/work/engineering-model",
+    "/work/repositories",
     "/work/medico",
     "/work/reliable-knowledge-systems",
     "/research",

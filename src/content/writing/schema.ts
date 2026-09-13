@@ -68,13 +68,24 @@ export const writingLevels = [
   { slug: "advanced", label: "Advanced" },
 ] as const;
 
+/*
+ * Every entry here has something published under it.
+ *
+ * Two entries were removed rather than filled - graph neural networks and scientific computing.
+ * Both describe real work on this site, and neither had a tutorial, so both routes rendered a page
+ * whose entire content was a sentence saying there was no content. A vocabulary is a promise about
+ * what you will find; an entry that has never been used is a promise the site has not kept. They
+ * go back in the list on the same commit as the tutorial that fills them, not before.
+ */
 export const writingTopics = [
-  { slug: "machine-learning", label: "Machine Learning" },
-  { slug: "uncertainty-quantification", label: "Uncertainty Quantification" },
-  { slug: "graph-neural-networks", label: "Graph Neural Networks" },
+  { slug: "reliable-ai-systems", label: "Reliable AI Systems" },
+  { slug: "distributed-systems", label: "Backend and Distributed Systems" },
   { slug: "retrieval-and-grounded-generation", label: "Retrieval and Grounded Generation" },
+  { slug: "document-intelligence", label: "Document Intelligence" },
+  { slug: "uncertainty-quantification", label: "Uncertainty Quantification" },
+  { slug: "explainable-ai", label: "Explainable AI" },
+  { slug: "machine-learning", label: "Machine Learning" },
   { slug: "mlops", label: "MLOps" },
-  { slug: "scientific-computing", label: "Scientific Computing" },
 ] as const;
 
 export type WritingLevelSlug = (typeof writingLevels)[number]["slug"];

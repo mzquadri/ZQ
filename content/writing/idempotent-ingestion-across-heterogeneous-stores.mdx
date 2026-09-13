@@ -1,0 +1,161 @@
+---
+schemaVersion: 1
+status: published
+section: learn
+kind: tutorial
+title: "Idempotent Ingestion Across Heterogeneous Stores"
+description: "Deriving identifiers so that a redelivered event converges three stores on the same state, without a distributed transaction and without a deduplication table."
+publishedAt: "2026-09-13"
+updatedAt: "2026-09-13"
+author: "Mohd Zamin Quadri"
+topic: distributed-systems
+level: advanced
+tags:
+  - slug: idempotency
+    label: Idempotency
+  - slug: event-driven
+    label: Event-Driven Systems
+  - slug: data-architecture
+    label: Data Architecture
+projectSlugs:
+  - reliable-knowledge-systems
+relatedSlugs:
+  - designing-replay-as-a-normal-path
+  - equal-counts-do-not-prove-two-stores-agree
+references:
+  - id: kleppmann-ddia
+    title: "Designing Data-Intensive Applications"
+    authors:
+      - Martin Kleppmann
+    year: 2017
+    publisher: "O'Reilly"
+  - id: rfc4122
+    title: "A Universally Unique IDentifier (UUID) URN Namespace"
+    authors:
+      - Paul Leach
+      - Michael Mealling
+      - Rich Salz
+    year: 2005
+    publisher: IETF
+    url: https://www.rfc-editor.org/rfc/rfc4122
+featured: true
+---
+
+A document arrives on a queue. One service parses it into records. Another projects those records into a search index and a graph. Three stores now hold three representations of one input, and no two of them share a transaction manager.
+
+Then the broker redelivers the message, because that is what at-least-once delivery means.
+
+The question this article answers is narrow: what has to be true about your identifiers so that the second delivery leaves the system in exactly the state the first one did?
+
+<Callout title="The claim">
+  If every identifier is a pure function of the input, every write becomes an upsert, and convergence stops needing coordination. You do not need a distributed transaction. You need identifiers that cannot drift.
+</Callout>
+
+## What goes wrong with generated identifiers
+
+The default in most stacks is to let each store mint its own key — an auto-increment column, a random point id, an internally generated node id. That is fine until the same input arrives twice.
+
+```python
+# Redelivery-hostile: the identifier depends on when the code ran.
+point_id = uuid.uuid4()
+index.upsert(id=point_id, vector=embed(chunk.text), payload=chunk.meta)
+```
+
+The second delivery computes a different `point_id` for the identical chunk, so `upsert` inserts rather than replaces. The index now holds the chunk twice. Nothing errors. The count is simply wrong, and it is wrong in a way that grows with every retry.
+
+The usual patch is a processed-message table: record each message id, skip anything already seen. That works, and it buys the problem you were avoiding — the table is a fourth store, it needs its own write to be atomic with the other three, and you are back to coordinating.
+
+## Derive the identifier from the content instead
+
+A deterministic identifier is computed from the input, so two deliveries of the same input compute the same value. UUID version 5 is built for exactly this: a namespace plus a name, hashed.
+
+```python
+import uuid
+
+# One namespace per identifier family, fixed once and never regenerated.
+CHUNK_NS = uuid.UUID("6f9619ff-8b86-d011-b42d-00c04fc964ff")
+
+
+def chunk_point_id(document_key: str, version: int, ordinal: int) -> uuid.UUID:
+    """Stable for a given (document, version, position). Recomputable from nothing else."""
+    return uuid.uuid5(CHUNK_NS, f"{document_key}:{version}:{ordinal}")
+```
+
+Three properties matter here, and each is doing work:
+
+- **It is a pure function.** No clock, no counter, no database round trip. The same arguments produce the same id on any machine, in any process, at any time.
+- **It is reproducible from the record itself.** If you have the stored record you can recompute its id and check it. An identifier you cannot recompute is one you can only trust.
+- **The inputs are part of the identity.** Including `version` means a new version of a document produces different ids, which is what you want: the old ids are still addressable for withdrawal rather than silently overwritten.
+
+Pick the components deliberately. Anything in the tuple becomes part of what "the same thing" means. Anything left out becomes something two different records are allowed to disagree about while sharing an id.
+
+## Every write becomes an upsert
+
+Once ids are derived, each store's write is expressed as *converge to this state*, not *add this*.
+
+```python
+def project(chunks, index, graph):
+    for chunk in chunks:
+        point_id = chunk_point_id(chunk.document_key, chunk.version, chunk.ordinal)
+        # Vector store: upsert by the derived id.
+        index.upsert(id=str(point_id), vector=embed(chunk.text), payload=chunk.meta)
+
+    # Graph store: MERGE on a natural key, never CREATE.
+    graph.run(
+        "MERGE (d:Document {key: $key}) "
+        "SET d.version = $version, d.title = $title",
+        key=chunks[0].document_key, version=chunks[0].version, title=chunks[0].title,
+    )
+```
+
+`CREATE` is the bug. `MERGE` on a natural key is the fix, and it is a fix precisely because the key is derived rather than allocated. In a relational store the same shape is `INSERT ... ON CONFLICT (derived_key) DO UPDATE`.
+
+The result is that the redelivered message performs the same writes and reaches the same state. The second run is not *skipped* — it is *repeated and harmless*, which is a considerably easier property to reason about than a skip that depends on a lookup succeeding.
+
+## One writer per store
+
+Idempotent writes converge only if nothing else is writing. If two services can both write the search index, a redelivery from one can race a correction from the other, and the winner is decided by arrival order.
+
+So the rule I enforce is blunt: **each store has exactly one writing service.** Everything else reads. When a second write path appeared in a system I built, the resolution was to delete that path rather than to relax the rule and add locking around it — because a single-writer store gives you something locking does not, which is that a divergence is attributable. There is exactly one service that could have caused it.
+
+Write order within that single writer is worth deciding explicitly too, and worth writing down. If the index is written before the graph, a crash between them leaves the index ahead. That is a state your reconciliation has to recognise, so choose the order you would rather explain and keep it.
+
+## Count fences: cheap, and not proof
+
+After projecting, assert what you expect to be there.
+
+```python
+expected = len(chunks)
+stored = index.count(filter={"document_key": chunk.document_key, "version": chunk.version})
+if stored != expected:
+    raise ProjectionMismatch(f"expected {expected} points, found {stored}")
+```
+
+This catches partial writes, silent client-side batching failures, and the whole class of "it looked like it worked". It is worth having.
+
+It does not prove the stores agree. Equal totals survive one record being removed and another added — the subject of [a separate article](/learn/equal-counts-do-not-prove-two-stores-agree), because it is the mistake I see made most often once someone has added fences and feels finished.
+
+## Where this pattern does not apply
+
+Be honest about the boundary:
+
+- **Genuinely non-idempotent effects.** Sending an email, charging a card, appending to a ledger. Derived ids do not help; you need an outbox with an explicit deduplication window.
+- **Inputs without a stable natural key.** If nothing in the payload identifies the thing, you are deriving from noise. Fix the event contract first.
+- **Aggregations.** `count = count + 1` is not idempotent however the row is keyed. Store the contributing facts and derive the aggregate.
+- **Ordering requirements.** Idempotence makes redelivery safe; it does not make *reordering* safe. If two versions of one document can be processed concurrently, key the partition by document identity so they cannot.
+
+That last point is the one that bit me. Broker-level ordering is per partition, so two generations of the same document only stay ordered if they land on the same partition. Keying inbound events by document identity rather than by message id was a one-line change and a real defect.
+
+## The contract, stated
+
+1. Every identifier is a pure function of `(entity, version, position)` — no clocks, no counters.
+2. Every write is an upsert or a `MERGE`, never a create.
+3. Each store has exactly one writing service, and the write order inside it is documented.
+4. Partitions are keyed by entity identity, so two versions of one entity cannot race.
+5. Post-write count fences catch partial writes, and are never presented as agreement.
+
+None of this requires a distributed transaction, a saga, or a two-phase commit. It requires deciding what "the same thing" means and then computing it the same way everywhere.
+
+## Related
+
+The [reliable knowledge systems model](/work/reliable-knowledge-systems) shows the shape of a system built this way, with synthetic data throughout. [Designing replay as a normal path](/learn/designing-replay-as-a-normal-path) covers the consumer side: what has to be true for re-running a stream to be routine rather than an incident. Kleppmann's *Designing Data-Intensive Applications* is the reference I would send someone to for the surrounding theory, and the [UUID specification](https://www.rfc-editor.org/rfc/rfc4122) defines the version 5 derivation used above.
