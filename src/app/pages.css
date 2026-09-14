@@ -29,7 +29,32 @@
   align-items: center;
 }
 
+/*
+ * The measure belongs to the prose, not to the column.
+ *
+ * `max-width: 40rem` on the column was a reading measure for the standfirst, and it also capped
+ * everything passed in as children. On /work that meant four jump links needing 682px were laid
+ * out in 640px, so the row wrapped three-and-one and left "Repository index" alone on a second
+ * line at every width from 768 up.
+ *
+ * Capping the prose elements instead keeps the line length where it was and lets a navigation row
+ * use the width the hero actually has. Where the stage carries a figure the grid track already
+ * constrains the column.
+ *
+ * The cap was doing a second job, though, and dropping it without replacement broke /architecture
+ * at 390: below 640px the stage becomes a flex column, and a flex item's `min-width: auto` let the
+ * meta row's min-content push the column to 483px inside a 358px container. `min-width: 0` and a
+ * full-width cap restore that containment without reintroducing a reading measure on a nav row.
+ */
 .page-stage-copy {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.page-stage-copy > .page-stage-eyebrow,
+.page-stage-copy > .page-stage-title,
+.page-stage-copy > .page-stage-standfirst,
+.page-stage-copy > .page-stage-meta {
   max-width: 40rem;
 }
 

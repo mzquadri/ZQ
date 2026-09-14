@@ -13,6 +13,7 @@ import {
   parseWritingSource,
 } from "../src/content/writing/repository";
 import { createRssFeed, escapeXml } from "../src/content/writing/rss";
+import { publicWritingSections } from "../src/content/writing/repository";
 import { getLinkableWork, standaloneWork } from "../src/content/work-routes";
 
 /*
@@ -102,16 +103,76 @@ test("the taxonomy only offers filters that lead somewhere", () => {
   }
 });
 
-test("the scaffold stays a draft so it cannot inflate the published count", () => {
+/*
+ * Publication is decided by status and date, never by what a file is called.
+ *
+ * The scaffold is the case that motivated this - a template that documents the schema and must
+ * never reach a reader - but naming it in the assertion would only protect that one file. What is
+ * asserted is the contract every entry is under: nothing reaches a public surface unless it says
+ * `published` and carries a date that has already happened. A second scaffold, a half-written
+ * draft, or a piece dated next week all fail the same way.
+ */
+test("only explicitly published, already-dated content reaches a public surface", () => {
   const all = getAllWriting();
-  const scaffold = all.find((entry) => entry.slug.includes("scaffold"));
-  assert.ok(scaffold, "the scaffold article is missing");
+  const published = getPublishedLearnWriting();
+  const today = new Date().toISOString().slice(0, 10);
+
+  for (const entry of published) {
+    assert.equal(entry.status, "published", `${entry.slug} is public with status ${entry.status}`);
+    assert.ok(entry.publishedAt, `${entry.slug} is public with no publication date`);
+    assert.ok(entry.publishedAt! <= today, `${entry.slug} is public and dated in the future`);
+    assert.ok(publicWritingSections.includes(entry.section), `${entry.slug} is public from ${entry.section}`);
+  }
+
+  /* And every surface derived from the collection is derived from that same filtered set. */
+  const publicSlugs = new Set(published.map((entry) => entry.slug));
+  const withheld = all.filter((entry) => !publicSlugs.has(entry.slug));
+  assert.ok(withheld.length > 0, "no unpublished entry exists, so this test proves nothing");
+
+  const { topics, levels, tags } = getWritingTaxonomy();
+  for (const entry of withheld) {
+    assert.notEqual(entry.status, "published", `${entry.slug} is published but absent from the public set`);
+
+    /* A withheld entry must not be the only thing holding a taxonomy chip open. */
+    if (!published.some((other) => other.topic === entry.topic)) {
+      assert.ok(!topics.some((t) => t.slug === entry.topic), `${entry.topic} is offered by ${entry.slug} alone`);
+    }
+    if (!published.some((other) => other.level === entry.level)) {
+      assert.ok(!levels.some((l) => l.slug === entry.level), `${entry.level} is offered by ${entry.slug} alone`);
+    }
+    for (const tag of entry.tags) {
+      if (!published.some((other) => other.tags.some((t) => t.slug === tag.slug))) {
+        assert.ok(!tags.some((t) => t.slug === tag.slug), `tag ${tag.slug} is offered by ${entry.slug} alone`);
+      }
+    }
+
+    /* Nor may a published piece link to one. */
+    for (const other of published) {
+      assert.ok(
+        !other.relatedSlugs.includes(entry.slug),
+        `${other.slug} relates to ${entry.slug}, which is not published`,
+      );
+    }
+  }
+
+  /* The feed is built from the same set, so an unpublished entry cannot appear in it. */
+  const feed = createRssFeed({
+    entries: [...published],
+    domain: "https://mzquadri.de",
+    siteName: "Mohd Zamin Quadri",
+  });
+  for (const entry of withheld) {
+    assert.ok(!feed.includes(`/learn/${entry.slug}`), `${entry.slug} appears in the RSS feed`);
+    assert.ok(!feed.includes(entry.title), `${entry.slug} title appears in the RSS feed`);
+  }
+});
+
+test("the scaffold is present, and is withheld by the contract rather than by name", () => {
+  const scaffold = getAllWriting().find((entry) => entry.slug === "scaffold-article");
+  assert.ok(scaffold, "the scaffold article is missing; it documents the schema");
   assert.equal(scaffold.status, "draft");
-  assert.equal(
-    getPublishedLearnWriting().length,
-    all.filter((entry) => entry.status === "published" && entry.section === "learn").length,
-  );
-  assert.ok(!getPublishedLearnWriting().some((entry) => entry.slug.includes("scaffold")));
+  assert.equal(scaffold.publishedAt, undefined, "a draft must not carry a publication date");
+  assert.ok(!getPublishedLearnWriting().some((entry) => entry.slug === scaffold.slug));
 });
 
 test("the research feed publishes metadata only, never a summary", () => {
