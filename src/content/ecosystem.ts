@@ -439,6 +439,17 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     boundary:
       "Retained as a record rather than as work. It is not an application and not a portfolio project.",
   },
+  {
+    name: "mzquadri",
+    title: "Profile README",
+    category: "Reference",
+    language: "Markdown",
+    topics: ["Profile", "Index"],
+    description:
+      "The README GitHub renders on the profile page. It points at this site and at the handful of repositories worth opening first, with what each one measured.",
+    boundary:
+      "A signpost, not work. Every figure it quotes belongs to the repository it links to, and is checked there rather than here.",
+  },
 ];
 
 export function repositoryUrl(repository: EcosystemRepository) {
