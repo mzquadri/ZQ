@@ -133,7 +133,7 @@ export const canonicalMlopsEvidence = {
 } as const;
 
 const insureAssistRepository = "https://github.com/mzquadri/insureassist-rag-mlops";
-const insureAssistCommit = "0f7cb63095f35bb02be40058ac4550225c7283a2";
+const insureAssistCommit = "526495a7e4c92bedb2492af68278232ffac75c32";
 
 /**
  * Evidence links for the InsureAssist RAG benchmark, pinned to the released commit.
@@ -683,13 +683,13 @@ const authoredProjects: readonly Project[] = [
     evidence: [
       {
         label: "Attacks caught",
-        value: "92.3%",
-        note: "24 of 26 adversarial cases handled at or above the response each case requires. Deterministic: no model call, no network.",
+        value: "96.2%",
+        note: "25 of 26 adversarial cases handled at or above the response each case requires. Deterministic: no model call, no network.",
       },
       {
         label: "Legitimate traffic refused",
-        value: "11.1%",
-        note: "2 of 18 benign near-misses blocked. The keyword filter it is compared against refuses 38.9%.",
+        value: "9.5%",
+        note: "2 of 21 benign near-misses blocked. The keyword filter it is compared against refuses 33.3%.",
       },
       {
         label: "Controls with no false positives",
@@ -703,14 +703,14 @@ const authoredProjects: readonly Project[] = [
       },
     ],
     quality: [
-      "98 tests: unit, engine properties, corpus hygiene, and integration over a real MCP subprocess",
+      "108 tests: unit, engine properties, corpus hygiene, and integration over a real MCP subprocess",
       "CI runs lint, format, mypy, the tests, the benchmark and the end-to-end demo on 3.11, 3.12 and 3.13",
       "The benchmark reproduces exactly from a clean clone, with no API key, network or GPU",
-      "Headline numbers are pinned by tests, and the four known failures are named exactly so a new one fails the build",
+      "Headline numbers are pinned by tests, and the three known failures are named exactly so a new one fails the build",
     ],
     limitations: [
-      "Paraphrase defeats pattern matching, so 92.3% is an upper bound against the attack forms represented",
-      "Encoded payloads are not decoded before matching, and one corpus case is kept as a scored miss because of it",
+      "Paraphrase defeats pattern matching, so 96.2% is an upper bound against the attack forms represented",
+      "Base64 is decoded only when it returns prose, so attachments and keys are never re-scanned; nested or multi-layer encodings are still invisible",
       "One event at a time: an instruction assembled across several tool results is invisible",
       "English only; images, PDFs and binary content are not inspected",
       "The corpus is mine, which is not the same as an independent evaluation",

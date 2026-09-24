@@ -96,7 +96,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     language: "Python",
     topics: ["Agent Security", "Model Context Protocol", "Prompt Injection", "Adversarial Benchmark"],
     description:
-      "A proxy that sits between an MCP client and an MCP server, inspecting tool declarations, call arguments and returned content, with a 44-case corpus that measures each control against the legitimate traffic a careless rule would break.",
+      "A proxy that sits between an MCP client and an MCP server, inspecting tool declarations, call arguments and returned content, with a 47-case corpus that measures each control against the legitimate traffic a careless rule would break.",
     boundary:
       "A prototype with a reproducible benchmark, not a deployed product. Detection is pattern-based and deterministic, so paraphrased attacks and encoded payloads pass; two of the corpus cases are kept as scored misses and two known false positives are kept for the same reason. The Model Context Protocol SDK is a dependency by other authors, not part of this work.",
     caseStudySlug: "mcp-policy-gateway",

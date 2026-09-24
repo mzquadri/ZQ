@@ -23,7 +23,7 @@ const gatewayRepository = "https://github.com/mzquadri/mcp-policy-gateway";
  * would have relabelled the citation and left every evidence link on the old commit, still
  * resolving and quietly quoting different numbers.
  */
-const gatewayCommit = "d5bd208";
+const gatewayCommit = "11c0017";
 
 export const gatewaySource = {
   repository: gatewayRepository,
@@ -125,15 +125,15 @@ export const configurations = [
     label: "Keyword filter",
     note: "Substring matching on the obvious phrases. What gets built first.",
     caught: 0.3846,
-    falseBlock: 0.3889,
+    falseBlock: 0.3333,
     micros: 3,
   },
   {
     key: "gateway",
     label: "Policy gateway",
     note: "Nine controls across three stages.",
-    caught: 0.9231,
-    falseBlock: 0.1111,
+    caught: 0.9615,
+    falseBlock: 0.0952,
     micros: 99.6,
   },
 ] as const;
@@ -149,8 +149,8 @@ export const controls = [
   {
     name: "instruction_injection",
     stage: "discovery, response",
-    caught: 15,
-    benignTouched: 4,
+    caught: 16,
+    benignTouched: 5,
     decidable: false,
     what: "Instructions addressed to the model, inside text the model is about to read.",
   },
@@ -266,7 +266,7 @@ export const bypass = {
 
 /** What the deterministic design costs, stated rather than buried. */
 export const limits = [
-  "Paraphrase defeats it. Every rule keys on a shape, so the 92.3% is an upper bound against the attack forms represented, not a general claim.",
+  "Paraphrase defeats it. Every rule keys on a shape, so the 96.2% is an upper bound against the attack forms represented, not a general claim.",
   "No decoding before matching, so encoded payloads pass.",
   "One event at a time. An instruction assembled across several tool results is invisible.",
   "English only. Images, PDFs and binary content are not inspected at all.",
