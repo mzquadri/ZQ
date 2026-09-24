@@ -373,6 +373,72 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     boundary:
       "Versions source and notebooks but not data, checkpoints, or metrics, so no accuracy, F1, or model-comparison claim is published.",
   },
+  {
+    name: "drift-aware-ml-platform",
+    title: "Drift-Aware ML Platform: Retraining on a Signal That Actually Fires",
+    category: "Engineering",
+    language: "Python",
+    topics: ["MLOps", "Concept Drift", "Model Registry", "Promotion Gates"],
+    description:
+      "Hourly demand forecasting where the monitor watches the target as well as the inputs, because on this data the covariates hold still while the relationship between them and the target moves, and promotion re-scores the live champion on the challenger's own validation window rather than comparing two numbers measured on different data.",
+    boundary:
+      "A portfolio project on a public dataset, run on one machine, and not production experience. The Terraform module describes a deployment that has not been applied against a live project, there is no feature store, retraining is a full refit, and the prediction log is a file on a volume, which is fine for one instance and wrong for several.",
+  },
+  {
+    name: "jobhunter",
+    title: "CareerOS: Scored Job Discovery and Application Drafting",
+    category: "Active",
+    language: "Python",
+    topics: ["FastAPI", "Next.js", "Scoring", "Document Drafting"],
+    description:
+      "Reads verified job sources on a schedule, scores each posting against one profile, shows why each score came out the way it did, and drafts the covering letter, so the work left is reading and deciding rather than searching.",
+    boundary:
+      "It never applies on anyone's behalf, by design. The scores are editorial heuristics tuned to a single profile and establish nothing about how any employer actually reads an application.",
+  },
+  {
+    name: "career-data-lab",
+    title: "Career Data Lab: Production-Style Data Practice, Locally",
+    category: "Experiment",
+    language: "Python",
+    topics: ["Polars", "DuckDB", "Data Contracts", "Quality Gates"],
+    description:
+      "A local-first practice project for the shape of production data work: Polars transformations, DuckDB for querying, Pandera contracts on the inputs, and a ruff, pyright and pytest gate over the whole thing.",
+    boundary:
+      "A practice project rather than a pipeline anything depends on. It reads local files only, and establishes no throughput, cost or reliability claim.",
+  },
+  {
+    name: "embedded-ai-edgevision-lab",
+    title: "EdgeVision Lab: What Changes Between Training and the Device",
+    category: "Experiment",
+    language: "Python",
+    topics: ["Model Export", "Quantization", "C++ Inference", "Benchmark Methodology"],
+    description:
+      "A learning lab for the deployment side of applied machine learning: a PyTorch vision model taken through export, quantization and C++ inference, measuring what changes at each step.",
+    boundary:
+      "Early, and deliberately not about accuracy. The methodology is the subject; no result here establishes what any particular model does on any particular device.",
+  },
+  {
+    name: "complete-python-warmup",
+    title: "Complete Python Warmup: A Learning Record",
+    category: "Reference",
+    language: "Jupyter Notebook",
+    topics: ["Python", "Learning Record"],
+    description:
+      "A single notebook of Python practice worked through in June 2024, following a beginner curriculum from syntax and control flow to the standard library and then NumPy, pandas and matplotlib.",
+    boundary:
+      "Kept as a record of early learning. It is not a project, not a library, and not evidence of engineering practice.",
+  },
+  {
+    name: "git-python-basics",
+    title: "Git and Python Basics: An Early Practice Exercise",
+    category: "Reference",
+    language: "Python",
+    topics: ["Git", "Python", "Learning Record"],
+    description:
+      "A minimal executable script and a standalone CSS snippet, retained from early Git and Python practice.",
+    boundary:
+      "Retained as a record rather than as work. It is not an application and not a portfolio project.",
+  },
 ];
 
 export function repositoryUrl(repository: EcosystemRepository) {
