@@ -183,7 +183,7 @@ export const strongWork: readonly StrongWork[] = [
     ],
   },
   {
-    repository: "DPS",
+    repository: "munich-accident-forecasting",
     title: "Traffic Accident Prediction API",
     premise:
       "A model behind a typed HTTP contract. What it establishes is that the path works, not that the forecast is right.",

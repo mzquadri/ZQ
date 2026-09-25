@@ -114,15 +114,15 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     caseStudySlug: "medico",
   },
   {
-    name: "DPS",
-    title: "DPS: Traffic Accident Prediction API",
+    name: "munich-accident-forecasting",
+    title: "Munich Accident Forecasting: A Result, and Whether It Holds",
     category: "Engineering",
-    language: "Jupyter Notebook",
-    topics: ["FastAPI", "Regression", "Input Validation", "Model Serving"],
+    language: "Python",
+    topics: ["Forecasting", "FastAPI", "Baseline Comparison", "Reproducibility"],
     description:
-      "A small FastAPI service that loads a regression model trained on Munich traffic-accident records and answers a calendar year and month with a rounded predicted count.",
+      "Monthly forecasts for seven Munich accident series from the city's open data, served behind a FastAPI contract. A per-series linear trend with monthly seasonal offsets beats the seasonal-naive baseline on the published window, and the same protocol re-run over ordinary years shows the baseline winning instead.",
     boundary:
-      "An educational prototype, not a public-safety forecast. The tracked model and CSV come from a historical-data exercise and establish no forecast accuracy for any future decision.",
+      "An educational prototype, not a public-safety forecast. Most of the published margin turns out to be the pandemic repeated forward by the baseline, which the repository measures rather than leaves as a caveat. Nothing here is validated for operational use.",
   },
   {
     name: "Weather-Data-Analytics-EDA",
