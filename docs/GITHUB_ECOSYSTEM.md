@@ -34,6 +34,12 @@ career chronology in a smaller font, and this portfolio publishes none. Validati
 
 1. List every public repository on the profile:
    `curl -s "https://api.github.com/users/mzquadri/repos?per_page=100"`
+
+   Use that unauthenticated request and nothing else. `gh repo list` returns private
+   repositories too when signed in as the owner, and an entry added from it looks correct in
+   review while publishing a 404 and a description of work nobody else can see. Four entries
+   reached the index that way once. The tests cannot catch it, because they run without a
+   network; this step is the only guard.
 2. For each one, read the current README and confirm the description and boundary still describe
    it honestly. The index is **complete**: every public repository is listed, including forks and
    learning artifacts, because a curated index that quietly drops the unflattering ones is a

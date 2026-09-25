@@ -396,50 +396,6 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "It never applies on anyone's behalf, by design. The scores are editorial heuristics tuned to a single profile and establish nothing about how any employer actually reads an application.",
   },
   {
-    name: "career-data-lab",
-    title: "Career Data Lab: Production-Style Data Practice, Locally",
-    category: "Experiment",
-    language: "Python",
-    topics: ["Polars", "DuckDB", "Data Contracts", "Quality Gates"],
-    description:
-      "A local-first practice project for the shape of production data work: Polars transformations, DuckDB for querying, Pandera contracts on the inputs, and a ruff, pyright and pytest gate over the whole thing.",
-    boundary:
-      "A practice project rather than a pipeline anything depends on. It reads local files only, and establishes no throughput, cost or reliability claim.",
-  },
-  {
-    name: "embedded-ai-edgevision-lab",
-    title: "EdgeVision Lab: What Changes Between Training and the Device",
-    category: "Experiment",
-    language: "Python",
-    topics: ["Model Export", "Quantization", "C++ Inference", "Benchmark Methodology"],
-    description:
-      "A learning lab for the deployment side of applied machine learning: a PyTorch vision model taken through export, quantization and C++ inference, measuring what changes at each step.",
-    boundary:
-      "Early, and deliberately not about accuracy. The methodology is the subject; no result here establishes what any particular model does on any particular device.",
-  },
-  {
-    name: "complete-python-warmup",
-    title: "Complete Python Warmup: A Learning Record",
-    category: "Reference",
-    language: "Jupyter Notebook",
-    topics: ["Python", "Learning Record"],
-    description:
-      "A single notebook of Python practice worked through in June 2024, following a beginner curriculum from syntax and control flow to the standard library and then NumPy, pandas and matplotlib.",
-    boundary:
-      "Kept as a record of early learning. It is not a project, not a library, and not evidence of engineering practice.",
-  },
-  {
-    name: "git-python-basics",
-    title: "Git and Python Basics: An Early Practice Exercise",
-    category: "Reference",
-    language: "Python",
-    topics: ["Git", "Python", "Learning Record"],
-    description:
-      "A minimal executable script and a standalone CSS snippet, retained from early Git and Python practice.",
-    boundary:
-      "Retained as a record rather than as work. It is not an application and not a portfolio project.",
-  },
-  {
     name: "mzquadri",
     title: "Profile README",
     category: "Reference",
