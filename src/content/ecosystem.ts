@@ -275,7 +275,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     name: "UQ-Hydrology-Seminar-TUM",
     title: "Uncertainty Quantification in Hydrology",
     category: "Research",
-    language: "Python",
+    language: "Jupyter Notebook",
     topics: ["Sensitivity Analysis", "SALib", "Rainfall-Runoff Modelling", "TUM Seminar"],
     description:
       "A three-person TUM seminar connecting HBV rainfall-runoff calibration, local and global sensitivity analysis, and input/output uncertainty propagation.",
