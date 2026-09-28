@@ -120,9 +120,9 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     language: "Python",
     topics: ["Forecasting", "FastAPI", "Baseline Comparison", "Reproducibility"],
     description:
-      "Monthly forecasts for seven Munich accident series from the city's open data, served behind a FastAPI contract. A per-series linear trend with monthly seasonal offsets beats the seasonal-naive baseline on the published window, and the same protocol re-run over ordinary years shows the baseline winning instead.",
+      "Monthly forecasts for seven Munich accident series from the city's open data, served behind a FastAPI contract. A per-series linear trend with monthly seasonal offsets beats the seasonal-naive baseline on the published window, and the same protocol re-run over ordinary years shows the advantage gone. A paired bootstrap separates the two: the published margin clears zero, the earlier one does not.",
     boundary:
-      "An educational prototype, not a public-safety forecast. Most of the published margin turns out to be the pandemic repeated forward by the baseline, which the repository measures rather than leaves as a caveat. Nothing here is validated for operational use.",
+      "An educational prototype, not a public-safety forecast. Most of the published margin turns out to be the pandemic repeated forward by the baseline, which the repository measures rather than leaves as a caveat, and on 24 test months only one of the two margins is separable from zero. Nothing here is validated for operational use.",
   },
   {
     name: "Weather-Data-Analytics-EDA",

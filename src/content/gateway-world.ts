@@ -267,7 +267,8 @@ export const bypass = {
 /** What the deterministic design costs, stated rather than buried. */
 export const limits = [
   "Paraphrase defeats it. Every rule keys on a shape, so the 96.2% is an upper bound against the attack forms represented, not a general claim.",
-  "No decoding before matching, so encoded payloads pass.",
+  "Base64 is decoded only where it returns prose, so attachments and digests are never rescanned. Nested or multi-layer encodings still pass.",
+  "The false-refusal advantage over a keyword filter is not established: 9.5% and 33.3% carry 95% intervals of [2.7%, 28.9%] and [17.2%, 54.6%], which overlap. The recall gap does not.",
   "One event at a time. An instruction assembled across several tool results is invisible.",
   "English only. Images, PDFs and binary content are not inspected at all.",
   "The corpus is mine. Ground truth was written before the controls and documented misses were kept, but that is not the same as an independent evaluation.",
