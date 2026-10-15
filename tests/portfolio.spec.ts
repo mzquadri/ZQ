@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 import { ecosystemRepositories } from "../src/content/ecosystem";
+import { site } from "../src/content/truth";
 import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
 import { SCENES } from "../src/components/sequence/scenes";
 
@@ -748,13 +749,21 @@ test("the portfolio presents no chronology it cannot source", async ({ page }) =
    * gives it, so the assertion moved from "no range appears" to "every range that appears is one
    * of the five approved ones". A date invented in a component fails exactly as before.
    */
-  const APPROVED = new Set([
-    "Apr 2025 - Present",
-    "Aug 2023 - Mar 2024",
-    "Jan 2023 - Jun 2023",
-    "Apr 2022 - Dec 2022",
-    "May 2021 - Jul 2021",
-  ]);
+  /*
+   * Derived from the records rather than written out again. The list used to be five literal
+   * strings, which made it a second copy of site.experience that nothing kept in step: when
+   * BP-IT ended and became "Apr 2025 - Sep 2026", and volunteering arrived carrying periods of
+   * its own, this test failed on facts that were correct. scripts/validate-content.ts already
+   * builds its allowlist this way.
+   *
+   * The assertion is unchanged, and still the point: a range rendered by a component that no
+   * record supports fails exactly as before.
+   */
+  const APPROVED = new Set(
+    [...site.experience, ...site.volunteering].flatMap((record) =>
+      record.period ? [record.period.replace(/\s*-\s*/, " - ")] : [],
+    ),
+  );
 
   for (const path of ["/", "/work", "/work/transport-uq", "/about"]) {
     await page.goto(path);
