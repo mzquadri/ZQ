@@ -84,6 +84,18 @@ export function CredentialsList() {
               <p className="credential-name">{entry.title}</p>
               <p className="credential-meta">
                 {entry.issuer} / {entry.awarded}
+                {entry.credentialUrl ? (
+                  <>
+                    {" / "}
+                    <a
+                      href={entry.credentialUrl}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Verify
+                    </a>
+                  </>
+                ) : null}
               </p>
             </li>
           ))}
@@ -101,5 +113,31 @@ export function CredentialsList() {
         </ul>
       </section>
     </div>
+  );
+}
+
+/**
+ * Unpaid work.
+ *
+ * Separate from ExperienceList because it is not employment, and separate from
+ * CredentialsList because neither entry is a credential. The issuer line is rendered
+ * only where the body that signed the certificate differs from the body that ran the
+ * event, which is the case for EYE 2023.
+ */
+export function VolunteeringList() {
+  return (
+    <ul className="credential-list volunteering-list">
+      {site.volunteering.map((entry) => (
+        <li key={entry.id}>
+          <p className="credential-name">{entry.role}</p>
+          <p className="career-org">
+            {[entry.organization, entry.location].filter(Boolean).join(" / ")}
+          </p>
+          <p className="career-period">{entry.period}</p>
+          <p className="career-practice">{entry.summary}</p>
+          {entry.issuer ? <p className="credential-meta">{entry.issuer}</p> : null}
+        </li>
+      ))}
+    </ul>
   );
 }

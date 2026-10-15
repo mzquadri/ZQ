@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CredentialsList, EducationList, ExperienceList } from "@/components/CareerProfile";
+import {
+  CredentialsList,
+  EducationList,
+  ExperienceList,
+  VolunteeringList,
+} from "@/components/CareerProfile";
 import { DomainsScene, StageHero } from "@/components/cinema/PageStages";
 import { DomainsCanvas } from "@/components/scene/PersonalCanvases";
 import PageShell from "@/components/PageShell";
@@ -124,8 +129,20 @@ export default function AboutPage() {
         <CredentialsList />
       </section>
 
+      <section className="section-wrap credentials-section">
+        <p className="section-index"><span>05</span>Volunteering</p>
+        <h2 className="standalone-heading">Work that was not paid for</h2>
+        <p className="section-lede">
+          Two entries, both longer-running than they look on a line. EYE 2023 is the European
+          Parliament&rsquo;s youth event and was held at the Parliament in Strasbourg; the
+          certificate for it was issued by the delegation, not by the Parliament, and the entry
+          says so.
+        </p>
+        <VolunteeringList />
+      </section>
+
       <section className="section-wrap principles-section">
-        <p className="section-index"><span>05</span>Principles</p>
+        <p className="section-index"><span>06</span>Principles</p>
         <h2 className="standalone-heading">How I approach technical work</h2>
         <div className="principle-grid">
           {principles.map((principle, index) => (
@@ -139,7 +156,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap capability-detail">
-        <p className="section-index"><span>06</span>Capabilities with proof</p>
+        <p className="section-index"><span>07</span>Capabilities with proof</p>
         <h2 className="standalone-heading">What I can contribute</h2>
         <div className="capability-table">
           {capabilities.map((capability) => (

@@ -286,7 +286,12 @@ check(
   site.experience.filter((record) => record.period?.endsWith("Present")).length <= 1,
   "At most one role may be marked Present",
 );
-check(site.education.length === 2, "Expected two approved education records");
+// Three since 15 Oct 2026: the TUM degree, the AMU degree, and the Mathematics of Data Science
+// advanced seminar. The seminar is a graded module of the M.Sc. with a public numerical
+// companion, so it belongs under education rather than under research, and the count moved with
+// it. The count is pinned rather than unbounded so a record cannot be added without this line
+// being changed deliberately.
+check(site.education.length === 3, "Expected three approved education records");
 check(new Set(site.education.map((record) => record.id)).size === site.education.length, "Education IDs must be unique");
 for (const record of site.experience) {
   check(!("startDate" in record) && !("endDate" in record), `${record.id} must not publish disputed dates`);
@@ -333,8 +338,13 @@ for (const project of projects) {
  * that appears must be a period published by the registry; a date invented in a component, or one
  * that drifted from the record it was copied from, still fails.
  */
+// Volunteering periods join the approved set. They are the same shape as an employment range and
+// would otherwise trip the check below, but they are approved facts from the same review: the
+// AIESEC range comes from the CV and the EYE 2023 one from the certificate. The point of this
+// check is that no date range reaches the page without a record behind it, not that only paid
+// work may carry dates.
 const approvedPeriods = new Set(
-  site.experience.flatMap((record) =>
+  [...site.experience, ...site.volunteering].flatMap((record) =>
     record.period ? [record.period.replace(/\s*-\s*/, " - ")] : [],
   ),
 );

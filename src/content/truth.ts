@@ -60,6 +60,31 @@ export interface CredentialRecord {
   title: string;
   issuer: string;
   awarded: string;
+  /**
+   * The issuer's own verification page. Every certification published here carries one: a
+   * credential a reader cannot check is an assertion, and this site does not publish assertions
+   * it can avoid. Each URL below was opened and read on 15 Oct 2026 before being added.
+   */
+  credentialUrl?: string;
+}
+
+/**
+ * Unpaid work, kept separate from employment.
+ *
+ * `issuer` is the body that signed the certificate, which is not always the body that ran the
+ * event. EYE 2023 is the European Parliament's youth event and was held at the Parliament in
+ * Strasbourg, but the Certificate of Achievement was issued by #DiasporaVote!. Conflating the two
+ * would claim a Parliament award that was never made.
+ */
+export interface VolunteeringRecord {
+  id: string;
+  organization: string;
+  role: string;
+  period: string;
+  location?: string;
+  summary: string;
+  /** The body that issued the certificate, where one exists and differs from the event host. */
+  issuer?: string;
 }
 
 /** A language with its self-assessed CEFR level, as published on the CV. */
@@ -148,7 +173,7 @@ export const truthRegistry = {
           organization: "BP-IT Consulting & Solutions GmbH",
           title: "AI Engineer (Working Student)",
           location: "Munich, Germany",
-          period: "Apr 2025 - Present",
+          period: "Apr 2025 - Sep 2026",
           practice:
             "Built verification workflows for a multilingual legal knowledge platform using relational, vector, and graph storage.",
         },
@@ -201,12 +226,29 @@ export const truthRegistry = {
     records: {
       value: [
         {
+          // "M.Sc. program:" stays, and the validator enforces it. TUM's certificate of
+          // completion is dated 13 Aug 2026, but it also states that the academic title "may
+          // only be used once the graduate is in possession of the diploma", and the diploma is
+          // a separate document issued later. So the programme is reported as completed and the
+          // title is not claimed. The status line carries the date the certificate gives.
           id: "tum-mse",
           institution: "Technical University of Munich",
           credential: "M.Sc. program: Mathematics in Science and Engineering",
           location: "Munich, Germany",
           period: "2026",
-          status: "Master's thesis submitted",
+          status: "Programme completed August 2026; diploma not yet issued",
+        },
+        {
+          // The seminar belongs here rather than under research: it is a graded module of the
+          // M.Sc., not independent work. The numerical companion to it is a public repository.
+          id: "tum-seminar-nn-identification",
+          institution: "Technical University of Munich",
+          credential:
+            "Advanced Seminar, Mathematics of Data Science: Identification of Neural Networks",
+          location: "Munich, Germany",
+          period: "2025",
+          status:
+            "With Prof. Massimo Fornasier and Dr. Alessandro Scagliotti. Presented 24 January 2025.",
         },
         {
           id: "amu-mathematics",
@@ -214,6 +256,7 @@ export const truthRegistry = {
           credential: "B.Sc. (Hons.) Mathematics",
           location: "Aligarh, India",
           period: "2021",
+          status: "First Division",
         },
       ] as const satisfies readonly EducationRecord[],
       source: { tier: "approved-document", reference: recruiterCoreApproval },
@@ -230,6 +273,8 @@ export const truthRegistry = {
           title: "Neural Networks and Deep Learning",
           issuer: "DeepLearning.AI, Coursera",
           awarded: "Sep 2024",
+          credentialUrl:
+            "https://www.coursera.org/account/accomplishments/verify/WXJN8I5LFWO1",
         },
         {
           id: "dlai-improving-dnn",
@@ -237,9 +282,74 @@ export const truthRegistry = {
             "Improving Deep Neural Networks: Hyperparameter Tuning, Regularization and Optimization",
           issuer: "DeepLearning.AI, Coursera",
           awarded: "Sep 2024",
+          credentialUrl:
+            "https://www.coursera.org/account/accomplishments/verify/KU9TUZBNRN9W",
+        },
+        {
+          // Udemy's certificate page names the course in full. An earlier draft of the CV
+          // shortened it to "Python for Data Analysis", which is not the name of anything Udemy
+          // issued, so the full title is used.
+          id: "udemy-python-data-analysis",
+          title: "Data Science: Python for Data Analysis Full Bootcamp",
+          issuer: "Udemy",
+          awarded: "Aug 2024",
+          credentialUrl:
+            "https://www.udemy.com/certificate/UC-013e2d06-e241-4790-8468-580857efeae9/",
+        },
+        {
+          id: "datacamp-intro-sql",
+          title: "Introduction to SQL",
+          issuer: "DataCamp",
+          awarded: "Apr 2022",
+          credentialUrl:
+            "https://www.datacamp.com/statement-of-accomplishment/course/cc6f599bad4e14576d823664f8a722b75ee91f9e",
+        },
+        {
+          id: "datacamp-intro-python",
+          title: "Introduction to Python",
+          issuer: "DataCamp",
+          awarded: "Apr 2022",
+          credentialUrl:
+            "https://www.datacamp.com/statement-of-accomplishment/course/0a2ac762470c3c93bb40aa6c72f43416b713ef02",
         },
       ] as const satisfies readonly CredentialRecord[],
-      source: { tier: "approved-document", reference: curriculumVitae },
+      // Titles and issuers are read off the issuers' own verification pages rather than off the
+      // CV, which is why they outrank it as a source. The two DataCamp pages do not display a
+      // completion date, so those two dates still come from the CV alone.
+      source: {
+        tier: "approved-document",
+        reference: `Issuer verification pages, read 2026-10-15; DataCamp dates from ${curriculumVitae}`,
+      },
+      verifiedAt,
+      reviewAfter: currentFactReviewAfter,
+      public: true,
+    },
+    volunteering: {
+      value: [
+        {
+          id: "aiesec-munich",
+          organization: "AIESEC in Munich",
+          role: "Incoming Global Talent Volunteer",
+          period: "Jun 2022 - Present",
+          location: "Munich, Germany",
+          summary:
+            "Placement, onboarding and document coordination for international students and interns, and regular contact with host companies.",
+        },
+        {
+          id: "eye-2023",
+          organization: "#DiasporaVote!",
+          role: "Delegate, #DiasporaVote! delegation",
+          period: "Jun 2023",
+          location: "Strasbourg, France",
+          summary:
+            "Took part in the European Youth Event (EYE 2023), the European Parliament's youth event, held at the Parliament in Strasbourg on 9 and 10 June 2023.",
+          issuer: "Certificate of Achievement issued by #DiasporaVote!",
+        },
+      ] as const satisfies readonly VolunteeringRecord[],
+      source: {
+        tier: "approved-document",
+        reference: `Certificate of Achievement, #DiasporaVote!, signed Celine Fabrequette, CEO and Founder; AIESEC entry from ${curriculumVitae}`,
+      },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,
       public: true,
@@ -470,6 +580,7 @@ export const site = {
   linkedin: truthRegistry.profiles.linkedin.value,
   email: truthRegistry.profiles.email.value,
   certifications: truthRegistry.credentials.certifications.value as readonly CredentialRecord[],
+  volunteering: truthRegistry.credentials.volunteering.value as readonly VolunteeringRecord[],
   languages: truthRegistry.credentials.languages.value as readonly LanguageRecord[],
   architecture: truthRegistry.artifacts.architecture.value,
   architectureRepository: truthRegistry.artifacts.architectureRepository.value,
