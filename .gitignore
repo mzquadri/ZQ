@@ -125,3 +125,4 @@ __pycache__/
 # `node tools/audit-site.mjs <origin> <dir>`.
 /audit*/
 .register.mjs
+.env*

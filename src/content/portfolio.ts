@@ -858,8 +858,21 @@ export const allProjects: readonly Project[] = authoredProjects;
  * production is the one environment named explicitly here and the one where a draft is
  * withheld. Anything that is not a production build shows drafts, which keeps review cheap; the
  * only environment that can publish is the only environment that is excluded.
+ *
+ * `HIDE_DRAFTS=1` is a second, narrower switch, and it only ever hides more.
+ *
+ * The reason it exists: this account is on a hobby plan, where preview URLs are public to
+ * anyone holding the link. "Preview" therefore does not mean "private", and a preview built to
+ * be shared - with a reviewer, or for a look at what production will serve - would otherwise
+ * carry the confidential draft to whoever has the URL. Setting it at deploy time
+ * (`vercel deploy --build-env HIDE_DRAFTS=1`) gives a preview that matches production without
+ * promoting anything.
+ *
+ * It cannot be used the other way around. There is no value of this variable that makes a draft
+ * visible in a production build, because the VERCEL_ENV test runs first and independently.
  */
-export const draftsAreVisible = process.env.VERCEL_ENV !== "production";
+export const draftsAreVisible =
+  process.env.VERCEL_ENV !== "production" && process.env.HIDE_DRAFTS !== "1";
 
 /**
  * Whether a project may appear on the site in this environment.
