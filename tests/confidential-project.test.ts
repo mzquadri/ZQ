@@ -309,7 +309,15 @@ test("the legal knowledge platform case study is confidential, draft, and source
  * in a child process under a chosen VERCEL_ENV is the only way to observe the gate it actually
  * shipped with.
  */
-function loadPortfolioUnder(vercelEnv: string) {
+/**
+ * Load the portfolio module under a chosen environment.
+ *
+ * `hideDrafts` is passed explicitly, and defaults to unset, for the same reason the test below
+ * states both directions of the rule rather than reading the ambient environment: a deploy may
+ * set HIDE_DRAFTS=1 for the whole `npm run check`, and a helper that inherited it would quietly
+ * change what these tests assert. Inheriting VERCEL_ENV had exactly this failure once already.
+ */
+function loadPortfolioUnder(vercelEnv: string, hideDrafts?: "1") {
   const script = [
     'import { projects, allProjects, draftsAreVisible, getProject } from "./src/content/portfolio";',
     'process.stdout.write(JSON.stringify({',
@@ -323,7 +331,11 @@ function loadPortfolioUnder(vercelEnv: string) {
   const output = execFileSync(
     process.execPath,
     [resolve("node_modules/tsx/dist/cli.mjs"), "--eval", script],
-    { env: { ...process.env, VERCEL_ENV: vercelEnv }, encoding: "utf8", cwd: resolve(".") },
+    {
+      env: { ...process.env, VERCEL_ENV: vercelEnv, HIDE_DRAFTS: hideDrafts ?? "" },
+      encoding: "utf8",
+      cwd: resolve("."),
+    },
   );
 
   return JSON.parse(output) as {
@@ -357,6 +369,30 @@ test("a preview build keeps the unapproved draft reviewable", () => {
     "a draft must remain visible outside a production build so it can be reviewed",
   );
   assert.ok(result.resolvesDraft, "getProject must resolve the draft outside a production build");
+});
+
+test("a preview build with HIDE_DRAFTS set drops the draft too", () => {
+  const result = loadPortfolioUnder("preview", "1");
+
+  assert.equal(result.draftsAreVisible, false);
+  assert.ok(result.authored.includes(CONFIDENTIAL_SLUG), "the draft must still be authored and validated");
+  assert.ok(
+    !result.rendered.includes(CONFIDENTIAL_SLUG),
+    "HIDE_DRAFTS must keep a draft off a preview that is going to be shared",
+  );
+  assert.ok(!result.resolvesDraft, "getProject must not resolve the draft when HIDE_DRAFTS is set");
+});
+
+test("HIDE_DRAFTS cannot make a draft visible in production", () => {
+  /*
+   * The switch only ever hides. This pins that: no value of HIDE_DRAFTS reopens a production
+   * build, because the VERCEL_ENV test runs first and independently of it.
+   */
+  for (const value of ["0", "", "false", "no"] as const) {
+    const result = loadPortfolioUnder("production", value as unknown as "1");
+    assert.equal(result.draftsAreVisible, false, `HIDE_DRAFTS=${value} must not reopen production`);
+    assert.ok(!result.rendered.includes(CONFIDENTIAL_SLUG));
+  }
 });
 
 test("a production build drops the unapproved draft from the rendered site", () => {
