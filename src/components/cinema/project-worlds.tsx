@@ -211,7 +211,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
     evidence: evidenceOf("streamflow-forecasting"),
     href: "/work/streamflow-forecasting",
     figureNote:
-      "R² 0.979 on synthetic data, one step ahead with yesterday's measurement supplied. The two lines overlap because of what the model was given.",
+      "R² 0.979 in the repository's earlier run, one step ahead with yesterday's measurement supplied. The two lines overlap because of what the model was given; the current run shows simply repeating yesterday's value scores higher.",
     scale: "compact",
     scene: () => <HorizonScene />,
     seam: {

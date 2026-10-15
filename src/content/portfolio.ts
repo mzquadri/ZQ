@@ -538,7 +538,7 @@ const authoredProjects: readonly Project[] = [
       "Global sensitivity",
       "Input and output uncertainty",
     ],
-    tools: ["Python", "NumPy", "SciPy", "SALib", "pandas", "Matplotlib", "LaTeX"],
+    tools: ["Python", "NumPy", "SciPy (QMC sampling)", "pandas", "Matplotlib", "LaTeX"],
     evidence: [
       {
         label: "Best seminar result",
@@ -615,38 +615,43 @@ const authoredProjects: readonly Project[] = [
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Project author",
     summary:
-      "A deterministic benchmark comparing seasonal-naive, SARIMAX, and gradient-boosted one-step streamflow predictions.",
+      "A controlled benchmark that scores ridge, XGBoost and SARIMAX against the baselines that actually matter on a daily series, and finds that the gradient booster loses to predicting yesterday's value.",
     problem:
-      "Forecasting methods should be compared against simple baselines with temporal holdouts and hydrology-relevant metrics.",
+      "An earlier version of this repository ranked XGBoost at R² 0.979 above SARIMAX at 0.721. The two numbers were scored on different targets, daily and monthly, and the only baseline offered was a day-of-year mean that could not win. The question became which methods beat a fair baseline on the same rows.",
     contribution:
-      "Created a fixed-seed synthetic daily series, chronological split, lag and rolling features, model comparison, diagnostics, and an explicit distinction between one-step and recursive forecasting.",
-    workflow: ["Synthetic 15-year series", "Chronological holdout", "Three model families", "Hydrology metrics", "Error analysis"],
+      "Rebuilt the comparison so every daily method is scored on the same 730 held-out days, added persistence, random walk with drift and a trend-corrected day-of-year baseline, added a ridge model on the same features, and repeated the whole comparison over five seeds.",
+    workflow: ["Synthetic 15-year series", "Chronological holdout", "Fair daily baselines", "Five-seed repeat", "Error analysis"],
     tools: ["XGBoost", "statsmodels", "scikit-learn", "pandas", "NumPy", "Matplotlib"],
     evidence: [
       {
-        label: "One-step benchmark",
-        value: "R² 0.979",
-        note: "XGBoost on synthetic data with observed lag inputs; not a recursive multi-day forecast.",
+        label: "Persistence baseline",
+        value: "R² 0.988",
+        note: "Predicting yesterday's value, on the same 730 held-out days as every daily model.",
       },
       {
-        label: "Classical comparator",
-        value: "R² 0.721",
-        note: "SARIMAX result on monthly means within the same synthetic benchmark.",
+        label: "XGBoost",
+        value: "R² 0.985",
+        note: "Twenty engineered lag, rolling and calendar features, and still below persistence; it fails to beat it on all five seeds.",
+      },
+      {
+        label: "Ridge on the same features",
+        value: "R² 0.994",
+        note: "The only method that improves on persistence, and it does so on all five seeds.",
       },
     ],
     quality: [
       "Fixed-seed data generator and chronological test split",
-      "Seasonal-naive baseline retained alongside stronger models",
-      "Tracked metrics and nine diagnostic figures",
-      "Repository checker validates source and artifacts",
+      "Every daily method scored on the same held-out rows",
+      "Comparison repeated over five seeds and recorded in results/benchmark.json",
+      "SARIMAX reported on monthly means and kept out of the daily ranking",
     ],
     limitations: [
       "Synthetic data cannot establish real-catchment performance",
-      "XGBoost evaluation is one-step-ahead with observed historical discharge lags",
+      "The feature models see same-day observed weather, so they are nowcasts rather than pure one-step-ahead forecasts",
       "The benchmark does not test recursive multi-day behavior or distribution shift",
     ],
     learned:
-      "Strong synthetic scores are useful for testing an evaluation pipeline, but they are not evidence of field validity.",
+      "A leaderboard is only as good as its weakest baseline. On a series this persistent, repeating yesterday's value is the number every model has to beat.",
     repository: "https://github.com/mzquadri/Time-Series-Streamflow-Forecasting",
   },
   {

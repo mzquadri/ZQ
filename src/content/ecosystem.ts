@@ -200,7 +200,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     description:
       "Master's thesis codebase studying when a graph neural network surrogate for transport simulation can be trusted, and how uncertainty supports a review decision.",
     boundary:
-      "A fork of Elena Natterer's repository, extending it with the uncertainty work. It carries the submitted thesis as a frozen record alongside a working copy that has since been edited, and says which is which. The training and evaluation artifacts it reads are published as release assets on the same repository, the largest of them because they exceed GitHub's per-file limit.",
+      "A fork of Elena Natterer's repository, extending it with the uncertainty work. It carries the submitted thesis as a frozen record alongside a working copy that has since been edited, and says which is which. The training and evaluation artifacts it reads are published as release assets on the same repository, because the largest of them exceed GitHub's per-file limit.",
     caseStudySlug: "transport-uq",
   },
   {
@@ -250,14 +250,14 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
   },
   {
     name: "insureassist-rag-mlops",
-    title: "InsureAssist: Grounded RAG Service",
+    title: "InsureAssist: A Measured RAG Service",
     category: "Active",
     language: "Python",
     topics: ["Retrieval-Augmented Generation", "Qdrant", "FastAPI", "Docker", "Kubernetes"],
     description:
-      "A local-first insurance-policy question-answering service that retrieves source clauses and returns cited answers behind a typed FastAPI contract.",
+      "A local-first question-answering service over the three NFIP Standard Flood Insurance Policy forms. It retrieves the governing passages, answers from them behind a typed FastAPI contract, and returns citations that resolve to character offsets in the source text.",
     boundary:
-      "An engineering prototype. Kubernetes manifests are authored but no completed cloud deployment and no regulated-data validation are claimed.",
+      "An engineering prototype, built to be measured rather than demonstrated, and the measurements are published with it: unanswerable questions are not detected, 28% of answers cite a block that was never supplied, and results cover one jurisdiction, one peril and three documents. Kubernetes manifests are authored, but no completed cloud deployment and no regulated-data validation are claimed.",
     caseStudySlug: "insureassist-rag",
   },
   {
@@ -276,9 +276,9 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     title: "Uncertainty Quantification in Hydrology",
     category: "Research",
     language: "Jupyter Notebook",
-    topics: ["Sensitivity Analysis", "SALib", "Rainfall-Runoff Modelling", "TUM Seminar"],
+    topics: ["Sensitivity Analysis", "Sobol Indices", "Rainfall-Runoff Modelling", "TUM Seminar"],
     description:
-      "A three-person TUM seminar connecting HBV rainfall-runoff calibration, local and global sensitivity analysis, and input/output uncertainty propagation.",
+      "A three-person TUM seminar connecting HBV rainfall-runoff calibration, local and global sensitivity analysis with a Saltelli estimator written from scratch, input/output uncertainty propagation, DREAM sampling on a MODFLOW model and ROPE parameter estimation.",
     boundary:
       "Group coursework. Individual ownership of each result is not claimed, and course-provided forcing data is not redistributable.",
     caseStudySlug: "hydrology-uq",
@@ -321,11 +321,11 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     title: "Streamflow Forecasting Benchmark",
     category: "Experiment",
     language: "Python",
-    topics: ["Forecasting", "SARIMAX", "XGBoost", "Baselines"],
+    topics: ["Forecasting", "Ridge", "XGBoost", "Baselines"],
     description:
-      "A deterministic benchmark comparing seasonal-naive, SARIMAX, and gradient-boosted one-step streamflow predictions on a fixed-seed synthetic series.",
+      "A controlled benchmark on a fixed-seed synthetic daily series that scores ridge, XGBoost and SARIMAX against persistence, random walk with drift and day-of-year baselines. On 730 held-out days the gradient booster loses to predicting yesterday's value, on all five seeds; only ridge improves on persistence.",
     boundary:
-      "Synthetic data. Strong scores test the evaluation pipeline and are not evidence of real-catchment validity.",
+      "Synthetic data, so nothing here describes a real river. The feature models see same-day observed weather, which makes them nowcasts rather than pure one-step forecasts, and SARIMAX is scored on monthly means, so its R² cannot be ranked against the daily ones.",
     caseStudySlug: "streamflow-forecasting",
   },
   {
@@ -378,9 +378,9 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     title: "Drift-Aware ML Platform: Retraining on a Signal That Actually Fires",
     category: "Engineering",
     language: "Python",
-    topics: ["MLOps", "Concept Drift", "Model Registry", "Promotion Gates"],
+    topics: ["MLOps", "Drift Monitoring", "Model Registry", "Promotion Gates"],
     description:
-      "Hourly demand forecasting where the monitor watches the target as well as the inputs, because on this data the covariates hold still while the relationship between them and the target moves, and promotion re-scores the live champion on the challenger's own validation window rather than comparing two numbers measured on different data.",
+      "Hourly demand forecasting where the monitor watches the target as well as the inputs, because on this data the covariates hold still while the relationship between them and the target moves. Promotion re-scores the live champion on the challenger's own validation window rather than comparing two numbers measured on different data.",
     boundary:
       "A portfolio project on a public dataset, run on one machine, and not production experience. The Terraform module describes a deployment that has not been applied against a live project, there is no feature store, retraining is a full refit, and the prediction log is a file on a volume, which is fine for one instance and wrong for several.",
   },
@@ -391,7 +391,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     language: "Python",
     topics: ["FastAPI", "Next.js", "Scoring", "Document Drafting"],
     description:
-      "Reads verified job sources on a schedule, scores each posting against one profile, shows why each score came out the way it did, and drafts the covering letter, so the work left is reading and deciding rather than searching.",
+      "Reads 119 verified job sources every hour, scores each posting against one profile, shows why each score came out the way it did, tracks the roles pursued through a drag-and-drop application pipeline, and drafts the covering letter, so the work left is reading and deciding rather than searching.",
     boundary:
       "It never applies on anyone's behalf, by design. The scores are editorial heuristics tuned to a single profile and establish nothing about how any employer actually reads an application.",
   },
