@@ -226,17 +226,15 @@ export const truthRegistry = {
     records: {
       value: [
         {
-          // "M.Sc. program:" stays, and the validator enforces it. TUM's certificate of
-          // completion is dated 13 Aug 2026, but it also states that the academic title "may
-          // only be used once the graduate is in possession of the diploma", and the diploma is
-          // a separate document issued later. So the programme is reported as completed and the
-          // title is not claimed. The status line carries the date the certificate gives.
+          // The degree is conferred and the diploma is in hand, confirmed by the author on
+          // 15 Oct 2026. Until then this record read "M.Sc. program:" with a status saying the
+          // thesis had been submitted, which was the correct hedge while the award was pending
+          // and is now simply wrong. The hedge is gone and the validator enforces its absence.
           id: "tum-mse",
           institution: "Technical University of Munich",
-          credential: "M.Sc. program: Mathematics in Science and Engineering",
+          credential: "M.Sc. Mathematics in Science and Engineering",
           location: "Munich, Germany",
           period: "2026",
-          status: "Programme completed August 2026; diploma not yet issued",
         },
         {
           // The seminar belongs here rather than under research: it is a graded module of the
@@ -343,12 +341,16 @@ export const truthRegistry = {
           location: "Strasbourg, France",
           summary:
             "Took part in the European Youth Event (EYE 2023), the European Parliament's youth event, held at the Parliament in Strasbourg on 9 and 10 June 2023.",
-          issuer: "Certificate of Achievement issued by #DiasporaVote!",
+          // Two certificates, two issuers, and the distinction is the reason this field exists.
+          // Naming only the Parliament's would drop the delegation; naming only the delegation's
+          // would leave the Parliament document unaccounted for.
+          issuer:
+            "Certificate of Achievement from #DiasporaVote!, signed Celine Fabrequette, CEO and Founder; Certificate of Participation from the European Parliament's Youth Outreach Unit, signed Magdalena Starostin, Head of Unit",
         },
       ] as const satisfies readonly VolunteeringRecord[],
       source: {
         tier: "approved-document",
-        reference: `Certificate of Achievement, #DiasporaVote!, signed Celine Fabrequette, CEO and Founder; AIESEC entry from ${curriculumVitae}`,
+        reference: `EYE 2023: Certificate of Achievement, #DiasporaVote!, signed Celine Fabrequette; and Certificate of Participation, Youth Outreach Unit of the European Parliament, signed Magdalena Starostin. AIESEC entry from ${curriculumVitae}`,
       },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,

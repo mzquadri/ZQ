@@ -86,9 +86,15 @@ export default function AboutPage() {
             I build reference ML pipelines and grounded AI service prototypes to exercise the
             operational side of model development.
           </p>
+          {/*
+            * The second sentence used to read "No later education status is published", which was
+            * the honest thing to say while the degree was pending. It has been awarded, so the
+            * sentence is replaced rather than kept: the thesis status still describes the thesis,
+            * and the degree is now stated plainly under Education below.
+            */}
           <p>
             My Master&apos;s thesis, <cite>{thesis.title}</cite>, was submitted at {thesis.institution}.
-            The available record states: {thesis.status}. No later education status is published.
+            The degree was awarded in 2026.
           </p>
           <p>
             {site.availability}, including roles across Machine Learning Engineering, Applied AI,

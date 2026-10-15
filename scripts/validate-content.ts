@@ -380,7 +380,22 @@ for (const slug of featuredProjectSlugs) {
 }
 check(getFeaturedProjects().length === featuredProjectSlugs.length, "Featured project registry is inconsistent");
 check(thesis.status.includes("submitted"), "Thesis status must use submitted wording");
-check(site.education[0].credential.startsWith("M.Sc. program:"), "TUM education must not imply degree conferral");
+/*
+ * This rule used to require the "M.Sc. program:" prefix, so the site could not imply a degree
+ * that had not been awarded. The degree was conferred and the diploma issued, confirmed by the
+ * author on 15 Oct 2026, so the hedge became the inaccurate statement and the rule is inverted:
+ * the TUM record must now name the degree plainly and must not carry the old hedge.
+ */
+check(
+  site.education[0].credential === "M.Sc. Mathematics in Science and Engineering",
+  "TUM education must name the conferred degree exactly",
+);
+check(
+  !site.education.some((record) => /program:|not yet issued|thesis submitted/i.test(
+    `${record.credential} ${record.status ?? ""}`,
+  )),
+  "No education record may carry the pre-conferral hedge",
+);
 /*
  * One repository again, as of 4 Sep 2026.
  *
