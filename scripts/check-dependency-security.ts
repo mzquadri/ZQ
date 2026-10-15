@@ -43,17 +43,27 @@ const FLOORS: Record<string, Floor[]> = {
   next: [
     {
       line: "16.3",
-      minimum: "16.3.5",
-      advisories: ["GHSA-p293-qw3h-jr36", "GHSA-2xp9-vwfh-vxw4"],
-      note: "Unauthenticated RCE on Windows-hosted servers, and RCE in the Image Optimization API for AVIF input. Affects >=16.0.0 <16.3.3; 16.3.5 is the release this repository moved to.",
+      minimum: "16.3.8",
+      advisories: [
+        "GHSA-p293-qw3h-jr36",
+        "GHSA-2xp9-vwfh-vxw4",
+        "GHSA-vcvr-r3jv-pc5j",
+        "GHSA-cjq9-62q9-8jv4",
+        "GHSA-3w37-wq28-93x7",
+        "GHSA-4jqv-mc3x-m676",
+        "GHSA-mcj8-r9mp-w47p",
+        "GHSA-f87g-xv8r-7p7x",
+        "GHSA-39w2-rjm5-chcv",
+      ],
+      note: "Unauthenticated RCE on Windows-hosted servers and RCE in the Image Optimization API for AVIF input (fixed in 16.3.3); RCE in next/og ImageResponse, which every opengraph-image route here uses (fixed in 16.3.6); and SSRF in Image Optimization plus cache-poisoning and information-disclosure advisories (fixed in 16.3.8).",
     },
   ],
   sharp: [
     {
       line: "0.35",
-      minimum: "0.35.4",
-      advisories: ["GHSA-rgj7-g3m4-5g8c"],
-      note: "libheif vulnerabilities reachable through sharp, which arrives as a transitive dependency of Next.js rather than a direct one.",
+      minimum: "0.35.5",
+      advisories: ["GHSA-rgj7-g3m4-5g8c", "CVE-2026-96889"],
+      note: "libheif and librsvg vulnerabilities reachable through sharp, which arrives as a transitive dependency of Next.js rather than a direct one. Next 16.3.8 still allows ^0.35.4, so package.json overrides it to ^0.35.5.",
     },
   ],
 };

@@ -14,7 +14,7 @@ immediately invalidate its own claim.
 | Continuous integration | GitHub Actions: success |
 | Working tree | Clean and aligned with `origin/main` |
 | Runtime | Node.js 24.12.0, npm 11.6.4 (`engines`: `node >=24 <25`) |
-| Framework | Next.js 16.3.5, React 19.2.8 |
+| Framework | Next.js 16.3.8, React 19.2.8 |
 | Tooling | TypeScript 5.9.3, ESLint 9.39.1, Playwright 1.62.1 |
 
 ### Current verification
@@ -36,6 +36,19 @@ snapshot.
 | Dependency audit | `npm audit` | 0 vulnerabilities, across 693 dependencies |
 | Dependency audit, production | `npm audit --omit=dev` | 0 vulnerabilities |
 | Advisory floors | `npm run check:security` | `next` and `sharp` meet their recorded minimums |
+
+On 2026-10-15 the production audit in CI failed on advisories published after this snapshot was
+taken, so the framework line above was updated without re-running every row of the table. Next.js
+moved from 16.3.5 to 16.3.8, closing
+[GHSA-vcvr-r3jv-pc5j](https://github.com/advisories/GHSA-vcvr-r3jv-pc5j), critical, remote code
+execution in `next/og` `ImageResponse` — the API every `opengraph-image` route here is built on —
+along with an SSRF in Image Optimization and five cache-poisoning and disclosure advisories, all
+fixed by 16.3.8. Next 16.3.8 still accepts `sharp` 0.35.4, so `sharp` is overridden to `^0.35.5`
+for CVE-2026-96889 in its bundled librsvg, and `source-map-js` to `^1.2.2` for an event-loop
+denial of service. The copies of KaTeX nested under `rehype-katex` and `micromark-extension-math`
+were older than 0.18.2 and are overridden to the direct dependency's 0.18.4, which the site was
+already rendering with. Afterwards `npm audit --omit=dev` reports 0 vulnerabilities, and
+`npm run check`, the production privacy scan and the end-to-end suite pass unchanged.
 
 The previous snapshot recorded four advisories, one of them critical, and they have been
 remediated rather than re-described. Next.js moved from 16.3.1 to 16.3.5, closing two critical
