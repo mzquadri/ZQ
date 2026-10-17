@@ -38,7 +38,7 @@ const py = (q: number) => PAD.top + IH - ((q - Q_MIN) / (Q_MAX - Q_MIN)) * IH;
 const truthLine = zoom.map((p) => `${px(p[0])},${py(p[1])}`).join(" ");
 const predLine = zoom.map((p) => `${px(p[0])},${py(p[2])}`).join(" ");
 
-/* R² is unbounded below, so the bar scale is squashed; the exact numbers sit beside it. */
+/* R2 is unbounded below, so the bar scale is squashed; the exact numbers sit beside it. */
 const squash = (r2: number) => (r2 >= 0 ? r2 : -Math.log10(1 - r2) / 2.2);
 const barMax = Math.max(...models.map((m) => Math.abs(squash(m.r2))));
 
@@ -58,9 +58,9 @@ export default function StreamflowWorldFlat() {
               <span className="streamflow-flat-bar" aria-hidden="true">
                 <i style={{ "--w": `${(Math.abs(squash(m.r2)) / barMax) * 100}%` } as React.CSSProperties} />
               </span>
-              <span className="streamflow-flat-r2">R² {m.r2}</span>
+              <span className="streamflow-flat-r2">R2 {m.r2}</span>
               <span className="streamflow-flat-scored">
-                RMSE {m.rmse} · MAE {m.mae} · scored on {m.scoredOn}
+                RMSE {m.rmse}, MAE {m.mae}, scored on {m.scoredOn}
               </span>
             </li>
           ))}
@@ -107,7 +107,7 @@ export default function StreamflowWorldFlat() {
 
       <p className="streamflow-flat-note">
         Two things explain the table. The series was written rather than measured &mdash; a fixed-seed
-        generator whose recursion is <code>y[t] = {generator.ar}·y[t−1] + …</code>, so its
+        generator whose recursion is <code>y[t] = {generator.ar}*y[t-1] + ...</code>, so its
         day-to-day autocorrelation is {lag1Autocorrelation} and the two most recent lags carry{" "}
         <strong>{Math.round(topTwoShare * 1000) / 10}%</strong> of the fitted model while rainfall
         carries {importances.find((f) => f.feature === "precip_lag1")?.value}. And the baseline is

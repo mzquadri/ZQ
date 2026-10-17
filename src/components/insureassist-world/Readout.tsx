@@ -147,7 +147,7 @@ export default function Readout({ state }: { state: InsureKey }) {
           items={[
             {
               label: "Replaying",
-              note: `${wrongFormCase.category} · answered by the ${
+              note: `${wrongFormCase.category}, answered by the ${
                 forms.find((f) => f.id === wrongFormCase.relevant[0])?.form ?? "corpus"
               }`,
               value: wrongFormCase.id,
@@ -173,7 +173,7 @@ export default function Readout({ state }: { state: InsureKey }) {
             <li data-on="" data-tone={retriever.selected ? "positive" : undefined} key={retriever.key}>
               <code>
                 {retriever.label}
-                {retriever.selected ? " · selected" : ""}
+                {retriever.selected ? ", selected" : ""}
               </code>
               <span>
                 hit@5 {retriever.hitAt5} &middot; MRR {retriever.mrr} &middot; top-document{" "}

@@ -25,7 +25,7 @@ export const metadata: Metadata = createPageMetadata({
     "A progressive research record for uncertainty-aware GNN surrogates: methods, audited findings, selective review, calibration, marginal coverage, limitations, and reproducibility.",
   path: thesisResearchPath,
   imagePath: `${thesisResearchPath}/opengraph-image`,
-  imageAlt: "Transport surrogate thesis research — uncertainty, calibration, and selective review",
+  imageAlt: "Transport surrogate thesis research, uncertainty, calibration, and selective review",
 });
 
 export default function ThesisResearchPage() {
@@ -64,7 +64,7 @@ export default function ThesisResearchPage() {
 
       <article>
         <header className="page-hero research-hero thesis-research-hero section-wrap">
-          <Link className="back-link" href="/research">← Research overview</Link>
+          <Link className="back-link" href="/research">Back to research overview</Link>
           {/* `thesis.status` already begins with "Master's thesis" - do not prefix it again. */}
           <p className="kicker">{thesis.status}</p>
           <h1>{thesis.title}</h1>
@@ -86,7 +86,7 @@ export default function ThesisResearchPage() {
 
         {/*
           The system, before the prose.
-          
+
           A reader arriving here can already see the whole pipeline come apart and reassemble
           before being asked to read a word of it, and every quantity the sequence shows is read
           from the aggregate evidence bundle published in the thesis repository. On a phone, on a
@@ -178,8 +178,8 @@ export default function ThesisResearchPage() {
             <h2>What the aggregate evidence supports</h2>
           </div>
           <div className="research-finding-grid">
-            <article><span>Point prediction</span><strong>Deep ensemble</strong><p>{researchEvidence.results.deepEnsemble.members} members produced the strongest cached-test point accuracy: R² {researchEvidence.results.deepEnsemble.r2.toFixed(3)} and MAE {researchEvidence.results.deepEnsemble.mae.toFixed(2)} veh/h.</p></article>
-            <article><span>Uncertainty ranking</span><strong>MC Dropout</strong><p>Trial 8 produced the stronger uncertainty–absolute-error rank association: Spearman ρ {researchEvidence.results.mcDropout.spearman.toFixed(3)}.</p></article>
+            <article><span>Point prediction</span><strong>Deep ensemble</strong><p>{researchEvidence.results.deepEnsemble.members} members produced the strongest cached-test point accuracy: R2 {researchEvidence.results.deepEnsemble.r2.toFixed(3)} and MAE {researchEvidence.results.deepEnsemble.mae.toFixed(2)} veh/h.</p></article>
+            <article><span>Uncertainty ranking</span><strong>MC Dropout</strong><p>Trial 8 produced the stronger uncertainty-absolute-error rank association: Spearman rho {researchEvidence.results.mcDropout.spearman.toFixed(3)}.</p></article>
             <article><span>Review trade-off</span><strong>{halfRetention.retentionPct}% retained</strong><p>Accepted-set MAE was {halfRetention.mae.toFixed(2)} veh/h, {halfRetention.reductionPct.toFixed(1)}% below accepting every cached prediction.</p></article>
             <article><span>Coverage</span><strong>Empirical marginal</strong><p>Reported split-conformal coverage was {coverage90.observedPct.toFixed(2)}% and {coverage95.observedPct.toFixed(2)}% at nominal {coverage90.nominalPct}% and {coverage95.nominalPct}%.</p></article>
           </div>

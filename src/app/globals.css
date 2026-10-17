@@ -816,6 +816,16 @@ ol {
   font-size: 0.82rem;
 }
 
+/* The photographer's credit. Quieter and tighter to the note above it than a
+   second .footer-note would be, so it reads as an attribution rather than as a
+   second disclaimer competing with the privacy line. */
+.footer-credit {
+  margin-top: 0.35rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+
 /*
  * Six links now rather than two, so they stack into a column on the right instead of running as
  * a row that wraps unpredictably against the identity block beside it.
@@ -1059,8 +1069,11 @@ ol {
 .editorial-list li::before {
   position: absolute;
   left: 0;
-  color: var(--orange);
-  content: "—";
+  top: 0.68em;
+  width: 0.62em;
+  height: 1.5px;
+  background: var(--orange);
+  content: "";
 }
 
 .positive-list li::before {

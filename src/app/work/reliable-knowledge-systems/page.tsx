@@ -58,7 +58,7 @@ export default function ReliableKnowledgeSystemsPage() {
     <PageShell current="/work">
       <article>
         <header className="page-hero section-wrap">
-          <Link className="back-link" href="/work">← Selected work</Link>
+          <Link className="back-link" href="/work">Back to selected work</Link>
           <p className="kicker">Current engineering / Illustrative model</p>
           <h1>Anything derived should be rebuildable. Anything else must not be overwritten.</h1>
 

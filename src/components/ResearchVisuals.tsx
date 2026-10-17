@@ -68,7 +68,7 @@ export function CalibrationComparison() {
       </figcaption>
       <div className="calibration-grid">
         {researchEvidence.calibrationProtocols.map((protocol) => {
-          const prefix = protocol.approximate ? "≈" : "";
+          const prefix = protocol.approximate ? "about " : "";
           return (
             <article key={protocol.id}>
               <p className="calibration-label">{protocol.label}</p>

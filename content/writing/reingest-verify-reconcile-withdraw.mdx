@@ -32,7 +32,7 @@ references:
 featured: false
 ---
 
-Most content pipelines ship with one verb: ingest. Everything afterwards — a bad extraction, a publisher amendment, a document that should never have been loaded — becomes a database session and someone's careful `DELETE`.
+Most content pipelines ship with one verb: ingest. Everything afterwards, a bad extraction, a publisher amendment, a document that should never have been loaded, becomes a database session and someone's careful `DELETE`.
 
 A system that is going to be operated needs its repair paths designed rather than improvised. Four actions cover almost everything, and the design work is not in implementing them. It is in deciding what each one is *allowed to touch*.
 
@@ -70,7 +70,7 @@ def reingest(document_key: str) -> Outcome:
     return Outcome(units=len(units), pruned=pruned)
 ```
 
-Re-ingest reads the *capture*, not the publisher. Re-downloading during a repair means you are rebuilding from a source that may itself have changed, which confuses two different events — a bad extraction and an amended document — that need different responses.
+Re-ingest reads the *capture*, not the publisher. Re-downloading during a repair means you are rebuilding from a source that may itself have changed, which confuses two different events, a bad extraction and an amended document, that need different responses.
 
 ## Verify
 
@@ -80,10 +80,10 @@ The constraint is worth enforcing structurally rather than by convention: give t
 
 Verify should also be honest about what it did not do. Every check reports one of four states, and the last two are different:
 
-- `pass` — the check ran and held
-- `fail` — the check ran and did not hold
-- `not_applicable` — the check does not apply to this record type
-- `not_run` — the check did not execute
+- `pass`, the check ran and held
+- `fail`, the check ran and did not hold
+- `not_applicable`, the check does not apply to this record type
+- `not_run`, the check did not execute
 
 Collapsing the last two into a grey dash is how a fully-verified record gets read as half-verified. It is a small modelling decision with a disproportionate effect on whether anyone trusts the interface.
 
@@ -108,7 +108,7 @@ Run reconcile on startup as well as on demand. Startup is exactly when the previ
 
 Withdraw is the only destructive action, and it needs the most structure.
 
-It spans services — canonical state in one place, projections in others — so it is an orchestration with a real possibility of partial failure. Two things make that tolerable:
+It spans services, canonical state in one place, projections in others, so it is an orchestration with a real possibility of partial failure. Two things make that tolerable:
 
 **A lifecycle lock per record.** Two concurrent withdrawals of the same record, or a withdrawal racing a re-ingest, must not interleave. The lock is per record rather than global so unrelated work continues.
 
@@ -149,7 +149,7 @@ The practical effect is that a demonstration or a read-only deployment cannot mu
 
 When I built the operator interface for a system like this, the single most valuable decision was reducing it to **one** server-side variable naming the backend. Not one per component, not a client-side override, not a fallback chain.
 
-With a fallback chain, a component that failed to read its configuration could quietly ask a different backend and display a verdict the application never requested — and the interface would look entirely normal while doing it. One variable makes that impossible.
+With a fallback chain, a component that failed to read its configuration could quietly ask a different backend and display a verdict the application never requested, and the interface would look entirely normal while doing it. One variable makes that impossible.
 
 ## Summary
 

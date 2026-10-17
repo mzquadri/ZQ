@@ -31,6 +31,12 @@ export default function SiteFooter() {
           <p className="footer-note">
             Evidence-led ML engineering. No tracking, cookies, or contact-form data.
           </p>
+          {/*
+           * The portrait is a commissioned photograph, licensed for this use. Crediting
+           * the photographer is the condition under which it appears, so the credit sits
+           * on every page rather than only on the one that shows the picture.
+           */}
+          <p className="footer-note footer-credit">Photo: Davies</p>
         </div>
         <nav aria-label="Footer navigation" className="footer-links">
           <Link href="/work">Selected work</Link>

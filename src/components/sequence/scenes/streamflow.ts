@@ -143,7 +143,7 @@ function draw(s: Surface, progress: number, p: Palette) {
       const py = zpy(failure.peakThreshold);
       if (py > zy0 && py < zy0 + zh) {
         s.line(zx, py, zx + zw, py, { stroke: p.warn, width: 1, alpha: peaks * 0.6, dash: [5, 4] });
-        s.text(zx + zw, py - s.unit * 0.012, `top decile · ${failure.peakThreshold}`, {
+        s.text(zx + zw, py - s.unit * 0.012, `top decile, ${failure.peakThreshold}`, {
           size: s.unit * 0.019,
           fill: p.warn,
           alpha: peaks * 0.85,
@@ -248,13 +248,13 @@ function draw(s: Surface, progress: number, p: Palette) {
     say(`worst ${failure.worstError} at ${failure.worstObserved}`, under * 0.8 * (1 - lean * 0.8), p.soft, 1);
   } else if (peaks > 0.05) say(`the top decile carries ${(failure.peakShareOfSquaredError * 100).toFixed(0)}% of the squared error`, peaks * (1 - under * 0.8), p.ink);
   else if (close > 0.05) {
-    say(`R2 ${XGB.r2} · MAE ${XGB.mae}`, close * (1 - peaks * 0.8), p.ink);
+    say(`R2 ${XGB.r2}, MAE ${XGB.mae}`, close * (1 - peaks * 0.8), p.ink);
     say("one step ahead. no horizon.", close * 0.8 * (1 - peaks * 0.8), p.soft, 1);
   } else if (predict > 0.05) say("one step ahead", predict * (1 - close * 0.8), p.ink);
   else if (features > 0.05) say(`lags ${configuration.lags.slice(0, 4).join(", ")} and more`, features * (1 - predict * 0.8), p.ink);
   else if (magnify > 0.05) say("120 days of the holdout", magnify * (1 - features * 0.8), p.ink);
   else if (pick > 0.05) say("one window out of the test period", pick * (1 - magnify * 0.8), p.ink);
-  else say(`${split.trainYears} years train · ${split.testYears} years held out`, 1 - pick * 0.9, p.soft);
+  else say(`${split.trainYears} years train, ${split.testYears} years held out`, 1 - pick * 0.9, p.soft);
 }
 
 export const streamflow: SceneDefinition = {

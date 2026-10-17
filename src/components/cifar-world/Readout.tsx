@@ -63,7 +63,7 @@ export default function Readout({ state }: { state: CifarKey }) {
           items={[
             { label: "Input", note: "three channels, thirty-two square", value: `${project.inputNumbers.toLocaleString("en-GB")} numbers` },
             { label: "Per pixel", note: "no depth, no metadata, no context", value: "Three bytes" },
-            { label: "Not upscaled", note: "this is the resolution the model sees", value: "32 × 32" },
+            { label: "Not upscaled", note: "this is the resolution the model sees", value: "32 x 32" },
           ]}
         />
       );
@@ -89,7 +89,7 @@ export default function Readout({ state }: { state: CifarKey }) {
       return (
         <Rows
           items={[
-            { label: "Kernel", note: "padding 1, so the plate keeps its size", value: "3 × 3" },
+            { label: "Kernel", note: "padding 1, so the plate keeps its size", value: "3 x 3" },
             { label: "Each output sees", note: "and nothing else, at this depth", value: "9 pixels" },
             { label: "Assumption", note: "nearby pixels belong together", value: "Locality" },
           ]}
@@ -101,9 +101,9 @@ export default function Readout({ state }: { state: CifarKey }) {
         <>
           <Rows
             items={[
-              { label: "Conv block 1", note: `${stages[1].params.toLocaleString("en-GB")} parameters`, value: stages[1].shape.join(" × ") },
+              { label: "Conv block 1", note: `${stages[1].params.toLocaleString("en-GB")} parameters`, value: stages[1].shape.join(" x ") },
               { label: "Channels", note: "a sample of them is drawn", value: `${stages[1].shape[0]}` },
-              { label: "Pooling", note: "32 becomes 16", value: "MaxPool 2 × 2" },
+              { label: "Pooling", note: "32 becomes 16", value: "MaxPool 2 x 2" },
             ]}
           />
           <p className="world-note">
@@ -120,8 +120,8 @@ export default function Readout({ state }: { state: CifarKey }) {
             <li data-on="" key={s.name}>
               <code>{s.name}</code>
               <span>
-                {s.shape.join(" × ")}
-                {s.params ? ` · ${s.params.toLocaleString("en-GB")} parameters` : ""}
+                {s.shape.join(" x ")}
+                {s.params ? `, ${s.params.toLocaleString("en-GB")} parameters` : ""}
               </span>
             </li>
           ))}
@@ -132,7 +132,7 @@ export default function Readout({ state }: { state: CifarKey }) {
       return (
         <Rows
           items={[
-            { label: "Flatten", note: "128 × 4 × 4", value: "2,048" },
+            { label: "Flatten", note: "128 x 4 x 4", value: "2,048" },
             { label: "Hidden", note: `dropout 0.5, then ${project.classes} outputs`, value: "256" },
             {
               label: "Classifier parameters",
@@ -157,7 +157,7 @@ export default function Readout({ state }: { state: CifarKey }) {
                 >
                   <code>{r.cls}</code>
                   <span>
-                    {r.count} of 1,000{r.cls === primary.cls ? " — correct" : ""}
+                    {r.count} of 1,000{r.cls === primary.cls ? ", correct" : ""}
                   </span>
                 </li>
               ))}
@@ -177,7 +177,7 @@ export default function Readout({ state }: { state: CifarKey }) {
             items={[
               { label: "Overall", note: `test loss ${result.testLoss}`, value: `${result.testAccuracy}%` },
               { label: "Best class", note: structure.best, value: `${structure.bestAccuracy}%` },
-              { label: "Worst class", note: `${structure.worst} — a ${structure.spread}-point spread`, value: `${structure.worstAccuracy}%` },
+              { label: "Worst class", note: `${structure.worst}, a ${structure.spread}-point spread`, value: `${structure.worstAccuracy}%` },
             ]}
           />
           <p className="world-note">
@@ -194,7 +194,7 @@ export default function Readout({ state }: { state: CifarKey }) {
             {topConfusions.slice(0, 3).map((c) => (
               <li data-on="" data-tone="uncertain" key={`${c.from}-${c.to}`}>
                 <code>
-                  {c.from} → {c.to}
+                  {c.from} to {c.to}
                 </code>
                 <span>{c.count} of 1,000</span>
               </li>
@@ -202,7 +202,7 @@ export default function Readout({ state }: { state: CifarKey }) {
           </ol>
           <p className="world-note">
             {cls("cat").accuracy}% of cats are found. {topConfusions[0].count} of them are called{" "}
-            {topConfusions[0].to} — nearly as often as the model gets them right, and the largest
+            {topConfusions[0].to}, nearly as often as the model gets them right, and the largest
             single cell off the diagonal.
           </p>
         </>

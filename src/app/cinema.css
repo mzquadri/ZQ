@@ -306,13 +306,24 @@
 }
 
 .cine-cta::after {
-  content: "→";
+  /* Drawn, not typed. Generated content is read aloud, so a typed arrow puts
+     "right arrow" into the accessibility tree after every call to action. */
+  content: "";
+  display: inline-block;
+  width: 0.4em;
+  height: 0.4em;
+  margin-left: 0.5em;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: translateY(-0.08em) rotate(45deg);
   transition: transform var(--dur-base) var(--ease-exit);
 }
 
 .cine-cta:hover::after,
 .cine-cta:focus-visible::after {
-  transform: translateX(0.28rem);
+  /* The rotation has to be carried through, or the chevron snaps back to a
+     square on hover: a transform replaces the whole list, it does not add to it. */
+  transform: translate(0.28rem, -0.08em) rotate(45deg);
 }
 
 .cine-cta-quiet {

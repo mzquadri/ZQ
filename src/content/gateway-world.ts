@@ -51,7 +51,7 @@ export const upstream = {
 /** Read but not used as code. Recorded because the debt should be visible. */
 export const priorArt = [
   {
-    name: "OWASP — MCP Tool Poisoning",
+    name: "OWASP, MCP Tool Poisoning",
     url: "https://owasp.org/www-community/attacks/MCP_Tool_Poisoning",
     role: "Source of the attack-class names used in the corpus.",
   },
@@ -258,7 +258,7 @@ export const bypass = {
   title: "A withheld tool that could still be called",
   found: "Integration tests, over a real MCP subprocess",
   what: "The gateway hid a poisoned tool at discovery, then executed a direct call to it.",
-  why: "Hiding a name from a listing is not the same as making it uncallable. A client holding the name from an earlier session can still ask, and the request-stage controls never learn that the declaration was rejected — they only see the call.",
+  why: "Hiding a name from a listing is not the same as making it uncallable. A client holding the name from an earlier session can still ask, and the request-stage controls never learn that the declaration was rejected; they only see the call.",
   fix: "The gateway records withheld tools and refuses calls to them.",
   lesson:
     "The corpus tests decisions. This was a bug in wiring, and only a test that spoke the protocol could reach it.",

@@ -770,10 +770,10 @@ test("the portfolio presents no chronology it cannot source", async ({ page }) =
     const text = await page.locator("main").innerText();
     const ranges =
       text.match(
-        /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(?:Present|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2})/g,
+        /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-\u2013]\s*(?:Present|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2})/g,
       ) ?? [];
     for (const range of ranges) {
-      expect(APPROVED.has(range.replace(/\s*[-–]\s*/, " - ")), `${path} shows an unapproved range: ${range}`).toBe(true);
+      expect(APPROVED.has(range.replace(/\s*[-\u2013]\s*/, " - ")), `${path} shows an unapproved range: ${range}`).toBe(true);
     }
   }
 
@@ -2286,7 +2286,7 @@ test("cifar reports the real tensor shapes", async ({ page }) => {
   await page.goto("/work/cifar10-cnn");
   const text = await page.locator("main").innerText();
   /* Measured from the module by the generator, not read off the README. */
-  for (const shape of ["3 × 32 × 32", "32 × 16 × 16", "64 × 8 × 8", "128 × 4 × 4"]) {
+  for (const shape of ["3 x 32 x 32", "32 x 16 x 16", "64 x 8 x 8", "128 x 4 x 4"]) {
     expect(text, `expected the measured shape ${shape}`).toContain(shape);
   }
 });
@@ -2910,7 +2910,7 @@ test("the rating curve amplifies a fixed gauge error into a growing discharge in
 
   /* The input never changes; only what the curve does with it. */
   await expect(fig.locator(".rating-amp-readout p").first()).toHaveText(/Measurement uncertainty/i);
-  expect(await fig.innerText()).toContain("±25 cm");
+  expect(await fig.innerText()).toContain("plus or minus 25 cm");
 
   expect(low).toBeLessThan(base);
   expect(base).toBeLessThan(peak);
@@ -2944,7 +2944,7 @@ test("the amplification is operable from the keyboard and readable without it", 
    */
   const rows = fig.locator(".research-data-table tbody tr");
   await expect(rows).toHaveCount(3);
-  expect(await rows.first().innerText()).toContain("±25 cm");
+  expect(await rows.first().innerText()).toContain("plus or minus 25 cm");
   expect(await fig.locator("figcaption").innerText()).toMatch(/25 cm/);
 });
 

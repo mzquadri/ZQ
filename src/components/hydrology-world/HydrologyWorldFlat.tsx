@@ -120,7 +120,7 @@ export default function HydrologyWorldFlat() {
         />
         <Panel
           band={stageBand}
-          caption={`${outputExperiment.series.toLocaleString("en-GB")} series from moving the measured water level ±25 cm. NSE ${calibration.referenceNse} becomes ${outputExperiment.nseMean}; ${outputExperiment.betterByChance} of them beat the reference.`}
+          caption={`${outputExperiment.series.toLocaleString("en-GB")} series from moving the measured water level plus or minus 25 cm. NSE ${calibration.referenceNse} becomes ${outputExperiment.nseMean}; ${outputExperiment.betterByChance} of them beat the reference.`}
           label="Perturb the ruler"
           tone="stage"
         />
@@ -128,11 +128,11 @@ export default function HydrologyWorldFlat() {
 
       <p className="hydrology-flat-note">
         Both panels are on the same discharge scale, and both bands are drawn at their measured
-        widths. Moving the water level costs <strong>{verdict.lossRatio}×</strong> more than moving
-        the rainfall, because discharge is never measured directly — it is inferred from stage
+        widths. Moving the water level costs <strong>{verdict.lossRatio}x</strong> more than moving
+        the rainfall, because discharge is never measured directly; it is inferred from stage
         through a fitted curve whose local exponent rises from {verdict.exponentAtBase} to{" "}
         {verdict.exponentAtPeak} as the river rises, so one fixed gauge error buys{" "}
-        {verdict.bandRatio}× more error at the flood peak than at baseflow. Refitting the model
+        {verdict.bandRatio}x more error at the flood peak than at baseflow. Refitting the model
         to each corrupted series recovers {outputExperiment.compensationPct}% of the loss and still
         never beats the reference: you cannot calibrate your way out of an error in the thing you
         are calibrating against.
@@ -145,9 +145,9 @@ export default function HydrologyWorldFlat() {
         {calibration.evaluations.toLocaleString("en-GB")} model evaluations; then sensitivity
         analysis, locally around that optimum and globally with{" "}
         <strong>Sobol</strong> indices under Saltelli sampling; then the two perturbation studies
-        above. The two Sobol configurations disagree about which parameter dominates —{" "}
+        above. The two Sobol configurations disagree about which parameter dominates ,{" "}
         {sensitivity.narrow.top} sampled narrowly against {sensitivity.full.top} sampled across the
-        full space — and their total indices sum to {sensitivity.full.sumTotal} rather than 1,
+        full space, and their total indices sum to {sensitivity.full.sumTotal} rather than 1,
         so most of the variance sits in interactions rather than in any single parameter.
       </p>
 
@@ -166,7 +166,7 @@ export default function HydrologyWorldFlat() {
         </div>
         <div>
           <dt>Rating curve fit</dt>
-          <dd>R² {ratingCurve.r2}</dd>
+          <dd>R2 {ratingCurve.r2}</dd>
         </div>
       </dl>
 

@@ -39,7 +39,7 @@ for (const route of targets) {
   const results = await new AxeBuilder({ page }).analyze();
   const count = results.violations.reduce((n, v) => n + v.nodes.length, 0);
   total += count;
-  console.log(`\n=== ${route} — ${results.violations.length} rules, ${count} nodes ===`);
+  console.log(`\n=== ${route}: ${results.violations.length} rules, ${count} nodes ===`);
 
   for (const violation of results.violations) {
     console.log(`\n[${violation.impact}] ${violation.id}: ${violation.help}`);

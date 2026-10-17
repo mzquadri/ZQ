@@ -100,7 +100,7 @@ def validate_schema(frame, spec: list[ColumnSpec]) -> list[str]:
     return problems
 ```
 
-Distribution drift is the harder half, because *some* drift is expected. The useful formulation is not "has the distribution changed" but "has it changed more than the amount this model was shown to tolerate" — which means you need a tolerance, established once, rather than a p-value you re-interpret each run.
+Distribution drift is the harder half, because *some* drift is expected. The useful formulation is not "has the distribution changed" but "has it changed more than the amount this model was shown to tolerate", which means you need a tolerance, established once, rather than a p-value you re-interpret each run.
 
 ## Performance: fit the transformation once
 
@@ -128,7 +128,7 @@ Then compare against the incumbent on identical held-out data, and hold two thre
 
 Aggregate metrics hide capability loss. A model that gains a point of accuracy overall while losing an entire minority class has improved by the number and regressed by any measure that matters.
 
-Keep a suite of specific cases with expected outcomes — edge cases, known-hard examples, one per subgroup you care about, and one per bug you have previously fixed.
+Keep a suite of specific cases with expected outcomes, edge cases, known-hard examples, one per subgroup you care about, and one per bug you have previously fixed.
 
 ```python
 def behaviour_suite(artefact, cases) -> list[str]:
@@ -181,7 +181,7 @@ class PromotionReport:
         return all(g.passed for g in (self.data, self.performance, self.behaviour, self.reproducibility))
 ```
 
-A single boolean tells whoever reads it to go and find the logs. Four results tell them what to fix. And when a gate is skipped — no incumbent to compare against, for a first model — record it as `skipped` with a reason rather than as a pass. A first release has not beaten anything, and the report should say so.
+A single boolean tells whoever reads it to go and find the logs. Four results tell them what to fix. And when a gate is skipped, no incumbent to compare against, for a first model, record it as `skipped` with a reason rather than as a pass. A first release has not beaten anything, and the report should say so.
 
 ## What gates do not give you
 

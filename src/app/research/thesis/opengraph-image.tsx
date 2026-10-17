@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { site, thesis } from "@/content/portfolio";
 import { researchEvidence } from "@/content/research";
 
-export const alt = "Transport surrogate thesis research — uncertainty, calibration, and selective review";
+export const alt = "Transport surrogate thesis research, uncertainty, calibration, and selective review";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -23,8 +23,8 @@ export default function ThesisResearchOpenGraphImage() {
         <div style={{ alignItems: "flex-end", display: "flex", justifyContent: "space-between" }}>
           <div style={{ display: "flex", gap: 44 }}>
             <div style={{ display: "flex", flexDirection: "column" }}><span style={{ color: "#9ac9c4", fontSize: 18 }}>TEST SCOPE</span><strong style={{ fontFamily: "serif", fontSize: 38 }}>{(researchEvidence.scope.predictions / 1_000_000).toFixed(2)}M</strong></div>
-            <div style={{ display: "flex", flexDirection: "column" }}><span style={{ color: "#9ac9c4", fontSize: 18 }}>RANK ASSOCIATION</span><strong style={{ fontFamily: "serif", fontSize: 38 }}>ρ {researchEvidence.results.mcDropout.spearman.toFixed(3)}</strong></div>
-            <div style={{ display: "flex", flexDirection: "column" }}><span style={{ color: "#9ac9c4", fontSize: 18 }}>{halfRetention.retentionPct}% RETAINED</span><strong style={{ fontFamily: "serif", fontSize: 38 }}>−{halfRetention.reductionPct.toFixed(1)}% MAE</strong></div>
+            <div style={{ display: "flex", flexDirection: "column" }}><span style={{ color: "#9ac9c4", fontSize: 18 }}>RANK ASSOCIATION</span><strong style={{ fontFamily: "serif", fontSize: 38 }}>rho {researchEvidence.results.mcDropout.spearman.toFixed(3)}</strong></div>
+            <div style={{ display: "flex", flexDirection: "column" }}><span style={{ color: "#9ac9c4", fontSize: 18 }}>{halfRetention.retentionPct}% RETAINED</span><strong style={{ fontFamily: "serif", fontSize: 38 }}>-{halfRetention.reductionPct.toFixed(1)}% MAE</strong></div>
           </div>
           <div style={{ display: "flex", fontSize: 22, fontWeight: 700 }}>{site.name} / mzquadri.de</div>
         </div>

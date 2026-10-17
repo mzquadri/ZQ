@@ -50,7 +50,7 @@ featured: true
 
 Retrieval fails quietly. A dense-only index returns the passage that is closest in embedding space, and if the right passage contained a rare identifier the model never learned, that passage is not in the top fifty. Nothing errors. The generator produces a fluent answer from the wrong source.
 
-Hybrid retrieval addresses one part of this — lexical recall — and introduces its own set of quiet failures. This article is about both.
+Hybrid retrieval addresses one part of this, lexical recall, and introduces its own set of quiet failures. This article is about both.
 
 <Callout title="Degrade loudly, or not at all">
   Every stage that can degrade should either refuse or report. A retrieval system whose failure mode is "slightly worse results" is a system whose failures you will never find.
@@ -136,7 +136,7 @@ Store the `model_id` in the payload of every point. When you change models you t
 
 This is the decision I feel most strongly about.
 
-Embedding models have a maximum input length. The default behaviour of nearly every client library is to truncate silently. The result is a vector that represents the first part of the document and is indexed as though it represented the whole thing — and there is no way, later, to tell that point apart from a correct one.
+Embedding models have a maximum input length. The default behaviour of nearly every client library is to truncate silently. The result is a vector that represents the first part of the document and is indexed as though it represented the whole thing, and there is no way, later, to tell that point apart from a correct one.
 
 ```python
 def embed_or_refuse(text: str, contract: EmbeddingContract) -> list[float]:
@@ -149,7 +149,7 @@ def embed_or_refuse(text: str, contract: EmbeddingContract) -> list[float]:
     return model.encode(text)
 ```
 
-Refusing means an ingestion failure that someone has to look at. That is the correct outcome. The alternative is a corpus containing points that quietly misrepresent their documents, and you will find them by noticing that answers about long documents are bad — eventually, and without knowing why.
+Refusing means an ingestion failure that someone has to look at. That is the correct outcome. The alternative is a corpus containing points that quietly misrepresent their documents, and you will find them by noticing that answers about long documents are bad, eventually, and without knowing why.
 
 Chunking is the real answer, and chunk boundaries should follow the document's own structure where it has one. For legal text I chunk on provisions and index only currently-active sections, because a retrieval hit on a repealed provision is worse than no hit.
 
@@ -174,7 +174,7 @@ class RetrievalResult:
 ## What this does not solve
 
 - **Retrieval quality is not answer quality.** Correct passages can still be summarised wrongly.
-- **A citation is only as good as what it points at.** If it points at a document version the publisher no longer serves, the answer is confidently wrong — which is why the corpus behind retrieval needs its own [integrity ladder](/learn/equal-counts-do-not-prove-two-stores-agree).
+- **A citation is only as good as what it points at.** If it points at a document version the publisher no longer serves, the answer is confidently wrong, which is why the corpus behind retrieval needs its own [integrity ladder](/learn/equal-counts-do-not-prove-two-stores-agree).
 - **Fusion does not repair a bad chunking strategy.** If the answer spans two chunks and neither contains it, no amount of fusion will find it.
 - **None of this is an evaluation.** Build a labelled set of real queries and measure, or you are tuning parameters against intuition.
 

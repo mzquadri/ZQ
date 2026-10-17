@@ -113,15 +113,15 @@ export const strongWork: readonly StrongWork[] = [
       kind: "measured",
       axis: "Reported score, 0 to 1",
       bars: [
-        { label: "R²", value: 0.899 },
+        { label: "R2", value: 0.899 },
         { label: "Nash-Sutcliffe", value: 0.899 },
         { label: "Flood-event precision", value: 0.574 },
         { label: "Flood-event recall", value: 0.648 },
         { label: "Flood-event F1", value: 0.609 },
       ],
       readouts: [
-        { label: "RMSE", value: "2.551 m³/s" },
-        { label: "MAE", value: "1.833 m³/s" },
+        { label: "RMSE", value: "2.551 m3/s" },
+        { label: "MAE", value: "1.833 m3/s" },
         { label: "PBIAS", value: "3.57%" },
       ],
       caveat:
@@ -164,8 +164,8 @@ export const strongWork: readonly StrongWork[] = [
         { label: "XGBoost (tuned)", value: 0.898 },
       ],
       readouts: [
-        { label: "Best accuracy", value: "0.826 · SVM" },
-        { label: "Best F1", value: "0.790 · SVM" },
+        { label: "Best accuracy", value: "0.826, SVM" },
+        { label: "Best F1", value: "0.790, SVM" },
       ],
       caveat:
         "Tuning moved XGBoost from 0.896 to 0.898 and left the untuned SVM ahead. The comparison is reported as it came out.",
@@ -196,7 +196,7 @@ export const strongWork: readonly StrongWork[] = [
       kind: "demonstrated",
       axis: "What the repository establishes",
       readouts: [
-        { label: "Contract", value: "POST /deaths/ · typed request and response" },
+        { label: "Contract", value: "POST /deaths/, typed request and response" },
         { label: "Artifact", value: "Model loaded relative to the app, not the caller's directory" },
         { label: "Documentation", value: "Interactive schema served at /docs" },
       ],

@@ -59,7 +59,7 @@ Accuracy and calibration are different properties. A model can have either witho
 
 ## They come apart in both directions
 
-**Accurate, badly calibrated.** Modern deep networks are systematically overconfident — Guo et al. showed that as architectures got deeper and more accurate, calibration got *worse*. A network that is right 94% of the time while reporting 0.99 on nearly everything is accurate and its confidence is worthless for triage.
+**Accurate, badly calibrated.** Modern deep networks are systematically overconfident, Guo et al. showed that as architectures got deeper and more accurate, calibration got *worse*. A network that is right 94% of the time while reporting 0.99 on nearly everything is accurate and its confidence is worthless for triage.
 
 **Well calibrated, useless.** A model that predicts the base rate for every input is perfectly calibrated. If 12% of cases are positive and it always says 0.12, its stated probabilities are exactly right and it has learned nothing. Calibration alone is not a quality measure.
 
@@ -108,7 +108,7 @@ $$
 \hat{p}_i = \operatorname{softmax}\!\left(\frac{z_i}{T}\right)
 $$
 
-One parameter, fitted on a validation set by minimising negative log-likelihood. It cannot change the ranking of predictions, so accuracy is exactly unchanged — which is what makes it safe.
+One parameter, fitted on a validation set by minimising negative log-likelihood. It cannot change the ranking of predictions, so accuracy is exactly unchanged, which is what makes it safe.
 
 **Isotonic regression** fits a monotonic mapping from score to probability. More flexible, needs more data, and can overfit a small validation set.
 

@@ -63,7 +63,7 @@ def quantity_matches(records, index, document_key) -> bool:
 
 Worth having. It catches partial writes, client-side batching that silently dropped a page, and the case where a projection never ran at all.
 
-What it cannot catch is any transformation that preserves cardinality — and re-ingestion after an extractor change is exactly such a transformation. That is the situation where you most want a check and least want this one.
+What it cannot catch is any transformation that preserves cardinality, and re-ingestion after an extractor change is exactly such a transformation. That is the situation where you most want a check and least want this one.
 
 ## Identity
 
@@ -99,7 +99,7 @@ This is also where the *source* has to be a fixed object rather than a live fetc
 
 ## Relationships
 
-Structured corpora carry references between records — a cross-reference, a citation, a foreign key. These are their own failure surface, because they can break without either endpoint changing.
+Structured corpora carry references between records, a cross-reference, a citation, a foreign key. These are their own failure surface, because they can break without either endpoint changing.
 
 Compare the edge set produced by re-running extraction on the captured source against the edge set stored in the graph. Report the difference in both directions. An edge that exists only in the store is a stale relationship from a previous extraction; an edge that exists only in the re-run is one the store never received.
 
@@ -107,7 +107,7 @@ Compare the edge set produced by re-running extraction on the captured source ag
 
 The last rung asks a different kind of question: *was this version built by the pipeline it claims?*
 
-Record, alongside every stored generation, a digest of the rules that produced it — the parser, the extractors, the registry of what was in scope. Then a check can say whether the installed rules still match the recorded ones. This is what turns "the data looks right" into "the data was produced by a declared process, and that process has not silently changed underneath it". It gets its [own article](/learn/evidence-provenance-for-knowledge-systems), because getting the digest itself right has a few sharp edges.
+Record, alongside every stored generation, a digest of the rules that produced it, the parser, the extractors, the registry of what was in scope. Then a check can say whether the installed rules still match the recorded ones. This is what turns "the data looks right" into "the data was produced by a declared process, and that process has not silently changed underneath it". It gets its [own article](/learn/evidence-provenance-for-knowledge-systems), because getting the digest itself right has a few sharp edges.
 
 ## Report the rungs separately
 

@@ -222,8 +222,8 @@ function draw(s: Surface, progress: number, p: Palette) {
   };
 
   if (review > 0.05) {
-    say(`most confident 10%  ·  MAE ${KEEP.mae.toFixed(2)}`, review, p.ink);
-    say(`everything          ·  MAE ${ALL.mae.toFixed(2)}`, review * 0.8, p.soft, 1);
+    say(`most confident 10% ,  MAE ${KEEP.mae.toFixed(2)}`, review, p.ink);
+    say(`everything         ,  MAE ${ALL.mae.toFixed(2)}`, review * 0.8, p.soft, 1);
   } else if (uncertain > 0.05) {
     say("uncertainty grows with distance from the intervention", uncertain * (1 - calibrate * 0.7), p.ink);
   } else if (lift > 0.05) {

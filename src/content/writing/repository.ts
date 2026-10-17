@@ -68,7 +68,11 @@ export function calculateReadingTime(body: string) {
     .replace(/\$\$[\s\S]*?\$\$/g, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/[#>*_`\[\]()|-]/g, " ");
-  const wordCount = prose.match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu)?.length ?? 0;
+  // The curly apostrophe is a character class here, not punctuation in prose:
+  // a post drafted elsewhere can still arrive carrying one, and dropping it
+  // would split "don't" into two words. The marker has to sit on this line,
+  // because both the checker and the rewriter work a line at a time.
+  const wordCount = prose.match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu)?.length ?? 0; // check-characters: allow
   return { wordCount, readingTime: Math.max(1, Math.ceil(wordCount / 225)) };
 }
 

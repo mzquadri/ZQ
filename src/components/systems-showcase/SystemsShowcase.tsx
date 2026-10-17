@@ -101,7 +101,7 @@ function FanOut() {
             <p className="systems-name">Captured before it is parsed</p>
             <p>
               The bytes are retained first, so everything built afterwards has one fixed thing to be
-              compared against — rather than being compared against another copy of itself.
+              compared against, rather than being compared against another copy of itself.
             </p>
             <p className="systems-chip">Capture retained</p>
           </div>
@@ -293,7 +293,7 @@ function CheckLadder() {
 
       <p className="figure-note">
         Each comparison is recorded as its own result rather than folded into one status, because
-        passing one is not evidence for another — and none of them turns into proof.
+        passing one is not evidence for another, and none of them turns into proof.
       </p>
     </figure>
   );

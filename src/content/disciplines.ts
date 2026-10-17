@@ -46,13 +46,11 @@ export const disciplines: readonly Discipline[] = [
      */
     roleIds: ["tum-programming-visualization", "tum-numerical-methods"],
   },
-  {
-    id: "ml-research",
-    name: "Machine learning research",
-    summary:
-      "Estimating a quantity that is not directly measurable, and being careful about what the estimate can support. The battery work is the earliest instance of the question the thesis later formalised.",
-    roleIds: ["iiser-battery-ml"],
-  },
+  // "Machine learning research" used to sit here, and its only role was the
+  // IISER Bhopal internship. That record left the CV, so it left truth.ts, and
+  // a discipline with no roles under it is an empty heading. The research work
+  // this portfolio actually shows is the thesis and the two seminars, which
+  // have their own sections.
   {
     id: "data-engineering",
     name: "Data and workflow engineering",

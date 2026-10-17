@@ -44,7 +44,7 @@ export function ResearchSection() {
         <SectionHead chapter={chapters.research} />
 
         <p className="research-standfirst">
-          {thesis.status} at {thesis.institution} — {thesis.program}.
+          {thesis.status} at {thesis.institution}, {thesis.program}.
         </p>
 
         <dl className="research-metrics">

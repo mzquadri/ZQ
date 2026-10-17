@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/content/portfolio";
 
-export const alt = `${site.name} — ${site.role} and reliable systems`;
+export const alt = `${site.name}, ${site.role} and reliable systems`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -30,8 +30,8 @@ export default function OpenGraphImage() {
             Applied ML with evidence built in.
           </div>
           <div style={{ display: "flex", gap: 20, fontSize: 26 }}>
-            <span>AI systems</span><span>·</span><span>Machine learning</span><span>·</span>
-            <span>RAG</span><span>·</span><span>GNNs</span><span>·</span><span>Research</span>
+            <span>AI systems</span><span>*</span><span>Machine learning</span><span>*</span>
+            <span>RAG</span><span>*</span><span>GNNs</span><span>*</span><span>Research</span>
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>

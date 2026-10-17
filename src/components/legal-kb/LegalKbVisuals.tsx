@@ -294,7 +294,7 @@ export function SourceChangeConvergence() {
                   <li>{order.then}</li>
                 </ol>
                 <p>
-                  <em>{order.intermediate}</em> — {order.why}
+                  <em>{order.intermediate}</em>, {order.why}
                 </p>
               </dd>
             </div>

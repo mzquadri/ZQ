@@ -53,7 +53,7 @@ The question this article answers is narrow: what has to be true about your iden
 
 ## What goes wrong with generated identifiers
 
-The default in most stacks is to let each store mint its own key — an auto-increment column, a random point id, an internally generated node id. That is fine until the same input arrives twice.
+The default in most stacks is to let each store mint its own key, an auto-increment column, a random point id, an internally generated node id. That is fine until the same input arrives twice.
 
 ```python
 # Redelivery-hostile: the identifier depends on when the code ran.
@@ -63,7 +63,7 @@ index.upsert(id=point_id, vector=embed(chunk.text), payload=chunk.meta)
 
 The second delivery computes a different `point_id` for the identical chunk, so `upsert` inserts rather than replaces. The index now holds the chunk twice. Nothing errors. The count is simply wrong, and it is wrong in a way that grows with every retry.
 
-The usual patch is a processed-message table: record each message id, skip anything already seen. That works, and it buys the problem you were avoiding — the table is a fourth store, it needs its own write to be atomic with the other three, and you are back to coordinating.
+The usual patch is a processed-message table: record each message id, skip anything already seen. That works, and it buys the problem you were avoiding, the table is a fourth store, it needs its own write to be atomic with the other three, and you are back to coordinating.
 
 ## Derive the identifier from the content instead
 
@@ -110,13 +110,13 @@ def project(chunks, index, graph):
 
 `CREATE` is the bug. `MERGE` on a natural key is the fix, and it is a fix precisely because the key is derived rather than allocated. In a relational store the same shape is `INSERT ... ON CONFLICT (derived_key) DO UPDATE`.
 
-The result is that the redelivered message performs the same writes and reaches the same state. The second run is not *skipped* — it is *repeated and harmless*, which is a considerably easier property to reason about than a skip that depends on a lookup succeeding.
+The result is that the redelivered message performs the same writes and reaches the same state. The second run is not *skipped*; it is *repeated and harmless*, which is a considerably easier property to reason about than a skip that depends on a lookup succeeding.
 
 ## One writer per store
 
 Idempotent writes converge only if nothing else is writing. If two services can both write the search index, a redelivery from one can race a correction from the other, and the winner is decided by arrival order.
 
-So the rule I enforce is blunt: **each store has exactly one writing service.** Everything else reads. When a second write path appeared in a system I built, the resolution was to delete that path rather than to relax the rule and add locking around it — because a single-writer store gives you something locking does not, which is that a divergence is attributable. There is exactly one service that could have caused it.
+So the rule I enforce is blunt: **each store has exactly one writing service.** Everything else reads. When a second write path appeared in a system I built, the resolution was to delete that path rather than to relax the rule and add locking around it, because a single-writer store gives you something locking does not, which is that a divergence is attributable. There is exactly one service that could have caused it.
 
 Write order within that single writer is worth deciding explicitly too, and worth writing down. If the index is written before the graph, a crash between them leaves the index ahead. That is a state your reconciliation has to recognise, so choose the order you would rather explain and keep it.
 
@@ -133,7 +133,7 @@ if stored != expected:
 
 This catches partial writes, silent client-side batching failures, and the whole class of "it looked like it worked". Keep it.
 
-It does not prove the stores agree. Equal totals survive one record being removed and another added — the subject of [a separate article](/learn/equal-counts-do-not-prove-two-stores-agree), because it is the mistake I see made most often once someone has added fences and feels finished.
+It does not prove the stores agree. Equal totals survive one record being removed and another added, the subject of [a separate article](/learn/equal-counts-do-not-prove-two-stores-agree), because it is the mistake I see made most often once someone has added fences and feels finished.
 
 ## Where this pattern does not apply
 
@@ -148,7 +148,7 @@ That last point is the one that bit me. Broker-level ordering is per partition, 
 
 ## The contract, stated
 
-1. Every identifier is a pure function of `(entity, version, position)` — no clocks, no counters.
+1. Every identifier is a pure function of `(entity, version, position)`, no clocks, no counters.
 2. Every write is an upsert or a `MERGE`, never a create.
 3. Each store has exactly one writing service, and the write order inside it is documented.
 4. Partitions are keyed by entity identity, so two versions of one entity cannot race.

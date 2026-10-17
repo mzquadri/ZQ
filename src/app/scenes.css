@@ -45,7 +45,16 @@
   text-decoration: none;
 }
 
-.chapter-more::after { content: "→"; }
+.chapter-more::after {
+  content: "";
+  display: inline-block;
+  width: 0.38em;
+  height: 0.38em;
+  margin-left: 0.45em;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: translateY(-0.08em) rotate(45deg);
+}
 
 .chapter-more:hover,
 .chapter-more:focus-visible {
@@ -581,7 +590,16 @@
   text-decoration: none;
 }
 
-.case-back::before { content: "←"; }
+.case-back::before {
+  content: "";
+  display: inline-block;
+  width: 0.38em;
+  height: 0.38em;
+  margin-right: 0.45em;
+  border-bottom: 1.5px solid currentColor;
+  border-left: 1.5px solid currentColor;
+  transform: translateY(-0.08em) rotate(45deg);
+}
 
 .case-back:hover,
 .case-back:focus-visible { color: var(--accent); }

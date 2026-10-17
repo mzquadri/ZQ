@@ -43,7 +43,7 @@ featured: false
 
 Here is a defect I found in my own work, and it is the reason this article exists.
 
-A pipeline parsed structured documents and reported how much of each document it had successfully captured — a completeness percentage. A verification gate then checked that percentage. The gate computed the denominator by calling a module to count the structural elements in the source. That module was the same one the parser used to walk the document.
+A pipeline parsed structured documents and reported how much of each document it had successfully captured, a completeness percentage. A verification gate then checked that percentage. The gate computed the denominator by calling a module to count the structural elements in the source. That module was the same one the parser used to walk the document.
 
 So when the parser missed a whole category of element, the counter missed it too. Numerator and denominator both shrank. The gate reported one hundred percent, correctly, against a total that was itself wrong. Parser, gate and contract were wrong together, and nothing in the pipeline could see it.
 
@@ -60,11 +60,11 @@ Four axes, and all four matter:
 1. **No shared application code.** Not one import. Not a constants module, not a "small helper", not the schema definitions.
 2. **A different library.** If both sides use the same parser library, a bug in that library is common to both.
 3. **A different traversal model.** Same library, different approach still leaves you sharing the library's model of the document. Full-tree materialisation and streaming events fail differently.
-4. **Different text assembly.** How character data is gathered — including what happens to text between and after child elements — is a classic source of quiet disagreement, so the two sides should do it differently on purpose.
+4. **Different text assembly.** How character data is gathered, including what happens to text between and after child elements, is a classic source of quiet disagreement, so the two sides should do it differently on purpose.
 
 In the system above, production used the standard library's tree parser with a hardened loader and a full-tree walk. The oracle uses a different library entirely, in streaming mode, with an explicit tag stack, accumulating character data from each element's own text and its trailing text separately. Its complete import list is three standard-library modules plus that one parser. Zero application imports.
 
-That is a stronger independence argument than "the oracle uses the standard library", which is what an earlier draft of my own documentation claimed. Different library, different traversal model, different text assembly, zero shared code — each clause is doing work.
+That is a stronger independence argument than "the oracle uses the standard library", which is what an earlier draft of my own documentation claimed. Different library, different traversal model, different text assembly, zero shared code, each clause is doing work.
 
 ## A worked shape
 
@@ -105,7 +105,7 @@ The gate then compares production's stored structure against this inventory. Bec
 
 An independent oracle still has to earn the right to issue a verdict. The mechanism I use is a self-proof that runs before any new claim:
 
-> Before certifying anything, re-derive every already-certified record under today's rules. If any of them no longer reproduces, issue no verdict at all — including for the record being certified.
+> Before certifying anything, re-derive every already-certified record under today's rules. If any of them no longer reproduces, issue no verdict at all, including for the record being certified.
 
 ```python
 def prove_baseline(certified: list[Record]) -> None:
@@ -122,7 +122,7 @@ The refusal is the point. The tempting behaviour is to report the regressions as
 
 The defect that started this article was real, and unit tests did not find it. What found it was running the gate against a second document.
 
-The first document happened to carry exactly one piece of source evidence. The gate's query pooled evidence documents without grouping, so with one document it was accidentally correct. The second document carried three — one current and two superseded — and every finding was suddenly multiplied by three. The bug was in the gate, not the data, and only a second subject with a different shape could expose it.
+The first document happened to carry exactly one piece of source evidence. The gate's query pooled evidence documents without grouping, so with one document it was accidentally correct. The second document carried three, one current and two superseded, and every finding was suddenly multiplied by three. The bug was in the gate, not the data, and only a second subject with a different shape could expose it.
 
 The general rule is worth stating plainly: **a verification component tested against one instance is tested against that instance's accidents.** Choose the second subject for a structural difference, not for coverage.
 
@@ -130,7 +130,7 @@ The general rule is worth stating plainly: **a verification component tested aga
 
 State the boundary, because "all our tooling is independent" is almost always false.
 
-In the same toolset there are roughly four dozen operational tools, and at least one deliberately imports the production parser — it is a differential that runs both implementations over the same input and reports where they disagree. That tool is not independent and is not meant to be; its whole purpose requires both sides.
+In the same toolset there are roughly four dozen operational tools, and at least one deliberately imports the production parser; it is a differential that runs both implementations over the same input and reports where they disagree. That tool is not independent and is not meant to be; its whole purpose requires both sides.
 
 So the claim is narrow and checkable: *the oracle* imports no application code. That is a property you can assert in a test.
 
@@ -152,7 +152,7 @@ An independence claim that no test enforces decays within a release or two, beca
 A second implementation is expensive. It is worth it when:
 
 - the output is used as evidence rather than as a convenience,
-- a wrong answer is *quiet* — nothing crashes, the number just reads well,
+- a wrong answer is *quiet*; nothing crashes, the number just reads well,
 - the cost of being confidently wrong is higher than the cost of the second implementation.
 
 It is not worth it for most business logic, where failures are loud and cheap. It was worth it here because a corpus that has drifted from its source produces confident citations of text the publisher no longer serves, and nobody downstream can tell.

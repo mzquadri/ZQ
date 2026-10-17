@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import JsonLd from "@/components/JsonLd";
+import { themeBootstrap } from "@/components/ThemeToggle";
 import { site } from "@/content/portfolio";
 import "./globals.css";
 import "./motion.css";
@@ -9,6 +10,7 @@ import "./scenes.css";
 import "./home.css";
 import "./rail.css";
 import "./pages.css";
+import "./world.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -56,7 +58,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Mohd Zamin Quadri — Applied ML, reliable systems, scientific computing",
+        alt: "Mohd Zamin Quadri, Applied ML, reliable systems, scientific computing",
       },
     ],
   },
@@ -80,7 +82,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/*
+          * Runs before first paint, so the page is never briefly the wrong
+          * theme. A toggle that reads localStorage in an effect shows light
+          * for one frame on a dark-theme reload, and that flash is worse than
+          * having no dark theme at all. suppressHydrationWarning is on the
+          * html element because this script is what makes the server markup
+          * and the first client render differ, deliberately.
+          */}
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <JsonLd
           data={{

@@ -76,7 +76,7 @@ def looks_corrupted(text: str) -> bool:
 
 When corruption is detected, do not proceed. Route the document to an OCR path that rasterises and re-reads it. That is slower and usually better than the broken text layer, and it turns a silent data-quality problem into a branch you can count.
 
-One more repair, unglamorous and effective: some encoders mangle specific characters in recoverable ways. A targeted repair table for the language you handle costs almost nothing. Keep it small, keep it tested, and log every time it fires — a rising repair rate means an upstream change you want to know about.
+One more repair, unglamorous and effective: some encoders mangle specific characters in recoverable ways. A targeted repair table for the language you handle costs almost nothing. Keep it small, keep it tested, and log every time it fires, a rising repair rate means an upstream change you want to know about.
 
 ## Classify before you extract
 
@@ -105,7 +105,7 @@ The anchor path also gives you a free evaluation: sample documents where anchor 
 
 ## Templates are schemas, not prompt strings
 
-A template should be a data structure the pipeline can reason about — field names, types, whether each is required, and a description that goes into the prompt.
+A template should be a data structure the pipeline can reason about, field names, types, whether each is required, and a description that goes into the prompt.
 
 ```python
 @dataclass(frozen=True)
@@ -125,15 +125,15 @@ POLICY_TERMS = (
 )
 ```
 
-From one template you generate the prompt, the JSON schema for validation, and the database columns. One definition, three consumers — which is what stops the prompt from drifting away from the schema, a failure that produces valid-looking output the pipeline then rejects.
+From one template you generate the prompt, the JSON schema for validation, and the database columns. One definition, three consumers, which is what stops the prompt from drifting away from the schema, a failure that produces valid-looking output the pipeline then rejects.
 
 ## Validate structurally, then semantically
 
 Two separate gates.
 
-**Structural** — is the output well-formed against the schema? Wrong types, missing required fields, extra keys.
+**Structural**, is the output well-formed against the schema? Wrong types, missing required fields, extra keys.
 
-**Semantic** — are the values plausible? Dates in a sane range, enums inside the vocabulary, patterns matching.
+**Semantic**, are the values plausible? Dates in a sane range, enums inside the vocabulary, patterns matching.
 
 ```python
 def validate(raw: str, template: tuple[Field, ...]) -> Extraction:
@@ -156,7 +156,7 @@ Return the errors rather than raising. A document where nine of ten fields extra
 
 ## Keep a deterministic fallback
 
-For fields with a stable surface form — reference numbers, dates, amounts — a regex is not a worse tool than a language model. It is a different tool with different failure modes, and running both is cheap.
+For fields with a stable surface form, reference numbers, dates, amounts, a regex is not a worse tool than a language model. It is a different tool with different failure modes, and running both is cheap.
 
 ```python
 def extract_policy_number(text: str, model_value: str | None) -> tuple[str | None, str]:

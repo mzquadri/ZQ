@@ -7,7 +7,7 @@ import { canonicalMlopsEvidence, mlopsReferenceRun } from "@/content/portfolio";
  * confusion matrix is the one published in its evaluation document, and the terminal
  * lines are the commands it documents together with the output its CI reproduces on
  * every run. No screenshot is fabricated and no number is estimated. Where a value
- * genuinely varies between runs — latency, wall-clock — it is not shown at all.
+ * genuinely varies between runs, latency, wall-clock; it is not shown at all.
  */
 
 const { confusion, test, split, referenceCommands } = mlopsReferenceRun;

@@ -1,0 +1,466 @@
+/*
+ * The explorable world, the classic view, and the dark theme both run in.
+ *
+ * Dark is a second palette for the same tokens rather than a filter over the
+ * first: the paper greys become deep blues, the teal and the orange brighten
+ * just enough to hold their contrast on a dark ground, and the hairlines flip
+ * from dark-on-light to light-on-dark. Everything downstream keeps reading
+ * `--paper` and `--ink` and never learns which theme is on.
+ */
+
+:root[data-theme="dark"] {
+  --ink: #eef3f7;
+  --ink-soft: #a9b7c4;
+  --paper: #0a1016;
+  --paper-raised: #141d26;
+  --paper-deep: #060b10;
+  --teal: #35d6c4;
+  --teal-dark: #7fe9dc;
+  --orange: #ff8a5c;
+  --orange-ink: #ff9f6b;
+  --orange-text: #ffb28a;
+  --yellow: #f0cd6a;
+  --line: rgba(238, 243, 247, 0.2);
+  --line-strong: rgba(238, 243, 247, 0.42);
+}
+
+:root[data-theme="dark"] body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* The panels fade with the scene rather than snapping ahead of it. Scoped to
+   the world, and dropped entirely for a reader who asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .world-places,
+  .world-readout,
+  .world-cta,
+  .theme-toggle {
+    transition: background-color 320ms ease, color 320ms ease, border-color 320ms ease;
+  }
+}
+
+/* ---------------------------------------------------------------- toggle */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.38rem 0.78rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--label-strong, 0.74rem);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  border-color: var(--line-strong);
+}
+
+/* A half-filled disc: the same mark a reader sees on any brightness control. */
+.theme-toggle-mark {
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+.theme-toggle-mark[data-dark="true"] {
+  background: linear-gradient(90deg, transparent 50%, currentColor 50%);
+}
+
+/* ----------------------------------------------------------------- world */
+
+.world-stage {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 34rem;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.world-stage-idle {
+  background: var(--paper);
+}
+
+.world-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.world-canvas canvas {
+  display: block;
+  touch-action: none;
+}
+
+.world-intro {
+  transition: opacity 420ms ease, transform 420ms ease;
+  position: absolute;
+  top: clamp(1.4rem, 4vh, 3rem);
+  left: clamp(1.4rem, 4vw, 3.4rem);
+  max-width: 30rem;
+  pointer-events: none;
+}
+
+/* Out of the way once you are somewhere. The readout is what to read then. */
+.world-intro[data-away="true"] {
+  opacity: 0;
+  transform: translateY(-0.5rem);
+}
+
+.world-intro h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--serif);
+  font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+  line-height: 1.08;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+}
+
+.world-intro p {
+  margin: 0;
+  max-width: 26rem;
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+/* The list of places. A real navigation, not a legend: every place is a button,
+   so the world is reachable by keyboard without inventing a 3D focus model. */
+.world-places {
+  position: absolute;
+  top: 50%;
+  right: clamp(1.4rem, 3vw, 3rem);
+  transform: translateY(-50%);
+  width: min(19rem, 32vw);
+  padding: 1rem 1rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--paper-raised) 86%, transparent);
+  backdrop-filter: blur(9px);
+}
+
+.world-places-label {
+  margin: 0 0 0.6rem;
+  font-family: var(--mono);
+  font-size: var(--label-strong, 0.72rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.world-places ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.world-places button {
+  display: grid;
+  gap: 0.1rem;
+  width: 100%;
+  padding: 0.48rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.world-places button:hover,
+.world-places button:focus-visible {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--teal) 10%, transparent);
+}
+
+.world-places button.is-current {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 16%, transparent);
+}
+
+.world-place-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.world-place-kind {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.world-wide {
+  margin-top: 0.7rem;
+  width: 100%;
+  padding: 0.42rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* The readout for the place you are standing at. */
+.world-readout {
+  position: absolute;
+  left: clamp(1.4rem, 4vw, 3.4rem);
+  bottom: clamp(5.4rem, 12vh, 8rem);
+  width: min(27rem, 42vw);
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--teal);
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--paper-raised) 92%, transparent);
+  backdrop-filter: blur(9px);
+}
+
+.world-readout-kind {
+  margin: 0 0 0.3rem;
+  font-family: var(--mono);
+  font-size: var(--label-strong, 0.72rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.world-readout h2 {
+  margin: 0 0 0.4rem;
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  line-height: 1.12;
+  color: var(--ink);
+}
+
+.world-readout-headline {
+  margin: 0 0 0.45rem;
+  font-size: 1.06rem;
+  font-weight: 600;
+  color: var(--teal-dark);
+}
+
+:root[data-theme="dark"] .world-readout-headline {
+  color: var(--teal);
+}
+
+.world-readout-detail {
+  margin: 0 0 0.75rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.world-readout-link {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* The way out, on screen the whole time. */
+.world-escape {
+  position: absolute;
+  left: clamp(1.4rem, 4vw, 3.4rem);
+  bottom: clamp(1.4rem, 4vh, 2.6rem);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.world-escape span {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.world-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.56rem 1.1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.world-cta:hover,
+.world-cta:focus-visible {
+  background: var(--teal-dark);
+  color: #ffffff;
+}
+
+.world-theme {
+  position: absolute;
+  top: clamp(1.4rem, 4vh, 3rem);
+  right: clamp(1.4rem, 3vw, 3rem);
+  z-index: 2;
+}
+
+.world-fallback {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 10vh, 7rem) 1.4rem;
+}
+
+.world-fallback h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.9rem, 6vw, 2.7rem);
+  line-height: 1.1;
+  margin: 0 0 0.8rem;
+}
+
+.world-fallback p {
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin: 0 0 0.9rem;
+}
+
+.world-fallback-note {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 60rem) {
+  .world-places,
+  .world-readout {
+    position: static;
+    width: auto;
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------- classic view */
+
+.classic {
+  --classic-gap: clamp(3rem, 8vh, 5.5rem);
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: clamp(2.4rem, 7vh, 5rem) clamp(1.2rem, 5vw, 2.4rem) 6rem;
+}
+
+.classic-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(2rem, 5vh, 3.4rem);
+}
+
+.classic-back {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.classic h1 {
+  margin: 0 0 0.7rem;
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 6vw, 3.3rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+.classic-standfirst {
+  margin: 0 0 var(--classic-gap);
+  max-width: 38rem;
+  color: var(--ink-soft);
+  font-size: 1.06rem;
+  line-height: 1.6;
+}
+
+.classic section {
+  margin-bottom: var(--classic-gap);
+  scroll-margin-top: 2rem;
+}
+
+.classic h2 {
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  line-height: 1.15;
+}
+
+.classic-entry {
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.classic-entry:last-child {
+  border-bottom: 0;
+}
+
+.classic-entry-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.classic-entry h3 {
+  margin: 0;
+  font-size: 1.04rem;
+  line-height: 1.25;
+}
+
+.classic-when {
+  flex: none;
+  font-family: var(--mono);
+  font-size: var(--label-strong, 0.74rem);
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.classic-role {
+  margin: 0.2rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.classic-entry p.classic-body {
+  margin: 0.5rem 0 0;
+  line-height: 1.58;
+}
+
+.classic-result {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal) 14%, transparent);
+  color: var(--teal-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .classic-result {
+  color: var(--teal);
+}
+
+.classic-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.classic-links a {
+  font-weight: 600;
+}

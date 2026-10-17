@@ -174,8 +174,13 @@ export const truthRegistry = {
           title: "AI Engineer (Working Student)",
           location: "Munich, Germany",
           period: "Apr 2025 - Sep 2026",
+          // Worded to match the CV exactly: four of the five services, not the
+          // platform; a three-stage ingestion pipeline, not a two-stage one;
+          // and "up to" fourteen checks, because two of the fourteen are
+          // structurally inapplicable to an EU source and a German law meets
+          // fourteen where an EU one meets twelve.
           practice:
-            "Built verification workflows for a multilingual legal knowledge platform using relational, vector, and graph storage.",
+            "Built four of the five services in a multilingual legal knowledge platform: a three-stage ingestion pipeline into relational, vector and graph storage, behind up to fourteen verification checks.",
         },
         {
           id: "tum-programming-visualization",
@@ -192,19 +197,21 @@ export const truthRegistry = {
           period: "Jan 2023 - Jun 2023",
         },
         {
+          // October, not April. The onboarding pack is signed 31.08.2022, the
+          // LfF insurance form stamped 26.09.2022, and the course this role
+          // taught ran 05.10 to 13.10.2022. Nothing on disk supports April, so
+          // the CV was corrected and this record follows it.
           id: "tum-numerical-methods",
           organization: "Technical University of Munich",
           title: "Student Research Assistant, Numerical Methods and Scientific Visualization",
           location: "Munich, Germany",
-          period: "Apr 2022 - Dec 2022",
+          period: "Oct 2022 - Dec 2022",
         },
-        {
-          id: "iiser-battery-ml",
-          organization: "IISER Bhopal",
-          title: "Summer Research Intern, Machine Learning for Li-ion Battery State Estimation",
-          location: "Bhopal, India",
-          period: "May 2021 - Jul 2021",
-        },
+        // The IISER Bhopal summer internship was removed from the CV and is
+        // removed here for the same reason: one surface claiming a role the
+        // others do not is worse than the role being absent from all of them.
+        // The public Battery-SOC-Estimation-ML repository is unaffected; it is
+        // a project, not an employment record.
       ] as const satisfies readonly ExperienceRecord[],
       source: {
         tier: "approved-document",
@@ -379,7 +386,7 @@ export const truthRegistry = {
       public: true,
     },
     status: {
-      value: "Master's thesis submitted",
+      value: "M.Sc. awarded",
       source: { tier: "immutable-artifact", reference: "Submitted thesis artifact and submission record" },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,

@@ -13,12 +13,13 @@
     "check:security": "tsx scripts/check-dependency-security.ts",
     "test:content": "tsx --test tests/content-foundation.test.ts tests/ecosystem.test.ts tests/confidential-project.test.ts tests/walkthrough.test.ts tests/systems-showcase.test.ts tests/strong-work.test.ts tests/gateway-evidence.test.ts",
     "test:e2e": "npm run build && playwright test",
-    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build",
+    "check": "npm run lint && npm run typecheck && npm run validate:content && npm run check:characters && npm run test:content && npm run build",
     "hooks:install": "git config core.hooksPath .githooks",
     "check:authorship": "bash tools/check-authorship.sh",
     "privacy:scan": "node tools/privacy-scan.mjs",
     "refresh:research-feed": "tsx scripts/refresh-research-feed.ts",
-    "record:video": "node tools/record-legal-kb-video.mjs"
+    "record:video": "node tools/record-legal-kb-video.mjs",
+    "check:characters": "python tools/check_characters.py --ext=.ts,.tsx,.md,.mdx src content"
   },
   "dependencies": {
     "@react-three/drei": "10.7.6",

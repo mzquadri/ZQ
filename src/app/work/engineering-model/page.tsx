@@ -12,7 +12,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = createPageMetadata({
   title: "Engineering model",
   description:
-    "A synthetic model of a problem common to data platforms — one source, several representations, independently checked — and a map of where each public project sits between data and a decision.",
+    "A synthetic model of a problem common to data platforms, one source, several representations, independently checked, and a map of where each public project sits between data and a decision.",
   path: "/work/engineering-model",
 });
 
@@ -34,7 +34,7 @@ export default function EngineeringModelPage() {
     <PageShell current="/work">
       <article>
         <header className="page-hero section-wrap">
-          <Link className="back-link" href="/work">← Selected work</Link>
+          <Link className="back-link" href="/work">Back to selected work</Link>
           <p className="kicker">Public-safe model / Synthetic throughout</p>
           <h1>{showcase.title}</h1>
           <p>{showcase.introduction}</p>
@@ -66,7 +66,7 @@ export default function EngineeringModelPage() {
           <p className="kicker">Back to the work</p>
           <h2>The model is the frame. The case studies are the evidence.</h2>
           <p>
-            Nothing on this page establishes anything on its own — it describes how the problem is
+            Nothing on this page establishes anything on its own; it describes how the problem is
             shaped and where each project sits in it. What a claim rests on is in the case study
             that makes it.
           </p>

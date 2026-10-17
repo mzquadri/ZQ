@@ -263,7 +263,10 @@ const foundEmails = new Set(renderedSource.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}
 for (const found of foundEmails) {
   check(found === approvedEmail, `Public content contains an unapproved email address: ${found}`);
 }
-check(site.experience.length === 5, "Expected five approved experience records");
+// Four, not five. The IISER Bhopal summer internship was removed from the CV,
+// so it was removed from truth.ts; a count that still said five would have kept
+// the record alive in the only place it is enforced.
+check(site.experience.length === 4, "Expected four approved experience records");
 check(new Set(site.experience.map((record) => record.id)).size === site.experience.length, "Experience IDs must be unique");
 /*
  * Experience dates are published now, so the check is on their shape rather than their absence.
@@ -350,11 +353,13 @@ const approvedPeriods = new Set(
 );
 const renderedPeriods =
   renderedSource.match(
-    /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-–]\s*(?:Present|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2})/g,
+    /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}\s*[-\u2013]\s*(?:Present|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2})/g,
   ) ?? [];
 for (const period of new Set(renderedPeriods)) {
   check(
-    approvedPeriods.has(period.replace(/\s*[-–]\s*/, " - ")),
+    // The en dash is gone from the content, but a period typed with one
+    // elsewhere should still normalise rather than be reported as unapproved.
+    approvedPeriods.has(period.replace(/\s*[-\u2013]\s*/, " - ")),
     `An unapproved employment date range appears in the rendered source: ${period}`,
   );
 }
@@ -379,7 +384,16 @@ for (const slug of featuredProjectSlugs) {
   check(projectBySlug.has(slug), `Featured project references unknown project: ${slug}`);
 }
 check(getFeaturedProjects().length === featuredProjectSlugs.length, "Featured project registry is inconsistent");
-check(thesis.status.includes("submitted"), "Thesis status must use submitted wording");
+/*
+ * This rule used to require the word "submitted", so the site could not imply a
+ * thesis that had not been handed in. It was handed in on 15 May 2026 and the
+ * degree was conferred -- the diploma is dated 13 August 2026 -- so "submitted"
+ * became the understatement rather than the safe wording, and the rule is
+ * inverted to match the one eight lines below it, which was inverted for the
+ * same reason. The status must now name the award and must not carry the hedge.
+ */
+check(!thesis.status.includes("submitted"), "Thesis status must not still say submitted");
+check(thesis.status.includes("awarded"), "Thesis status must name the awarded degree");
 /*
  * This rule used to require the "M.Sc. program:" prefix, so the site could not imply a degree
  * that had not been awarded. The degree was conferred and the diploma issued, confirmed by the
