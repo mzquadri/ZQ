@@ -357,8 +357,7 @@ ol {
 .kicker,
 .section-index,
 .classification,
-.case-meta,
-.hero-visual-label {
+.case-meta {
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 700;
@@ -370,32 +369,19 @@ ol {
   color: var(--teal-dark);
 }
 
-.hero {
-  display: grid;
-  min-height: calc(92svh - 4.8rem);
-  grid-template-columns: minmax(0, 1.18fr) minmax(22rem, 0.82fr);
-  align-items: center;
-  gap: clamp(3rem, 7vw, 8rem);
-}
-
-.hero-copy h1 {
-  max-width: 13ch;
-  margin-top: 1.35rem;
-  font-size: clamp(3.7rem, 7.3vw, 7.3rem);
-}
-
-.hero-copy h1 em {
-  color: var(--teal);
-  font-weight: inherit;
-}
-
-.hero-intro {
-  max-width: 43rem;
-  margin-top: 2rem;
-  color: var(--ink-soft);
-  font-size: clamp(1.1rem, 2vw, 1.35rem);
-  line-height: 1.55;
-}
+/*
+ * `.hero`, `.hero-copy`, `.hero-intro`, `.hero-identity` and `.hero-visual`
+ * were removed here on 18 Oct 2026. They belonged to the layout two designs
+ * ago and no component had used them for some time; `grep` finds no
+ * `className` carrying any of them. They are not dead weight so much as a
+ * trap: `src/app/home.css` now owns the hero under the same names, both files
+ * are global, and the one that wins is decided by stylesheet injection order
+ * rather than by anything in the source. The new hero was laying out in four
+ * columns because of this.
+ *
+ * The names still in use elsewhere are different and stay: `.hero-actions`,
+ * `.hero-field`, `.page-hero` and the `.cine-hero*` family.
+ */
 
 .hero-actions,
 .case-actions {
@@ -461,28 +447,6 @@ ol {
   box-shadow: 0 0 0 5px rgba(0, 109, 101, 0.14);
 }
 
-.hero-visual {
-  position: relative;
-  background: var(--ink);
-  color: var(--paper-raised);
-  padding: clamp(1.2rem, 2.5vw, 2rem);
-  box-shadow: 14px 14px 0 var(--orange);
-}
-
-.hero-visual::before {
-  position: absolute;
-  inset: 0.65rem;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  content: "";
-  pointer-events: none;
-}
-
-.hero-visual-label {
-  position: relative;
-  z-index: 1;
-  padding: 0.4rem 0 1.4rem;
-  color: #abc9c5;
-}
 
 .confidence-protocol {
   position: relative;
@@ -1433,15 +1397,6 @@ ol {
 }
 
 @media (max-width: 900px) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
-    padding-top: 5rem;
-  }
-
-  .hero-visual {
-    max-width: 39rem;
-  }
-
   .section-heading {
     /* minmax(0, 1fr), not 1fr: a bare fr track keeps a min-content floor, which lets a wide
      * child push the track past the container and the page past the viewport. */
@@ -1579,16 +1534,6 @@ ol {
   .section-wrap,
   .footer-grid {
     width: min(100% - 1.5rem, var(--content));
-  }
-
-  .hero {
-    min-height: auto;
-    padding-top: 4.5rem;
-    padding-bottom: 5rem;
-  }
-
-  .hero-copy h1 {
-    font-size: clamp(3rem, 15vw, 4.4rem);
   }
 
   .hero-actions,
@@ -4023,29 +3968,6 @@ ol {
 }
 
 /* Hero identity row: portrait beside the headline rather than stacked above it. */
-/* Portrait in its own column beside the copy stack, top-aligned, so the headline and
-   the paragraphs under it share one left edge instead of the headline being indented. */
-.hero-identity {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  gap: 1.5rem;
-  margin-bottom: 1.6rem;
-}
-
-.hero-identity-copy > * + * {
-  margin-top: 0.85rem;
-}
-
-.hero-identity-copy .hero-actions,
-.hero-identity-copy .availability {
-  margin-top: 1.6rem;
-}
-
-.hero-identity .kicker {
-  margin-bottom: 0.35rem;
-}
-
 .about-identity {
   display: flex;
   flex-wrap: wrap;
@@ -4105,10 +4027,6 @@ ol {
 }
 
 @media (max-width: 560px) {
-  .hero-identity {
-    gap: 1rem;
-  }
-
   .portrait[data-variant="hero"] .portrait-frame {
     width: 5.2rem;
     height: 5.2rem;

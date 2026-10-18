@@ -1,566 +1,255 @@
 /*
- * Homepage sections after the work sequence.
+ * The home page.
  *
- * Same stage, same scrub contract, but each section is pitched differently on purpose. The
- * engineering section is the most diagrammatic, research is the quietest and most numeric, and
- * experience is nearly all type - because those are genuinely different kinds of claim and
- * flattening them into one treatment is what made the previous version feel like a document
- * rather than a portfolio.
+ * One screen of identity over the city the thesis is about, then the rest of
+ * the page. Left aligned throughout: the name, the paragraphs, the links and
+ * every section heading below share one left edge, which is the page's spine.
+ *
+ * The only motion on this site that nobody asked for is the network drawing
+ * itself in, once, over about two and a half seconds. See `.hero-map-svg`.
  */
 
-.cine-section {
-  background: var(--stage);
-  color: var(--stage-ink);
-  border-top: 1px solid var(--stage-line);
-  padding: clamp(3.5rem, 8vh, 6rem) 0;
-}
-
-.cine-section-inner {
-  width: min(100% - 3rem, var(--content));
-  margin: 0 auto;
-}
-
-/* Accent worlds, so the sections are distinguishable from a single frame the way projects are. */
-.cine-engineering { --accent: var(--accent-systems); }
-.cine-research { --accent: var(--accent-graph); }
-.cine-experience { --accent: var(--accent-pipeline); }
-
-/* ---- Shared section head -------------------------------------------------------------------- */
-
-.cine-section-head {
-  max-width: 54rem;
-  margin-bottom: clamp(2.5rem, 6vh, 4rem);
-}
-
-.cine-section-index {
-  margin: 0 0 0.7rem;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.24em;
-  color: var(--stage-ink-soft);
-}
-
-.cine-section-eyebrow {
-  margin: 0 0 0.85rem;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.cine-section-title {
-  margin: 0 0 1.1rem;
-  font-family: var(--sans);
-  font-size: clamp(1.9rem, 4.8vw, 3.5rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
-  font-weight: 700;
-}
-
-.cine-section-lede {
-  margin: 0;
-  max-width: 58ch;
-  font-size: clamp(1rem, 1.55vw, 1.12rem);
-  line-height: 1.6;
-  color: color-mix(in oklab, var(--stage-ink) 84%, transparent);
-}
-
-.cine-section-action {
-  margin: clamp(2rem, 5vh, 3rem) 0 0;
-}
-
-.cine-note {
-  margin: 1.75rem 0 0;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  color: var(--stage-ink-soft);
-  border-left: 2px solid var(--stage-line-strong);
-  padding-left: 0.9rem;
-}
-
-/* ---- Engineering: four verbs ----------------------------------------------------------------- */
-
-.verb-track {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  counter-reset: verb;
-}
-
-.verb {
+.hero {
   position: relative;
-  padding: 1.6rem 1.25rem;
-  border: 1px solid var(--stage-line);
-  border-radius: 4px;
-  background: color-mix(in oklab, var(--stage-raised) 62%, transparent);
-  display: grid;
-  gap: 1rem;
-  justify-items: start;
+  padding: clamp(3rem, 7vw, 6.5rem) 0 clamp(2.5rem, 5vw, 4rem);
+  overflow: hidden;
 }
 
-/* A connecting rule between the four, so they read as a sequence rather than four tiles. */
-.verb:not(:last-child)::after {
-  content: "";
+/* ---- The city behind ------------------------------------------------------------------------- */
+
+.hero-map {
   position: absolute;
-  top: 50%;
-  right: calc(-1.5rem - 1px);
-  width: 1.5rem;
-  height: 1px;
-  background: var(--stage-line-strong);
+  /*
+   * Placed off to the right and bled past the edges so the drawing reads as a
+   * fragment of something larger rather than a logo sitting in a box. The
+   * portrait column lands over its densest part, which is why the mask below
+   * fades hardest there.
+   */
+  inset: -12% -22% -18% 28%;
+  z-index: 0;
+  color: var(--blue);
+  opacity: 0.22;
+  pointer-events: none;
+  /*
+   * Faded out at every edge so it has no boundary. Without this the drawing
+   * ends on a hard rectangle and immediately looks like a pasted image.
+   */
+  mask-image: radial-gradient(118% 92% at 62% 44%, #000 28%, rgba(0, 0, 0, 0.55) 56%, transparent 84%);
 }
 
-.verb-svg {
-  width: 3.1rem;
-  height: 3.1rem;
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  overflow: visible;
+:root[data-theme="dark"] .hero-map,
+:root:not([data-theme="light"]) .hero-map {
+  /* The same lines carry further on a dark ground, so they are dialled back. */
+  opacity: 0.3;
 }
 
-/* Filled parts of each mark: the thing being held, and the reading taken. */
-.verb-hold,
-.verb-source,
-.verb-reading {
-  fill: var(--accent);
-  stroke: none;
-}
-
-.verb-derived,
-.verb-form {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 3;
-}
-
-.verb-derived {
-  stroke-dasharray: 4 4;
-}
-
-.verb-tick {
-  stroke: var(--accent-systems);
-}
-
-.verb-name {
-  margin: 0;
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--stage-ink);
+.hero-map-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /*
- * The verbs on paper.
+ * The reveal.
  *
- * They were drawn for the dark homepage stage. They are now inside the case study they were
- * always about, one section above the invariants they decompose into, and that section is paper.
- * Only the ground changes: each mark keeps the route's accent.
+ * Six paths, each holding a sixth of the segments in a fixed interleaved order,
+ * so the map fills evenly rather than drawing every boulevard and then
+ * stippling in the rest. Each path is dashed with one dash long enough to cover
+ * its own length and the offset animates to zero, which is the standard way to
+ * make a stroke draw itself.
+ *
+ * `pathLength` is not set, so the dash values are in user units and have to be
+ * larger than the longest subpath; 4000 is comfortably past that for a 1843 by
+ * 1400 viewBox.
+ *
+ * It runs once, `forwards`, and then the page is still. Nothing here loops.
  */
-.case-section .verb {
-  border-color: var(--line);
-  background: var(--paper-raised);
+.hero-map-svg .pr {
+  stroke-dasharray: 4000;
+  stroke-dashoffset: 4000;
+  animation: draw-in 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
-.case-section .verb:not(:last-child)::after {
-  background: var(--line);
+.hero-map-svg .pr0 { animation-delay: 0s; }
+.hero-map-svg .pr1 { animation-delay: 0.16s; }
+.hero-map-svg .pr2 { animation-delay: 0.32s; }
+.hero-map-svg .pr3 { animation-delay: 0.48s; }
+.hero-map-svg .pr4 { animation-delay: 0.64s; }
+.hero-map-svg .pr5 { animation-delay: 0.8s; }
+
+@keyframes draw-in {
+  to { stroke-dashoffset: 0; }
 }
 
-.case-section .verb-name {
-  color: var(--ink);
+/*
+ * Reduced motion gets the finished drawing, not a blank space.
+ *
+ * The global rule in globals.css compresses every animation to 0.01ms, which
+ * would leave these paths at their starting offset of 4000, which is to say
+ * invisible. The informative state is the end state, so it is set directly.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .hero-map-svg .pr {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
 }
 
-.case-section .verb-track {
-  margin-top: clamp(1.5rem, 3vh, 2.25rem);
-}
+/* ---- Identity -------------------------------------------------------------------------------- */
 
-/* ---- Research: numbers, quietly -------------------------------------------------------------- */
-
-.research-standfirst {
-  margin: 0 0 2rem;
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  color: var(--stage-ink-soft);
-}
-
-.research-metrics {
-  margin: 0;
+.hero-inner {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1px;
-  background: var(--stage-line);
-  border: 1px solid var(--stage-line);
-}
-
-.research-metric {
-  background: var(--stage);
-  padding: 1.5rem 1.35rem;
-  display: grid;
-  align-content: start;
-  gap: 0.4rem;
-}
-
-.research-metric dt {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.research-metric dd {
-  margin: 0;
-}
-
-.research-metric-value {
-  font-size: clamp(1.35rem, 2.6vw, 1.9rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.research-metric-note {
-  font-size: 0.84rem;
-  line-height: 1.5;
-  color: var(--stage-ink-soft);
-}
-
-/* ---- Experience: problem classes and roles ---------------------------------------------------- */
-
-.problem-list {
-  margin: 0 0 clamp(2.5rem, 6vh, 4rem);
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 1px;
-  background: var(--stage-line);
-  border-block: 1px solid var(--stage-line);
-}
-
-.problem {
-  background: var(--stage);
-  padding: clamp(1.5rem, 3vw, 2.25rem) 0;
-  display: grid;
-  grid-template-columns: 9rem minmax(0, 1fr) 12rem;
-  gap: 1.5rem 2rem;
-  align-items: start;
-}
-
-.problem-stage {
-  margin: 0;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.problem-title {
-  margin: 0 0 0.5rem;
-  font-family: var(--sans);
-  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  font-weight: 650;
-}
-
-.problem-detail {
-  margin: 0;
-  grid-column: 2;
-  max-width: 56ch;
-  font-size: 0.96rem;
-  line-height: 1.6;
-  color: color-mix(in oklab, var(--stage-ink) 82%, transparent);
-}
-
-.problem-verbs {
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.35rem;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--stage-ink-soft);
-}
-
-.problem-verbs li::before {
-  content: "";
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  margin-right: 0.6rem;
-  vertical-align: 0.18em;
-  background: var(--accent);
-  transform: rotate(45deg);
-}
-
-.role-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: 1.25rem;
-}
-
-.role {
-  padding: 1.15rem 0 0;
-  border-top: 1px solid var(--stage-line-strong);
-}
-
-.role-org {
-  margin: 0 0 0.2rem;
-  font-size: 0.95rem;
-  font-weight: 650;
-}
-
-.role-title {
-  margin: 0;
-  font-size: 0.86rem;
-  color: var(--stage-ink-soft);
-}
-
-.role-practice {
-  margin: 0.6rem 0 0;
-  font-size: 0.86rem;
-  line-height: 1.55;
-  color: color-mix(in oklab, var(--stage-ink) 78%, transparent);
-}
-
-/* ---- Closing ---------------------------------------------------------------------------------- */
-
-.cine-closing {
-  background: var(--stage-deep);
-  color: var(--stage-ink);
-  padding: clamp(4rem, 10vh, 7rem) 0;
-  border-top: 1px solid var(--stage-line);
-  --accent: var(--accent-graph);
-}
-
-.cine-closing-inner {
-  width: min(100% - 3rem, var(--content));
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 26vw, 380px);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  max-width: var(--content);
   margin: 0 auto;
-  max-width: 52rem;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
 }
 
-.cine-closing-line {
-  margin: 0 0 1.35rem;
-  font-family: var(--sans);
-  font-size: clamp(2rem, 6vw, 4.2rem);
-  line-height: 1.02;
-  letter-spacing: -0.04em;
-  font-weight: 700;
+.hero-name {
+  margin: 0;
+  /*
+   * Archivo's width axis, set wide. This is the one place on the site that uses
+   * it at full extension: a name is the thing a portfolio is least likely to
+   * need to abbreviate, and the extra width is what gives the page a voice
+   * without introducing a second typeface.
+   */
+  font-variation-settings: "wdth" 112, "wght" 640;
+  font-size: clamp(2.6rem, 6.4vw, 5rem);
+  line-height: 0.94;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
-.cine-closing-support {
-  margin: 0 0 1.5rem;
-  max-width: 54ch;
-  font-size: clamp(1rem, 1.6vw, 1.14rem);
-  line-height: 1.6;
-  color: color-mix(in oklab, var(--stage-ink) 82%, transparent);
+.hero-role {
+  margin: 0.7rem 0 0;
+  color: var(--violet-ink);
+  font-variation-settings: "wdth" 104, "wght" 560;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  letter-spacing: 0.01em;
 }
 
-.cine-closing-availability {
-  margin: 0 0 2rem;
-  font-family: var(--mono);
-  font-size: 0.76rem;
-  letter-spacing: 0.12em;
-  color: var(--accent);
+.hero-intro {
+  max-width: var(--measure);
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
 }
 
-.cine-closing .cine-actions {
-  justify-content: flex-start;
+.hero-intro p {
+  margin: 0 0 0.85rem;
+  font-size: clamp(1rem, 1.25vw, 1.08rem);
+  line-height: 1.62;
 }
 
-/* ---- Scrub ------------------------------------------------------------------------------------ */
-
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .cine-section-head,
-    .cine-note,
-    .cine-section-action,
-    .research-standfirst,
-    .role,
-    .cine-closing-line,
-    .cine-closing-support,
-    .cine-closing-availability,
-    .cine-closing .cine-actions {
-      animation: mz-reveal var(--dur-slow) var(--ease-exit) both;
-      animation-timeline: view();
-      animation-range: entry 10% entry 58%;
-    }
-
-    /* Staggered members. The delay is what makes four tiles read as a sequence. */
-    .verb,
-    .research-metric,
-    .problem {
-      animation: mz-reveal var(--dur-slow) var(--ease-exit) both;
-      animation-timeline: view();
-      animation-range: entry 8% entry 56%;
-      animation-delay: calc(var(--i, 0) * var(--stagger));
-    }
-
-    /*
-     * Each verb moves in its own way, because four identical marks made four different kinds of
-     * work look interchangeable. The movements are named for what they describe: something
-     * arriving and being held, one thing becoming several, a check travelling back to its
-     * source, and a state that was already true becoming visible.
-     */
-    .verb-arrive,
-    .verb-arrive-head,
-    .verb-branch,
-    .verb-return,
-    .verb-tick,
-    .verb-trace {
-      stroke-dasharray: 100;
-      animation: mz-connect var(--dur-cinematic) var(--ease-exit) both;
-      animation-timeline: view();
-      animation-range: entry 14% entry 66%;
-      animation-delay: calc((var(--i, 0) * var(--stagger)) + 120ms);
-      --path-length: 100;
-    }
-
-    .verb-hold,
-    .verb-derived {
-      animation: mz-expand var(--dur-slow) var(--ease-exit) both;
-      transform-origin: left center;
-      animation-timeline: view();
-      animation-range: entry 20% entry 70%;
-    }
-
-    .verb-source,
-    .verb-form,
-    .verb-reading {
-      animation: mz-propagate var(--dur-slow) var(--ease-weighted) both;
-      animation-timeline: view();
-      animation-range: entry 22% entry 72%;
-      animation-delay: calc(var(--i, 0) * 90ms);
-    }
-  }
+.hero-intro p:last-child {
+  margin-bottom: 0;
 }
 
-/* ---- Responsive ------------------------------------------------------------------------------- */
-
-@media (max-width: 900px) {
-  .verb-track { grid-template-columns: repeat(2, 1fr); }
-  .verb:nth-child(2)::after { display: none; }
-
-  .problem {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .problem-detail,
-  .problem-verbs {
-    grid-column: 1;
-  }
-
-  .problem-verbs {
-    grid-row: auto;
-    grid-auto-flow: column;
-    justify-content: start;
-    gap: 1.1rem;
-  }
+.hero-where {
+  max-width: var(--measure);
+  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
 }
 
-@media (max-width: 640px) {
-  .cine-section { padding: 3.5rem 0; }
-  .cine-section-inner,
-  .cine-closing-inner { width: min(100% - 2rem, var(--content)); }
+/* ---- Links ----------------------------------------------------------------------------------- */
 
-  .verb-track { grid-template-columns: 1fr; gap: 0.85rem; }
-  .verb::after { display: none; }
-  .verb { grid-template-columns: auto 1fr; align-items: center; gap: 1rem; }
-  .verb-mark svg { width: 2rem; height: 2rem; }
-
-  .problem-verbs {
-    grid-auto-flow: row;
-    gap: 0.35rem;
-  }
-
-  .role-list { gap: 1rem; }
-}
-
-/* ---- Engineering: the branching figure --------------------------------------------------------- */
-
-.projected-branch {
-  position: relative;
-  display: block;
-  margin-bottom: clamp(2rem, 5vh, 3rem);
-}
-
-.branch-flat {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 46vh;
-  background: color-mix(in oklab, var(--stage-raised) 62%, transparent);
-  border: 1px solid var(--stage-line);
-  border-radius: 4px;
-}
-
-.branch-source { fill: var(--stage-ink); }
-
-.branch-form {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-}
-
-.branch-link,
-.branch-return {
-  fill: none;
-  stroke-width: 1.5;
-}
-
-.branch-link { stroke: var(--stage-line-strong); }
-
-/* The check travels back to the source, so it is drawn as the return it is. */
-.branch-return {
-  stroke: var(--accent);
-  stroke-dasharray: 4 4;
-}
-
-@media (max-width: 640px) {
-  .branch-flat { max-height: none; }
+.hero-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
 }
 
 /*
- * The four invariants on the homepage engineering chapter.
- *
- * Four short questions rather than four icons: the point of this work is that health is a
- * conjunction, and a row of symbols would say the opposite.
+ * A link looks like a link. No arrow glyph after the label: it says nothing the
+ * underline and the pointer do not already say, it is the commonest ornament on
+ * a generated page, and the character rule this site is held to bans the glyph
+ * outright.
  */
-.invariant-track {
-  display: grid;
-  gap: 0.9rem;
-  margin: clamp(2rem, 5vh, 3rem) 0 0;
-  padding: 0;
-  list-style: none;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+.hero-link {
+  padding: 0.5rem 1rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: border-color 140ms ease, background-color 140ms ease;
 }
 
-.invariant-track li {
-  display: grid;
-  gap: 0.2rem;
-  padding-left: 0.85rem;
-  border-left: 2px solid var(--accent-graph, #4cc4b0);
+.hero-link:first-child {
+  border-color: transparent;
+  background: var(--violet);
+  color: light-dark(#ffffff, #10151c);
 }
 
-.invariant-track strong { font-size: 0.9rem; letter-spacing: -0.005em; }
-.invariant-track span { font-size: 0.85rem; line-height: 1.5; color: var(--stage-ink-soft, #9aa7b2); }
+@media (hover: hover) {
+  .hero-link:hover {
+    border-color: var(--ink);
+  }
 
-.cine-section-action { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; }
+  .hero-link:first-child:hover {
+    border-color: transparent;
+    background: var(--violet-ink);
+  }
+}
+
+/* ---- Portrait -------------------------------------------------------------------------------- */
+
+.hero-portrait {
+  margin: 0;
+  justify-self: end;
+}
+
+.hero-portrait-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /*
+   * The portrait is a cut-out on a transparent ground, so it needs no frame,
+   * no border radius and no shadow. A rounded box around it would put it in
+   * the same visual class as a card, and it is a person.
+   *
+   * The source is cropped flat across the chest, which on a transparent ground
+   * reads as a hard horizontal cut rather than as a photograph. Fading the last
+   * fifth of it into the page lets it end instead of stopping. The fade is
+   * generous and low-contrast on purpose: a tight one reads as a vignette.
+   */
+  mask-image: linear-gradient(to bottom, #000 40%, transparent 92%);
+}
+
+.hero-footnote {
+  position: relative;
+  z-index: 1;
+  max-width: var(--content);
+  margin: clamp(2rem, 4vw, 3rem) auto 0;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* ---- Narrow ---------------------------------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .hero-inner {
+    /*
+     * The portrait goes above the name on a phone, at a size that does not eat
+     * the screen before a word has been read.
+     */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+
+  .hero-portrait {
+    order: -1;
+    justify-self: start;
+    width: min(58vw, 260px);
+  }
+
+  .hero-map {
+    inset: -10% -30% -10% -10%;
+    opacity: 0.16;
+  }
+}

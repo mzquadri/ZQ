@@ -12,7 +12,16 @@ const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Expected a lowercas
 
 export function getPrivateTextIssue(value: string) {
   if (/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/.test(value)) return "contains an email address";
-  if (/[A-Za-z]:\\Users\\|\/(?:Users|home)\//i.test(value)) return "contains a local filesystem path";
+  /*
+   * An absolute path off somebody's machine, not any string containing
+   * "/home/". The lookbehind is the whole rule: a real path begins after a
+   * quote, a bracket or whitespace, never straight after a word character. The
+   * loose version matched the import specifier `@/components/home/Hero` and
+   * failed the build on a directory name.
+   */
+  if (/(?<![\w@.])(?:[A-Za-z]:\\Users\\|\/(?:Users|home)\/)/i.test(value)) {
+    return "contains a local filesystem path";
+  }
   if (/\+\d[\d\s().-]{7,}/.test(value)) return "contains an international phone number";
   if (/(?:^|[/?#=&])\d{10,15}(?=$|[/?#=&])/.test(value)) return "contains a possible phone number";
   if (/(?:phone|mobile|tel)=[^&#]*\d{7,}/i.test(value)) return "contains a possible phone number";

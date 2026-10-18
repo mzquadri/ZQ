@@ -22,11 +22,27 @@ import ThemeToggle from "@/components/ThemeToggle";
  * the tab order when closed without depending on an animation having finished.
  */
 
+/*
+ * Six, in the order someone reads them rather than the order they were built.
+ *
+ * `/work` keeps its URL and is labelled "Projects": the eight case studies live
+ * under it as `/work/<slug>`, and renaming the route would break every link to
+ * them, including the ones on the GitHub profile. A label that does not match
+ * its path is a smaller cost than a dead link.
+ *
+ * `/learn` is labelled "Writing" for the same reason. "Learn" described a
+ * teaching surface that the thirteen pieces there are not; they are notes on
+ * engineering problems, and a visitor looking for them looks for writing.
+ *
+ * `/architecture`, `/drive` and `/work/repositories` are reachable from the
+ * footer rather than here. They are second visits, not first ones, and a seven
+ * item bar starts wrapping at the width a laptop actually has.
+ */
 const NAV = [
-  { href: "/work", label: "Work" },
+  { href: "/experience", label: "Experience" },
   { href: "/research", label: "Research" },
-  { href: "/architecture", label: "Architecture" },
-  { href: "/learn", label: "Learn" },
+  { href: "/work", label: "Projects" },
+  { href: "/learn", label: "Writing" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ] as const;

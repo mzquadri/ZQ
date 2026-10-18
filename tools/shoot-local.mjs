@@ -37,8 +37,17 @@ for (const theme of ["light", "dark"]) {
       if (r.status() >= 400) problems.push(`${r.status()} ${r.url().slice(0, 110)}`);
     });
 
-    await page.goto(base + route, { waitUntil: "networkidle", timeout: 90000 });
-    await page.waitForTimeout(1200);
+    /*
+     * `domcontentloaded` plus an explicit settle rather than `networkidle`.
+     * Pages carrying a canvas or a long-running animation never reach a 500ms
+     * quiet window, so networkidle times out on a page that is in fact finished.
+     * The waits below are what actually matters: fonts resolved, images
+     * decoded, and long enough for the hero's one animation to have run.
+     */
+    await page.goto(base + route, { waitUntil: "domcontentloaded", timeout: 90000 });
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForLoadState("load").catch(() => {});
+    await page.waitForTimeout(2600);
 
     // What the page resolved to, so a token that failed to parse is visible as
     // a value rather than as a colour that looks almost right.

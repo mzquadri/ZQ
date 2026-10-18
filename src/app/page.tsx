@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import HeroStage from "@/components/cinema/HeroStage";
+import Hero from "@/components/home/Hero";
 import {
   ClosingSection,
   ExperienceSection,
@@ -34,7 +34,7 @@ import { chapters } from "@/content/cinema";
 export default function Home() {
   return (
     <PageShell>
-      <HeroStage />
+      <Hero />
 
       <section className="chapter-intro" id="work">
         <div className="chapter-intro-inner">

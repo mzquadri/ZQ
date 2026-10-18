@@ -60,21 +60,29 @@
 /*
  * The stage palette.
  *
- * The reading surfaces of this site stay warm paper - long-form technical text belongs on paper.
- * But motion and depth do not read on a light ground; a graph propagating across #f2f0e8 looks
- * like a diagram, and the same graph on a dark ground looks like an instrument. So the cinematic
- * sections invert: near-black ground, paper-coloured type, and one accent per project world.
+ * It used to be a fixed dark set, and the reasoning was sound at the time: the
+ * reading surfaces were warm paper, and motion does not read on a light ground,
+ * so the cinematic sections inverted to a near-black stage with paper-coloured
+ * type. One palette for reading, one for looking.
  *
- * These are additive. Nothing that already exists changes colour.
+ * **The theme does that job now.** With a real light and dark mode, a section
+ * that is always dark is not "cinematic", it is a section that ignores the
+ * reader's choice: the navigation bar rendered black on a light page, because
+ * it draws from `--stage-ink` and `--stage-line-strong`.
+ *
+ * So these are now aliases onto the theme's own tokens. Everything that reached
+ * for a stage colour follows the theme without being touched, and the accent
+ * worlds below are unaffected. The names stay because about 300 declarations
+ * use them; they go as each section is rewritten.
  */
 :root {
-  --stage: #0b0f14;
-  --stage-raised: #131a22;
-  --stage-deep: #060909;
-  --stage-ink: #f2f0e8;
-  --stage-ink-soft: #9aa7b2;
-  --stage-line: rgb(242 240 232 / 16%);
-  --stage-line-strong: rgb(242 240 232 / 38%);
+  --stage: var(--paper);
+  --stage-raised: var(--paper-raised);
+  --stage-deep: var(--paper-deep);
+  --stage-ink: var(--ink);
+  --stage-ink-soft: var(--ink-soft);
+  --stage-line: var(--line);
+  --stage-line-strong: var(--line-strong);
 
   /*
    * Accent worlds. Each flagship project owns one hue so that a reader who has scrolled past four

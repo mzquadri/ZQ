@@ -248,7 +248,28 @@ for (const claim of forbiddenClaims) {
 
 const privateTextIssue = getPrivateTextIssue(privacyText);
 check(!privateTextIssue, `Public content ${privateTextIssue ?? "violates the privacy boundary"}`);
-check(!/[A-Za-z]:\\Users\\|\/(?:Users|home)\//.test(renderedSource), "Public content contains a local filesystem path");
+/*
+ * An absolute path from somebody's machine, not any string containing "/home/".
+ *
+ * The previous pattern matched the substring anywhere, so adding a component
+ * directory called `home` failed the build on the import specifier
+ * `@/components/home/Hero`. The lookbehind is what distinguishes a path from a
+ * path fragment: a real absolute path starts after a quote, a bracket or
+ * whitespace, never directly after a word character.
+ */
+const localPath = /(?<![\w@.])(?:[A-Za-z]:\\Users\\|\/(?:Users|home)\/)/.exec(renderedSource);
+check(
+  localPath === null,
+  /*
+   * The message quotes what was found. "Public content contains a local
+   * filesystem path" with no context sent me hunting through three separate
+   * sources for a substring, and the thing it had matched turned out to be an
+   * import specifier.
+   */
+  `Public content contains a local filesystem path: ${JSON.stringify(
+    renderedSource.slice(Math.max(0, (localPath?.index ?? 0) - 70), (localPath?.index ?? 0) + 50),
+  )}`,
+);
 /*
  * One approved address, and no other.
  *
@@ -322,7 +343,32 @@ check(
   !/download\s+(my\s+)?(cv|resume|résumé)/i.test(renderedSource),
   "A CV download invitation appears in the rendered site source",
 );
-check(!existsSync(resolve("public")), "public/ exists again; it held only the withdrawn CV");
+/*
+ * `public/` is allowed to exist again, and is checked for what it holds.
+ *
+ * The directory was deleted and this check pinned it shut, because the only
+ * thing it had ever served was the withdrawn CV PDF. That made the rule easy to
+ * state and wrong as soon as the site needed a real static asset: the home page
+ * now serves the portrait and the Paris road network from it.
+ *
+ * "The directory must not exist" was never the actual requirement. The
+ * requirement is that no CV or resume is served from it, so that is what is
+ * checked, over every file in the tree rather than over the top level.
+ */
+if (existsSync(resolve("public"))) {
+  const served = readdirSync(resolve("public"), { recursive: true })
+    .filter((path): path is string => typeof path === "string");
+  for (const path of served) {
+    check(
+      !/(^|[/\\])(cv|resume|résumé|lebenslauf)[^/\\]*\.(pdf|docx?|odt)$/i.test(path),
+      `public/ serves what looks like a CV: ${path}`,
+    );
+    check(
+      !/Mohd_Zamin_Quadri_CV|mohd-zamin-quadri-resume|mohd-zamin-quadri-cv/i.test(path),
+      `public/ serves the withdrawn CV: ${path}`,
+    );
+  }
+}
 check(
   !/\+\s*49[\s)(\d-]{7,}|\(\+\d{1,3}\)/.test(renderedSource),
   "Public content contains a telephone number",
@@ -826,6 +872,8 @@ if (existsSync(portraitPath)) {
 
 // --- Confidential work -------------------------------------------------------------------------
 
+const ENDPOINT_LEAK = /https?:|\bhttp\b|\b\d{1,3}(?:\.\d{1,3}){3}\b|localhost|\.internal\b|\.local\b/i;
+
 for (const record of site.experience) {
   if (!record.practice) continue;
   check(
@@ -833,8 +881,40 @@ for (const record of site.experience) {
     `${record.id} publishes a practice description that is too thin to be useful`,
   );
   check(
-    !/https?:|\bhttp\b|\b\d{1,3}(?:\.\d{1,3}){3}\b|localhost|\.internal\b|\.local\b/i.test(record.practice),
+    !ENDPOINT_LEAK.test(record.practice),
     `${record.id} practice description leaks an endpoint, host, or address`,
+  );
+}
+
+/*
+ * The expanded detail on the experience page is held to the same rule.
+ *
+ * `practice` was the only employer-facing prose when that check was written. The
+ * entries now expand into a per-role bullet list and a tool list, which is more
+ * text about the same employers, so it is checked the same way rather than
+ * trusted because it came from the CV. A CV is not a privacy review.
+ */
+for (const record of site.experience) {
+  for (const [i, line] of (record.detail ?? []).entries()) {
+    check(
+      line.trim().length >= 40,
+      `${record.id} detail[${i}] is too thin to be worth expanding into`,
+    );
+    check(
+      !ENDPOINT_LEAK.test(line),
+      `${record.id} detail[${i}] leaks an endpoint, host, or address`,
+    );
+  }
+  for (const [i, tool] of (record.tech ?? []).entries()) {
+    check(
+      tool.trim().length > 0 && !ENDPOINT_LEAK.test(tool),
+      `${record.id} tech[${i}] is empty or leaks an endpoint`,
+    );
+  }
+  /* A role that expands to nothing should not render an expander at all. */
+  check(
+    record.detail === undefined || record.detail.length > 0,
+    `${record.id} declares an empty detail list`,
   );
 }
 

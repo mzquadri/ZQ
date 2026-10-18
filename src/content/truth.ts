@@ -42,6 +42,25 @@ export interface ExperienceRecord {
    * must be approved individually before publication.
    */
   practice?: string;
+  /**
+   * What the role actually involved, one clause per line, for the entry to expand into.
+   *
+   * Every line is the corresponding CV bullet, reworded only where the CV's phrasing is
+   * CV-shaped. Nothing may appear here that is not on the CV: this is the surface a recruiter
+   * reads against the document in front of them, and a line in one and not the other is the
+   * discrepancy that costs an interview.
+   *
+   * The same endpoint rule as `practice` applies and is enforced in validate-content.ts.
+   */
+  detail?: readonly string[];
+  /**
+   * The tools named on the CV for this role, verbatim and in the CV's own spelling.
+   *
+   * A reader scanning for a stack should find the same words here as on the document. Nothing
+   * is added because it is adjacent or implied: if the CV does not name it for this role, it
+   * is not here.
+   */
+  tech?: readonly string[];
 }
 
 export interface EducationRecord {
@@ -181,6 +200,18 @@ export const truthRegistry = {
           // fourteen where an EU one meets twelve.
           practice:
             "Built four of the five services in a multilingual legal knowledge platform: a three-stage ingestion pipeline into relational, vector and graph storage, behind up to fourteen verification checks.",
+          detail: [
+            "Engineered four of the five services of a legal knowledge base: a three-stage pipeline parsing German GII-NORM and EU FORMEX v4 legislation into PostgreSQL, with BGE-M3 embeddings in Qdrant and Neo4j kept consistent by uuid5 point IDs.",
+            "Shipped the FastAPI verification service that runs up to 14 checks on every law before it is certified, one of them an oracle parse on an independent XML stack, and the Next.js dashboard that reports them.",
+            "Built the ML core of a DenseNet-121 chest X-ray classifier over five findings, with a calibrated threshold per finding, an ICD-10 severity layer and Grad-CAM++ attribution, served by a Kafka-backed prediction service.",
+            "Extended a document-extraction pipeline pairing Docling OCR with LLM and regex extraction against declarative templates, so a model can be swapped without touching the pipeline.",
+            "Built the Docker Compose stack and contributed to the Kubernetes manifests and CI pipelines; Argo CD ran the services as pods in Dev and QA.",
+          ],
+          tech: [
+            "Python", "FastAPI", "Next.js", "PostgreSQL", "Qdrant", "Neo4j", "MongoDB",
+            "BGE-M3", "Docling", "PyTorch", "Apache Kafka", "MinIO", "Ollama",
+            "Docker", "Kubernetes", "Argo CD",
+          ],
         },
         {
           id: "tum-programming-visualization",
@@ -188,6 +219,10 @@ export const truthRegistry = {
           title: "Student Research Assistant / Programming and Visualization",
           location: "Munich, Germany",
           period: "Aug 2023 - Mar 2024",
+          detail: [
+            "Taught MATLAB lab sessions for mathematics and engineering students, and prepared the starter code they worked from.",
+          ],
+          tech: ["MATLAB"],
         },
         {
           id: "audi-workflows-databases",
@@ -195,6 +230,12 @@ export const truthRegistry = {
           title: "Intern, Programming of Workflows and Linking of Databases",
           location: "Ingolstadt, Germany",
           period: "Jan 2023 - Jun 2023",
+          detail: [
+            "Built an Excel VBA application with UserForms that automated development release tracking, replacing a manual search through roughly 600 rows and 130 or more columns with dropdown selection and single-click lookup.",
+            "Added separate interfaces for the German and Chinese markets, with forms to create, update and delete records and automatic write-back to the source sheet.",
+            "Connected the tool to FREIPRO, the release system every department already used, so its records stayed in step with the company's; numerous departments adopted it.",
+          ],
+          tech: ["Excel VBA", "UserForms"],
         },
         {
           // October, not April. The onboarding pack is signed 31.08.2022, the
@@ -206,6 +247,10 @@ export const truthRegistry = {
           title: "Student Research Assistant, Numerical Methods and Scientific Visualization",
           location: "Munich, Germany",
           period: "Oct 2022 - Dec 2022",
+          detail: [
+            "Taught the MATLAB labs of Introduction to Programming (MA0010) at the Chair of Numerical Mathematics, covering vectorisation, linear systems and 2D and 3D visualisation.",
+          ],
+          tech: ["MATLAB"],
         },
         // The IISER Bhopal summer internship was removed from the CV and is
         // removed here for the same reason: one surface claiming a role the
