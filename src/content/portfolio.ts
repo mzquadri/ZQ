@@ -222,7 +222,7 @@ const authoredProjects: readonly Project[] = [
   {
     slug: "transport-uq",
     title: "Reliable GNN Surrogates for Transport Policy Analysis",
-    eyebrow: "Master's thesis / Reliable ML",
+    eyebrow: "Master's thesis on reliable machine learning",
     classification: "Academic research",
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Researcher and thesis author",

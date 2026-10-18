@@ -44,7 +44,7 @@ export default function AboutPage() {
   return (
     <PageShell current="/about">
       <StageHero
-        eyebrow="About / Working approach"
+        eyebrow="How I work"
         title="Mathematical care, practical engineering."
         standfirst="I work at the boundary between modelling and systems: understanding what a model can support, then building the data, evaluation, and software path that makes that evidence useful."
         meta={[

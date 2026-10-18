@@ -48,7 +48,7 @@ export default function ContactPage() {
             </p>
 
             <p className="ending-availability">
-              {site.availability} · {site.location}
+              {site.availability}, {site.location}
             </p>
 
             <ul className="ending-channels contact-links">

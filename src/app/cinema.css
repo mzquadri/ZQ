@@ -305,10 +305,12 @@
   text-decoration: none;
 }
 
-.cine-cta::after {
-  content: "→";
-  transition: transform var(--dur-base) var(--ease-exit);
-}
+/*
+ * The arrow that used to sit after every call to action is gone. It said
+ * nothing the link did not already say, the character rule bans the glyph, and
+ * an arrow appended to button text is the commonest ornament on a generated
+ * page. The hover rule that slid it is removed with it.
+ */
 
 .cine-cta:hover::after,
 .cine-cta:focus-visible::after {

@@ -153,16 +153,16 @@ export default function Readout({ state }: { state: HydrologyKey }) {
         <>
           <Rows
             items={[
-              { label: "Rating curve", note: ratingCurve.form, value: `R² ${ratingCurve.r2}` },
+              { label: "Rating curve", note: ratingCurve.form, value: `R2 ${ratingCurve.r2}` },
               {
                 label: "Local exponent",
                 note: `at ${verdict.baseStage} cm, then at ${verdict.peakStage} cm`,
-                value: `${verdict.exponentAtBase} → ${verdict.exponentAtPeak}`,
+                value: `${verdict.exponentAtBase} to ${verdict.exponentAtPeak}`,
               },
               {
                 label: "What 25 cm costs",
                 note: "same error in centimetres, both ends of the event",
-                value: `×${verdict.bandRatio} wider at the peak`,
+                value: `x${verdict.bandRatio} wider at the peak`,
               },
             ]}
           />
@@ -187,12 +187,12 @@ export default function Readout({ state }: { state: HydrologyKey }) {
               },
               {
                 label: "Spread at baseflow",
-                note: `discharge width of ±25 cm at ${verdict.baseStage} cm`,
+                note: `discharge width of plus or minus 25 cm at ${verdict.baseStage} cm`,
                 value: `${verdict.bandAtBase}`,
               },
               {
                 label: "Spread at the peak",
-                note: `the same ±25 cm at ${verdict.peakStage} cm`,
+                note: `the same plus or minus 25 cm at ${verdict.peakStage} cm`,
                 value: `${verdict.bandAtPeak}`,
               },
             ]}
@@ -214,12 +214,12 @@ export default function Readout({ state }: { state: HydrologyKey }) {
               {
                 label: "Objective spread",
                 note: "5th to 95th percentile of the objective function",
-                value: `${outputExperiment.ofvP5} – ${outputExperiment.ofvP95}`,
+                value: `${outputExperiment.ofvP5} - ${outputExperiment.ofvP95}`,
               },
               {
                 label: "Against the rain envelope",
                 note: "measured, not drawn to taste",
-                value: `${verdict.lossRatio}× wider`,
+                value: `${verdict.lossRatio}x wider`,
               },
             ]}
           />
@@ -254,7 +254,7 @@ export default function Readout({ state }: { state: HydrologyKey }) {
           />
           <p className="world-note">
             Precipitation noise let 834 series through by luck. Rating-curve error let none through
-            at all — a clean sweep across 2,000 draws, which is what a systematic error looks like
+            at all, a clean sweep across 2,000 draws, which is what a systematic error looks like
             when a random one has just been ruled out.
           </p>
         </>
@@ -297,14 +297,14 @@ export default function Readout({ state }: { state: HydrologyKey }) {
             <li data-on="" data-tone="positive">
               <code>{sensitivity.narrow.top}</code>
               <span>
-                {sensitivity.narrow.topLabel} · S_T {sensitivity.narrow.totalIndex} · sampled
+                {sensitivity.narrow.topLabel}, S_T {sensitivity.narrow.totalIndex}, sampled
                 narrowly, near the optimum
               </span>
             </li>
             <li data-on="" data-tone="uncertain">
               <code>{sensitivity.full.top}</code>
               <span>
-                {sensitivity.full.topLabel} · S_T {sensitivity.full.totalIndex} · sampled across the
+                {sensitivity.full.topLabel}, S_T {sensitivity.full.totalIndex}, sampled across the
                 full parameter space
               </span>
             </li>

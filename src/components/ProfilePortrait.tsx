@@ -8,7 +8,7 @@ import { site } from "@/content/portfolio";
  *
  * The photograph is not committed yet, and a missing file must not break the build or
  * leave a broken image on the page. The existence check runs on the server at build
- * time, so a page either renders the real portrait or a generated monogram — never an
+ * time, so a page either renders the real portrait or a generated monogram, never an
  * empty box and never a request for a file that is not there.
  *
  * The fallback is drawn from the existing theme tokens rather than a new palette, so it

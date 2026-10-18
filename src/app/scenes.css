@@ -45,8 +45,6 @@
   text-decoration: none;
 }
 
-.chapter-more::after { content: "→"; }
-
 .chapter-more:hover,
 .chapter-more:focus-visible {
   border-color: var(--accent);
@@ -581,7 +579,18 @@
   text-decoration: none;
 }
 
-.case-back::before { content: "←"; }
+/* A drawn chevron, not the arrow glyph. Back navigation does want a mark;
+   it does not want a character the rule bans. */
+.case-back::before {
+  display: inline-block;
+  width: 0.42em;
+  height: 0.42em;
+  margin-right: 0.45em;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  content: "";
+}
 
 .case-back:hover,
 .case-back:focus-visible { color: var(--accent); }

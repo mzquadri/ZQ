@@ -78,7 +78,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Mohd Zamin Quadri — Applied ML, reliable systems, scientific computing",
+        alt: "Mohd Zamin Quadri, Applied ML, reliable systems, scientific computing",
       },
     ],
   },
@@ -91,9 +91,25 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+/*
+ * Both of these were pinned to the old light-only design and would have fought
+ * the theme.
+ *
+ * `colorScheme: "light"` emits a meta tag that tells the browser the page only
+ * supports light, which overrides the stylesheet's `color-scheme: light dark`
+ * and would have left every `light-dark()` token resolving to its light half
+ * whatever the reader chose. "light dark" says what is actually true.
+ *
+ * `themeColor` tints the browser's own chrome on a phone. A single warm-paper
+ * value left a cream bar above a dark page, so it is now a pair matched to each
+ * theme's ground, which Next emits as two media-scoped meta tags.
+ */
 export const viewport: Viewport = {
-  colorScheme: "light",
-  themeColor: "#f2f0e8",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f7f8fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#10151c" },
+  ],
 };
 
 export default function RootLayout({

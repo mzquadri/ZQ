@@ -22,7 +22,7 @@ import { site } from "./truth";
 export const architecture = {
   site: site.architecture,
   repository: site.architectureRepository,
-  eyebrow: "Architecture / Case studies / Separate site",
+  eyebrow: "Case studies, on a separate site",
   title: "The systems, drawn at the level an interviewer asks about.",
   standfirst:
     "A separate case-study site documents the AI systems I contributed to at BP-ITCS: twenty architecture diagrams, an interactive walkthrough and a written record of what each claim rests on. It is published on its own terms, with its own review of what could be shown.",

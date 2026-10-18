@@ -406,7 +406,7 @@ function HorizonFlat() {
     <div
       className="scene-streamflow"
       role="img"
-      aria-label={`An earlier benchmark result on synthetic data. XGBoost scored R² ${streamflowChapter.r2} against SARIMAX ${streamflowChapter.sarimaxR2} and a day-of-year baseline at ${streamflowChapter.naiveR2}, but the predicted and observed lines overlap because each prediction is one day ahead and is given the discharge observed the day before. The two most recent lag features carry ${Math.round(streamflowChapter.topTwoShare * 1000) / 10}% of the model.`}
+      aria-label={`An earlier benchmark result on synthetic data. XGBoost scored R2 ${streamflowChapter.r2} against SARIMAX ${streamflowChapter.sarimaxR2} and a day-of-year baseline at ${streamflowChapter.naiveR2}, but the predicted and observed lines overlap because each prediction is one day ahead and is given the discharge observed the day before. The two most recent lag features carry ${Math.round(streamflowChapter.topTwoShare * 1000) / 10}% of the model.`}
     >
       <svg
         aria-hidden="true"
@@ -417,7 +417,7 @@ function HorizonFlat() {
         <polyline className="scene-sf-pred" points={sfPred} pathLength={100} {...at(24, 62)} />
       </svg>
       <p className="scene-sf-caption" {...at(56, 78)}>
-        <strong>R² {streamflowChapter.r2}</strong>
+        <strong>R2 {streamflowChapter.r2}</strong>
         <span>
           one step ahead, given yesterday&rsquo;s measurement &mdash; lag&nbsp;1 and lag&nbsp;2
           carry {Math.round(streamflowChapter.topTwoShare * 1000) / 10}% of the model

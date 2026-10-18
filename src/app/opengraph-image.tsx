@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/content/portfolio";
 
-export const alt = `${site.name} — ${site.role} and reliable systems`;
+export const alt = `${site.name}, ${site.role} and reliable systems`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -29,9 +29,19 @@ export default function OpenGraphImage() {
           <div style={{ fontSize: 72, fontWeight: 700, maxWidth: 980, lineHeight: 1.02 }}>
             Applied ML with evidence built in.
           </div>
-          <div style={{ display: "flex", gap: 20, fontSize: 26 }}>
-            <span>AI systems</span><span>·</span><span>Machine learning</span><span>·</span>
-            <span>RAG</span><span>·</span><span>GNNs</span><span>·</span><span>Research</span>
+          {/*
+            * The terms used to be joined by middle dots in their own spans. The
+            * flex gap already separates them, so the dots were doing no work
+            * that the layout was not, and a meta string strung together with
+            * middle dots is one of the surest tells of a generated page. The
+            * character rule bans the glyph anyway.
+            */}
+          <div style={{ display: "flex", gap: 28, fontSize: 26 }}>
+            <span>AI systems</span>
+            <span>Machine learning</span>
+            <span>RAG</span>
+            <span>GNNs</span>
+            <span>Research</span>
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>

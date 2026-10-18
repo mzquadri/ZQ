@@ -3,7 +3,7 @@ import { architecture } from "@/content/architecture";
 import { site } from "@/content/portfolio";
 
 export const alt =
-  "Architecture case studies by Mohd Zamin Quadri — the systems, drawn at the level an interviewer asks about";
+  "Architecture case studies by Mohd Zamin Quadri, the systems, drawn at the level an interviewer asks about";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -47,9 +47,11 @@ export default function ArchitectureOpenGraphImage() {
         <div style={{ display: "flex", fontSize: 70, fontWeight: 700, lineHeight: 1.04, maxWidth: 1000 }}>
           The systems, drawn at the level an interviewer asks about.
         </div>
-        <div style={{ color: "#9fb0bb", display: "flex", fontSize: 26, gap: 18 }}>
-          <span>Twenty diagrams</span><span>·</span>
-          <span>Interactive walkthrough</span><span>·</span>
+        {/* The flex gap separates these; the middle dots that used to sit
+            between them did not. See the note in src/app/opengraph-image.tsx. */}
+        <div style={{ color: "#9fb0bb", display: "flex", fontSize: 26, gap: 28 }}>
+          <span>Twenty diagrams</span>
+          <span>Interactive walkthrough</span>
           <span>Stated contribution</span>
         </div>
       </div>
@@ -58,7 +60,7 @@ export default function ArchitectureOpenGraphImage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           <strong style={{ fontSize: 32 }}>{site.name}</strong>
           <span style={{ color: "#9fb0bb", fontSize: 23 }}>
-            {site.role} · {site.location}
+            {site.role}, {site.location}
           </span>
         </div>
         <div style={{ display: "flex", gap: 12 }}>

@@ -354,15 +354,32 @@ ol {
   padding-block: clamp(2.75rem, 5vw, 4.5rem);
 }
 
+/*
+ * The small label above a heading.
+ *
+ * It used to be tracked-out capitals in a monospace face, on 58 elements across
+ * the site. Three things were wrong with that. Capitals are measurably slower
+ * to read and these labels are navigational, so the one piece of text telling
+ * you where you are was the hardest piece to read. A monospace face here says
+ * "this is data" when the content is a section name, which spends the one
+ * signal this site has for a measured value. And the combination is the single
+ * commonest ornament on a machine-written page, which is the company this work
+ * should not be keeping.
+ *
+ * Now: sentence case, the body face, quiet rather than loud. It still reads as
+ * a label because it is small and set in the muted ink, which is what made it a
+ * label in the first place; the shouting was never doing that work.
+ *
+ * Mono is reserved for numerals, file paths and identifiers. See docs/DESIGN.md.
+ */
 .kicker,
 .section-index,
 .classification,
 .case-meta {
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  color: var(--ink-soft);
 }
 
 .kicker {
@@ -1095,11 +1112,16 @@ ol {
   opacity: 0.84;
 }
 
+/* An en rule as the list marker, drawn rather than typed, so the character
+   rule holds and the weight is ours rather than the font's. */
 .editorial-list li::before {
   position: absolute;
+  top: 0.72em;
   left: 0;
-  color: var(--orange);
-  content: "—";
+  width: 0.62em;
+  height: 2px;
+  background: var(--violet);
+  content: "";
 }
 
 .positive-list li::before {

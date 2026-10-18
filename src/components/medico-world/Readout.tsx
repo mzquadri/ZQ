@@ -59,10 +59,10 @@ export default function Readout({ state }: { state: MedicoKey }) {
           {sources.map((source, i) => (
             <li data-on="" key={source.key}>
               <code>
-                {source.name} · {coverage[i].covered}/{findings.length}
+                {source.name}, {coverage[i].covered}/{findings.length}
               </code>
               <span>
-                {source.approxImages} images · {source.split}
+                {source.approxImages} images, {source.split}
               </span>
             </li>
           ))}
@@ -77,7 +77,7 @@ export default function Readout({ state }: { state: MedicoKey }) {
             {sources.map((source, i) => (
               <li data-on="" key={source.key}>
                 <code>
-                  {source.name} · {coverage[i].covered} of {findings.length}
+                  {source.name}, {coverage[i].covered} of {findings.length}
                 </code>
               </li>
             ))}
@@ -107,7 +107,7 @@ export default function Readout({ state }: { state: MedicoKey }) {
         <Rows
           items={[
             { label: "Backbone", value: "DenseNet-121", note: "torchvision, ImageNet initialised" },
-            { label: "Dense blocks", value: "6 · 12 · 24 · 16", note: "a transition between each" },
+            { label: "Dense blocks", value: "6, 12, 24, 16", note: "a transition between each" },
             { label: "First convolution", value: "3 channels to 1", note: "RGB weights averaged for grayscale" },
           ]}
         />

@@ -221,7 +221,7 @@ function draw(s: Surface, progress: number, p: Palette) {
   if (promote > 0.05) say("production is reached only by promotion from staging", promote, p.accent);
   else if (staging > 0.05) say("staging requires an evaluated bundle whose gate passed", staging * (1 - promote * 0.8), p.ink);
   else if (pass > 0.05) {
-    say(`all four hold · accuracy ${results.accuracy}`, pass * (1 - staging * 0.8), p.accent);
+    say(`all four hold, accuracy ${results.accuracy}`, pass * (1 - staging * 0.8), p.accent);
     say(`margin over baseline ${results.accuracyOverBaseline.toFixed(4)}`, pass * 0.85 * (1 - staging * 0.8), p.soft, 1);
   } else if (rebuild > 0.05) say("a new candidate, not a lowered threshold", rebuild * (1 - pass * 0.8), p.ink);
   else if (refuse > 0.05) say("refused, and not scored anyway", refuse * (1 - rebuild * 0.8), p.warn);

@@ -184,7 +184,7 @@ export function ThesisTrialLog() {
             >
               <span className="trial-bar" style={{ height: `${Math.max(4, height)}%` }} />
               <span className="trial-id">{trial.id}</span>
-              <span className="trial-r2">{trial.excluded ? "—" : trial.r2.toFixed(3)}</span>
+              <span className="trial-r2">{trial.excluded ? "-" : trial.r2.toFixed(3)}</span>
             </li>
           );
         })}
@@ -207,7 +207,7 @@ export function ThesisTrialLog() {
                 <th scope="row">{trial.id}</th>
                 <td>
                   {trial.change}
-                  {"note" in trial && trial.note ? <em> — {trial.note}</em> : null}
+                  {"note" in trial && trial.note ? <em>, {trial.note}</em> : null}
                 </td>
                 <td>{trial.excluded ? "not comparable" : trial.r2.toFixed(4)}</td>
                 <td>{trial.split}</td>

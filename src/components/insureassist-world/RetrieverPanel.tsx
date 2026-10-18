@@ -36,7 +36,7 @@ export default function RetrieverPanel({ progress }: { progress: number }) {
             <g data-selected={retriever.selected ? "" : undefined} key={retriever.key}>
               <text className="insure-panel-name" x={LEFT} y={top - 4}>
                 {retriever.label}
-                {retriever.selected ? " · selected" : ""}
+                {retriever.selected ? ", selected" : ""}
               </text>
               <rect className="insure-panel-track" height={BAR} width={TRACK} x={LEFT} y={top} />
               <rect

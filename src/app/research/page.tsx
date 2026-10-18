@@ -17,7 +17,7 @@ export const metadata: Metadata = createPageMetadata({
     "Research in reliable machine learning, uncertainty quantification, graph surrogates, scientific modelling, and evidence-aware decisions.",
   path: "/research",
   imagePath: "/research/opengraph-image",
-  imageAlt: "Research by Mohd Zamin Quadri — reliable machine learning from prediction to decisions",
+  imageAlt: "Research by Mohd Zamin Quadri, reliable machine learning from prediction to decisions",
 });
 
 export default function ResearchPage() {
@@ -59,9 +59,9 @@ export default function ResearchPage() {
 
       <StageHero
         accent="var(--accent-graph)"
-        eyebrow="Research / Reliable ML / Scientific modelling"
+        eyebrow="Reliable machine learning and scientific modelling"
         title="From fast predictions to decisions that expose uncertainty."
-        standfirst="My primary research asks how an ML surrogate can report more than a point estimate: where error is likely, whether uncertainty is calibrated, and when a prediction should enter a review queue. Approximate, quantify, calibrate, verify, decline — each step is only reachable from the one below it."
+        standfirst="My primary research asks how an ML surrogate can report more than a point estimate: where error is likely, whether uncertainty is calibrated, and when a prediction should enter a review queue. Approximate, quantify, calibrate, verify, decline, each step is only reachable from the one below it."
       >
         <div className="research-audience" aria-label="Ways into the research">
           <div><span>Recruiter</span><strong>What did the work establish?</strong></div>
@@ -122,7 +122,7 @@ export default function ResearchPage() {
           </div>
           <dl className="research-record-metrics">
             <div><dt>Evaluated scope</dt><dd>{researchEvidence.scope.scenarios} scenarios<small>{researchEvidence.scope.predictions.toLocaleString("en-US")} link predictions</small></dd></div>
-            <div><dt>Uncertainty ranking</dt><dd>ρ {researchEvidence.results.mcDropout.spearman.toFixed(3)}<small>MC uncertainty vs. absolute error</small></dd></div>
+            <div><dt>Uncertainty ranking</dt><dd>rho {researchEvidence.results.mcDropout.spearman.toFixed(3)}<small>MC uncertainty vs. absolute error</small></dd></div>
             <div><dt>Selective review</dt><dd>{halfRetention.reductionPct.toFixed(1)}%<small>Lower MAE at 50% retention</small></dd></div>
           </dl>
           <div className="research-record-actions">

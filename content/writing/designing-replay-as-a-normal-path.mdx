@@ -4,7 +4,7 @@ status: published
 section: learn
 kind: tutorial
 title: "Designing Replay as a Normal Path"
-description: "Offset handling, publish-then-commit ordering, and broker confirmation before HTTP success — the consumer-side decisions that make re-running a stream routine rather than an incident."
+description: "Offset handling, publish-then-commit ordering, and broker confirmation before HTTP success, the consumer-side decisions that make re-running a stream routine rather than an incident."
 publishedAt: "2026-09-13"
 updatedAt: "2026-09-13"
 author: "Mohd Zamin Quadri"
@@ -44,7 +44,7 @@ Replay is usually discovered rather than designed. Something goes wrong, someone
 It is cheaper to decide up front that re-running a stream is an ordinary operation. Four decisions get you most of the way, and they are all on the consumer side.
 
 <Callout title="What has to be true">
-  Re-processing an event that has already been processed changes nothing. Not "is skipped" — changes nothing. A skip depends on a lookup; a harmless repeat does not.
+  Re-processing an event that has already been processed changes nothing. Not "is skipped", changes nothing. A skip depends on a lookup; a harmless repeat does not.
 </Callout>
 
 ## 1. Commit offsets for events you skip
@@ -62,7 +62,7 @@ for record in consumer.poll():
     consumer.commit(record)
 ```
 
-The offset never advances past the foreign event. On restart the consumer re-reads from it, skips it again, and never moves. One event of a type you do not handle stalls the partition indefinitely, and the symptom is not an error — it is a consumer that looks healthy and processes nothing.
+The offset never advances past the foreign event. On restart the consumer re-reads from it, skips it again, and never moves. One event of a type you do not handle stalls the partition indefinitely, and the symptom is not an error; it is a consumer that looks healthy and processes nothing.
 
 ```python
 for record in consumer.poll():
@@ -81,7 +81,7 @@ Two orderings, and only one is safe.
 
 **Publish then commit.** A crash between them redelivers the input, and the downstream event is emitted twice.
 
-The second is strictly better, because a duplicate is absorbable and a loss is not. It only works if the duplicate really is absorbed — which is what [derived identifiers](/learn/idempotent-ingestion-across-heterogeneous-stores) are for. Publish-then-commit without downstream idempotence just moves the failure.
+The second is strictly better, because a duplicate is absorbable and a loss is not. It only works if the duplicate really is absorbed, which is what [derived identifiers](/learn/idempotent-ingestion-across-heterogeneous-stores) are for. Publish-then-commit without downstream idempotence just moves the failure.
 
 ```python
 def process(record):
@@ -122,7 +122,7 @@ producer.send(topic, key=str(uuid.uuid4()), value=payload)
 producer.send(topic, key=document.key, value=payload)
 ```
 
-This is a one-line change and a real defect I have had to fix. The failure is intermittent, load-dependent, and invisible in any single-threaded test — which is a good description of most partitioning bugs.
+This is a one-line change and a real defect I have had to fix. The failure is intermittent, load-dependent, and invisible in any single-threaded test, which is a good description of most partitioning bugs.
 
 The trade-off is honest: keying by entity means a hot entity is a hot partition. Accept it, or shard the key with a bounded suffix and give up cross-version ordering deliberately rather than accidentally.
 
@@ -133,7 +133,7 @@ With those four in place, replay becomes a configuration change rather than an e
 1. **Stop the consumer.** Not strictly required if the work is idempotent, but it keeps the logs readable.
 2. **Reset the group to a timestamp or an offset.** A timestamp is usually what you actually mean.
 3. **Restart and watch lag drain.**
-4. **Reconcile afterwards** — see below.
+4. **Reconcile afterwards**, see below.
 
 What makes this safe is that every step of the pipeline recomputes the same identifiers and upserts over the same rows. Replaying a week of events produces the state that week's events would have produced, not a week of duplicates.
 
@@ -141,11 +141,11 @@ What makes this safe is that every step of the pipeline recomputes the same iden
 
 **Removal.** If an event stream expresses only additions and updates, replaying it converges everything that exists and leaves behind anything that was deleted. Deletions need either their own events or a post-replay prune step that removes what the replay did not touch.
 
-**Rule changes.** Replaying with a corrected parser produces different output from the original run — which is usually the point, but it means the resulting records were built by different rules from their neighbours. Record which rules produced each generation so that difference is visible rather than invisible. That is the subject of [evidence provenance](/learn/evidence-provenance-for-knowledge-systems).
+**Rule changes.** Replaying with a corrected parser produces different output from the original run, which is usually the point, but it means the resulting records were built by different rules from their neighbours. Record which rules produced each generation so that difference is visible rather than invisible. That is the subject of [evidence provenance](/learn/evidence-provenance-for-knowledge-systems).
 
 ## Reconcile after every replay
 
-Replay is when partial state is most likely, so it is exactly when a read-only cross-store comparison is worth running. Not a count — counts survive a substitution. Compare the identifier sets and report what is missing and what is unexpected.
+Replay is when partial state is most likely, so it is exactly when a read-only cross-store comparison is worth running. Not a count, counts survive a substitution. Compare the identifier sets and report what is missing and what is unexpected.
 
 If your system has no such sweep, the honest position after a replay is that you believe it worked.
 

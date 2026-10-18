@@ -224,7 +224,7 @@ function draw(s: Surface, progress: number, p: Palette) {
   } else if (mean > 0.05) {
     say(`${result.testAccuracy} is the mean of these ten`, mean * (1 - seam * 0.8), p.warn);
     say(`spread ${structure.spread}`, mean * 0.8 * (1 - seam * 0.8), p.soft, 1);
-  } else if (fan > 0.05) say(`${structure.worst} ${structure.worstAccuracy} · ${structure.best} ${structure.bestAccuracy}`, fan * (1 - mean * 0.8), p.ink);
+  } else if (fan > 0.05) say(`${structure.worst} ${structure.worstAccuracy}, ${structure.best} ${structure.bestAccuracy}`, fan * (1 - mean * 0.8), p.ink);
   else if (row > 0.05) say("a thousand cats, and where they went", row * (1 - fan * 0.8), p.ink);
   else if (blocks > 0.05) say("vehicles and animals", blocks * (1 - row * 0.8), p.ink);
   else if (errors > 0.05) say("and everything it did not", errors * (1 - blocks * 0.8), p.warn);

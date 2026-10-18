@@ -34,7 +34,7 @@ export default function AllWritingPage() {
     <PageShell current="/learn">
       <StageHero
         accent="var(--accent-systems)"
-        eyebrow="Learn / complete list"
+        eyebrow="Every piece"
         title="Every tutorial, newest first."
         standfirst="The whole library in one list. Each piece is written from work on this site, carries original code, and states what it does not establish."
         meta={[

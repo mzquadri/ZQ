@@ -49,7 +49,7 @@ export default function CifarWorldFlat() {
             {stages.map((s) => (
               <li key={s.name}>
                 <strong>{s.name}</strong>
-                <code>{s.shape.join(" × ")}</code>
+                <code>{s.shape.join(" x ")}</code>
                 <span>{s.params ? `${s.params.toLocaleString("en-GB")} params` : "input"}</span>
               </li>
             ))}
@@ -136,7 +136,7 @@ export default function CifarWorldFlat() {
           of them to {worst.to} as it gets right.{" "}
           {Math.round(structure.withinGroupShare * 100)}% of all{" "}
           {(structure.withinGroupErrors + structure.acrossGroupErrors).toLocaleString("en-GB")}{" "}
-          mistakes stay inside the vehicle group or inside the animal group — the boundary the model
+          mistakes stay inside the vehicle group or inside the animal group, the boundary the model
           learned best is not one of the ten it was asked for.
         </p>
       </figure>

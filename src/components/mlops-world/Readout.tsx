@@ -53,7 +53,7 @@ function GateList({ failing }: { failing?: boolean }) {
             </code>
             <span>
               {blocked ? "held short of the threshold on this candidate" : `measured ${check.value}`}
-              {" · "}
+              {", "}
               {check.note}
             </span>
           </li>
@@ -83,7 +83,7 @@ export default function Readout({ state }: { state: MlopsKey }) {
             {dataChecks.map((check) => (
               <li data-on="" key={check.label}>
                 <code>
-                  {check.label} · {check.threshold}
+                  {check.label}, {check.threshold}
                 </code>
                 <span>{check.note}</span>
               </li>
@@ -92,7 +92,7 @@ export default function Readout({ state }: { state: MlopsKey }) {
           <p className="world-note">
             On failure the policy is <code>{dataFailurePolicy}</code>: a degenerate dataset stops the
             run rather than producing a flattering score on it. The dataset itself is downloaded and
-            verified against a pinned checksum ({experiment.datasetSha256}…), never redistributed.
+            verified against a pinned checksum ({experiment.datasetSha256}...), never redistributed.
           </p>
         </>
       );
@@ -168,7 +168,7 @@ export default function Readout({ state }: { state: MlopsKey }) {
           <p className="world-note">
             Held out: accuracy {results.accuracy}, weighted F1 {results.f1Weighted}, ROC-AUC{" "}
             {results.rocAuc}, against a majority-class baseline of {results.baselineAccuracy}. CI
-            asserts these against an actual run within ±{results.tolerance}.
+            asserts these against an actual run within plus or minus {results.tolerance}.
           </p>
         </>
       );

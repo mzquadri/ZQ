@@ -51,7 +51,7 @@ export default function Readout({ state }: { state: StreamflowKey }) {
             <li data-on="" data-tone={m.r2 < 0 ? "uncertain" : "positive"} key={m.key}>
               <code>{m.label}</code>
               <span>
-                R² {m.r2} · RMSE {m.rmse} · scored on {m.scoredOn}
+                R2 {m.r2}, RMSE {m.rmse}, scored on {m.scoredOn}
               </span>
             </li>
           ))}
@@ -77,17 +77,17 @@ export default function Readout({ state }: { state: StreamflowKey }) {
               {
                 label: "Recursion",
                 note: "each day is mostly the day before",
-                value: `y[t] = ${generator.ar}·y[t−1] + …`,
+                value: `y[t] = ${generator.ar}*y[t-1] + ...`,
               },
               {
                 label: "Plus",
-                note: `seasonal pull ${generator.basePull}, rainfall response, noise σ ${generator.noiseSd}`,
+                note: `seasonal pull ${generator.basePull}, rainfall response, noise sigma ${generator.noiseSd}`,
                 value: `trend ${generator.trendPerDay}/day`,
               },
               {
                 label: "Feedback gain",
                 note: `so the trend becomes ${generator.effectiveDrift} a day`,
-                value: `1/(1−${generator.ar}) = ${generator.arGain}`,
+                value: `1/(1-${generator.ar}) = ${generator.arGain}`,
               },
             ]}
           />
@@ -115,7 +115,7 @@ export default function Readout({ state }: { state: StreamflowKey }) {
           <Rows
             items={[
               { label: "Baseline", note: model("naive").note, value: model("naive").label },
-              { label: "R²", note: `NSE ${model("naive").nse}`, value: `${model("naive").r2}` },
+              { label: "R2", note: `NSE ${model("naive").nse}`, value: `${model("naive").r2}` },
               { label: "MAE / RMSE", note: "almost equal, which is the clue", value: `${model("naive").mae} / ${model("naive").rmse}` },
             ]}
           />
@@ -159,7 +159,7 @@ export default function Readout({ state }: { state: StreamflowKey }) {
             items={[
               { label: "Model", note: model("sarimax").note, value: "SARIMAX" },
               { label: "Scored on", note: "the daily series is resampled away", value: model("sarimax").scoredOn },
-              { label: "R²", note: `RMSE ${model("sarimax").rmse} on those means`, value: `${model("sarimax").r2}` },
+              { label: "R2", note: `RMSE ${model("sarimax").rmse} on those means`, value: `${model("sarimax").r2}` },
             ]}
           />
           <p className="world-note">
@@ -176,7 +176,7 @@ export default function Readout({ state }: { state: StreamflowKey }) {
             items={[
               { label: "Model", note: model("xgboost").note, value: "XGBoost" },
               { label: "Scored on", note: "one prediction per day", value: model("xgboost").scoredOn },
-              { label: "R²", note: `RMSE ${model("xgboost").rmse}, MAPE ${model("xgboost").mape}%`, value: `${model("xgboost").r2}` },
+              { label: "R2", note: `RMSE ${model("xgboost").rmse}, MAPE ${model("xgboost").mape}%`, value: `${model("xgboost").r2}` },
             ]}
           />
           <p className="world-note">

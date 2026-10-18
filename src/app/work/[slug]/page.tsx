@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     path: `/work/${project.slug}`,
     type: "article",
     imagePath: `/work/${project.slug}/opengraph-image`,
-    imageAlt: `${project.title} — ${project.classification} case study`,
+    imageAlt: `${project.title}, ${project.classification} case study`,
   });
 }
 

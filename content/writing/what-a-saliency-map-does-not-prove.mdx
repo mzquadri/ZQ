@@ -65,7 +65,7 @@ Here is what a gradient-based attribution map actually is: a weighted combinatio
 
 ## Grad-CAM++ in one paragraph
 
-Grad-CAM weights each feature map by its globally average-pooled gradient, then combines and rectifies. It works well when one instance of a class dominates the frame, and degrades when several instances of the same class appear — the averaging lets the strongest one absorb the attribution.
+Grad-CAM weights each feature map by its globally average-pooled gradient, then combines and rectifies. It works well when one instance of a class dominates the frame, and degrades when several instances of the same class appear, the averaging lets the strongest one absorb the attribution.
 
 Grad-CAM++ replaces that global average with pixel-wise positive weights derived from higher-order gradient terms, which gives better localisation for multiple occurrences.
 
@@ -110,11 +110,11 @@ I would not present an attribution map to a reviewer without having run these. P
 
 ## Priors: the temptation to make the picture nicer
 
-On a multi-label chest-radiograph prototype, I implemented a per-finding anatomical region prior — a boost applied to attribution inside the region where a finding is anatomically expected.
+On a multi-label chest-radiograph prototype, I implemented a per-finding anatomical region prior, a boost applied to attribution inside the region where a finding is anatomically expected.
 
 It made the maps look substantially better.
 
-It is disabled, with the reason recorded beside the flag. The reason is straightforward: a prior that boosts attribution where the finding *should* be makes the map agree with anatomy regardless of what the network did. The map stops being evidence about the model and becomes a restatement of the prior. If the network is attending to the wrong region — the precise failure the map exists to reveal — the prior hides it.
+It is disabled, with the reason recorded beside the flag. The reason is straightforward: a prior that boosts attribution where the finding *should* be makes the map agree with anatomy regardless of what the network did. The map stops being evidence about the model and becomes a restatement of the prior. If the network is attending to the wrong region, the precise failure the map exists to reveal, the prior hides it.
 
 Keeping the code with the flag off and the reason written down is better than deleting it, because it records a decision someone will otherwise make again.
 
@@ -122,9 +122,9 @@ Keeping the code with the flag off and the reason written down is better than de
 
 A single heatmap is often asked to answer three different questions at once. Keep them apart in the output:
 
-- **Presence** — is the finding there? A thresholded comparison per class.
-- **Confidence** — how strong is the evidence? The calibrated score.
-- **Urgency** — how quickly should a human look? A policy decision, not a model output.
+- **Presence**, is the finding there? A thresholded comparison per class.
+- **Confidence**, how strong is the evidence? The calibrated score.
+- **Urgency**, how quickly should a human look? A policy decision, not a model output.
 
 Deriving urgency from the raw score conflates a modelling question with an operational one. If urgency is a fixed banding over confidence, say so explicitly, so that changing the banding does not look like changing the model.
 
@@ -140,7 +140,7 @@ That is not hedging. Each clause corresponds to a specific inference a reader wo
 
 Rudin's argument is worth engaging with rather than citing politely: for high-stakes decisions, an interpretable model is often better than a black box with a post-hoc explanation, because the explanation is an approximation of the model and its errors are unmeasured.
 
-The practical position I hold: attribution maps are useful for **model debugging**, where you are looking for gross failures — attending to the text burned into a scan, to a scanner artefact, to the border. They are not useful as a **justification** presented to a decision-maker, because their failure modes are invisible in exactly the cases that matter.
+The practical position I hold: attribution maps are useful for **model debugging**, where you are looking for gross failures, attending to the text burned into a scan, to a scanner artefact, to the border. They are not useful as a **justification** presented to a decision-maker, because their failure modes are invisible in exactly the cases that matter.
 
 If your system needs to justify itself to a person who will act on it, the justification has to come from something with a measurable error rate.
 

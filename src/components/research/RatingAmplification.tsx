@@ -130,7 +130,7 @@ export default function RatingAmplification() {
               water level (cm)
             </text>
             <text x={PLOT.left} y={PLOT.top - 8}>
-              discharge (m³/s)
+              discharge (m3/s)
             </text>
           </g>
         </svg>
@@ -151,7 +151,7 @@ export default function RatingAmplification() {
         <div data-output="">
           <p className="rating-amp-label">Discharge interval</p>
           <p className="rating-amp-value">
-            {band.width < 100 ? band.width.toFixed(2) : band.width.toFixed(0)} m³/s
+            {band.width < 100 ? band.width.toFixed(2) : band.width.toFixed(0)} m3/s
           </p>
           <p className="rating-amp-note">
             {band.low.toFixed(1)} to {band.high.toFixed(1)} at a water level of {stage} cm.
@@ -162,7 +162,7 @@ export default function RatingAmplification() {
       <p className="research-note">
         The error did not grow &mdash; the transformation amplified it. The curve is nearly flat at
         low water and steep at the top, so the same 50 cm of gauge uncertainty spans{" "}
-        {verdict.bandAtBase} m³/s at a base stage of {verdict.baseStage} cm and {verdict.bandAtPeak}{" "}
+        {verdict.bandAtBase} m3/s at a base stage of {verdict.baseStage} cm and {verdict.bandAtPeak}{" "}
         at {verdict.peakStage}. The local exponent runs from about {verdict.exponentAtBase} to{" "}
         {verdict.exponentAtPeak} across that range. Nothing here is a forecast: it is a fixed
         measurement uncertainty pushed through a fitted stage-discharge relationship.
@@ -192,7 +192,7 @@ export default function RatingAmplification() {
                   </th>
                   <td>&plusmn;{gaugeUncertaintyCm} cm</td>
                   <td>
-                    {row.low.toFixed(2)} &ndash; {row.high.toFixed(2)} m³/s
+                    {row.low.toFixed(2)} &ndash; {row.high.toFixed(2)} m3/s
                   </td>
                   <td>{row.width < 100 ? row.width.toFixed(2) : row.width.toFixed(0)}</td>
                 </tr>

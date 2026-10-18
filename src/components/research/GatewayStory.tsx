@@ -70,7 +70,7 @@ export function TrustBoundary() {
                 <td>{stage.author}</td>
                 <td>
                   <span className={stage.scannable ? "gw-yes" : "gw-no"}>
-                    {stage.scannable ? "Yes — a scanner reads this" : "No"}
+                    {stage.scannable ? "Yes, a scanner reads this" : "No"}
                   </span>
                 </td>
                 <td>{stage.threat}</td>
@@ -82,7 +82,7 @@ export function TrustBoundary() {
 
       <p className="research-note">
         Static scanners read declarations before use. That covers the first row well and cannot
-        reach the third at all — not because the tools are weak, but because of when they run. The
+        reach the third at all, not because the tools are weak, but because of when they run. The
         gateway sits at the protocol boundary, where all three are visible.
       </p>
     </figure>
@@ -98,7 +98,7 @@ export function GatewayComparison() {
       <figcaption>
         <strong>Result</strong>
         Attacks caught against legitimate traffic refused, on {verdict.cases} deterministic cases.
-        No model call, no network — the same table on any machine.
+        No model call, no network, the same table on any machine.
       </figcaption>
 
       <div className="gw-bars">
@@ -134,7 +134,7 @@ export function GatewayComparison() {
       </div>
 
       <p className="research-note">
-        The keyword filter is in the table because it is the real alternative — substring matching
+        The keyword filter is in the table because it is the real alternative, substring matching
         on the obvious phrases is what gets written when a team decides to do something about prompt
         injection. It catches {pct(configurations[1].caught)} of the attacks and refuses{" "}
         {pct(configurations[1].falseBlock)} of legitimate calls. That second number is the profile of
@@ -224,7 +224,7 @@ export function GatewayFailures() {
       <figcaption>
         <strong>What does not hold</strong>
         Four of {verdict.cases} cases are not handled. All four were written before the controls
-        were, and a test names them exactly — so a <em>new</em> failure breaks the build rather than
+        were, and a test names them exactly, so a <em>new</em> failure breaks the build rather than
         quietly lowering the headline.
       </figcaption>
 
@@ -293,7 +293,7 @@ export function GatewayBypass() {
       </ol>
 
       <p className="research-note">
-        {bypass.lesson} It was found by {bypass.found.toLowerCase()} — the tests that launch a real
+        {bypass.lesson} It was found by {bypass.found.toLowerCase()}, the tests that launch a real
         MCP server as a subprocess and talk to it over stdio, rather than exercising the policy
         engine as a library.
       </p>

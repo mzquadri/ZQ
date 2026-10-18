@@ -46,7 +46,7 @@ export default function MedicoPage() {
     <PageShell current="/work">
       <article>
         <header className="page-hero section-wrap">
-          <Link className="back-link" href="/work">← Selected work</Link>
+          <Link className="back-link" href="/work">Selected work</Link>
           <p className="kicker">Research prototype / Medical imaging</p>
           <h1>Uncertain is not negative.</h1>
 

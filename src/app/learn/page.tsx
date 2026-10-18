@@ -67,7 +67,7 @@ export default function LearnPage() {
     <PageShell current="/learn">
       <StageHero
         accent="var(--accent-systems)"
-        eyebrow="Learn / technical field notes"
+        eyebrow="Notes from the work"
         title="Build the system. Explain the reasoning."
         standfirst="Tutorials on the engineering behind the work on this site: idempotent ingestion, independent verification, retrieval that reports its own degradation, calibration, and where a system should decline to answer. Every piece carries original code and states what it does not establish."
         meta={[

@@ -3,7 +3,7 @@
  *
  * These replace the `↗` character. U+2197 has an emoji presentation on Windows and
  * Android, so a link that should have carried a small ink-coloured arrow was rendering
- * a blue emoji tile instead — dozens of times per page. A variation selector fixes it
+ * a blue emoji tile instead, dozens of times per page. A variation selector fixes it
  * inconsistently across platforms; an inline SVG does not depend on font fallback at
  * all and inherits `currentColor`, so the arrow finally matches the text it belongs to.
  *
@@ -41,7 +41,7 @@ export function ExternalArrow({ className }: IconProps) {
  * Deleting the whitespace in the markup is therefore not enough on its own: a long title
  * that filled its line still pushed the arrow onto a line by itself, which is what happened
  * to the repository and arXiv titles. Only the last word and the icon are held together,
- * so everything before them keeps wrapping normally — the alternative, `nowrap` on the whole
+ * so everything before them keeps wrapping normally, the alternative, `nowrap` on the whole
  * link, would force long titles to overflow instead.
  *
  * The label stays plain text in the accessible name; the arrow remains decorative and

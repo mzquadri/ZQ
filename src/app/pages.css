@@ -2778,3 +2778,264 @@
     text-align: left;
   }
 }
+
+/* ---- Certificates and volunteering ----------------------------------------------------------- */
+
+.cred {
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.cred-head h1 {
+  margin: 0.4rem 0 0;
+  font-variation-settings: "wdth" 108, "wght" 620;
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  line-height: 1.02;
+}
+
+.cred-lede {
+  max-width: var(--measure);
+  margin: 1rem 0 0;
+  color: var(--ink-soft);
+}
+
+.cred-h2 {
+  margin: clamp(2.25rem, 5vw, 3.5rem) 0 0;
+  font-variation-settings: "wdth" 104, "wght" 600;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+}
+
+.cred-list {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.cred-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.cred-item-block {
+  align-items: start;
+}
+
+.cred-main {
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+.cred-title {
+  margin: 0;
+  font-variation-settings: "wght" 560;
+  font-size: 1.02rem;
+  line-height: 1.35;
+}
+
+.cred-issuer {
+  margin: 0.15rem 0 0;
+  color: var(--violet-ink);
+  font-size: 0.9rem;
+}
+
+.cred-summary {
+  max-width: var(--measure);
+  margin: 0.6rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* The second, quieter line: who issued what, where two issuers are involved. */
+.cred-note {
+  max-width: var(--measure);
+  margin: 0.5rem 0 0;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--rose);
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.cred-side {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  color: var(--ink-soft);
+}
+
+/* A date is a figure, and a column of figures should line up. */
+.cred-date {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.cred-place {
+  font-size: 0.85rem;
+}
+
+.cred-verify {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.82rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .cred-verify:hover {
+    border-color: var(--teal-accent);
+    color: var(--teal-ink);
+  }
+}
+
+.cred-langs {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cred-langs li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.cred-lang {
+  min-width: 10rem;
+  font-variation-settings: "wght" 560;
+}
+
+.cred-level {
+  color: var(--ink-soft);
+}
+
+/* ---- Legal pages ----------------------------------------------------------------------------- */
+
+/*
+ * Datenschutz and Impressum. One narrow column, nothing decorative. These are
+ * read by someone checking a specific fact, so the job is legibility and
+ * findable headings, not design.
+ */
+
+.legal {
+  max-width: 48rem;
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.legal h1 {
+  margin: 0.4rem 0 0;
+  font-variation-settings: "wdth" 106, "wght" 620;
+  font-size: clamp(1.9rem, 4vw, 2.9rem);
+}
+
+.legal h2 {
+  margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0.5rem;
+  font-variation-settings: "wght" 600;
+  font-size: 1.05rem;
+}
+
+.legal p,
+.legal li {
+  max-width: var(--measure);
+  line-height: 1.65;
+}
+
+.legal-lede {
+  margin-top: 1rem;
+  color: var(--ink-soft);
+}
+
+.legal-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.legal-list li {
+  margin-bottom: 0.45rem;
+}
+
+.legal-address {
+  font-style: normal;
+  line-height: 1.7;
+}
+
+/* A German legal term inside English prose, marked so it is read as a citation. */
+.legal-term {
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.legal code {
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  background: var(--paper-deep);
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+/*
+ * The field that is deliberately not filled in. It is marked in rose, which on
+ * this site means a caveat, and it is a <mark> so that it is announced rather
+ * than merely coloured.
+ */
+.legal-missing {
+  display: inline-block;
+  margin: 0.15rem 0;
+  padding: 0.15rem 0.5rem;
+  border-left: 3px solid var(--rose);
+  background: transparent;
+  color: var(--rose-ink);
+  font-size: 0.92rem;
+}
+
+.legal-note {
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--rose);
+  background: var(--paper-raised);
+  font-size: 0.95rem;
+}
+
+/* ---- Footer additions ------------------------------------------------------------------------ */
+
+.footer-credit {
+  margin: 0.6rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  width: min(100% - 3rem, var(--content));
+  margin: 1.5rem auto 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.footer-legal a {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .footer-legal a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+}

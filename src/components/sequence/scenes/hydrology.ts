@@ -215,15 +215,15 @@ function draw(s: Surface, progress: number, p: Palette) {
     say(`recalibrated NSE ${outputExperiment.recalNseMean.toFixed(4)}`, recal * (1 - ratio * 0.8), p.ink);
     say(`${outputExperiment.recalBetter} of ${outputExperiment.series} beat the baseline`, recal * 0.85 * (1 - ratio * 0.8), p.warn, 1);
   } else if (spread > 0.05) {
-    say(`same 50 cm · ${verdict.bandAtBase.toFixed(1)} then ${verdict.bandAtPeak.toFixed(0)}`, spread * (1 - recal * 0.8), p.warn);
+    say(`same 50 cm, ${verdict.bandAtBase.toFixed(1)} then ${verdict.bandAtPeak.toFixed(0)}`, spread * (1 - recal * 0.8), p.warn);
     say(`curve exponent ${verdict.exponentAtBase} to ${verdict.exponentAtPeak}`, spread * 0.8 * (1 - recal * 0.8), p.soft, 1);
   } else if (ruler > 0.05) say("now perturb the ruler: plus or minus 25 cm", ruler * (1 - project * 0.7), p.ink);
   else if (reset > 0.05) say("reset", reset * (1 - ruler * 0.9), p.soft);
   else if (rainCost > 0.05) {
     say(`NSE ${calibration.nse} to ${inputExperiment.nseMean.toFixed(4)}`, rainCost * (1 - reset * 0.9), p.ink);
     say(`${inputExperiment.betterByChance} of ${inputExperiment.series} did better by chance`, rainCost * 0.8 * (1 - reset * 0.9), p.soft, 1);
-  } else if (rain > 0.05) say(`perturb the rain · ${inputExperiment.series} series`, rain * (1 - rainCost * 0.8), p.ink);
-  else say(`calibrated HBV · NSE ${calibration.nse}`, 1 - rain * 0.9, p.soft);
+  } else if (rain > 0.05) say(`perturb the rain, ${inputExperiment.series} series`, rain * (1 - rainCost * 0.8), p.ink);
+  else say(`calibrated HBV, NSE ${calibration.nse}`, 1 - rain * 0.9, p.soft);
 }
 
 export const hydrology: SceneDefinition = {

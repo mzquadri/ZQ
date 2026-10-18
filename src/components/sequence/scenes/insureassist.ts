@@ -122,7 +122,7 @@ function draw(s: Surface, progress: number, p: Palette) {
       alpha: ask * 0.8,
       cap: "round",
     });
-    s.text(f.x, qy - s.unit * 0.022, `one question · ${QUESTION.category.replace("_", " ")}`, {
+    s.text(f.x, qy - s.unit * 0.022, `one question, ${QUESTION.category.replace("_", " ")}`, {
       size: s.unit * 0.022,
       fill: p.ink,
       alpha: ask * (1 - packet * 0.7),
@@ -223,7 +223,7 @@ function draw(s: Surface, progress: number, p: Palette) {
       alpha: packet * 0.7,
       dash: [7, 5],
     });
-    s.text(px, py - s.unit * 0.018, `evidence packet · top 5 of ${corpus.chunks} passages`, {
+    s.text(px, py - s.unit * 0.018, `evidence packet, top 5 of ${corpus.chunks} passages`, {
       size: s.unit * 0.021,
       fill: p.accent,
       alpha: packet * 0.9,
@@ -279,7 +279,7 @@ function draw(s: Surface, progress: number, p: Palette) {
       trace * (1 - packet * 0.8),
       p.warn,
     );
-    say(`${WRONG_AT_ONE} of ${run.length} do this · top-document ${results.topDocument.toFixed(4)}`, trace * 0.85 * (1 - packet * 0.8), p.soft, 1);
+    say(`${WRONG_AT_ONE} of ${run.length} do this, top-document ${results.topDocument.toFixed(4)}`, trace * 0.85 * (1 - packet * 0.8), p.soft, 1);
   } else if (choose > 0.05) say("nearest passage wins", choose * (1 - trace * 0.8), p.ink);
   else if (lift > 0.05) say(`${corpus.chunks} passages, three forms`, lift * (1 - choose * 0.8), p.ink);
   else say("three forms. same skeleton, different substance.", 1 - ask * 0.9, p.soft);

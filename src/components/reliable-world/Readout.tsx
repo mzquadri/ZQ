@@ -96,7 +96,7 @@ export default function Readout({ state }: { state: ReliableKey }) {
             >
               <code>
                 {representation.label}
-                {representation.rebuildable ? "" : " · not rebuildable"}
+                {representation.rebuildable ? "" : ", not rebuildable"}
               </code>
               <span>{representation.holds}</span>
             </li>
