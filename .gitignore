@@ -134,3 +134,4 @@ tools/shots/
 
 # Lighthouse JSON reports. Large, machine-specific, and regenerated per run.
 tools/lh/
+.env*.local

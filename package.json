@@ -16,7 +16,10 @@
     "check": "npm run lint && npm run typecheck && npm run validate:content && npm run test:content && npm run build",
     "hooks:install": "git config core.hooksPath .githooks",
     "check:authorship": "bash tools/check-authorship.sh",
+    "build:prod": "node tools/build-prod.mjs",
     "privacy:scan": "node tools/privacy-scan.mjs",
+    "check:privacy": "npm run build:prod && node tools/privacy-scan.mjs",
+    "check:no-third-party": "node tools/check-no-third-party.mjs",
     "refresh:research-feed": "tsx scripts/refresh-research-feed.ts",
     "record:video": "node tools/record-legal-kb-video.mjs"
   },

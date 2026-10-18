@@ -906,7 +906,13 @@ ol {
  * without moving the text, and the negative margin keeps the column spacing it had.
  */
 .footer-links a {
-  color: var(--paper-raised);
+  /*
+   * `--ink`, not `--paper-raised`. These were white because the footer used to
+   * be a dark inversion; against the recessed surface it is now, white read at
+   * a contrast ratio of 1.16, which is invisible. This is the token that flips
+   * with the theme, so it is correct on both grounds rather than on one.
+   */
+  color: var(--ink);
   font-size: 0.8rem;
   display: inline-flex;
   align-items: center;
