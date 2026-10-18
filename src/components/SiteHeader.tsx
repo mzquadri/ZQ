@@ -124,8 +124,18 @@ export default function SiteHeader({ current, identity }: { current?: string; id
       <span aria-hidden="true" className="rail-progress" />
 
       <div className="rail-inner">
-        <Link className="rail-mark" href="/" aria-label={`${identity.name}, home`}>
-          <span aria-hidden="true">MZQ</span>
+        {/*
+          * No `aria-label` here.
+          *
+          * It used to carry `aria-label="Mohd Zamin Quadri, home"` while the
+          * visible text is "MZQ". That fails the label-in-name rule: someone
+          * using voice control says what they can see, "MZQ", and nothing
+          * matches, so the control is unreachable by voice. The accessible name
+          * now comes from the content, which contains both the initials and the
+          * full name, and the initials are no longer hidden from it.
+          */}
+        <Link className="rail-mark" href="/">
+          <span>MZQ</span>
           <span className="rail-name">Mohd Zamin Quadri</span>
         </Link>
 

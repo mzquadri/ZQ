@@ -50,48 +50,47 @@
 }
 
 /*
- * The reveal.
+ * The reveal, and why it is a wipe rather than a self-drawing stroke.
  *
- * Six paths, each holding a sixth of the segments in a fixed interleaved order,
- * so the map fills evenly rather than drawing every boulevard and then
- * stippling in the rest. Each path is dashed with one dash long enough to cover
- * its own length and the offset animates to zero, which is the standard way to
- * make a stroke draw itself.
+ * The obvious way to make a map draw itself is `stroke-dashoffset`, and that is
+ * what this did first. It looks right and it is far too expensive: the six
+ * paths carry about 3,000 line segments between them, and animating the dash
+ * offset invalidates the geometry every frame, so the browser re-rasterises all
+ * 3,000 segments sixty times a second for the length of the animation. Measured
+ * on a mobile Lighthouse run it put 835 ms into Style and Layout and most of a
+ * second into rendering, on a page whose entire job is to show a name and four
+ * links.
  *
- * `pathLength` is not set, so the dash values are in user units and have to be
- * larger than the longest subpath; 4000 is comfortably past that for a 1843 by
- * 1400 viewBox.
+ * A `clip-path` inset is composited instead: the network is rasterised once and
+ * the compositor moves a rectangle across it. The geometry never changes, so
+ * none of it is re-rasterised. It reads as the city appearing from the left
+ * rather than as each road being traced, which is a fair trade for the whole
+ * cost.
  *
  * It runs once, `forwards`, and then the page is still. Nothing here loops.
  */
-.hero-map-svg .pr {
-  stroke-dasharray: 4000;
-  stroke-dashoffset: 4000;
-  animation: draw-in 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+.hero-map-svg {
+  clip-path: inset(0 100% 0 0);
+  animation: wipe-in 1.4s cubic-bezier(0.22, 0.61, 0.36, 1) 0.15s forwards;
+  will-change: clip-path;
 }
 
-.hero-map-svg .pr0 { animation-delay: 0s; }
-.hero-map-svg .pr1 { animation-delay: 0.16s; }
-.hero-map-svg .pr2 { animation-delay: 0.32s; }
-.hero-map-svg .pr3 { animation-delay: 0.48s; }
-.hero-map-svg .pr4 { animation-delay: 0.64s; }
-.hero-map-svg .pr5 { animation-delay: 0.8s; }
-
-@keyframes draw-in {
-  to { stroke-dashoffset: 0; }
+@keyframes wipe-in {
+  to { clip-path: inset(0 0 0 0); }
 }
 
 /*
  * Reduced motion gets the finished drawing, not a blank space.
  *
  * The global rule in globals.css compresses every animation to 0.01ms, which
- * would leave these paths at their starting offset of 4000, which is to say
- * invisible. The informative state is the end state, so it is set directly.
+ * would leave the clip at its starting inset, which is to say invisible. The
+ * informative state is the end state, so it is set directly.
  */
 @media (prefers-reduced-motion: reduce) {
-  .hero-map-svg .pr {
-    stroke-dashoffset: 0;
+  .hero-map-svg {
+    clip-path: none;
     animation: none;
+    will-change: auto;
   }
 }
 

@@ -38,17 +38,22 @@ export const heroLinks = [
  * The hero's background drawing, and what it honestly is.
  *
  * `tools/export-paris-hero.mjs` writes the SVG from the thesis tensor. It draws
- * the longest 4,000 of the 31,635 road segments, because all of them come to
+ * the longest 3,000 of the 31,635 road segments, because all of them come to
  * roughly 23,600 distinct strokes and 390 KB, which is not a background. The
  * subset is stated rather than glossed: the figure caption and the image's own
  * description both give both numbers.
+ *
+ * 3,000 rather than the 4,000 this started at. Both read clearly as Paris; the
+ * smaller set costs a third less to rasterise, and the hero's whole job is to
+ * load fast enough that the name is readable before anyone has decided whether
+ * to stay.
  */
 export const parisNetwork = {
-  src: "/media/paris-network-4000.svg",
-  drawn: 4000,
+  src: "/media/paris-network-3000.svg",
+  drawn: 3000,
   total: 31635,
   description:
-    "The real Paris road network from my Master's thesis, drawn from the same tensor the model was trained on. The longest 4,000 of its 31,635 road segments are shown; the Peripherique ring, the Seine and the radial boulevards are all segments in the data rather than drawn decoration.",
+    "The real Paris road network from my Master's thesis, drawn from the same tensor the model was trained on. The longest 3,000 of its 31,635 road segments are shown; the Peripherique ring, the Seine and the radial boulevards are all segments in the data rather than drawn decoration.",
 } as const;
 
 /** The photographer's credit, carried on every page rather than only this one. */

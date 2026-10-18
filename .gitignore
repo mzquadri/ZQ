@@ -131,3 +131,6 @@ __pycache__/
 # on demand from whatever is built; committing them would put a stale picture of
 # the site in the history and grow the clone for nothing.
 tools/shots/
+
+# Lighthouse JSON reports. Large, machine-specific, and regenerated per run.
+tools/lh/

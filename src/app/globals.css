@@ -495,7 +495,7 @@ ol {
 }
 
 .confidence-protocol small {
-  color: #aeb8bd;
+  color: var(--ink-soft);
   font-size: 0.78rem;
 }
 
@@ -821,9 +821,24 @@ ol {
   margin-top: 2rem;
 }
 
+/*
+ * The footer is a quiet band, not an inversion.
+ *
+ * It used to be `background: var(--ink); color: var(--paper-raised)`, which was
+ * a deliberate inversion when the site was light-only. With a real dark theme
+ * those tokens swap, so on a dark page the footer became a near-white slab with
+ * the page's dark ink on it: the brightest element on the screen, at the
+ * bottom, under a dark page. The hardcoded greys inside it then failed contrast
+ * outright against that background.
+ *
+ * A recessed surface reads as "the end of the page" in both themes without
+ * fighting either, and everything inside can use the ordinary ink tokens, which
+ * is what makes the contrast correct by construction rather than by tuning.
+ */
 .site-footer {
-  background: var(--ink);
-  color: var(--paper-raised);
+  border-top: 1px solid var(--line);
+  background: var(--paper-deep);
+  color: var(--ink);
 }
 
 .footer-grid {
@@ -861,14 +876,14 @@ ol {
 }
 
 .footer-identity span {
-  color: #aeb8bd;
+  color: var(--ink-soft);
   font-size: 0.82rem;
 }
 
 .footer-note {
   max-width: 30rem;
   margin-top: 0.7rem;
-  color: #aeb8bd;
+  color: var(--ink-soft);
   font-size: 0.82rem;
 }
 

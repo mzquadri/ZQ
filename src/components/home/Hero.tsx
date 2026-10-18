@@ -17,11 +17,11 @@ import { site } from "@/content/portfolio";
  * the default and would have given the page no spine; everything down the rest
  * of the page hangs off the same left edge as the name.
  *
- * The network is inlined rather than loaded through <img> because the reveal
- * animates `stroke-dashoffset` on six paths inside it, and an SVG referenced by
- * <img> cannot be reached by the page's stylesheet. It is 68 KB, it is the only
- * thing on this page that is not text, and it is the subject of the work rather
- * than an ornament.
+ * The network is inlined rather than loaded through <img> so the page's own
+ * stylesheet can reach it: it carries the theme's accent colour through
+ * `currentColor` and is clipped by the reveal, neither of which crosses an
+ * <img> boundary. It is 51 KB, it is the only thing on this page that is not
+ * text, and it is the subject of the work rather than an ornament.
  */
 
 export default async function Hero() {
@@ -101,7 +101,7 @@ export default async function Hero() {
 /*
  * Read at build time, not bundled.
  *
- * Importing the SVG as a string would put 68 KB into the component's chunk and
+ * Importing the SVG as a string would put 51 KB into the component's chunk and
  * into every page that ever imports this file. Reading it here keeps it in the
  * prerendered HTML of this one route, which is where it is wanted, and the
  * route is static so the read happens once at build.
@@ -109,6 +109,6 @@ export default async function Hero() {
 async function loadNetwork() {
   const { readFile } = await import("node:fs/promises");
   const { join } = await import("node:path");
-  const raw = await readFile(join(process.cwd(), "public", "media", "paris-network-4000.svg"), "utf8");
+  const raw = await readFile(join(process.cwd(), "public", "media", "paris-network-3000.svg"), "utf8");
   return raw.replace("<svg ", '<svg class="hero-map-svg" aria-hidden="true" focusable="false" ');
 }
