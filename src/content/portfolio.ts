@@ -1,6 +1,9 @@
 import { gatewaySource } from "./gateway-world";
 import { site, thesis, truthRegistry } from "./truth";
 import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "./research";
+import { insureAssistBenchmark } from "@/content/insureassist-benchmark";
+
+export { insureAssistBenchmark };
 
 export { site, thesis } from "./truth";
 
@@ -168,28 +171,6 @@ export const canonicalInsureAssistEvidence = {
  * Deliberately absent: per-form metrics (3-8 questions each, no useful signal), latency
  * (machine-specific), and any abstention threshold (none is validated upstream).
  */
-export const insureAssistBenchmark = {
-  corpus: {
-    documents: 3,
-    chunks: 314,
-    words: 35_639,
-    source: "NFIP Standard Flood Insurance Policy forms, 44 CFR Part 61",
-    licence: "17 U.S.C. 105 - US Government work, no copyright",
-  },
-  questions: { total: 40, answerable: 32, unanswerable: 8, dev: 18, test: 22 },
-  architecture: "Hybrid: BGE dense + Okapi BM25, reciprocal rank fusion",
-  /** Held-out test split, 18 answerable questions. */
-  selected: { hitRate5: 0.556, mrr: 0.42, topDocumentAccuracy: 0.556 },
-  baselines: {
-    dense: { hitRate5: 0.5, mrr: 0.365, topDocumentAccuracy: 0.556 },
-    bm25: { hitRate5: 0.611, mrr: 0.366, topDocumentAccuracy: 0.333 },
-    /** The pre-selection starting point, at the original 600/100 chunking. */
-    startingPoint: { hitRate5: 0.611, mrr: 0.366, topDocumentAccuracy: 0.167 },
-  },
-  citations: { precision: 0.111, recall: 0.463, unsupportedRate: 0 },
-  abstention: { answerableAcceptance: 1, unanswerableRejection: 0 },
-  tests: 224,
-} as const;
 
 /**
  * The audited reference run published at {@link canonicalMlopsEvidence.commit}.
@@ -276,12 +257,12 @@ const authoredProjects: readonly Project[] = [
       },
       {
         label: "Primary GNN",
-        value: `R² ${researchEvidence.results.deterministic.r2.toFixed(3)}`,
+        value: `R2 ${researchEvidence.results.deterministic.r2.toFixed(3)}`,
         note: `Deterministic Trial 8; MAE ${researchEvidence.results.deterministic.mae.toFixed(2)} veh/h and RMSE ${researchEvidence.results.deterministic.rmse.toFixed(2)} veh/h.`,
       },
       {
         label: "Uncertainty ranking",
-        value: `ρ ${researchEvidence.results.mcDropout.spearman.toFixed(3)}`,
+        value: `rho ${researchEvidence.results.mcDropout.spearman.toFixed(3)}`,
         note: "Pooled Spearman correlation between MC Dropout uncertainty and absolute error.",
       },
       {
@@ -291,8 +272,8 @@ const authoredProjects: readonly Project[] = [
       },
       {
         label: "Deep ensemble",
-        value: `R² ${researchEvidence.results.deepEnsemble.r2.toFixed(3)}`,
-        note: `${researchEvidence.results.deepEnsemble.members}-member ensemble; MAE ${researchEvidence.results.deepEnsemble.mae.toFixed(2)} veh/h and uncertainty-error ρ ${researchEvidence.results.deepEnsemble.spearman.toFixed(3)}.`,
+        value: `R2 ${researchEvidence.results.deepEnsemble.r2.toFixed(3)}`,
+        note: `${researchEvidence.results.deepEnsemble.members}-member ensemble; MAE ${researchEvidence.results.deepEnsemble.mae.toFixed(2)} veh/h and uncertainty-error rho ${researchEvidence.results.deepEnsemble.spearman.toFixed(3)}.`,
       },
       {
         label: "Marginal coverage",
@@ -433,7 +414,7 @@ const authoredProjects: readonly Project[] = [
       {
         label: "Held-out accuracy",
         value: mlopsReferenceRun.test.accuracy.toFixed(4),
-        note: `Weighted F1 ${mlopsReferenceRun.test.f1Weighted.toFixed(4)} on ${mlopsReferenceRun.split.test} test rows, against a majority-class baseline of ${mlopsReferenceRun.test.baselineAccuracy.toFixed(4)} — a margin of ${mlopsBaselineMargin.toFixed(4)}.`,
+        note: `Weighted F1 ${mlopsReferenceRun.test.f1Weighted.toFixed(4)} on ${mlopsReferenceRun.split.test} test rows, against a majority-class baseline of ${mlopsReferenceRun.test.baselineAccuracy.toFixed(4)}, a margin of ${mlopsBaselineMargin.toFixed(4)}.`,
       },
       {
         label: "Ranking quality",
@@ -475,7 +456,7 @@ const authoredProjects: readonly Project[] = [
       "No probability calibration is reported, because nothing downstream consumes the probabilities as probabilities",
       "A reference implementation that has never carried production traffic",
       "Monitoring is an in-process counter endpoint over a bounded window, not a monitoring system",
-      "No delayed-label path exists, so nothing measures accuracy after deployment — only behaviour",
+      "No delayed-label path exists, so nothing measures accuracy after deployment, only behaviour",
       "MLflow tracking is optional and disabled by default; the bundle, not a tracking server, is the source of truth for promotion",
     ],
     learned:
@@ -589,7 +570,7 @@ const authoredProjects: readonly Project[] = [
       },
       {
         label: "Diagnostic range",
-        value: "33.5–82.0%",
+        value: "33.5 to 82.0%",
         note: "Per-class accuracy exposes large variation hidden by the aggregate score.",
       },
     ],
@@ -604,7 +585,7 @@ const authoredProjects: readonly Project[] = [
       "No trained checkpoint is versioned",
     ],
     learned:
-      "Reproducibility means keeping the unglamorous context—the subset, epochs, configuration, and weak classes—next to the score.",
+      "Reproducibility means keeping the unglamorous context, the subset, epochs, configuration, and weak classes, next to the score.",
     repository: "https://github.com/mzquadri/CNN-Image-Classification-PyTorch",
   },
   {
@@ -617,7 +598,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "A controlled benchmark that scores ridge, XGBoost and SARIMAX against the baselines that actually matter on a daily series, and finds that the gradient booster loses to predicting yesterday's value.",
     problem:
-      "An earlier version of this repository ranked XGBoost at R² 0.979 above SARIMAX at 0.721. The two numbers were scored on different targets, daily and monthly, and the only baseline offered was a day-of-year mean that could not win. The question became which methods beat a fair baseline on the same rows.",
+      "An earlier version of this repository ranked XGBoost at R2 0.979 above SARIMAX at 0.721. The two numbers were scored on different targets, daily and monthly, and the only baseline offered was a day-of-year mean that could not win. The question became which methods beat a fair baseline on the same rows.",
     contribution:
       "Rebuilt the comparison so every daily method is scored on the same 730 held-out days, added persistence, random walk with drift and a trend-corrected day-of-year baseline, added a ridge model on the same features, and repeated the whole comparison over five seeds.",
     workflow: ["Synthetic 15-year series", "Chronological holdout", "Fair daily baselines", "Five-seed repeat", "Error analysis"],
@@ -625,17 +606,17 @@ const authoredProjects: readonly Project[] = [
     evidence: [
       {
         label: "Persistence baseline",
-        value: "R² 0.988",
+        value: "R2 0.988",
         note: "Predicting yesterday's value, on the same 730 held-out days as every daily model.",
       },
       {
         label: "XGBoost",
-        value: "R² 0.985",
+        value: "R2 0.985",
         note: "Twenty engineered lag, rolling and calendar features, and still below persistence; it fails to beat it on all five seeds.",
       },
       {
         label: "Ridge on the same features",
-        value: "R² 0.994",
+        value: "R2 0.994",
         note: "The only method that improves on persistence, and it does so on all five seeds.",
       },
     ],
@@ -662,22 +643,22 @@ const authoredProjects: readonly Project[] = [
     authors: [{ name: site.name, url: site.github }],
     projectRole: "Sole author of the gateway, controls, corpus, benchmark and trace format",
     summary:
-      "An MCP client trusts three things at three different times: the tool declarations a server publishes, the arguments a model builds, and the content a tool returns. The security tooling that exists reads declarations before use, which covers the first and cannot reach the third — a poisoned search result does not exist until the search runs. This puts an enforcement point at the protocol boundary, where all three are visible, and then measures what each control is worth against a corpus that includes the legitimate traffic a careless rule would break.",
+      "An MCP client trusts three things at three different times: the tool declarations a server publishes, the arguments a model builds, and the content a tool returns. The security tooling that exists reads declarations before use, which covers the first and cannot reach the third, a poisoned search result does not exist until the search runs. This puts an enforcement point at the protocol boundary, where all three are visible, and then measures what each control is worth against a corpus that includes the legitimate traffic a careless rule would break.",
     problem:
-      "A tool description is prose the client concatenates into a prompt, and a tool result is prose appended to the conversation. A model has no reliable way to tell a sentence that describes data from a sentence that instructs it, and there is no parameterised query for a prompt. So the question is not how to make the model resistant to persuasion — it is how much of the deputy’s authority can be taken away at the boundary before the cost in refused legitimate calls makes an operator switch the control off.",
+      "A tool description is prose the client concatenates into a prompt, and a tool result is prose appended to the conversation. A model has no reliable way to tell a sentence that describes data from a sentence that instructs it, and there is no parameterised query for a prompt. So the question is not how to make the model resistant to persuasion; it is how much of the deputy's authority can be taken away at the boundary before the cost in refused legitimate calls makes an operator switch the control off.",
     contribution:
-      "Everything except the protocol itself. The gateway is an MCP server to the client and an MCP client to the downstream server, so it needs no cooperation from either and works against a server whose source I do not have. Nine controls run across three stages; eight of them answer decidable questions and one has to make a judgement, which is deliberate — it means the false-positive story has exactly one owner. The Model Context Protocol SDK is a dependency and is not my work.",
+      "Everything except the protocol itself. The gateway is an MCP server to the client and an MCP client to the downstream server, so it needs no cooperation from either and works against a server whose source I do not have. Nine controls run across three stages; eight of them answer decidable questions and one has to make a judgement, which is deliberate; it means the false-positive story has exactly one owner. The Model Context Protocol SDK is a dependency and is not my work.",
     systemSummary:
       "Client speaks MCP to the gateway; the gateway speaks MCP to the real server. Policy runs when declarations are relayed, before arguments are forwarded, and before results re-enter context. Every decision is written to a JSON Lines trace that stores digests and lengths rather than payloads.",
     workflow: [
       "Relay the downstream tool list, withholding or stripping declarations that carry instructions",
       "Check arguments against the schema the server itself published, and against the sandbox",
       "Forward the call, or refuse it, or hold it for a human if its effects cannot be undone",
-      "Inspect the returned content before it is read back into the model’s context",
+      "Inspect the returned content before it is read back into the model's context",
       "Record the decision, the rules that fired and the timing, without copying the payload",
     ],
     tools: [
-      "Python 3.11–3.13",
+      "Python 3.11 to 3.13",
       "Model Context Protocol SDK 2.x (dependency, MIT, Anthropic PBC)",
       "asyncio over stdio transport",
       "pytest",
@@ -721,7 +702,7 @@ const authoredProjects: readonly Project[] = [
       "The corpus is mine, which is not the same as an independent evaluation",
     ],
     learned:
-      "The benign half is the hard half. Writing attacks took an afternoon; the near-misses forced every interesting decision — matching on imperative shape rather than vocabulary, four actions instead of allow and deny, demoting a finding when the text is quoting rather than demanding.",
+      "The benign half is the hard half. Writing attacks took an afternoon; the near-misses forced every interesting decision, matching on imperative shape rather than vocabulary, four actions instead of allow and deny, demoting a finding when the text is quoting rather than demanding.",
     nextStep:
       "A paraphrase axis, to put a number on how much the headline over-states things, and attacks that deliberately exploit the reporting-context demotion.",
     repository: "https://github.com/mzquadri/mcp-policy-gateway",

@@ -263,7 +263,16 @@ const foundEmails = new Set(renderedSource.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}
 for (const found of foundEmails) {
   check(found === approvedEmail, `Public content contains an unapproved email address: ${found}`);
 }
-check(site.experience.length === 5, "Expected five approved experience records");
+/*
+ * Four, not five. The IISER Bhopal summer internship was the fifth, and it left
+ * the CV: it had been on this site and on no other surface, which is the wrong
+ * way round for a role nobody holds a document for. One surface claiming a role
+ * the others do not is worse than the role being absent from all of them.
+ *
+ * The count is still asserted rather than dropped, because the failure this
+ * guards against is a record appearing without review, and that is a count.
+ */
+check(site.experience.length === 4, "Expected four approved experience records");
 check(new Set(site.experience.map((record) => record.id)).size === site.experience.length, "Experience IDs must be unique");
 /*
  * Experience dates are published now, so the check is on their shape rather than their absence.

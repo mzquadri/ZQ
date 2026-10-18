@@ -325,7 +325,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     description:
       "A controlled benchmark on a fixed-seed synthetic daily series that scores ridge, XGBoost and SARIMAX against persistence, random walk with drift and day-of-year baselines. On 730 held-out days the gradient booster loses to predicting yesterday's value, on all five seeds; only ridge improves on persistence.",
     boundary:
-      "Synthetic data, so nothing here describes a real river. The feature models see same-day observed weather, which makes them nowcasts rather than pure one-step forecasts, and SARIMAX is scored on monthly means, so its R² cannot be ranked against the daily ones.",
+      "Synthetic data, so nothing here describes a real river. The feature models see same-day observed weather, which makes them nowcasts rather than pure one-step forecasts, and SARIMAX is scored on monthly means, so its R2 cannot be ranked against the daily ones.",
     caseStudySlug: "streamflow-forecasting",
   },
   {

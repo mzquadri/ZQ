@@ -38,7 +38,7 @@ export function createRssFeed({
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>${escapeXml(siteName)} — AI/ML engineering and research</title>
+    <title>${escapeXml(siteName)}, AI/ML engineering and research</title>
     <description>${escapeXml("Technical tutorials and notes on reliable AI, machine learning, and production engineering.")}</description>
     <link>${domain}/learn</link>
     <language>en</language>

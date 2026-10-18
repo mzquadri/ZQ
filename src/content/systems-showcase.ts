@@ -3,7 +3,7 @@
  *
  * A synthetic teaching model of a problem that shows up in most data platforms: one source
  * becomes several representations, and keeping them honest is harder than building them. It
- * describes no real system, no employer, and no dataset — every quantity is illustrative and
+ * describes no real system, no employer, and no dataset, every quantity is illustrative and
  * labelled as such on the page.
  *
  * This file is deliberately separate from any case-study content. Shared geometry lives in
@@ -14,7 +14,7 @@ export const showcase = {
   eyebrow: "Engineering systems",
   title: "One source. Several representations. Independently checked.",
   introduction:
-    "Most data platforms end up holding the same information more than once — as records, as vectors, as a graph. Each copy is useful, and each one can drift. This is an illustrative model of how I think about keeping them honest: what gets captured, what gets derived, what happens when the source changes, and what a check actually proves.",
+    "Most data platforms end up holding the same information more than once, as records, as vectors, as a graph. Each copy is useful, and each one can drift. This is an illustrative model of how I think about keeping them honest: what gets captured, what gets derived, what happens when the source changes, and what a check actually proves.",
   note: "Illustrative system model. Synthetic data throughout; it describes no particular system.",
 } as const;
 
@@ -174,7 +174,7 @@ export const checkLevels: readonly CheckLevel[] = [
   },
   {
     name: "Identity",
-    rulesOut: "A substitution that preserves the total — one record removed, another added.",
+    rulesOut: "A substitution that preserves the total, one record removed, another added.",
     stillOpen: "Whether the content behind a correctly named identity matches its source.",
   },
   {
