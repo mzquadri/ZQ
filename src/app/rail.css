@@ -284,3 +284,28 @@
   /* The sheet is a phone affordance; it must never appear on a pointer-and-keyboard layout. */
   .rail-sheet { display: none !important; }
 }
+
+/* ---- Theme control --------------------------------------------------------------------------- */
+
+/*
+ * Two instances, one visible at a time. On a pointer layout the control sits in
+ * the bar beside the links; below the sheet breakpoint the bar has no room for
+ * it, so the one in the sheet takes over. Each is hidden at the other's size
+ * rather than moved, because moving a focused control between two parents mid
+ * resize loses the focus.
+ */
+.rail-theme {
+  display: flex;
+  align-items: center;
+  margin-left: 1.25rem;
+}
+
+.rail-sheet-theme {
+  display: none;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 860px) {
+  .rail-theme { display: none; }
+  .rail-sheet-theme { display: block; }
+}

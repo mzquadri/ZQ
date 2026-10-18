@@ -2,27 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * The palette is the GitHub profile's, so the two surfaces read as one person's
+ * work: violet 7A6BA8, blue 4C7CAE, teal 4E9A92, with A99CD6 / 87AEDA / 82C0B8
+ * as the dark readings. See docs/DESIGN.md for what each one is for.
+ *
+ * Two sets of names live here. The lower block is the real one. The upper block
+ * is the set the existing stylesheets already use, 1411 times across seven
+ * files, re-pointed at the new palette rather than renamed: a rename would have
+ * been one commit that changed every line of CSS on the site and proved
+ * nothing. They are aliases, and they go as each page is rewritten.
+ */
+/*
+ * Light and dark are one set of declarations, not two blocks.
+ *
+ * `light-dark()` resolves against the element's computed `color-scheme`, so
+ * declaring `color-scheme: light dark` here makes the system preference the
+ * default, and the toggle overrides it by narrowing `color-scheme` to a single
+ * keyword on the same element. That is why there is no `prefers-color-scheme`
+ * media query below: a media query would have needed every token written twice,
+ * and the toggle would then have had to beat it in both directions.
+ *
+ * The accents lighten rather than desaturate for dark. The same three hues at
+ * the same saturation on a dark ground read as neon, and the brief for this
+ * palette was calm; the second value in each pair is the reading the GitHub
+ * profile already uses.
+ */
 :root {
-  --ink: #111820;
-  --ink-soft: #354149;
-  --paper: #f2f0e8;
-  --paper-raised: #fbfaf5;
-  --paper-deep: #e4e0d4;
-  --teal: #006d65;
-  --teal-dark: #004c47;
-  --orange: #f15a35;
+  color-scheme: light dark;
+
+  /* The palette. */
+  --violet: light-dark(#7a6ba8, #a99cd6);
+  --blue: light-dark(#4c7cae, #87aeda);
+  --teal-accent: light-dark(#4e9a92, #82c0b8);
   /*
-   * The same hue, dark enough to be read as text on paper. `--orange` is a fill colour: at
-   * 3.21:1 against the page it fails AA wherever it is used for a label rather than a bar.
+   * Rose is the return path. The system diagram gives it to the three dashed
+   * arrows that go backwards, and it means the same thing here: a caveat, a
+   * refusal, the place the work turns round and argues with itself.
    */
-  --orange-ink: #b8501c;
-  --orange-text: #a9361d;
-  --yellow: #e5ba38;
-  --line: rgba(17, 24, 32, 0.22);
-  --line-strong: rgba(17, 24, 32, 0.48);
+  --rose: light-dark(#b0607a, #d4909f);
+
+  /*
+   * Readable-as-text versions. The four accents above are fill colours: against
+   * the light page violet reads 4.0:1 and teal 3.2:1, so neither passes AA as
+   * text, and all four are used as text somewhere. On the dark ground they are
+   * already light enough, so the dark half of each pair is the fill colour
+   * itself; darkening there would push it towards the background.
+   */
+  --violet-ink: light-dark(#5f5190, #a99cd6);
+  --blue-ink: light-dark(#3a6490, #87aeda);
+  --teal-ink: light-dark(#35756e, #82c0b8);
+  --rose-ink: light-dark(#96455f, #d4909f);
+
+  --ink: light-dark(#1c2430, #e6ebf2);
+  --ink-soft: light-dark(#5a6675, #9fb0c2);
+  --paper: light-dark(#f7f8fa, #10151c);
+  --paper-raised: light-dark(#ffffff, #18202b);
+  --paper-deep: light-dark(#ebeef3, #0b1016);
+
+  /* The faint grid the body draws, as a token rather than a baked rgba. */
+  --grid-line: light-dark(rgba(28, 36, 48, 0.04), rgba(230, 235, 242, 0.035));
+
+  /* Aliases from the previous palette. Removed as each page is rewritten. */
+  --teal: var(--teal-accent);
+  --teal-dark: light-dark(#35756e, #5e9c94);
+  --orange: var(--violet);
+  --orange-ink: var(--violet-ink);
+  --orange-text: var(--violet-ink);
+  --yellow: var(--blue);
+
+  --line: light-dark(rgba(28, 36, 48, 0.2), rgba(230, 235, 242, 0.18));
+  --line-strong: light-dark(rgba(28, 36, 48, 0.45), rgba(230, 235, 242, 0.4));
   --content: 76rem;
-  --sans: var(--font-geist-sans), Arial, sans-serif;
-  --mono: var(--font-geist-mono), Consolas, monospace;
+  /* Prose measure. Long lines are the commonest reason a good page is not read. */
+  --measure: 68ch;
+  --sans: var(--font-archivo), "Segoe UI", Arial, sans-serif;
+  --mono: var(--font-plex-mono), Consolas, monospace;
   --serif: Georgia, "Times New Roman", serif;
 
   /*
@@ -61,6 +116,19 @@
   --section-title: clamp(2.5rem, 5vw, 5rem);
 }
 
+/*
+ * The toggle. It narrows `color-scheme` to one keyword, which is what every
+ * `light-dark()` above reads, so one declaration per theme switches the entire
+ * palette and the browser's own form controls and scrollbars with it.
+ */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {
@@ -91,8 +159,8 @@ html:has(:target) {
 body {
   margin: 0;
   background:
-    linear-gradient(rgba(17, 24, 32, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 24, 32, 0.035) 1px, transparent 1px),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
     var(--paper);
   background-size: 40px 40px;
   color: var(--ink);
@@ -113,6 +181,13 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+/*
+ * A two-ring focus indicator, so it stays visible whatever it lands on. The
+ * inner ring is the page colour and the outer is the text colour, which means
+ * one of the two always contrasts with whatever is underneath - a pale card, a
+ * dark hero, an accent-filled button. Both tokens flip with the theme, so this
+ * needs no dark-mode variant of its own.
+ */
 :focus-visible {
   outline: 3px solid var(--paper-raised);
   outline-offset: 2px;
@@ -6634,4 +6709,83 @@ ol {
   align-items: center;
   min-height: 24px;
   padding-block: 0.2rem;
+}
+
+/*
+ * The theme control.
+ *
+ * A radio group rather than a button, because it has three states and a radio
+ * group is what three mutually exclusive states are. That also gets keyboard
+ * behaviour, grouping and the current value announced correctly without any
+ * ARIA beyond the group label.
+ *
+ * The native inputs are taken out of the layout rather than hidden with
+ * `display: none`, which would remove them from the accessibility tree and from
+ * keyboard reach along with it.
+ */
+.theme-toggle {
+  display: inline-flex;
+  gap: 1px;
+  margin: 0;
+  padding: 1px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-deep);
+}
+
+.theme-toggle__option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.theme-toggle__option span {
+  display: block;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: var(--label-strong);
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.theme-toggle__option input:checked + span {
+  background: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: 0 1px 2px light-dark(rgba(28, 36, 48, 0.1), rgba(0, 0, 0, 0.35));
+}
+
+.theme-toggle__option input:focus-visible + span {
+  outline: 3px solid var(--paper-raised);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ink);
+}
+
+@media (hover: hover) {
+  .theme-toggle__option input:not(:checked) + span:hover {
+    color: var(--ink);
+  }
+}
+
+/*
+ * Nothing on this site moves by itself except one hero sequence, and this
+ * removes that one too. Transitions that answer a click are left alone at a
+ * length a reader will not notice, because removing them makes a state change
+ * harder to follow rather than easier.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

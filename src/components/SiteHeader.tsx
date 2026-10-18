@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
+import ThemeToggle from "@/components/ThemeToggle";
+
 
 /*
  * The global rail.
@@ -127,6 +129,17 @@ export default function SiteHeader({ current, identity }: { current?: string; id
           </ul>
         </nav>
 
+        {/*
+          * Beside the links on desktop, and repeated inside the sheet on
+          * phones, where this one is hidden. Duplicated rather than moved
+          * because the control belongs next to the navigation at both sizes,
+          * and a single instance would have to be either unreachable on a
+          * phone or out of place on a desktop.
+          */}
+        <div className="rail-theme">
+          <ThemeToggle />
+        </div>
+
         <button
           aria-controls={sheetId}
           aria-expanded={open}
@@ -161,6 +174,9 @@ export default function SiteHeader({ current, identity }: { current?: string; id
             </li>
           ))}
         </ul>
+        <div className="rail-sheet-theme">
+          <ThemeToggle />
+        </div>
         <p className="rail-sheet-foot">
           <a href={identity.github}>GitHub</a>
           <a href={identity.linkedin}>LinkedIn</a>
