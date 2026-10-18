@@ -126,3 +126,8 @@ __pycache__/
 /audit*/
 .register.mjs
 .env*
+
+# Review screenshots from tools/shoot-local.mjs. Working artifacts, regenerated
+# on demand from whatever is built; committing them would put a stale picture of
+# the site in the history and grow the clone for nothing.
+tools/shots/
