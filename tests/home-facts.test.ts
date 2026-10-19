@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import test from "node:test";
 
-import { homeIntro, portraitCredit } from "../src/content/home";
+import { homeIntro } from "../src/content/home";
 import {
   homeEducation,
   homeExperience,
@@ -154,6 +156,34 @@ test("skills are grouped and non-empty", () => {
   }
 });
 
-test("the photographer credit is still carried", () => {
-  assert.equal(portraitCredit, "Photo: Davies");
+test("no photographer name is published", () => {
+  /*
+   * Removed on 19 October 2026 at the owner's instruction. The assertion is
+   * inverted rather than deleted: the name was in the footer of every page, and
+   * a test that merely stopped checking would let it return unnoticed through a
+   * revert or a copy-paste.
+   *
+   * Comments are stripped before matching so the explanation in each file does
+   * not trip its own check.
+   *
+   * The name is assembled from parts rather than written as a literal, because
+   * this repository is public and a name in a test file is a published name,
+   * which is the thing that was asked to be removed. The clearance, the
+   * original attribution condition and this change are recorded in
+   * _portfolio-work/photos/PHOTOS.md, which is local and not published.
+   */
+  const NAME = new RegExp(["Dav", "ies"].join(""), "i");
+  const sources = [
+    "src/content/home.ts",
+    "src/components/SiteFooter.tsx",
+    "src/content/about-photos.ts",
+  ];
+  for (const file of sources) {
+    const text = readFileSync(resolve(file), "utf8");
+    const code = text.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+    assert.ok(
+      !NAME.test(code),
+      `${file} publishes the photographer's name outside a comment`,
+    );
+  }
 });

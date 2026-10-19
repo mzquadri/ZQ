@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { site } from "@/content/portfolio";
-import { portraitCredit } from "@/content/home";
 import { ArrowLabel } from "@/components/Icon";
 
 /*
@@ -32,13 +31,6 @@ export default function SiteFooter() {
           <p className="footer-note">
             Evidence-led ML engineering. No tracking, cookies, or contact-form data.
           </p>
-          {/*
-            * The photographer's credit, on every page rather than only the one
-            * that shows the portrait. That is the condition the photograph is
-            * used under, and a credit that can be navigated away from is not
-            * really attached to the image.
-            */}
-          <p className="footer-credit">{portraitCredit}</p>
         </div>
         <nav aria-label="Footer navigation" className="footer-links">
           {/* Certificates moved into the main navigation, so it is not repeated

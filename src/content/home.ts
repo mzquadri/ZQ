@@ -58,17 +58,32 @@ export const parisNetwork = {
     "The real Paris road network from my Master's thesis, drawn from the same tensor the model was trained on. The longest 3,000 of its 31,635 road segments are shown; the Peripherique ring, the Seine and the radial boulevards are all segments in the data rather than drawn decoration.",
 } as const;
 
-/** The photographer's credit, carried on every page rather than only this one. */
-export const portraitCredit = "Photo: Davies" as const;
+/*
+ * There is no photographer credit on this site.
+ *
+ * A credit line sat in the footer of every page from 18 to 19 October 2026 and
+ * was removed on 19 October at the owner's instruction. The owner holds the
+ * licence and the relationship with the photographer, so whether an attribution
+ * is published is theirs to decide.
+ *
+ * The photographer is deliberately not named here either. This repository is
+ * public, so a name in a comment is a published name, which is the thing that
+ * was asked to be removed. The clearance, the original condition and this
+ * change are all recorded in `_portfolio-work/photos/PHOTOS.md`, which is local
+ * and not published.
+ *
+ * Nothing in the build depends on it. If it is ever restored it goes back in
+ * src/components/SiteFooter.tsx, which is where it was.
+ */
 
 /**
  * The hero portrait, and the depth map that gives it parallax.
  *
  * Both are produced together by `_portfolio-work/photos/make_hero_3d.py` from
  * one alpha matte and one crop box, so they align by construction. The depth
- * map comes from Depth Anything V2 run locally: the photograph is licensed from
- * DAVIES and sending it to a hosted depth service would be a redistribution
- * nobody licensed.
+ * map comes from Depth Anything V2 run locally: the photograph is licensed
+ * third-party work, and sending it to a hosted depth service would be a
+ * redistribution nobody licensed.
  *
  * The photograph itself is untouched. The shader offsets where it samples;
  * it never writes a pixel. See src/components/home/DepthPortrait.tsx.
