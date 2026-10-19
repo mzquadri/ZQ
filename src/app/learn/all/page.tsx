@@ -9,7 +9,7 @@ import { getPublishedLearnWriting, getWritingTaxonomy } from "@/content/writing/
 import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Every tutorial",
+  title: "Every piece of writing",
   description:
     "The complete tutorial library: reliable AI systems, event-driven backends, retrieval, document intelligence, MLOps, calibration and explainability, newest first.",
   path: "/learn/all",

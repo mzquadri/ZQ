@@ -65,8 +65,8 @@
 .rail-mark > span:first-child {
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   /*
    * Its own colours, not the per-page scene accent.
    *
@@ -146,7 +146,9 @@
   display: none;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.5rem 0.9rem;
+  /* 44px tall, the floor for a standalone control on a phone. */
+  min-height: 44px;
+  padding: 0.6rem 1rem;
   border: 1px solid var(--stage-line-strong);
   border-radius: 999px;
   background: transparent;

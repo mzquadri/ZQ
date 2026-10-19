@@ -10,7 +10,7 @@ import { levelLabel, topicLabel } from "@/content/writing/schema";
 import ResearchFeed from "@/components/writing/ResearchFeed";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Learn",
+  title: "Writing",
   description:
     "Technical tutorials on reliable AI systems, event-driven backends, retrieval, document intelligence, MLOps, calibration and explainability, each written from work with stated evidence and limitations.",
   path: "/learn",

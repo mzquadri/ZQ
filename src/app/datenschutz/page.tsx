@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 
 import PageShell from "@/components/PageShell";
+import { createPageMetadata } from "@/lib/metadata";
 import { site } from "@/content/portfolio";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Datenschutz",
   description:
     "What this site collects, which is nothing: no cookies, no analytics, no third-party requests, and fonts served from this domain.",
-  alternates: { canonical: "/datenschutz" },
-  robots: { index: true, follow: true },
-};
+  path: "/datenschutz",
+});
 
 /*
  * The privacy page.
@@ -49,16 +49,27 @@ export default function DatenschutzPage() {
           <li>No account, no login, no profile.</li>
         </ul>
 
+        {/*
+          * Kept true as the control changed.
+          *
+          * This paragraph described a three-state Light / Dark / System
+          * control, and said that choosing System removed the stored value.
+          * That control is now a single button and there is no System option,
+          * so the sentence was describing something a reader could not find.
+          * A privacy notice that is out of date about the one thing it stores
+          * is worse than one that says nothing.
+          */}
         <h2>The one thing stored in your browser</h2>
         <p>
-          If you choose a colour theme, that choice is saved in your
-          browser&apos;s local storage under the key <code>theme</code>, with the
-          value <code>light</code> or <code>dark</code>. It never leaves your
-          device and it is not readable by anyone else. Choosing{" "}
-          <strong>System</strong> removes it. Clearing your browser data removes
-          it. This is a preference, not an identifier: it holds one of two words
-          and nothing that could distinguish you from anyone else who picked the
-          same one.
+          Until you press the light and dark button, nothing is stored at all
+          and the site simply follows your device&apos;s own setting. Once you
+          press it, that choice is saved in your browser&apos;s local storage
+          under the key <code>theme</code>, with the value <code>light</code> or{" "}
+          <code>dark</code>. It never leaves your device and nobody else can
+          read it. Clearing your browser data for this site removes it and the
+          page goes back to following your device. This is a preference, not an
+          identifier: it holds one of two words, and nothing in it could
+          distinguish you from anyone else who picked the same one.
         </p>
 
         <h2>Server logs</h2>

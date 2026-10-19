@@ -8,7 +8,8 @@
  */
 
 export interface AboutPhoto {
-  src: string;
+  /** Base name; the component appends the width and builds a srcset. */
+  stem: string;
   alt: string;
   /** The caption a reader sees. Says where and when, not how it was made. */
   caption: string;
@@ -26,9 +27,12 @@ export interface AboutPhoto {
   croppable: boolean;
 }
 
+/** The widths written by make_about_photos.py. */
+export const PHOTO_WIDTHS = [560, 1120] as const;
+
 export const aboutPhotos: readonly AboutPhoto[] = [
   {
-    src: "/media/about/munich-bmw-welt.webp",
+    stem: "munich-bmw-welt",
     alt: "Seated on a bench at dusk in Munich, with BMW Welt and the Olympiaturm behind.",
     caption: "Munich, during the TUM years.",
     width: 960,
@@ -36,15 +40,15 @@ export const aboutPhotos: readonly AboutPhoto[] = [
     croppable: true,
   },
   {
-    src: "/media/about/munich-snow.webp",
+    stem: "munich-snow",
     alt: "Outdoors in Munich during snowfall, snow in the hair, looking off camera.",
     caption: "A Munich winter.",
-    width: 1280,
-    height: 1280,
+    width: 1120,
+    height: 1120,
     croppable: true,
   },
   {
-    src: "/media/about/strasbourg.webp",
+    stem: "strasbourg",
     alt: "On the river Ill in Strasbourg in summer, half-timbered houses and tour boats behind.",
     caption: "Strasbourg, June 2023, for the European Youth Event.",
     width: 960,
@@ -62,11 +66,11 @@ export const aboutPhotos: readonly AboutPhoto[] = [
      * cropped, credited in the page, and `croppable: false` so the CSS cannot
      * quietly crop it with `object-fit: cover`.
      */
-    src: "/media/about/eye-2023-parliament.webp",
+    stem: "eye-2023-parliament",
     alt: "Studio portrait taken at the European Youth Event 2023 in Strasbourg, on a white background.",
     caption: "Taken at the European Youth Event 2023, at the Parliament in Strasbourg.",
-    width: 800,
-    height: 1200,
+    width: 1066,
+    height: 1600,
     credit: "European Union 2023, source: EP, Faces of Together.eu",
     croppable: false,
   },

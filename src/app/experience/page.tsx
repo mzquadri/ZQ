@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 
 import PageShell from "@/components/PageShell";
+import { createPageMetadata } from "@/lib/metadata";
 import { homeExperience } from "@/content/home-sections";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Experience",
   description:
     "Roles at BP-IT Consulting, AUDI AG and the Technical University of Munich, with what each one involved.",
-  alternates: { canonical: "/experience" },
-};
+  path: "/experience",
+});
 
 /*
  * The roles, each one openable.

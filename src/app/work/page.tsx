@@ -11,7 +11,7 @@ import { createPageMetadata } from "@/lib/metadata";
 import { ArrowLabel } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Selected Work",
+  title: "Projects",
   description:
     "Evidence-rich case studies across reliable knowledge systems, agent security, retrieval, MLOps and uncertainty quantification, plus a catalogued index of public repositories.",
   path: "/work",
@@ -77,7 +77,7 @@ export default function WorkPage() {
         ]}
       >
         <div className="work-jump">
-          <a href="#selected">Selected work</a>
+          <a href="#selected">Written up in full</a>
           <a href="#professional">Professional engineering</a>
           <a href="#supporting">Supporting projects</a>
           <Link href="/work/repositories">Repository index</Link>

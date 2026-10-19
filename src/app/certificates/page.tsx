@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 
 import PageShell from "@/components/PageShell";
+import { createPageMetadata } from "@/lib/metadata";
 import { site } from "@/content/portfolio";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Certificates and volunteering",
   description:
     "Five certifications, each with the issuer's own verification page, plus volunteering with AIESEC in Munich and the European Youth Event 2023.",
-  alternates: { canonical: "/certificates" },
-};
+  path: "/certificates",
+});
 
 /*
  * Credentials, and the thing that makes them worth publishing: every one links

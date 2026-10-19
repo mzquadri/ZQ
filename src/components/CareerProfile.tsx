@@ -110,6 +110,15 @@ export function CredentialsList() {
                       target="_blank"
                     >
                       Verify
+                      {/*
+                        * The certificate's name, for a screen reader.
+                        *
+                        * Five links reading "Verify" are five identical entries
+                        * in a link list, and a reader using one cannot tell
+                        * which certificate each belongs to. The visible label
+                        * stays short; the accessible name says what it verifies.
+                        */}
+                      <span className="visually-hidden"> {entry.title}</span>
                     </a>
                   </>
                 ) : null}

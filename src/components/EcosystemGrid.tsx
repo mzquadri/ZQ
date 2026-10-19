@@ -84,7 +84,10 @@ export function RepositoryCard({ repository }: { repository: EcosystemRepository
       <div className={styles.cardFoot}>
         {caseStudy ? (
           <Link className={styles.caseLink} href={`/work/${caseStudy.slug}`}>
-<ArrowLabel kind="forward">Case study</ArrowLabel>
+{/* Seven links read "Case study" on this page; the suffix says which. */}
+            <ArrowLabel hiddenSuffix={`for ${caseStudy.title}`} kind="forward">
+              Case study
+            </ArrowLabel>
           </Link>
         ) : null}
       </div>

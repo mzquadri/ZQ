@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-import { aboutPhotos } from "@/content/about-photos";
+import { aboutPhotos, PHOTO_WIDTHS } from "@/content/about-photos";
 
 /**
  * The photographs on the About page, with a light parallax.
@@ -66,7 +66,7 @@ export default function PhotoStrip() {
   return (
     <ul className="photo-strip" ref={ref}>
       {aboutPhotos.map((photo, index) => (
-        <li key={photo.src}>
+        <li key={photo.stem}>
           <figure
             className="photo-figure"
             data-parallax={index}
@@ -78,13 +78,27 @@ export default function PhotoStrip() {
              */
             data-whole={photo.croppable ? undefined : ""}
           >
+            {/*
+              * Two widths and a `sizes` hint, because one file was four times
+              * the pixels anyone sees: the strip renders each photograph at
+              * about 283 CSS pixels on a desktop, and a single 1280px file was
+              * being shipped for it. `sizes` has to describe the *layout*, not
+              * the file, or the browser picks from the wrong column.
+              *
+              * eslint-disable because next/image would re-encode these at a
+              * width of its own choosing, and the Parliament photograph has a
+              * licence condition about not being cropped that is easier to hold
+              * when this file controls the geometry.
+              */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               alt={photo.alt}
               decoding="async"
               height={photo.height}
               loading="lazy"
-              src={photo.src}
+              sizes="(max-width: 640px) 92vw, (max-width: 1100px) 44vw, 290px"
+              src={`/media/about/${photo.stem}-560.webp`}
+              srcSet={PHOTO_WIDTHS.map((w) => `/media/about/${photo.stem}-${w}.webp ${w}w`).join(", ")}
               width={photo.width}
             />
             <figcaption>

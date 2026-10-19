@@ -20,7 +20,7 @@ import { createPageMetadata } from "@/lib/metadata";
 import { ArrowLabel, ExternalArrow } from "@/components/Icon";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Transport Surrogate Thesis Research",
+  title: "Master's Thesis: Uncertainty for a Traffic GNN",
   description:
     "A progressive research record for uncertainty-aware GNN surrogates: methods, audited findings, selective review, calibration, marginal coverage, limitations, and reproducibility.",
   path: thesisResearchPath,

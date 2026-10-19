@@ -183,10 +183,31 @@ export default function RootLayout({
               addressLocality: site.location.split(",")[0],
               addressCountry: "DE",
             },
+            email: `mailto:${site.email}`,
+            /*
+             * Both degrees. This is the field a recruiter's tooling actually
+             * reads off a personal site, and it was the one thing missing from
+             * an otherwise complete Person block. End years only, matching the
+             * CV and the Education section.
+             */
+            alumniOf: [
+              {
+                "@type": "CollegeOrUniversity",
+                name: "Technical University of Munich",
+                sameAs: "https://www.tum.de/",
+              },
+              {
+                "@type": "CollegeOrUniversity",
+                name: "Aligarh Muslim University",
+                sameAs: "https://www.amu.ac.in/",
+              },
+            ],
             knowsAbout: [
               "Machine learning",
               "Uncertainty quantification",
+              "Conformal prediction",
               "Graph neural networks",
+              "Retrieval-augmented generation",
               "Scientific computing",
               "MLOps",
             ],

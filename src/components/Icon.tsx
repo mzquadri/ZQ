@@ -47,7 +47,23 @@ export function ExternalArrow({ className }: IconProps) {
  * The label stays plain text in the accessible name; the arrow remains decorative and
  * aria-hidden, exactly as when it is used on its own.
  */
-export function ArrowLabel({ children, kind = "external" }: { children: string; kind?: "external" | "forward" }) {
+export function ArrowLabel({
+  children,
+  kind = "external",
+  hiddenSuffix,
+}: {
+  children: string;
+  kind?: "external" | "forward";
+  /**
+   * Extra words for the accessible name only, appended after the visible label.
+   *
+   * For the case where the same visible text appears many times on one page:
+   * seven links reading "Case study" are seven identical entries in a screen
+   * reader's link list. `children` stays a string because the word-splitting
+   * below depends on it, so this is a separate prop rather than a node.
+   */
+  hiddenSuffix?: string;
+}) {
   const words = children.trim().split(/\s+/);
   const last = words.pop() ?? "";
   const Arrow = kind === "forward" ? ForwardArrow : ExternalArrow;
@@ -66,6 +82,7 @@ export function ArrowLabel({ children, kind = "external" }: { children: string; 
       {words.length > 0 ? `${words.join(" ")} ` : null}
       <span className="arrow-label">
         {last}
+        {hiddenSuffix ? <span className="visually-hidden"> {hiddenSuffix}</span> : null}
         <Arrow />
       </span>
     </span>

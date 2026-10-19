@@ -1,10 +1,28 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/content/portfolio";
 
-export const alt = `${site.name}, ${site.role} and reliable systems`;
+export const alt = `${site.name}, ${site.role}, Munich`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+/*
+ * The card LinkedIn shows.
+ *
+ * This is, in practice, the most-seen thing on the site: it appears whenever
+ * the link is shared or pasted into an application, often to someone who will
+ * decide from it alone whether to open the page. So it carries the name, the
+ * role and where he is, and nothing else.
+ *
+ * It used to be the old warm palette with a slogan, "Applied ML with evidence
+ * built in", above a row of tracked-out keywords. A slogan tells a recruiter
+ * nothing they can act on and dates badly; a name and a role are what the card
+ * is for. The palette is now the site's.
+ *
+ * No webfont is loaded. `next/og` would need the font fetched and embedded on
+ * every render, and the system stack at this size is indistinguishable in a
+ * 1200x630 PNG. The risk of a font fetch failing and the card rendering empty
+ * is not worth the difference.
+ */
 export default function OpenGraphImage() {
   return new ImageResponse(
     (
@@ -15,41 +33,33 @@ export default function OpenGraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#f2f0e8",
-          color: "#101820",
-          padding: "70px 76px",
-          border: "18px solid #101820",
+          background: "#f7f8fa",
+          color: "#1c2430",
+          padding: "72px 80px",
+          /* The one piece of colour: the site's violet, as a left edge. */
+          borderLeft: "20px solid #7a6ba8",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, letterSpacing: 3 }}>
-          <span>MZQ / PORTFOLIO</span>
-          <span style={{ color: "#006d65" }}>{site.location.toUpperCase()}</span>
+        <div style={{ display: "flex", fontSize: 26, color: "#5a6675" }}>
+          mzquadri.de
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div style={{ fontSize: 72, fontWeight: 700, maxWidth: 980, lineHeight: 1.02 }}>
-            Applied ML with evidence built in.
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          <div style={{ fontSize: 86, fontWeight: 700, lineHeight: 1.0, letterSpacing: -2 }}>
+            {site.name}
           </div>
-          {/*
-            * The terms used to be joined by middle dots in their own spans. The
-            * flex gap already separates them, so the dots were doing no work
-            * that the layout was not, and a meta string strung together with
-            * middle dots is one of the surest tells of a generated page. The
-            * character rule bans the glyph anyway.
-            */}
-          <div style={{ display: "flex", gap: 28, fontSize: 26 }}>
-            <span>AI systems</span>
-            <span>Machine learning</span>
-            <span>RAG</span>
-            <span>GNNs</span>
-            <span>Research</span>
+          <div style={{ fontSize: 40, color: "#5f5190", fontWeight: 600 }}>
+            {site.role}
+          </div>
+          <div style={{ fontSize: 30, color: "#5a6675", maxWidth: 900, lineHeight: 1.35 }}>
+            Machine learning systems, from the first look at the data to a
+            service running in production.
           </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <strong style={{ fontSize: 34 }}>{site.name}</strong>
-            <span style={{ fontSize: 24, color: "#3d4a52" }}>{site.role}</span>
-          </div>
-          <span style={{ background: "#ff5b35", padding: "12px 18px", fontSize: 22 }}>mzquadri.de</span>
+
+        <div style={{ display: "flex", gap: 34, fontSize: 25, color: "#5a6675" }}>
+          <span>{site.location}</span>
+          <span>M.Sc. Mathematics, TU Munich</span>
         </div>
       </div>
     ),

@@ -146,28 +146,19 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     boundary:
       "The labels are generated, not laboratory measurements. The tracked scores measure how well each model recovers the generator's own class-correlated distributions, and say nothing about whether real water is safe to drink.",
   },
-  {
-    name: "snake-water-gun",
-    title: "Snake, Water, Gun",
-    category: "Reference",
-    language: "Python",
-    topics: ["Python", "Unit Testing", "Learning Artifact"],
-    description:
-      "A command-line variant of rock-paper-scissors, with input validation and three unit tests covering the ties, each winning matchup and a rejected input.",
-    boundary:
-      "A beginner exercise. It sat under the name pde-problems for a year, which is where the repository started before that content was deleted and replaced; the name was corrected rather than left to misdescribe the contents, and GitHub still redirects the old one.",
-  },
-  {
-    name: "iftaar-invitation-2026",
-    title: "Iftaar Invitation",
-    category: "Reference",
-    language: "HTML",
-    topics: ["Static Site", "Client-Side Only", "Design Artifact"],
-    description:
-      "A single-file personalised invitation for a private gathering. Guest names, animation and countdown all run in the browser; nothing is submitted, collected or measured.",
-    boundary:
-      "An event-specific design artifact, not a reusable event-management system. The host and venue details are deliberately particular to the original invitation.",
-  },
+  /*
+   * `snake-water-gun` and `iftaar-invitation-2026` were listed here and are
+   * both **private** on GitHub, so every visitor following either link got a
+   * 404. Removed on 19 Oct 2026, found by `tools/check-links.mjs`.
+   *
+   * Private is the right status for both: one is a beginner exercise, the other
+   * a personalised invitation carrying a real date and venue. The defect was
+   * listing them in an index whose own heading is "public repositories", which
+   * published two dead links and overstated the public record by two.
+   *
+   * If either is ever made public it can come back; nothing else referenced
+   * them.
+   */
   /*
    * The profile README repository was listed here and does not exist.
    *
