@@ -301,9 +301,8 @@ ol {
   font-family: var(--mono);
   font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.01em;
   text-decoration: none;
-  text-transform: uppercase;
 }
 
 .wordmark > span:first-child {
@@ -522,9 +521,8 @@ ol {
   border-right: 1px solid rgba(255, 255, 255, 0.2);
   font-family: var(--mono);
   font-size: 0.7rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.01em;
   text-align: center;
-  text-transform: uppercase;
 }
 
 .section-heading {
@@ -633,8 +631,7 @@ ol {
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .pipeline-figure ol {
@@ -706,7 +703,6 @@ ol {
   font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .metric strong {
@@ -1194,7 +1190,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .research-meta dd {
@@ -1227,7 +1222,6 @@ ol {
 .research-question aside strong {
   font-family: var(--mono);
   font-size: 0.7rem;
-  text-transform: uppercase;
 }
 
 .research-question aside p {
@@ -1269,7 +1263,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .protocol-table tbody th {
@@ -1415,7 +1408,6 @@ ol {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .contact-links a:hover strong {
@@ -1522,7 +1514,6 @@ ol {
     font-family: var(--mono);
     font-size: var(--label-strong);
     font-weight: 700;
-    text-transform: uppercase;
   }
 
   .limitation-section,
@@ -1834,7 +1825,6 @@ ol {
   font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .research-audience strong {
@@ -2047,7 +2037,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .method-matrix-grid {
@@ -2097,7 +2086,6 @@ ol {
   color: var(--ink-soft);
   font-family: var(--mono);
   font-size: var(--label-strong);
-  text-transform: uppercase;
 }
 
 .method-matrix dd,
@@ -2135,7 +2123,6 @@ ol {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .retention-options {
@@ -2199,7 +2186,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .decision-accepted {
@@ -2293,7 +2279,6 @@ ol {
 .research-data-table thead th {
   font-family: var(--mono);
   font-size: var(--label-strong);
-  text-transform: uppercase;
 }
 
 .research-data-table tr[data-selected] {
@@ -2397,7 +2382,6 @@ ol {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .coverage-grid strong {
@@ -2647,7 +2631,6 @@ ol {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 /*
@@ -2681,7 +2664,6 @@ ol {
   font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .writing-card h2 {
@@ -2728,8 +2710,7 @@ ol {
   color: var(--teal-dark);
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .topic-columns ul {
@@ -2783,7 +2764,6 @@ ol {
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .article-cover {
@@ -2817,8 +2797,7 @@ ol {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .article-toc ol {
@@ -2931,7 +2910,6 @@ ol {
   font-family: var(--mono);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .article-prose .katex-display {
@@ -2952,8 +2930,7 @@ ol {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .article-callout > :last-child {
@@ -3001,7 +2978,6 @@ ol {
   color: var(--teal-dark);
   font-family: var(--mono);
   font-size: var(--label);
-  text-transform: uppercase;
 }
 
 .article-related-grid h3 {
@@ -3214,8 +3190,7 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .case-facts dd {
@@ -3232,8 +3207,7 @@ ol {
   font-family: var(--mono);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .system-flow ol {
@@ -3352,8 +3326,7 @@ ol {
   font-family: var(--mono);
   font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--teal-dark);
 }
 
@@ -3470,8 +3443,7 @@ ol {
   font-family: var(--mono);
   font-size: var(--label);
   font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--teal-dark);
 }
 
@@ -3535,8 +3507,7 @@ ol {
   font-family: var(--mono);
   font-size: 0.6rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
 }
 
@@ -3614,8 +3585,7 @@ ol {
   font-family: var(--mono);
   font-size: var(--label);
   font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--teal-dark);
 }
 
@@ -3682,8 +3652,7 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
   margin-bottom: 0.7rem;
 }
@@ -3700,7 +3669,6 @@ ol {
   font-size: var(--label-strong);
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--ink-soft);
   text-align: left;
   white-space: nowrap;
@@ -3837,8 +3805,7 @@ ol {
   font-family: var(--mono);
   font-size: var(--label);
   font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--teal-dark);
 }
 
@@ -3877,8 +3844,7 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
 }
 
@@ -4039,8 +4005,7 @@ ol {
 .portrait-caption span:last-child {
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--teal-dark);
 }
 
@@ -4145,8 +4110,7 @@ ol {
 .article-pager span {
   font-family: var(--mono);
   font-size: var(--label-strong);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
 }
 
@@ -4282,7 +4246,6 @@ ol {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .legal-count-grid strong {
@@ -4318,7 +4281,6 @@ ol {
   font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .legal-count-steps li[data-outcome="unresolved"] span {
@@ -4343,7 +4305,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .legal-fanout-source h3 {
@@ -4380,7 +4341,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .legal-fanout-grid h3 {
@@ -4409,7 +4369,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .legal-fanout-grid dd,
@@ -4456,7 +4415,6 @@ ol {
   font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .legal-convergence strong {
@@ -4485,7 +4443,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .legal-convergence-retained h3 {
@@ -4659,7 +4616,6 @@ ol {
   font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
   opacity: 0;
   scale: 0.9;
   transition: opacity 300ms ease, scale 300ms ease;
@@ -4841,7 +4797,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .legal-fanout-source-copy .legal-fanout-name {
@@ -4868,8 +4823,7 @@ ol {
   color: var(--paper);
   font-family: var(--mono);
   font-size: 0.6rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   scale: 1;
   opacity: 1;
   transition: scale var(--capture), opacity 90ms linear;
@@ -5272,7 +5226,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .legal-generation[data-generation="evidence"] header span {
@@ -5303,7 +5256,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--ink-soft);
   transition: transform var(--arrive), border-top-color var(--strike), background-color var(--strike);
 }
@@ -5396,7 +5348,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .legal-generation-unit-label {
@@ -5429,7 +5380,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .legal-orders dd {
@@ -5471,7 +5421,6 @@ ol {
   font-size: 0.72rem;
   font-style: normal;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 /* --- Ladder: each class of evidence arrives in turn --------------------------------------- */
@@ -5849,7 +5798,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .legal-closing-row > strong {
@@ -5947,7 +5895,6 @@ ol {
   font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .systems-name {
@@ -6043,7 +5990,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .systems-source-copy .systems-name { margin-top: 0.4rem; }
@@ -6064,8 +6010,7 @@ ol {
   color: var(--paper);
   font-family: var(--mono);
   font-size: var(--label-dense);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   scale: 1;
   opacity: 1;
   transition: scale var(--capture), opacity 90ms linear;
@@ -6126,7 +6071,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .systems-grid article > p { margin-top: 0.5rem; color: var(--ink-soft); font-size: 0.83rem; }
@@ -6179,7 +6123,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-strong);
   letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .systems-grid dd,
@@ -6274,7 +6217,6 @@ ol {
   font-family: var(--mono);
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .systems-count-grid strong { font-family: var(--sans); font-size: 3rem; font-weight: 500; line-height: 1.05; }
@@ -6307,7 +6249,6 @@ ol {
   font-size: var(--label);
   font-weight: 700;
   letter-spacing: 0.07em;
-  text-transform: uppercase;
   opacity: 0;
   scale: 0.9;
   transition: opacity 300ms ease, scale 300ms ease;
@@ -6327,7 +6268,6 @@ ol {
   font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .systems-count-steps li[data-outcome="unresolved"] span { color: var(--orange-text); }
@@ -6372,7 +6312,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .systems-generation[data-generation="history"] header span { color: var(--ink); }
@@ -6395,7 +6334,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--ink-soft);
   transition: transform var(--arrive), border-top-color 420ms ease, background-color 420ms ease;
 }
@@ -6464,7 +6402,6 @@ ol {
   font-family: var(--mono);
   font-size: var(--label-dense);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
 }
 
 .systems-dispositions {
@@ -6494,7 +6431,6 @@ ol {
   font-size: var(--label-dense);
   font-weight: 700;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .systems-dispositions strong { display: block; margin-top: 0.5rem; font-family: var(--sans); font-size: 1.28rem; font-weight: 500; }
@@ -6633,8 +6569,7 @@ ol {
   font-family: var(--mono);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--teal-dark);
 }
 
@@ -6673,65 +6608,41 @@ ol {
 }
 
 /*
- * The theme control.
+ * The theme button.
  *
- * A radio group rather than a button, because it has three states and a radio
- * group is what three mutually exclusive states are. That also gets keyboard
- * behaviour, grouping and the current value announced correctly without any
- * ARIA beyond the group label.
- *
- * The native inputs are taken out of the layout rather than hidden with
- * `display: none`, which would remove them from the accessibility tree and from
- * keyboard reach along with it.
+ * One control, square, quiet, in the corner. It replaced a three-state radio
+ * group; see the note in src/components/ThemeToggle.tsx for why. A square touch
+ * target rather than a pill because there is no label beside the icon to give
+ * the pill a shape worth having.
  */
-.theme-toggle {
+.theme-button {
   display: inline-flex;
-  gap: 1px;
-  margin: 0;
-  padding: 1px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--paper-deep);
-}
-
-.theme-toggle__option input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
+  align-items: center;
+  justify-content: center;
+  /* 40px, which is the smallest comfortable touch target on a phone. */
+  width: 2.5rem;
+  height: 2.5rem;
   padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.theme-toggle__option span {
-  display: block;
-  padding: 0.3rem 0.7rem;
-  border-radius: 999px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
   color: var(--ink-soft);
-  font-size: var(--label-strong);
-  line-height: 1.2;
   cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease;
-}
-
-.theme-toggle__option input:checked + span {
-  background: var(--paper-raised);
-  color: var(--ink);
-  box-shadow: 0 1px 2px light-dark(rgba(28, 36, 48, 0.1), rgba(0, 0, 0, 0.35));
-}
-
-.theme-toggle__option input:focus-visible + span {
-  outline: 3px solid var(--paper-raised);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 5px var(--ink);
+  transition: color 140ms ease, border-color 140ms ease, background-color 140ms ease;
 }
 
 @media (hover: hover) {
-  .theme-toggle__option input:not(:checked) + span:hover {
+  .theme-button:hover {
+    border-color: var(--ink-soft);
+    background: var(--paper-raised);
     color: var(--ink);
   }
+}
+
+.theme-button:focus-visible {
+  outline: 3px solid var(--paper-raised);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ink);
 }
 
 /*

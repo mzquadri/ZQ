@@ -92,7 +92,7 @@ export default function ReliableKnowledgeSystemsPage() {
 
         <section className="section-wrap case-section two-column-copy">
           <div>
-            <p className="section-index"><span>01</span>The problem</p>
+            <p className="section-index">The problem</p>
             <h2>Four descriptions of one thing, three of them disposable.</h2>
             <p>
               One capture, several derived views. They are not stages in a pipeline; they exist at
@@ -117,7 +117,7 @@ export default function ReliableKnowledgeSystemsPage() {
         </section>
 
         <section className="section-wrap case-section">
-          <p className="section-index"><span>02</span>Verification</p>
+          <p className="section-index">Verification</p>
           <h2>The interesting arrow points backwards.</h2>
           <p>
             A diagram of a system like this usually runs one way and stops at the output. The
@@ -157,7 +157,7 @@ export default function ReliableKnowledgeSystemsPage() {
         </section>
 
         <section className="section-wrap case-section">
-          <p className="section-index"><span>03</span>Rules that make a check mean something</p>
+          <p className="section-index">Rules that make a check mean something</p>
           <h2>Most of the difficulty is ownership, not measurement.</h2>
           <ul className="reliable-list">
             {principles.map((principle) => (
@@ -171,7 +171,7 @@ export default function ReliableKnowledgeSystemsPage() {
 
         <section className="section-wrap case-section two-column-copy">
           <div>
-            <p className="section-index"><span>04</span>When it goes wrong</p>
+            <p className="section-index">When it goes wrong</p>
             <h2>The failures worth designing for are the quiet ones.</h2>
             <p>
               None of these describes an incident. They are the classes of failure this shape of
@@ -204,7 +204,7 @@ export default function ReliableKnowledgeSystemsPage() {
         </section>
 
         <section className="section-wrap case-section">
-          <p className="section-index"><span>05</span>What I worked on</p>
+          <p className="section-index">What I worked on</p>
           <h2>Stated as problems, and only where I can show the commits.</h2>
           <ul className="reliable-list">
             {contribution.map((item) => (

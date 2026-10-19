@@ -48,9 +48,9 @@ export interface WalkthroughStep {
 export const walkthroughSteps: readonly WalkthroughStep[] = [
   {
     id: "problem",
-    title: "Stored is not the same as correct",
+    title: "Matching record counts do not prove matching content",
     caption:
-      "Two stores can report the same number of records and still hold different content. Remove one unit, add another, and the total never moves.",
+      "Two stores can report the same number of records and still hold different content. Remove one record, add another, and the total never moves.",
     target: ".legal-count-stage",
     beats: [
       { scene: "count", state: 1, hold: 3000 },

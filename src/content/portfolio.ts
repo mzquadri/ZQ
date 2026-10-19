@@ -221,7 +221,7 @@ const mlopsBaselineMargin =
 const authoredProjects: readonly Project[] = [
   {
     slug: "transport-uq",
-    title: "Reliable GNN Surrogates for Transport Policy Analysis",
+    title: "Master's Thesis: Uncertainty for a Traffic GNN",
     eyebrow: "Master's thesis on reliable machine learning",
     classification: "Academic research",
     authors: [{ name: site.name, url: site.github }],
@@ -637,7 +637,7 @@ const authoredProjects: readonly Project[] = [
   },
   {
     slug: "mcp-policy-gateway",
-    title: "The boundary a scanner cannot stand at",
+    title: "MCP Policy Gateway",
     eyebrow: "Runtime policy enforcement for MCP tool calls",
     classification: "Engineering prototype",
     authors: [{ name: site.name, url: site.github }],
@@ -731,7 +731,7 @@ const authoredProjects: readonly Project[] = [
   },
   {
     slug: "legal-knowledge-platform",
-    title: "Stored is not the same as correct",
+    title: "Legal Knowledge Base",
     eyebrow: "Verification for a multilingual legal corpus",
     classification: "Employer engineering",
     evidenceMode: "employer-confidential",

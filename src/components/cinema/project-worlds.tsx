@@ -66,7 +66,7 @@ function evidenceOf(slug: string, index = 0) {
 export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "transport-uq": {
     accent: "var(--accent-graph)",
-    title: "When can a surrogate stand in for a simulation?",
+    title: "Master's Thesis: Uncertainty for a Traffic GNN",
     eyebrow: "Master's thesis / Transport",
     question:
       "A graph network answers in milliseconds what a traffic simulator takes hours to compute. The question is not whether it is fast. It is when it may be believed.",
@@ -85,7 +85,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   "mcp-policy-gateway": {
     accent: "var(--accent-steel)",
-    title: "The boundary a scanner cannot stand at",
+    title: "MCP Policy Gateway",
     eyebrow: "Current engineering / Agent security",
     question:
       "A tool description can be scanned before anyone calls it. The document that tool returns cannot; it does not exist yet. So what is worth putting at the boundary itself, and what does it cost in refused legitimate calls?",
@@ -109,7 +109,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   "reliable-knowledge-systems": {
     accent: "var(--accent-retrieval)",
-    title: "Keeping derived state honest",
+    title: "Legal Knowledge Base",
     eyebrow: "Current engineering / Synthetic model",
     question:
       "One captured source becomes an index, a graph and a cache. Days later, is any of them still telling the truth about it?",
@@ -128,7 +128,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   medico: {
     accent: "var(--accent-pipeline)",
-    title: "Uncertain is not negative",
+    title: "AI Radiologist",
     eyebrow: "Research prototype / Medical imaging",
     question:
       "A chest report that never mentions a finding has not ruled it out. Training a classifier as though it had is the mistake this project is about.",
@@ -147,7 +147,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   "insureassist-rag": {
     accent: "var(--accent-corpus)",
-    title: "The right provision from the wrong policy",
+    title: "InsureAssist",
     eyebrow: "Reference implementation / Retrieval",
     question:
       "Three policy forms differ by a few words. The nearest passage can be the correct clause taken from the wrong document, and read exactly like the answer.",
@@ -166,7 +166,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   "mlops-reference-pipeline": {
     accent: "var(--accent-systems)",
-    title: "An unqualified model cannot reach release",
+    title: "MLOps Pipeline",
     eyebrow: "Reference implementation / Delivery",
     question:
       "Promotion is not the next box along a diagram. It is a conjunction of four checks, and one short check stops the candidate where it stands.",
@@ -185,7 +185,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   "hydrology-uq": {
     accent: "var(--accent-flow)",
-    title: "Two perturbations, one that matters",
+    title: "Uncertainty in a Hydrological Model",
     eyebrow: "TUM project seminar / Hydrology",
     question:
       "Disturb the rain and a calibrated model barely notices. Disturb the ruler the river was measured with and the calibration collapses.",
@@ -204,7 +204,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   "streamflow-forecasting": {
     accent: "var(--accent-flow)",
-    title: "Three numbers, three different questions",
+    title: "Streamflow Forecasting Benchmark",
     eyebrow: "Scientific computing / Benchmark",
     question:
       "A leaderboard invites one reading: rank the rows. These three were not scored on the same task, and the gap between the questions is wider than the gap between the models.",
@@ -223,7 +223,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
 
   "cifar10-cnn": {
     accent: "var(--accent-vision)",
-    title: "One number covering ten",
+    title: "CIFAR-10 Image Classifier",
     eyebrow: "Deep learning experiment / Vision",
     question:
       "Sixty-four percent is the mean of ten very different numbers, and the boundary the model learned best is not one of the ten it was asked for.",

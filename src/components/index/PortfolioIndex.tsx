@@ -45,7 +45,15 @@ export default function PortfolioIndex({
   items,
   label,
   tone = "paper",
-  numbered = true,
+  /*
+   * Off by default now.
+   *
+   * These lists are not sequences. A numbered marker beside every entry tells a
+   * reader that order carries meaning and that item 04 comes after item 03 for
+   * a reason, which is false here: they are categories of work. Zero-padding
+   * them to "01" made it worse, reading as a catalogue number.
+   */
+  numbered = false,
   summaries = true,
 }: {
   items: readonly IndexItem[];

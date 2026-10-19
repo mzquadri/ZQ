@@ -60,7 +60,8 @@ const PROFESSIONAL = [
 
 export default function WorkPage() {
   const groups = getPopulatedCategories();
-  const caseStudyCount = projects.length.toString().padStart(2, "0");
+  // Plain count. "07" reads as a catalogue number rather than a quantity.
+  const caseStudyCount = projects.length.toString();
   const supporting = [...supportingItems, ...registryItems(projects)];
 
   return (
@@ -68,8 +69,8 @@ export default function WorkPage() {
       <StageHero
         accent="var(--accent-graph)"
         eyebrow="Selected work"
-        title="Engineering claims that can be inspected."
-        standfirst="Research, coursework, prototypes, reference implementations, and synthetic demonstrations are labelled separately. Every case study includes evidence and limitations, not only a tool list, and every repository states what it does not establish."
+        title="Projects"
+        standfirst="Every project here says what it does, what was measured, and what it does not prove. Research, coursework and smaller demonstrations are labelled separately so you can tell them apart."
         meta={[
           { label: "Case studies", value: caseStudyCount },
           { label: "Public repositories", value: ecosystemRepositories.length.toString() },
@@ -85,19 +86,17 @@ export default function WorkPage() {
 
       <section className="section-wrap work-index" id="selected">
         <SectionHeading
-          index="01"
           eyebrow="Selected work"
-          title="The work written up in full"
-          introduction="Each case study states the problem, my contribution, the versioned evidence, the quality controls, and the limitations that bound the claim."
+          title="Written up in full"
+          introduction="Each one states the problem, what I did, the evidence behind the numbers, and the limits of what it shows."
         />
         <PortfolioIndex items={selectedItems} label="Selected work" />
       </section>
 
       <section className="section-wrap work-index" id="professional">
         <SectionHeading
-          index="02"
           eyebrow="Professional engineering"
-          title="Employer work, at the level it can be published"
+          title="Work for employers"
           introduction="What can be shown of the BP-ITCS systems is published two ways: as named architecture on a separate site with its own approval, and as a synthetic model here where the class of problem is the content rather than the system."
         />
         <PortfolioIndex items={PROFESSIONAL} label="Professional engineering" numbered={false} />
@@ -105,7 +104,6 @@ export default function WorkPage() {
 
       <section className="section-wrap work-index" id="supporting">
         <SectionHeading
-          index="03"
           eyebrow="Supporting projects"
           title="Coursework, references and experiments"
           introduction="Smaller in scope and weaker in evidence than the work above, and labelled that way rather than presented as equivalent. Each one still says what it establishes and what it does not."
@@ -120,7 +118,6 @@ export default function WorkPage() {
       */}
       <section className="section-wrap work-onward" id="repositories">
         <SectionHeading
-          index="04"
           eyebrow="Everything else"
           title="The public repositories, catalogued"
           introduction={`Beyond the case studies there are ${ecosystemRepositories.length} public repositories in ${groups.length} categories, each labelled by portfolio status rather than by technical quality.`}

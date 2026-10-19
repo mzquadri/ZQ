@@ -91,7 +91,7 @@ export default function MedicoPage() {
         </div>
 
         <section className="section-wrap">
-          <p className="section-index"><span>01</span>What this is</p>
+          <p className="section-index">What this is</p>
           <h2>Three corpora, one label space, and a great deal of silence.</h2>
           <p>
             The model predicts {findings.length} findings at once. Only one of its three sources
@@ -110,7 +110,7 @@ export default function MedicoPage() {
         </section>
 
         <section className="section-wrap">
-          <p className="section-index"><span>02</span>The loss</p>
+          <p className="section-index">The loss</p>
           <h2>Focal weighting, and then a switch that can turn the whole term off.</h2>
           <p>
             The loss is a focal loss with label smoothing ({config.labelSmoothing}), alpha{" "}
@@ -124,7 +124,7 @@ export default function MedicoPage() {
         </section>
 
         <section className="section-wrap">
-          <p className="section-index"><span>03</span>Splits and evaluation</p>
+          <p className="section-index">Splits and evaluation</p>
           <h2>Split by patient, and judged on the worst finding.</h2>
           <p>
             Both CheXpert and NIH are split 80/10/10 at the level of the patient, not the image, so

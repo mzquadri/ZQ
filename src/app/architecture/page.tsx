@@ -143,7 +143,7 @@ export default function ArchitecturePage() {
         <SectionHeading
           index="01"
           eyebrow="The case studies"
-          title="Seven subjects, each with its own contribution level"
+          title="The case studies"
           introduction="Every one of these is on the separate case-study site. The class beside each title is the contribution level that site publishes for it, and two of the seven are deliberately not claimed as mine."
         />
         <PortfolioIndex items={architectureSubjects} label="Architecture case studies" numbered={false} />
@@ -153,7 +153,7 @@ export default function ArchitecturePage() {
         <SectionHeading
           index="02"
           eyebrow="Ways in"
-          title="Four routes, ordered by how long you have"
+          title="Where to start"
           introduction="The first is the whole thing. The other three are the questions it gets asked most, each opening at the section that answers it."
         />
 
@@ -182,7 +182,7 @@ export default function ArchitecturePage() {
         <SectionHeading
           index="03"
           eyebrow="Scope"
-          title="What that material is, and what it is not"
+          title="What this covers"
           introduction="Worth reading before the diagrams rather than after. The case-study site makes a narrow claim carefully, and the narrowness is the point."
         />
 
@@ -210,7 +210,7 @@ export default function ArchitecturePage() {
         <SectionHeading
           index="04"
           eyebrow="The other treatment"
-          title="Two public versions of the same work, on purpose"
+          title="Why there are two versions"
           introduction="This site and the case-study site publish the same employer work at different levels, and it is worth knowing which one you are reading."
         />
         <div className="prose-large">

@@ -42,8 +42,8 @@ const NAV = [
   { href: "/experience", label: "Experience" },
   { href: "/research", label: "Research" },
   { href: "/work", label: "Projects" },
+  { href: "/certificates", label: "Certificates" },
   { href: "/learn", label: "Writing" },
-  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -155,13 +155,7 @@ export default function SiteHeader({ current, identity }: { current?: string; id
           </ul>
         </nav>
 
-        {/*
-          * Beside the links on desktop, and repeated inside the sheet on
-          * phones, where this one is hidden. Duplicated rather than moved
-          * because the control belongs next to the navigation at both sizes,
-          * and a single instance would have to be either unreachable on a
-          * phone or out of place on a desktop.
-          */}
+        {/* One instance, visible at every width. See the note in rail.css. */}
         <div className="rail-theme">
           <ThemeToggle />
         </div>

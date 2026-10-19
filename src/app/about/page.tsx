@@ -45,7 +45,7 @@ export default function AboutPage() {
     <PageShell current="/about">
       <StageHero
         eyebrow="How I work"
-        title="Mathematical care, practical engineering."
+        title="About"
         standfirst="I work at the boundary between modelling and systems: understanding what a model can support, then building the data, evaluation, and software path that makes that evidence useful."
         meta={[
           { label: "Based in", value: site.location },
@@ -57,7 +57,7 @@ export default function AboutPage() {
 
       <section className="section-wrap about-profile">
         <div>
-          <p className="section-index"><span>01</span>Current focus</p>
+          <p className="section-index">Current focus</p>
           <h2>Applied ML with research depth</h2>
           {/*
            * The portrait belongs here rather than in the stage. The stage makes a structural
@@ -104,7 +104,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap career-section">
-        <p className="section-index"><span>02</span>Disciplines</p>
+        <p className="section-index">Disciplines</p>
         <h2 className="standalone-heading">The kinds of work, not the order of them</h2>
         <p className="section-lede">
           Grouped by discipline rather than run as a timeline, because with five roles the order is
@@ -116,7 +116,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap education-section">
-        <p className="section-index"><span>03</span>Education and academic roles</p>
+        <p className="section-index">Education and academic roles</p>
         <h2 className="standalone-heading">Mathematics carried into computation</h2>
         <p className="section-lede">
           The approved public record includes TUM student research assistant titles in programming,
@@ -126,7 +126,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap credentials-section">
-        <p className="section-index"><span>04</span>Certifications and languages</p>
+        <p className="section-index">Certifications and languages</p>
         <h2 className="standalone-heading">The shorter part of the record</h2>
         <p className="section-lede">
           Two lists that belong on a CV rather than in a case study, published here so the document
@@ -136,7 +136,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap credentials-section">
-        <p className="section-index"><span>05</span>Volunteering</p>
+        <p className="section-index">Volunteering</p>
         <h2 className="standalone-heading">Work that was not paid for</h2>
         <p className="section-lede">
           Two entries, both longer-running than they look on a line. EYE 2023 is the European
@@ -148,12 +148,11 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap principles-section">
-        <p className="section-index"><span>06</span>Principles</p>
+        <p className="section-index">Principles</p>
         <h2 className="standalone-heading">How I approach technical work</h2>
         <div className="principle-grid">
-          {principles.map((principle, index) => (
+          {principles.map((principle) => (
             <article key={principle.title}>
-              <span aria-hidden="true">{(index + 1).toString().padStart(2, "0")}</span>
               <h3>{principle.title}</h3>
               <p>{principle.copy}</p>
             </article>
@@ -162,7 +161,7 @@ export default function AboutPage() {
       </section>
 
       <section className="section-wrap capability-detail">
-        <p className="section-index"><span>07</span>Capabilities with proof</p>
+        <p className="section-index">Capabilities with proof</p>
         <h2 className="standalone-heading">What I can contribute</h2>
         <div className="capability-table">
           {capabilities.map((capability) => (

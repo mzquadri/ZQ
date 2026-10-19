@@ -121,11 +121,16 @@ export default function DatenschutzPage() {
           them.
         </p>
 
+        {/*
+          * No link to an Impressum: that page is withheld until a postal
+          * address exists, so linking it would be a dead link. This section
+          * still names who is responsible, which is what a reader of a privacy
+          * notice needs from it.
+          */}
         <h2>Responsible for this site</h2>
         <p>
           {site.name}, {site.location}. Contact:{" "}
-          <a href={`mailto:${site.email}`}>{site.email}</a>. See also the{" "}
-          <a href="/impressum">Impressum</a>.
+          <a href={`mailto:${site.email}`}>{site.email}</a>.
         </p>
       </section>
     </PageShell>

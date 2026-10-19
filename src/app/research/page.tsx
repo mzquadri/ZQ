@@ -60,8 +60,8 @@ export default function ResearchPage() {
       <StageHero
         accent="var(--accent-graph)"
         eyebrow="Reliable machine learning and scientific modelling"
-        title="From fast predictions to decisions that expose uncertainty."
-        standfirst="My primary research asks how an ML surrogate can report more than a point estimate: where error is likely, whether uncertainty is calibrated, and when a prediction should enter a review queue. Approximate, quantify, calibrate, verify, decline, each step is only reachable from the one below it."
+        title="Research"
+        standfirst="My work asks how a machine learning model can report more than a single answer: where it is likely to be wrong, whether its stated confidence can be trusted, and when a prediction should be sent to a person instead."
       >
         <div className="research-audience" aria-label="Ways into the research">
           <div><span>Recruiter</span><strong>What did the work establish?</strong></div>
@@ -79,8 +79,8 @@ export default function ResearchPage() {
         <SectionHeading
           index="01"
           eyebrow="Research focus"
-          title="A weighted research identity, not a flat keyword list"
-          introduction="Reliable ML and uncertainty-aware graph surrogates are the primary body of work. Scientific modelling supports that direction; identifiability is an emerging mathematical inquiry rather than a claimed result."
+          title="What I work on"
+          introduction="Reliable machine learning and uncertainty on graph models are the main body of work. Scientific modelling supports it. Identifiability is an interest rather than a result I claim."
         />
         <div className="research-theme-grid">
           {researchThemes.map((theme) => (
@@ -110,7 +110,7 @@ export default function ResearchPage() {
           index="02"
           eyebrow="Primary record"
           title="Uncertainty Quantification for ML Models in Transportation Policy Analysis"
-          introduction="The submitted master's thesis studies a GNN surrogate for Paris capacity-reduction scenarios, with separate evidence for point accuracy, uncertainty ranking, calibration, conformal coverage, and selective review."
+          introduction="My completed M.Sc. thesis. A graph neural network stands in for a traffic simulation of Paris, and the work is about making its confidence trustworthy: how accurate it is, whether its uncertainty ranks its own errors, whether its stated ranges hold, and when to set a prediction aside."
         />
         <article className="research-record">
           <div className="research-record-heading">
@@ -137,8 +137,8 @@ export default function ResearchPage() {
         <SectionHeading
           index="03"
           eyebrow="Supporting work"
-          title="Scientific uncertainty and time-dependent models"
-          introduction="These projects extend the modelling context without being presented as equivalent to the thesis research record."
+          title="Supporting work"
+          introduction="Smaller projects around the same subject. They are not presented as equivalent to the thesis."
         />
         <div className="supporting-research-grid">
           {supportingProjects.map((project) => (

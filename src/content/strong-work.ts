@@ -145,7 +145,7 @@ export const strongWork: readonly StrongWork[] = [
   },
   {
     repository: "ML-Water-Quality-Classification",
-    title: "Water Quality: Four Classifiers, One Axis",
+    title: "Water Quality Classification",
     premise:
       "Four families of model on the same generated task, compared under cross-validation instead of asserted.",
     accent: "var(--accent-systems)",
@@ -218,7 +218,7 @@ export const strongWork: readonly StrongWork[] = [
   },
   {
     repository: "Weather-Data-Analytics-EDA",
-    title: "Weather Analytics: Measuring a Generator",
+    title: "Weather Data Analytics",
     premise:
       "An exploratory analysis that is scrupulous about what it is exploring: its own synthetic dataset, and nothing else.",
     accent: "var(--accent-vision)",
@@ -348,7 +348,7 @@ export const strongWork: readonly StrongWork[] = [
   },
   {
     repository: "Neural-Network-Identifiability-Analysis",
-    title: "Can Two Networks Hide the Same Function?",
+    title: "Identification of Neural Networks",
     premise:
       "Identical weights always behave identically. The interesting question runs the other way, and it is the subject of a TUM mathematics seminar.",
     accent: "var(--accent-retrieval)",

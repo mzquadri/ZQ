@@ -88,17 +88,31 @@
    * Accent worlds. Each flagship project owns one hue so that a reader who has scrolled past four
    * projects can still tell which one they are looking at from a single frame. `--accent` is
    * rebound per-section rather than used directly, so a scene never hard-codes its own colour.
+   *
+   * Re-toned to the site palette. These were eight saturated hues from the
+   * previous design, including an acid green and a bright amber, and they were
+   * chosen to be distinguishable rather than to belong together: a green label
+   * at the top of the Writing page had nothing to do with any other colour on
+   * the site. They are now variations within violet, blue and teal, which keeps
+   * them distinguishable from each other while keeping the page one piece of
+   * work. Each is a `light-dark()` pair so it holds on both grounds.
+   *
+   * The light halves are darker than a fill colour would need to be, because
+   * these are used as *text*: `color: var(--accent)` appears on eyebrows,
+   * figure labels and keys in about forty places. At fill strength they
+   * measured 3.69:1 on paper and failed AA on every page that set one. Every
+   * pair above clears 5.7:1 against its own ground.
    */
-  --accent-graph: #4cc4b0;
-  --accent-retrieval: #f0a03c;
-  --accent-pipeline: #7aa7f0;
-  --accent-flow: #5fb0d8;
-  --accent-vision: #d081c8;
-  --accent-systems: #8fd05a;
-  /* Added for the corpus scene, so no two neighbouring project accents share a hue. */
-  --accent-corpus: #a78bfa;
-  /* A neutral instrument colour, for a scene where amber has to keep meaning "this failed". */
-  --accent-steel: #8ea6bd;
+  --accent-graph: light-dark(#2f6b64, #82c0b8);
+  --accent-retrieval: light-dark(#6b5080, #c3a3d4);
+  --accent-pipeline: light-dark(#3a6490, #87aeda);
+  --accent-flow: light-dark(#336880, #7bb6cc);
+  --accent-vision: light-dark(#7d4763, #d292b4);
+  --accent-systems: light-dark(#44617a, #9bb9d2);
+  /* Kept distinct from `--accent-pipeline` so no two neighbouring scenes share a hue. */
+  --accent-corpus: light-dark(#5b4d86, #a99cd6);
+  /* A neutral instrument colour, for a scene where an accent has to keep meaning "this failed". */
+  --accent-steel: light-dark(#4a5b6c, #8ea6bd);
 
   --accent: var(--accent-graph);
 }

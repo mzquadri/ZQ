@@ -230,6 +230,21 @@ const renderedSource = `${publicContent}\n${publicSource}\n${writingSource}`;
  */
 const privacyText = renderedSource
   .replace(/https?:\/\/\S+/g, "")
+  /*
+   * SVG path geometry is removed too.
+   *
+   * The phone-number heuristic looks for a run of nine or more digits separated
+   * by spaces, dots, parentheses or hyphens, which is a fair description of a
+   * phone number and an exact description of a path coordinate list. The moon
+   * icon in the theme button, `d="M20.5 14.6A8.8 8.8 0 1 1 9.4 3.5a7 7 ..."`,
+   * failed the build as a suspected phone number.
+   *
+   * A `d` attribute cannot carry a contact detail in any sense a reader would
+   * encounter, so it is out of scope for a privacy check rather than something
+   * to exempt case by case. Only the attribute's value is dropped; everything
+   * else in the file is still scanned.
+   */
+  .replace(/\sd="[^"]*"/g, " ")
   .replaceAll(truthRegistry.profiles.email.value, "");
 const forbiddenClaims = [
   "production-grade",

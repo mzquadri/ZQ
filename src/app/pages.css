@@ -62,8 +62,7 @@
   margin: 0 0 0.85rem;
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--accent);
 }
 
@@ -94,8 +93,7 @@
 .page-stage-meta dt {
   font-family: var(--mono);
   font-size: var(--label-strong);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--stage-ink-soft);
   margin-bottom: 0.3rem;
 }
@@ -137,8 +135,7 @@
   fill: var(--stage-ink);
   font-family: var(--mono);
   font-size: 21px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .domain-centre {
@@ -283,8 +280,7 @@
   margin: 0 0 1rem;
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--accent);
 }
 
@@ -343,8 +339,7 @@
 .ending-channels span {
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--stage-ink-soft);
 }
 
@@ -415,8 +410,7 @@
   margin: 0 0 0.2rem;
   font-family: var(--mono);
   font-size: var(--label);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--accent);
 }
 
@@ -499,8 +493,7 @@
 .page-stage .research-audience span {
   font-family: var(--mono);
   font-size: var(--label-strong);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--accent);
 }
 
@@ -561,8 +554,7 @@
   min-height: 44px;
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--stage-ink-soft);
   text-decoration: none;
   border-bottom: 1px solid transparent;
@@ -784,8 +776,7 @@
 .thesis-flat-axis {
   fill: #6d7b86;
   font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .thesis-flat-scope {
@@ -821,8 +812,7 @@
 
 .thesis-readout dt {
   font-size: var(--label-strong);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: #6d7b86;
 }
 
@@ -898,8 +888,7 @@
 
 .thesis-reliability-key span {
   font-size: var(--label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: #6d7b86;
 }
 
@@ -1061,8 +1050,7 @@
 
 .world-readout dt {
   font-size: var(--label-strong);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--world-muted);
 }
 
@@ -1241,7 +1229,7 @@
 .insure-flat-name { fill: #e8e0d2; font-size: 12px; text-anchor: end; }
 .insure-flat-value { fill: #7aa7f0; font-size: 11px; }
 .insure-flat-value[data-doc] { fill: #4cc4b0; }
-.insure-flat-key { fill: #7aa7f0; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+.insure-flat-key { fill: #7aa7f0; font-size: 10px; letter-spacing: 0.01em; }
 .insure-flat-key[data-doc] { fill: #4cc4b0; }
 
 .insure-flat-figure figcaption {
@@ -1309,8 +1297,7 @@
   gap: 0.75rem;
   margin: 0.5rem 0 0;
   font-size: var(--label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .insure-panel-key span { color: #7aa7f0; }
@@ -1598,8 +1585,7 @@
 .streamflow-flat-board figcaption {
   margin: 0 0 0.7rem;
   font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--world-muted);
 }
 
@@ -1767,7 +1753,6 @@
   margin: 0 0 0.7rem;
   font-size: 0.8rem;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--world-muted);
 }
 .cifar-flat-samples figcaption { margin: 0.7rem 0 0; text-transform: none; letter-spacing: 0; font-size: 0.82rem; line-height: 1.5; color: #9aa7b2; }
@@ -2200,8 +2185,7 @@
 .next-system-kicker {
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--accent, var(--stage-ink-soft));
 }
 
@@ -2285,8 +2269,7 @@
   gap: 1rem;
   font-family: var(--mono);
   font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
 }
 
@@ -2361,8 +2344,7 @@
 .rating-amp-label {
   font-family: var(--mono);
   font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
 }
 
@@ -2419,8 +2401,7 @@
   justify-content: space-between;
   font-family: var(--mono);
   font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--line);
@@ -2479,8 +2460,7 @@
 .gw-failure-kind {
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--ink);
@@ -2516,8 +2496,7 @@
   display: block;
   font-family: var(--mono);
   font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
   margin-bottom: 0.3rem;
 }
@@ -2534,8 +2513,7 @@
 .gw-prov-kind {
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
   padding-bottom: 0.5rem;
   border-bottom: 2px solid var(--ink);
@@ -2551,8 +2529,7 @@
 .gw-prov-facts dt {
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--ink-soft);
   min-width: 6rem;
 }

@@ -1,22 +1,24 @@
 import { site } from "./truth";
 
 /**
- * The copy on the home page.
+ * The introduction, supplied by the owner and used word for word.
  *
- * The introduction is the Industry CV's profile paragraph, reworded only where
- * the CV's phrasing is CV-shaped ("AI/ML engineer with an M.Sc. in ...", which
- * reads as a header rather than a sentence). Every claim in it is on the CV and
- * the same four sentences are already live on the GitHub profile, so the two
- * surfaces say the same thing in the same words. Nothing here is new.
+ * It deliberately does not reuse the CV or the GitHub profile wording. An
+ * earlier version of this file carried the CV's profile paragraph, which meant
+ * a reader arriving from the CV or from GitHub read the same four sentences a
+ * third time. This is the same person described for someone meeting him here
+ * first: it opens by introducing him, and it explains the thesis by what it was
+ * for rather than by what it measured.
  *
- * It is four sentences on purpose. The brief asks for three or four, and the
- * fourth is the one that says what the work is actually about.
+ * Do not reword any of it. The claims are the owner's own and were given as
+ * final copy; the facts in it are checked against the CV in
+ * tests/home-facts.test.ts.
  */
 export const homeIntro = [
-  "I build machine learning systems and the services that run them.",
-  "My Master's thesis at the Technical University of Munich added calibrated confidence estimates to a graph neural network that predicts how Paris traffic responds to road policy.",
-  "At BP-IT Consulting I built retrieval services over vector and graph databases, a document extraction pipeline that pairs OCR with large language models, and the ML core of a chest X-ray classifier.",
-  "I work the whole path from data and training to a tested, deployed service, and I measure what a model gets wrong as carefully as what it gets right.",
+  "Hi, I'm Zamin. I'm an AI/ML engineer in Munich, and I build machine learning systems from the first look at the data to a service running in production.",
+  "I recently completed my M.Sc. in Mathematics in Science and Engineering at TUM. For my thesis I taught a traffic model for Paris to say how sure it is about each prediction, so people know when to trust it.",
+  "At BP-IT Consulting I worked on search over legal documents, AI that reads insurance papers, and a chest X-ray classifier, along with the Docker and Kubernetes setup behind them.",
+  "Open to full-time Machine Learning and Applied AI roles and PhD positions.",
 ] as const;
 
 /**

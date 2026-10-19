@@ -38,9 +38,9 @@ export default function AllWritingPage() {
         title="Every tutorial, newest first."
         standfirst="The whole library in one list. Each piece is written from work on this site, carries original code, and states what it does not establish."
         meta={[
-          { label: "Tutorials", value: entries.length.toString().padStart(2, "0") },
-          { label: "Topics", value: topics.length.toString().padStart(2, "0") },
-          { label: "Levels", value: levels.length.toString().padStart(2, "0") },
+          { label: "Tutorials", value: entries.length.toString() },
+          { label: "Topics", value: topics.length.toString() },
+          { label: "Levels", value: levels.length.toString() },
         ]}
       >
         <p className="hero-actions">
@@ -56,7 +56,7 @@ export default function AllWritingPage() {
       <section className="section-wrap writing-index" aria-labelledby="all-writing" id="all">
         <div className="writing-index-header">
           <div>
-            <p className="section-index"><span>01</span>Published</p>
+            <p className="section-index">Published</p>
             <h2 id="all-writing">{entries.length} tutorials</h2>
           </div>
         </div>

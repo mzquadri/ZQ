@@ -1,10 +1,13 @@
 /*
  * The global navigation rail.
  *
- * Deliberately the same dark rail on every route, including the paper reading pages. The
- * alternative - a rail that changes with the page under it - was tried and it made the site feel
- * like several sites sharing a domain. One constant bar is the strongest single cue that these
- * pages belong together, which is exactly what the rest of this redesign is trying to establish.
+ * The same bar on every route. A rail that changed with the page under it was
+ * tried and made the site feel like several sites sharing a domain; one
+ * constant bar is the strongest single cue that these pages belong together.
+ *
+ * It is no longer a *dark* rail. It draws from the stage tokens, which are now
+ * aliases onto the theme, so it follows the reader's choice like everything
+ * else rather than staying black on a light page.
  */
 
 .rail {
@@ -48,19 +51,33 @@
   font-family: var(--mono);
   font-size: 0.74rem;
   font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   text-decoration: none;
   color: var(--stage-ink);
 }
 
-.rail-mark > span[aria-hidden] {
+/*
+ * The initials badge. Targeted by position, not by `[aria-hidden]`: the
+ * attribute was removed from that span so the link's accessible name would
+ * contain the text a voice-control user can see, and this rule stopped matching
+ * with it, which quietly dropped the badge.
+ */
+.rail-mark > span:first-child {
   display: grid;
   place-items: center;
   width: 2rem;
   height: 2rem;
-  background: var(--accent, var(--accent-graph));
-  color: var(--stage-deep);
+  /*
+   * Its own colours, not the per-page scene accent.
+   *
+   * It used to be `background: var(--accent)` with `color: var(--stage-deep)`,
+   * which meant the site's identity mark changed hue with whatever project the
+   * reader happened to be looking at, and once the stage tokens followed the
+   * theme it became a pale foreground on a mid-tone ground: 3.37:1, failing AA
+   * on every page. Violet is the site's own accent and does not move.
+   */
+  background: var(--violet-ink);
+  color: light-dark(#ffffff, #10151c);
   border-radius: 3px;
 }
 
@@ -136,8 +153,7 @@
   color: var(--stage-ink);
   font-family: var(--mono);
   font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   cursor: pointer;
 }
 
@@ -202,8 +218,7 @@
   margin: 2rem 0 0;
   font-family: var(--mono);
   font-size: 0.74rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .rail-sheet-foot a {
@@ -294,18 +309,25 @@
  * rather than moved, because moving a focused control between two parents mid
  * resize loses the focus.
  */
+/*
+ * Visible at every width, and only once.
+ *
+ * While this was a three-state radio group it was too wide for the phone bar,
+ * so it was duplicated into the navigation sheet and each copy hidden at the
+ * other's size. A single 40px icon fits the bar, so there is one control now,
+ * always reachable without opening a menu first.
+ */
 .rail-theme {
   display: flex;
   align-items: center;
-  margin-left: 1.25rem;
-}
-
-.rail-sheet-theme {
-  display: none;
-  margin-top: 1.5rem;
+  margin-left: auto;
+  padding-left: 1rem;
 }
 
 @media (max-width: 860px) {
-  .rail-theme { display: none; }
-  .rail-sheet-theme { display: block; }
+  .rail-theme {
+    /* Sits between the wordmark and the menu button rather than pushed right. */
+    margin-left: auto;
+    padding-right: 0.5rem;
+  }
 }

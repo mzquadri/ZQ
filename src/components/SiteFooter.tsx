@@ -41,9 +41,11 @@ export default function SiteFooter() {
           <p className="footer-credit">{portraitCredit}</p>
         </div>
         <nav aria-label="Footer navigation" className="footer-links">
+          {/* Certificates moved into the main navigation, so it is not repeated
+              here. About and Architecture are second visits, not first ones. */}
           <Link href="/work">Selected work</Link>
           <Link href="/architecture">Architecture</Link>
-          <Link href="/certificates">Certificates</Link>
+          <Link href="/about">About</Link>
           <a href={"mailto:" + site.email}>
             <ArrowLabel>{site.email}</ArrowLabel>
           </a>
@@ -56,14 +58,17 @@ export default function SiteFooter() {
         </nav>
       </div>
       {/*
-        * The two German legal pages sit below the rest, quieter than the
-        * navigation above them. They are required to be reachable from every
-        * page, which is why they are in the footer, but nobody arrives looking
-        * for them.
+        * Datenschutz sits below the rest, quieter than the navigation above it.
+        * It has to be reachable from every page, which is why it is here, but
+        * nobody arrives looking for it.
+        *
+        * There is no Impressum link. The page is written and withheld until a
+        * c/o address exists, because an Impressum that announces a missing
+        * field is worse than no Impressum: its whole purpose is to be the
+        * complete statement of who is responsible. See docs/withheld/.
         */}
       <div className="footer-legal">
         <Link href="/datenschutz">Datenschutz</Link>
-        <Link href="/impressum">Impressum</Link>
       </div>
     </footer>
   );

@@ -250,12 +250,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <section className="section-wrap case-section two-column-copy">
           <div>
-            <p className="section-index"><span>01</span>Problem</p>
+            <p className="section-index">Problem</p>
             <h2>Why this work exists</h2>
             <p>{project.problem}</p>
           </div>
           <div>
-            <p className="section-index"><span>02</span>Contribution</p>
+            <p className="section-index">Contribution</p>
             <h2>What I can claim</h2>
             <p>{project.contribution}</p>
           </div>
@@ -292,13 +292,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <CaseStory project={project} />
 
         <section className="section-wrap case-section">
-          <p className="section-index"><span>03</span>System</p>
+          <p className="section-index">System</p>
           <h2>Workflow and decisions</h2>
           {project.systemSummary ? <p className="system-summary">{project.systemSummary}</p> : null}
           <ol className="workflow-list">
             {project.workflow.map((step, index) => (
               <li key={step}>
-                <span>{(index + 1).toString().padStart(2, "0")}</span>
+                <span>{(index + 1).toString()}</span>
                 <strong>{step}</strong>
               </li>
             ))}
@@ -316,7 +316,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         ) : null}
 
         <section className="section-wrap case-section evidence-section">
-          <p className="section-index"><span>04</span>Evidence</p>
+          <p className="section-index">Evidence</p>
           <h2>What is actually versioned</h2>
           <div className="metric-grid">
             {project.evidence.map((metric) => (
@@ -331,7 +331,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         {project.artifacts ? (
           <section className="section-wrap case-section artifact-section">
-            <p className="section-index"><span>05</span>Inspection points</p>
+            <p className="section-index">Inspection points</p>
             <h2>Go directly to the evidence</h2>
             <div className="artifact-links">
               {project.artifacts.map((artifact) => (
@@ -346,14 +346,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <section className="section-wrap case-section quality-grid">
           <div>
-            <p className="section-index"><span>{project.artifacts ? "06" : "05"}</span>Quality controls</p>
+            <p className="section-index">Quality controls</p>
             <h2>How the work is checked</h2>
             <ul className="editorial-list positive-list">
               {project.quality.map((item) => <li key={item}>{item}</li>)}
             </ul>
           </div>
           <div className="limitation-panel">
-            <p className="section-index"><span>{project.artifacts ? "07" : "06"}</span>Limitations</p>
+            <p className="section-index">Limitations</p>
             <h2>Where the evidence stops</h2>
             <ul className="editorial-list">
               {project.limitations.map((item) => <li key={item}>{item}</li>)}

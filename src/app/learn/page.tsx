@@ -68,11 +68,11 @@ export default function LearnPage() {
       <StageHero
         accent="var(--accent-systems)"
         eyebrow="Notes from the work"
-        title="Build the system. Explain the reasoning."
-        standfirst="Tutorials on the engineering behind the work on this site: idempotent ingestion, independent verification, retrieval that reports its own degradation, calibration, and where a system should decline to answer. Every piece carries original code and states what it does not establish."
+        title="Writing"
+        standfirst="Notes on the engineering behind the projects on this site: how to make re-running a data load safe, how to check a system against something other than itself, how to tell when a model is confident and wrong, and when it should decline to answer. Each piece carries working code."
         meta={[
-          { label: "Tutorials", value: entries.length.toString().padStart(2, "0") },
-          { label: "Topics", value: topics.length.toString().padStart(2, "0") },
+          { label: "Tutorials", value: entries.length.toString() },
+          { label: "Topics", value: topics.length.toString() },
         ]}
       >
         <div className="work-jump">
@@ -87,7 +87,7 @@ export default function LearnPage() {
         <section className="section-wrap writing-index" aria-labelledby="featured-writing" id="featured">
           <div className="writing-index-header">
             <div>
-              <p className="section-index"><span>01</span>Start here</p>
+              <p className="section-index">Start here</p>
               <h2 id="featured-writing">If you read three</h2>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function LearnPage() {
       <section className="section-wrap writing-browse" aria-labelledby="browse-writing" id="browse">
         <div className="writing-index-header">
           <div>
-            <p className="section-index"><span>{leadWithFeatured ? "02" : "01"}</span>Browse</p>
+            <p className="section-index">Browse</p>
             <h2 id="browse-writing">By subject, or by how much you already know</h2>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function LearnPage() {
       <section className="section-wrap writing-index" aria-labelledby="latest-writing" id="all">
         <div className="writing-index-header">
           <div>
-            <p className="section-index"><span>{leadWithFeatured ? "03" : "02"}</span>Published</p>
+            <p className="section-index">Published</p>
             <h2 id="latest-writing">{useGrid ? "More from the library" : "Latest tutorial"}</h2>
           </div>
           <a className="rss-link" href="/rss.xml">RSS feed</a>

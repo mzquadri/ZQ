@@ -160,8 +160,7 @@
   display: block;
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--accent);
   margin-bottom: 0.6rem;
 }
@@ -196,7 +195,6 @@
   line-height: 0.84;
   letter-spacing: -0.055em;
   font-weight: 700;
-  text-transform: uppercase;
   /* The type sits over the figure, so it needs its own ground without becoming a solid box. */
   text-shadow: 0 0 42px color-mix(in oklab, var(--stage) 88%, transparent);
 }
@@ -220,8 +218,7 @@
   /* Floor raised to the label scale: at 900px this resolved to 10.9px for four words that
      are the first thing said about what I do. */
   font-size: clamp(var(--label), 1.15vw, 0.82rem);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--stage-ink-soft);
 }
 
@@ -259,7 +256,6 @@
   font-family: var(--mono);
   font-size: clamp(0.72rem, 1.1vw, 0.8rem);
   letter-spacing: 0.07em;
-  text-transform: uppercase;
   /*
    * 72%, not 62%.
    *
@@ -331,8 +327,7 @@
   margin: 0;
   font-family: var(--mono);
   font-size: var(--label);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   color: var(--stage-ink-soft);
 }
 

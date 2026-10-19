@@ -59,10 +59,12 @@ export default async function Hero() {
             ))}
           </div>
 
-          <p className="hero-where">
-            {site.location}. {site.availability}.
-          </p>
-
+          {/*
+            * No separate location and availability line any more. The intro
+            * opens with "an AI/ML engineer in Munich" and closes on what he is
+            * open to, so a line repeating both sat directly underneath saying
+            * it twice.
+            */}
           <nav className="hero-links" aria-label="Sections of this site">
             {heroLinks.map((link) => (
               <Link key={link.href} className="hero-link" href={link.href}>

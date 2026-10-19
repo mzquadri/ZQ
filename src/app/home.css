@@ -146,13 +146,6 @@
   margin-bottom: 0;
 }
 
-.hero-where {
-  max-width: var(--measure);
-  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
-  color: var(--ink-soft);
-  font-size: 0.95rem;
-}
-
 /* ---- Links ----------------------------------------------------------------------------------- */
 
 .hero-links {
@@ -250,5 +243,332 @@
   .hero-map {
     inset: -10% -30% -10% -10%;
     opacity: 0.16;
+  }
+}
+
+/* ---- Home sections --------------------------------------------------------------------------- */
+
+/*
+ * Everything below the hero. One rhythm: a heading, a line of plain
+ * explanation, then the content. No cards with the same radius and the same
+ * shadow for every kind of thing; the work list is bordered rows, experience is
+ * ruled entries, skills are plain lists.
+ */
+
+.hs {
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.hs-h2 {
+  margin: 0;
+  font-variation-settings: "wdth" 106, "wght" 620;
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  line-height: 1.08;
+}
+
+.hs-h2-spaced {
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+
+.hs-lede {
+  max-width: var(--measure);
+  margin: 0.8rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.hs-note {
+  max-width: var(--measure);
+  margin: 1.5rem 0 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--rose);
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.hs-more {
+  margin: 1.5rem 0 0;
+}
+
+.hs-more a {
+  color: var(--violet-ink);
+  font-size: 0.95rem;
+  text-underline-offset: 0.25em;
+}
+
+/* ---- Selected work --------------------------------------------------------------------------- */
+
+/*
+ * Two columns at most, never three.
+ *
+ * `auto-fit` with a 24rem minimum gave three columns at 1440px, and the
+ * nth-child rules below assume two: with three tracks the left rule landed on
+ * the middle card of each row and the fourth card picked up the indent meant
+ * for a right-hand column, so the second row started further right than the
+ * first. Explicit tracks rather than a rule that happens to produce two at the
+ * widths I looked at.
+ *
+ * Three columns would be wrong anyway at this measure. A card holds two
+ * sentences and a result, and a third of 76rem is too narrow to set them in.
+ */
+.work-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.work-card {
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 60rem) {
+  .work-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* The right-hand column takes the dividing rule, the left takes the gutter. */
+  .work-card:nth-child(even) {
+    padding-left: 2.25rem;
+    border-left: 1px solid var(--line);
+  }
+
+  .work-card:nth-child(odd) {
+    padding-right: 2.25rem;
+  }
+}
+
+.work-name {
+  margin: 0;
+  font-variation-settings: "wdth" 102, "wght" 600;
+  font-size: 1.08rem;
+  line-height: 1.3;
+}
+
+.work-name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .work-name a:hover {
+    color: var(--violet-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.work-context {
+  margin: 0.2rem 0 0;
+  color: var(--violet-ink);
+  font-size: 0.86rem;
+}
+
+.work-what {
+  max-width: 46ch;
+  margin: 0.7rem 0 0;
+  line-height: 1.55;
+}
+
+/*
+ * The result is the line a hiring reader is actually looking for, so it gets
+ * the teal rule: on this site teal means a measured thing.
+ */
+.work-result {
+  max-width: 46ch;
+  margin: 0.7rem 0 0;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--teal-accent);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.work-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.work-tech li {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+}
+
+/* ---- Research -------------------------------------------------------------------------------- */
+
+.res-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: clamp(1.25rem, 3vw, 2.25rem);
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.res-item {
+  padding-top: 0.9rem;
+  border-top: 2px solid var(--teal-accent);
+}
+
+.res-figure {
+  margin: 0;
+  color: var(--teal-ink);
+  font-variation-settings: "wdth" 104, "wght" 620;
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  line-height: 1.15;
+}
+
+.res-plain {
+  margin: 0.5rem 0 0;
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+/* ---- Experience ------------------------------------------------------------------------------ */
+
+.exp-list {
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.exp-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.3rem 1.5rem;
+  padding: 1.3rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.exp-role {
+  margin: 0;
+  font-variation-settings: "wght" 580;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+.exp-org {
+  margin: 0.15rem 0 0;
+  color: var(--violet-ink);
+  font-size: 0.92rem;
+}
+
+.exp-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  color: var(--ink-soft);
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.exp-period {
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.exp-bullets {
+  grid-column: 1 / -1;
+  max-width: var(--measure);
+  margin: 0.8rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.exp-bullets li {
+  margin-bottom: 0.45rem;
+  line-height: 1.55;
+}
+
+.exp-bullets li::marker {
+  color: var(--teal-ink);
+}
+
+/* ---- Education and skills ---------------------------------------------------------------------- */
+
+.es-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.edu-list,
+.skill-list {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edu-item {
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.edu-credential {
+  margin: 0;
+  font-variation-settings: "wght" 570;
+  line-height: 1.35;
+}
+
+.edu-institution {
+  margin: 0.15rem 0 0;
+  color: var(--violet-ink);
+  font-size: 0.9rem;
+}
+
+.edu-note {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+
+.skill-group {
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.skill-name {
+  margin: 0 0 0.45rem;
+  font-variation-settings: "wght" 570;
+  font-size: 0.92rem;
+}
+
+.skill-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skill-items li {
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 620px) {
+  .exp-item {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .exp-meta {
+    text-align: left;
   }
 }

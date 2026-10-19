@@ -29,14 +29,14 @@ export interface LinkableWork {
 export const standaloneWork: readonly LinkableWork[] = [
   {
     slug: "reliable-knowledge-systems",
-    title: "Keeping derived state honest",
+    title: "Legal Knowledge Base",
     classification: "Current engineering / Synthetic model",
     summary:
       "A synthetic model of keeping several derived representations of one source honest: capture, derivation, verification that runs backwards, and rebuilding derived state from evidence. Illustrative throughout; it describes no deployed system.",
   },
   {
     slug: "medico",
-    title: "Uncertain is not negative",
+    title: "AI Radiologist",
     classification: "Research prototype / Medical imaging",
     summary:
       "A multi-label chest X-ray classifier trained across three corpora that disagree about what they label. No trained weights, no patient data, no held-out metrics, and no clinical validation.",

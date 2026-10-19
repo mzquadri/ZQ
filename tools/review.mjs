@@ -86,6 +86,25 @@ if (!up) {
   process.exit(1);
 }
 
+/*
+ * Warm every route before the browser sees it.
+ *
+ * `next start` answers the readiness probe long before it has served anything,
+ * and the first request to a route pays for work the later ones do not. On a
+ * loaded machine that first request took longer than Playwright's navigation
+ * timeout, so the screenshot step failed on a page that was fine. Fetching each
+ * route once first moves that cost out of the measurement.
+ */
+for (const route of routes) {
+  try {
+    const res = await fetch(`http://localhost:${PORT}${route}`);
+    const body = await res.text();
+    console.log(`  warm ${route} ${res.status} ${(body.length / 1024).toFixed(0)} KB`);
+  } catch (err) {
+    console.log(`  warm ${route} FAILED ${err.message}`);
+  }
+}
+
 run("node", ["tools/shoot-local.mjs", `http://localhost:${PORT}`, OUT, ...routes], "screenshots");
 stop();
 console.log("done");

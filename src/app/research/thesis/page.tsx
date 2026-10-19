@@ -96,7 +96,7 @@ export default function ThesisResearchPage() {
         <ThesisWorld flat={<ThesisWorldFlat />} />
 
         <section className="section-wrap research-question">
-          <p className="section-index"><span>01</span>Research question</p>
+          <p className="section-index">Research question</p>
           <h2>Fast prediction is useful only when failure is visible.</h2>
           <p>
             Agent-based transport simulations can be expensive to run. A graph neural network
@@ -114,7 +114,7 @@ export default function ThesisResearchPage() {
 
         <section className="section-wrap thesis-system-section">
           <div className="research-section-copy">
-            <p className="section-index"><span>02</span>System context</p>
+            <p className="section-index">System context</p>
             <h2>From simulation output to a graph surrogate</h2>
             <p>
               Each scenario becomes a road-link graph. A PointNet, TransformerConv, and GAT model
@@ -127,7 +127,7 @@ export default function ThesisResearchPage() {
 
         <section className="section-wrap method-section">
           <div className="research-section-copy">
-            <p className="section-index"><span>03</span>Methods</p>
+            <p className="section-index">Methods</p>
             <h2>Different tools answer different reliability questions.</h2>
             <p>
               MC Dropout and deep ensembles estimate spread in different ways. Calibration tests
@@ -145,7 +145,7 @@ export default function ThesisResearchPage() {
 
         <section className="section-wrap selective-research-section">
           <div className="research-section-copy">
-            <p className="section-index"><span>04</span>Selective prediction</p>
+            <p className="section-index">Selective prediction</p>
             <h2>Choose review capacity; observe the retained-set trade-off.</h2>
             <p>
               Trial 8 MC Dropout uncertainty was used to sort predictions from least to most
@@ -158,7 +158,7 @@ export default function ThesisResearchPage() {
 
         <section className="section-wrap calibration-research-section">
           <div className="research-section-copy">
-            <p className="section-index"><span>05</span>Calibration & coverage</p>
+            <p className="section-index">Calibration & coverage</p>
             <h2>Ranking error is not the same as calibrating uncertainty.</h2>
             <p>
               A model can rank hard cases while still producing under-dispersed uncertainty.
@@ -174,7 +174,7 @@ export default function ThesisResearchPage() {
 
         <section className="section-wrap findings-section">
           <div className="research-section-copy">
-            <p className="section-index"><span>06</span>Findings</p>
+            <p className="section-index">Findings</p>
             <h2>What the aggregate evidence supports</h2>
           </div>
           <div className="research-finding-grid">
@@ -187,7 +187,7 @@ export default function ThesisResearchPage() {
 
         <section className="section-wrap reproducibility-section">
           <div className="research-section-copy">
-            <p className="section-index"><span>07</span>Reproducibility boundary</p>
+            <p className="section-index">Reproducibility boundary</p>
             <h2>Public aggregate evidence, explicit exclusions</h2>
             <p>
               The submitted PDF remains immutable and contains a numerical claim corrected after
@@ -219,7 +219,7 @@ export default function ThesisResearchPage() {
 
         <section className="section-wrap limitation-section">
           <div>
-            <p className="section-index"><span>08</span>Scientific limits</p>
+            <p className="section-index">Scientific limits</p>
             <h2>What this thesis does not establish</h2>
           </div>
           <ul className="editorial-list">
@@ -232,7 +232,7 @@ export default function ThesisResearchPage() {
         {relatedWriting.length > 0 ? (
           <section className="section-wrap thesis-next-section">
             <div>
-              <p className="section-index"><span>09</span>Learn and inspect</p>
+              <p className="section-index">Learn and inspect</p>
               <h2>Move between the scientific record, teaching layer, and source trail.</h2>
             </div>
             <div className="writing-grid">

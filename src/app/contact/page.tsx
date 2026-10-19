@@ -41,7 +41,7 @@ export default function ContactPage() {
         <div className="ending-inner">
           <div className="ending-copy">
             <p className="ending-eyebrow">Contact / Full-time opportunities</p>
-            <h1 className="ending-line">Open to work where the result has to hold up.</h1>
+            <h1 className="ending-line">Get in touch</h1>
             <p className="ending-support">
               I work at the boundary between modelling and systems. The fastest way to judge
               whether that is useful to you is the evidence itself.
