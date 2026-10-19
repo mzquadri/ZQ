@@ -9,6 +9,7 @@ import {
 import { DomainsScene, StageHero } from "@/components/cinema/PageStages";
 import { DomainsCanvas } from "@/components/scene/PersonalCanvases";
 import PageShell from "@/components/PageShell";
+import PhotoStrip from "@/components/about/PhotoStrip";
 import ProfilePortrait from "@/components/ProfilePortrait";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
@@ -58,7 +59,7 @@ export default function AboutPage() {
       <section className="section-wrap about-profile">
         <div>
           <p className="section-index">Current focus</p>
-          <h2>Applied ML with research depth</h2>
+          <h2>Applied machine learning, with the research behind it</h2>
           {/*
            * The portrait belongs here rather than in the stage. The stage makes a structural
            * claim about where the work sits; this section is the personal context, which is the
@@ -103,21 +104,32 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <section className="section-wrap photos-section">
+        <p className="section-index">Photographs</p>
+        <h2 className="standalone-heading">Where the work happened</h2>
+        <p className="section-lede">
+          Munich for the TUM years, Strasbourg for the European Youth Event. The
+          last of the four is the European Parliament&apos;s own photograph and
+          carries its credit.
+        </p>
+        <PhotoStrip />
+      </section>
+
       <section className="section-wrap career-section">
         <p className="section-index">Disciplines</p>
-        <h2 className="standalone-heading">The kinds of work, not the order of them</h2>
+        <h2 className="standalone-heading">The kinds of work</h2>
+        {/* "five roles" until the IISER Bhopal record left the CV. Four now. */}
         <p className="section-lede">
-          Grouped by discipline rather than run as a timeline, because with five roles the order is
-          the only thing a sequence adds and it is the thing a reader over-reads. Each role carries
-          the period it ran for, taken from the CV; no duty, client detail or impact figure beyond
-          the approved record is inferred from a title.
+          Grouped by discipline rather than run as a timeline. Each role carries
+          the period it ran for, taken from the CV, and nothing beyond the
+          approved record is inferred from a title.
         </p>
         <ExperienceList />
       </section>
 
       <section className="section-wrap education-section">
         <p className="section-index">Education and academic roles</p>
-        <h2 className="standalone-heading">Mathematics carried into computation</h2>
+        <h2 className="standalone-heading">Education</h2>
         <p className="section-lede">
           The approved public record includes TUM student research assistant titles in programming,
           visualization, and numerical methods. No duties beyond those titles are inferred.
@@ -127,7 +139,7 @@ export default function AboutPage() {
 
       <section className="section-wrap credentials-section">
         <p className="section-index">Certifications and languages</p>
-        <h2 className="standalone-heading">The shorter part of the record</h2>
+        <h2 className="standalone-heading">Certificates</h2>
         <p className="section-lede">
           Two lists that belong on a CV rather than in a case study, published here so the document
           and the pages agree about what the record contains.
@@ -137,7 +149,7 @@ export default function AboutPage() {
 
       <section className="section-wrap credentials-section">
         <p className="section-index">Volunteering</p>
-        <h2 className="standalone-heading">Work that was not paid for</h2>
+        <h2 className="standalone-heading">Volunteering</h2>
         <p className="section-lede">
           Two entries, both longer-running than they look on a line. EYE 2023 is the European
           Parliament&rsquo;s youth event and was held at the Parliament in Strasbourg; the

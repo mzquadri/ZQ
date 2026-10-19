@@ -61,9 +61,22 @@ export const parisNetwork = {
 /** The photographer's credit, carried on every page rather than only this one. */
 export const portraitCredit = "Photo: Davies" as const;
 
+/**
+ * The hero portrait, and the depth map that gives it parallax.
+ *
+ * Both are produced together by `_portfolio-work/photos/make_hero_3d.py` from
+ * one alpha matte and one crop box, so they align by construction. The depth
+ * map comes from Depth Anything V2 run locally: the photograph is licensed from
+ * DAVIES and sending it to a hosted depth service would be a redistribution
+ * nobody licensed.
+ *
+ * The photograph itself is untouched. The shader offsets where it samples;
+ * it never writes a pixel. See src/components/home/DepthPortrait.tsx.
+ */
 export const portrait = {
-  src: "/media/hero-portrait.webp",
-  width: 900,
-  height: 1290,
+  src: "/media/hero-3d-color.webp",
+  depth: "/media/hero-3d-depth.webp",
+  width: 1000,
+  height: 1452,
   alt: `${site.name}, black and white portrait`,
 } as const;

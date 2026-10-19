@@ -135,3 +135,6 @@ tools/shots/
 # Lighthouse JSON reports. Large, machine-specific, and regenerated per run.
 tools/lh/
 .env*.local
+
+# Motion recordings and extracted frames from tools/record-motion.mjs.
+tools/shots/recording/

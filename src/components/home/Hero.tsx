@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 
+import DepthPortrait from "@/components/home/DepthPortrait";
 import { heroLinks, homeIntro, parisNetwork, portrait } from "@/content/home";
 import { site } from "@/content/portfolio";
 
@@ -75,17 +75,18 @@ export default async function Hero() {
         </div>
 
         <figure className="hero-portrait">
-          <Image
+          {/*
+            * Not next/image. The depth shader needs the colour texture and the
+            * depth texture to be the same pixels at the same size, and an
+            * optimiser that re-encodes one of them at a width of its own
+            * choosing breaks that alignment. Both are already WebP at the size
+            * they are displayed, so there is nothing for an optimiser to win.
+            */}
+          <DepthPortrait
             alt={portrait.alt}
-            className="hero-portrait-img"
+            color={portrait.src}
+            depth={portrait.depth}
             height={portrait.height}
-            /*
-             * The only image above the fold, so it is the one that should not
-             * wait for anything. Everything else on the page is text.
-             */
-            priority
-            sizes="(max-width: 860px) 60vw, 380px"
-            src={portrait.src}
             width={portrait.width}
           />
         </figure>

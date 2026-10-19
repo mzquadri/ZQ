@@ -3016,3 +3016,73 @@
     text-decoration: underline;
   }
 }
+
+/* ---- About page photographs ------------------------------------------------------------------ */
+
+.photo-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.photo-figure {
+  margin: 0;
+  /* The drift the script writes. Composited, so scrolling stays cheap. */
+  transform: translate3d(0, var(--drift, 0px), 0);
+  will-change: transform;
+}
+
+.photo-figure img {
+  display: block;
+  width: 100%;
+  height: 17rem;
+  /*
+   * Cropped to a common height so a row of different aspect ratios reads as a
+   * row rather than a ragged edge.
+   */
+  object-fit: cover;
+  /*
+   * Biased towards the top, because these are portrait-orientation photographs
+   * of a person and a centred crop of one takes the head off. At 30% the Munich
+   * winter photograph was cropped to a jacket.
+   */
+  object-position: center 12%;
+  border-radius: 3px;
+  background: var(--paper-deep);
+}
+
+/*
+ * The European Parliament photograph is laid out whole.
+ *
+ * Its licence requires the entire item to be reproduced, and `object-fit:
+ * cover` is a crop. `contain` letterboxes it inside the same box instead, so
+ * the row still aligns and nothing is cut off. This is the CSS half of
+ * `croppable: false` in src/content/about-photos.ts.
+ */
+.photo-figure[data-whole] img {
+  object-fit: contain;
+  object-position: center;
+}
+
+.photo-figure figcaption {
+  margin-top: 0.6rem;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.photo-credit {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-figure {
+    transform: none;
+    will-change: auto;
+  }
+}

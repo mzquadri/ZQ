@@ -1,203 +1,105 @@
 /**
- * Continuous motion capture, at reading speed.
+ * Record the hero's depth parallax and the About page's photo drift.
  *
- * Every visual review of this site so far has been a filmstrip: discrete screenshots at chosen
- * scroll offsets. A filmstrip proves composition and cannot prove motion. Everything that makes
- * scroll-driven work feel cheap - stutter, a scene that snaps instead of settling, a long task
- * that eats a third of a second while the reader is mid-gesture - lives strictly between two
- * screenshots and is invisible to every review done that way.
+ *   node tools/record-motion.mjs http://localhost:3242 tools/shots/recording
  *
- * So this records the site the way it is actually used: real wheel events, at a real reader's
- * velocity, in wall-clock time, against the production build. Two artifacts come out of one pass.
+ * Two clips, because the two effects are driven by different inputs and a
+ * single pass would show neither properly:
  *
- *   1. A video file, at 1440x900, at 1x. Not a developer capture with instant jumps; the scroll
- *      is emitted at ~60 Hz with a per-phase velocity in pixels per second, so a second of the
- *      recording is a second of reading.
+ *   hero    the pointer is moved around the portrait in a slow figure, so the
+ *           parallax is driven the way a reader drives it.
+ *   about   the page is scrolled at a readable pace, which is what the photo
+ *           drift responds to.
  *
- *   2. A frame timeline recorded inside that same pass: rAF deltas, long tasks and layout shifts,
- *      all stamped against the video clock. This is the half a filmstrip structurally cannot
- *      show. A dropped frame at 00:14 is a number here and a flinch on playback, and the two
- *      refer to the same moment.
- *
- * The instrument is deliberately cheap - it appends a number per frame and does nothing else -
- * because a probe that costs frames to read frames measures itself.
- *
- * Usage: node tools/record-motion.mjs <cut> [outDir] [origin]
+ * Playwright's own video recording is used rather than a frame-by-frame
+ * screenshot loop. A canvas on requestAnimationFrame cannot be screenshotted
+ * reliably (the element never reports "stable", and software WebGL is too slow
+ * to complete a page screenshot), but video capture takes whatever the
+ * compositor presents, which is exactly what a visitor sees.
  */
-import { chromium } from "@playwright/test";
-import { mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { chromium } from "playwright";
+import { mkdir, readdir, rename } from "node:fs/promises";
 import { join } from "node:path";
 
-const cutName = process.argv[2] ?? "home";
-const outDir = process.argv[3] ?? "media/motion";
-const origin = process.argv[4] ?? "http://127.0.0.1:3400";
+const base = process.argv[2] ?? "http://localhost:3242";
+const out = process.argv[3] ?? "tools/shots/recording";
+await mkdir(out, { recursive: true });
 
-const VIEWPORT = { width: 1440, height: 900 };
-
-/* A reader's hand, in pixels per second. Transit is moving between things; read is moving
- * through something worth looking at; scrub is the pace a pinned scene is meant to be seen at. */
-const SPEED = { transit: 1300, read: 620, scrub: 330 };
-
-/** The eight detail routes get the same short cut: the opening object, then into the world. */
-const detailCut = (slug) => [
-  { goto: `/work/${slug}`, hold: 2.2, label: "opening composition at rest" },
-  { scroll: 900, speed: "read", label: "leave the identity object" },
-  { hold: 1.0 },
-  { scroll: 2600, speed: "scrub", label: "through the world" },
-  { hold: 1.4, label: "rest inside the world" },
-  { scroll: 2200, speed: "read", label: "onward through the case study" },
-  { hold: 1.0 },
-];
-
-const CUTS = {
-  /*
-   * The homepage cut, re-shot for an index.
-   *
-   * It used to scroll roughly thirty-five thousand pixels through eight full-viewport chapters.
-   * The page is six and a half thousand now and has no chapters in it, so every one of those
-   * marks landed in the footer and the recording was a still of the bottom of the page.
-   */
-  home: [
-    { goto: "/", hold: 2.4, label: "open on the hero, at rest" },
-    { scroll: 340, speed: "scrub", label: "the hero sequence, all five beats" },
-    { hold: 1.4, label: "hero rest frame" },
-    { scroll: 1000, speed: "transit", label: "into the work index" },
-    { hold: 1.6, label: "the index, whole" },
-    { scroll: 1400, speed: "read", label: "research and tutorials" },
-    { hold: 1.2 },
-    { scroll: 1600, speed: "read", label: "experience, then the ending" },
-    { hold: 2.4, label: "ending, at the bottom" },
-  ],
-  transport: detailCut("transport-uq"),
-  rks: detailCut("reliable-knowledge-systems"),
-  medico: detailCut("medico"),
-  insureassist: detailCut("insureassist-rag"),
-  mlops: detailCut("mlops-reference-pipeline"),
-  hydrology: detailCut("hydrology-uq"),
-  streamflow: detailCut("streamflow-forecasting"),
-  cifar: detailCut("cifar10-cnn"),
-};
-
-const cut = CUTS[cutName];
-if (!cut) {
-  console.error(`unknown cut "${cutName}". known: ${Object.keys(CUTS).join(", ")}`);
-  process.exit(1);
-}
-
-/* Recorded inside the page, against the same clock the video is stamped with. */
-const INSTRUMENT = `(() => {
-  const t0 = performance.now();
-  window.__motion = { t0, frames: [], long: [], shifts: [], marks: [] };
-  let last = t0;
-  const tick = (now) => {
-    window.__motion.frames.push(Math.round((now - last) * 100) / 100);
-    last = now;
-    requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-  try {
-    new PerformanceObserver((l) => {
-      for (const e of l.getEntries()) {
-        window.__motion.long.push({ at: Math.round(e.startTime - t0), ms: Math.round(e.duration) });
-      }
-    }).observe({ type: "longtask", buffered: true });
-  } catch {}
-  try {
-    new PerformanceObserver((l) => {
-      for (const e of l.getEntries()) {
-        if (e.hadRecentInput) continue;
-        window.__motion.shifts.push({ at: Math.round(e.startTime - t0), value: e.value });
-      }
-    }).observe({ type: "layout-shift", buffered: true });
-  } catch {}
-})();`;
-
-const raw = join(outDir, `.raw-${cutName}`);
-mkdirSync(outDir, { recursive: true });
-rmSync(raw, { recursive: true, force: true });
-mkdirSync(raw, { recursive: true });
-
-/*
- * Launched against the real GPU on purpose.
- *
- * Headless Chromium defaults to SwiftShader, a software rasteriser. That is fine for asserting
- * what a page contains and useless for asserting how it moves: the first pass of this review
- * measured the WebGL detail routes at 8-20 fps and the finding was an artifact of rasterising
- * every fragment on the CPU. No reader has that machine. These flags hand rendering to the
- * actual adapter, which is the only configuration in which a frame time means anything.
- *
- * Draw-call counts are not affected either way - a call issued to a software rasteriser is still
- * a call - so the offscreen audit remains valid under the default launcher.
- */
-const GPU = ["--use-gl=angle", "--use-angle=default", "--enable-gpu"];
-
-const browser = await chromium.launch({ args: GPU });
-/* NO_VIDEO=1 runs the identical cut with the recorder off. The encoder is not free and its cost
- * scales with how much of the frame changed, so a pass that scrolls prose - where every pixel
- * moves - is far more expensive to encode than a pinned scene, where most of the frame is still.
- * Comparing the two runs separates the site's frame timing from the recording of it. */
-const recording = process.env.NO_VIDEO !== "1";
-const context = await browser.newContext({
-  viewport: VIEWPORT,
-  deviceScaleFactor: 1,
-  reducedMotion: "no-preference",
-  ...(recording ? { recordVideo: { dir: raw, size: VIEWPORT } } : {}),
+const browser = await chromium.launch({
+  args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
 });
-await context.addInitScript(INSTRUMENT);
-const page = await context.newPage();
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const mark = (label) =>
-  page.evaluate((l) => {
-    window.__motion?.marks.push({ at: Math.round(performance.now() - window.__motion.t0), label: l });
-  }, label);
+async function clip(name, run) {
+  const dir = join(out, `_${name}`);
+  await mkdir(dir, { recursive: true });
+  const ctx = await browser.newContext({
+    viewport: { width: 1280, height: 800 },
+    /*
+     * No explicit `size`. Giving one that does not match the viewport makes
+     * Playwright letterbox the page inside the frame, and the first attempt
+     * came out as the site in the top-left corner of a grey rectangle. Omitted,
+     * the video is recorded at the viewport's own size.
+     */
+    recordVideo: { dir },
+    reducedMotion: "no-preference",
+  });
+  const page = await ctx.newPage();
+  await run(page);
+  await ctx.close();
 
-/** Emit wheel events at ~60 Hz so the page receives motion, not teleportation. */
-async function scrollBy(distance, pxPerSecond) {
-  const step = Math.max(1, Math.round(pxPerSecond / 60));
-  let done = 0;
-  while (done < distance) {
-    const delta = Math.min(step, distance - done);
-    await page.mouse.wheel(0, delta);
-    done += delta;
-    await sleep(16);
+  // Playwright names the file after the page's guid; give it the clip's name.
+  const files = (await readdir(dir)).filter((f) => f.endsWith(".webm"));
+  if (files[0]) {
+    await rename(join(dir, files[0]), join(out, `${name}.webm`));
+    console.log(`  ${name}.webm`);
+  } else {
+    console.log(`  ${name}: no video produced`);
   }
 }
 
-console.log(`recording "${cutName}" at ${VIEWPORT.width}x${VIEWPORT.height}`);
-for (const shot of cut) {
-  if (shot.goto) {
-    await page.goto(origin + shot.goto, { waitUntil: "load" });
-    await page.mouse.move(VIEWPORT.width / 2, VIEWPORT.height / 2);
+await clip("hero", async (page) => {
+  await page.goto(base + "/", { waitUntil: "domcontentloaded", timeout: 90000 });
+  await page.evaluate(() => document.fonts.ready);
+  // Let the network draw itself in and the textures arrive.
+  await page.waitForTimeout(3500);
+
+  const box = await page.locator(".hero-portrait").boundingBox();
+  if (!box) return;
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+
+  // A slow circuit around the portrait, in small steps so the easing shows.
+  const points = 46;
+  for (let i = 0; i <= points; i++) {
+    const t = (i / points) * Math.PI * 2;
+    await page.mouse.move(cx + Math.cos(t) * box.width * 0.55, cy + Math.sin(t) * box.height * 0.3);
+    await page.waitForTimeout(70);
   }
-  if (shot.label) await mark(shot.label);
-  if (shot.scroll) await scrollBy(shot.scroll, SPEED[shot.speed ?? "read"]);
-  if (shot.hold) await sleep(shot.hold * 1000);
-}
-await mark("end of cut");
+  await page.waitForTimeout(900);
+});
 
-const timeline = await page.evaluate(() => ({
-  frames: window.__motion.frames,
-  long: window.__motion.long,
-  shifts: window.__motion.shifts,
-  marks: window.__motion.marks,
-  scrollTop: Math.round(window.scrollY),
-  scrollHeight: Math.round(document.documentElement.scrollHeight),
-}));
+await clip("about", async (page) => {
+  await page.goto(base + "/about", { waitUntil: "domcontentloaded", timeout: 90000 });
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(1800);
 
-await context.close();
+  // Scroll to the photographs, then past them, at a reading pace.
+  await page.evaluate(() => {
+    const el = document.querySelector(".photos-section");
+    if (el) el.scrollIntoView({ behavior: "instant", block: "center" });
+  });
+  await page.waitForTimeout(700);
+
+  for (let i = 0; i < 48; i++) {
+    await page.mouse.wheel(0, 34);
+    await page.waitForTimeout(55);
+  }
+  await page.waitForTimeout(600);
+  for (let i = 0; i < 28; i++) {
+    await page.mouse.wheel(0, -46);
+    await page.waitForTimeout(55);
+  }
+  await page.waitForTimeout(800);
+});
+
 await browser.close();
-
-const suffix = recording ? "" : ".novideo";
-if (recording) {
-  const file = readdirSync(raw).find((f) => f.endsWith(".webm"));
-  const video = join(outDir, `${cutName}.webm`);
-  rmSync(video, { force: true });
-  renameSync(join(raw, file), video);
-  console.log(`video    ${video}`);
-}
-rmSync(raw, { recursive: true, force: true });
-writeFileSync(join(outDir, `${cutName}${suffix}.timeline.json`), JSON.stringify(timeline));
-
-console.log(`frames   ${timeline.frames.length}`);
-console.log(`scrolled ${timeline.scrollTop} of ${timeline.scrollHeight}`);

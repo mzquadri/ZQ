@@ -572,3 +572,50 @@
     text-align: left;
   }
 }
+
+/* ---- The depth canvas ------------------------------------------------------------------------ */
+
+/*
+ * The canvas sits exactly over the flat photograph and only becomes visible
+ * once the shader is drawing. Until then, or where WebGL is unavailable, or
+ * under reduced motion, the photograph underneath is what the reader sees.
+ *
+ * Both are in the layout, so there is no reflow when one replaces the other.
+ */
+.hero-portrait-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms ease;
+  /*
+   * The same fade as the flat photograph.
+   *
+   * Without it the canvas draws its full rectangle and the photograph ends on a
+   * hard horizontal edge, so swapping from the image to the canvas visibly
+   * squared off the bottom of the portrait. The two must carry the same mask or
+   * the transition between them is a change in shape.
+   */
+  mask-image: linear-gradient(to bottom, #000 40%, transparent 92%);
+}
+
+.hero-portrait-canvas[data-live] {
+  opacity: 1;
+}
+
+/*
+ * The flat image is hidden once the canvas is live, by visibility rather than
+ * display, so it keeps its box and the canvas keeps its size from it.
+ */
+.hero-portrait-canvas[data-live] ~ .hero-portrait-img,
+.hero-portrait:has(.hero-portrait-canvas[data-live]) .hero-portrait-img {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-portrait-canvas {
+    display: none;
+  }
+}

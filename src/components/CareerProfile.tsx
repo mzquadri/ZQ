@@ -21,7 +21,24 @@ import { getDisciplines } from "@/content/disciplines";
  * prevents that - the periods sit inside disciplines rather than in one descending column - but
  * how long something ran is information a reader of a portfolio is entitled to, and withholding
  * it cost more than the narrative it avoided.
+ *
+ * With one exception, see `publishPeriod` below.
  */
+
+/**
+ * Whether a role's dates may be shown on the website.
+ *
+ * BP-IT's are not, at the owner's instruction: they are on the CV, which is
+ * where a date is useful. This page was still rendering them from the registry
+ * after the home page and `/experience` had both stopped, which is exactly the
+ * kind of drift that happens when one rule is applied in three components by
+ * hand. The registry keeps the dates, because the CV needs them; this decides
+ * what the site prints.
+ */
+function publishPeriod(record: { organization: string; period?: string }) {
+  if (!record.period) return false;
+  return !record.organization.startsWith("BP-IT");
+}
 export function ExperienceList() {
   const groups = getDisciplines();
 
@@ -38,7 +55,7 @@ export function ExperienceList() {
                 <p className="career-org">
                   {[record.organization, record.location].filter(Boolean).join(" / ")}
                 </p>
-                {record.period ? <p className="career-period">{record.period}</p> : null}
+                {publishPeriod(record) ? <p className="career-period">{record.period}</p> : null}
                 {record.practice ? <p className="career-practice">{record.practice}</p> : null}
               </li>
             ))}
