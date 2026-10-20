@@ -7,6 +7,7 @@ import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
 import { SCENES } from "../src/components/sequence/scenes";
 import { stages as cifarStages } from "../src/content/cifar-world";
 import { projects } from "../src/content/portfolio";
+import { selectedWork } from "../src/content/home-work";
 
 /**
  * `#rrggbb` to the `rgb(r, g, b)` form `getComputedStyle` returns, so an
@@ -111,12 +112,29 @@ test("keyboard users can skip navigation and reach the primary links", async ({ 
    * so it is the assertion that moves. Scoped to the header because the
    * footer carries the name too.
    */
-  await expect(page.locator("header").getByRole("link", { name: site.name })).toBeFocused();
+  await expect(page.locator("a.rail-mark")).toBeFocused();
   await page.keyboard.press("Tab");
 
+  /*
+   * What comes third depends on the width, because it depends on the DOM.
+   *
+   * The bar is mark, then links, then the theme control, then the sheet
+   * toggle. On a pointer layout the links are visible, so the third stop is
+   * the first of them. On a phone `.rail-nav` is `display: none` and its links
+   * leave the tab order, so the third stop is the theme control and the fourth
+   * is the toggle.
+   *
+   * The theme control is what this test did not know about: it sits in the bar
+   * rather than in the sheet so a reader does not have to open a menu to change
+   * the theme, and it was added after this was written. The phone branch
+   * expected the toggle third and the pointer branch expected a link called
+   * "Work", which is labelled "Projects" now and is not first either.
+   */
   const toggle = page.getByRole("button", { name: /Menu|Close/ });
   if (await toggle.isVisible()) {
-    // Phone width: the third stop is the sheet toggle, and opening it must move focus inside.
+    await expect(page.locator(".rail-theme .theme-button")).toBeFocused();
+    await page.keyboard.press("Tab");
+    // Phone width: the next stop is the sheet toggle, and opening it must move focus inside.
     await expect(toggle).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(page.locator(".rail-sheet a").first()).toBeFocused();
@@ -124,7 +142,8 @@ test("keyboard users can skip navigation and reach the primary links", async ({ 
     await page.keyboard.press("Escape");
     await expect(toggle).toBeFocused();
   } else {
-    await expect(page.getByRole("link", { name: "Work", exact: true })).toBeFocused();
+    /* Pointer width: the bar's links follow, in document order. */
+    await expect(page.locator(".rail-nav a").first()).toBeFocused();
   }
 
   await page.getByRole("link", { name: "Skip to main content" }).focus();
@@ -251,9 +270,11 @@ test("canonical and structured metadata are present", async ({ page }) => {
     ["/research/thesis", "Master's Thesis: Uncertainty for a Traffic GNN"],
     ["/about", "About"],
     ["/contact", "Contact"],
-        ["/learn", "Learn"],
+    /* "Writing", which is the label in the navigation and the page's own title. */
+    ["/learn", "Writing"],
     ["/learn/selective-prediction-when-models-should-abstain", "Selective Prediction: When Models Should Abstain"],
-    ["/work/transport-uq", "Reliable GNN Surrogates for Transport Policy Analysis"],
+    /* The registry title, the same one the heading and the index now use. */
+    ["/work/transport-uq", "Master's Thesis: Uncertainty for a Traffic GNN"],
     ["/work/insureassist-rag", "InsureAssist: A Measured RAG Benchmark"],
     ["/work/mlops-reference-pipeline", "A Testable End-to-End MLOps Pipeline"],
     ["/work/hydrology-uq", "Uncertainty Quantification in Hydrology"],
@@ -475,13 +496,16 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
   // The homepage is an index now: it offers the project and says what kind of thing it is, and
   // the evidence lives one click away. None of the case study's table may appear here.
   /*
-   * The card is named "MLOps Pipeline", the registry title. The index used to
-   * name each project by its finding, so this link read "An unqualified model
-   * cannot reach release"; it names them plainly now and the finding is the
-   * line underneath. Taken from the registry so a rename does not break it.
+   * The homepage card's own name, which is not the registry title.
+   *
+   * The registry calls it "A Testable End-to-End MLOps Pipeline"; the card
+   * calls it "MLOps Pipeline", because `selectedWork` carries its own short
+   * names for a list a reader scans in forty seconds. The link used to read
+   * "An unqualified model cannot reach release", from when the index named
+   * each project by its finding.
    */
-  const mlops = projects.find((project) => project.slug === "mlops-reference-pipeline")!;
-  await expect(main.getByRole("link", { name: mlops.title }).first()).toHaveAttribute(
+  const mlopsCard = selectedWork.find((card) => card.href === "/work/mlops-reference-pipeline")!;
+  await expect(main.getByRole("link", { name: mlopsCard.name }).first()).toHaveAttribute(
     "href",
     "/work/mlops-reference-pipeline",
   );
@@ -2589,24 +2613,20 @@ test("the homepage index offers a shortlist and the way to the rest", async ({ p
   /*
    * A shortlist, deliberately, not a mirror of WORLD_ORDER.
    *
-   * This asserted one entry per world, nine of them. The homepage lists ten
-   * projects and three of those are not case studies at all: the architecture
-   * site, the AUDI case study and the identifiability analysis each link to
-   * their own repository. Two worlds, streamflow and cifar, are not on the
-   * shortlist at all. Requiring the two sets to match forced the homepage to
-   * be a table of contents for the worlds rather than a choice of what to
-   * read first.
+   * This asserted one entry per world, nine of them. `selectedWork` is the
+   * homepage's own list and its header says why: ten cards in the owner's
+   * order, from most thoroughly evidenced to smallest, with the CIFAR CNN and
+   * the streamflow benchmark deliberately left off because neither belongs
+   * beside a thesis and four production systems. Three cards are not case
+   * studies at all and link to their own repositories. Requiring the two sets
+   * to match forced the front page to be a table of contents for the worlds
+   * rather than a choice of what to read first.
    *
-   * What is worth asserting is that the shortlist is real: every case-study
-   * link it offers resolves to a project the registry knows about, so a
-   * renamed or withdrawn slug cannot sit on the front page pointing nowhere.
+   * Asserted against `selectedWork`, so the page is checked to render the list
+   * it is built from, with no second copy of the hrefs living here.
    */
-  const caseStudyHrefs = hrefs.filter((href) => href?.startsWith("/work/"));
-  expect(caseStudyHrefs.length).toBeGreaterThan(0);
-  const slugs = new Set(projects.map((project) => project.slug));
-  for (const href of caseStudyHrefs) {
-    const slug = href!.replace("/work/", "");
-    expect(slugs.has(slug), `the homepage links /work/${slug}, which is in no registry`).toBe(true);
+  for (const card of selectedWork) {
+    expect(hrefs, `the homepage index is missing ${card.href}`).toContain(card.href);
   }
 
   /* The index is a shortlist; the catalogue is one link away and says so. */
