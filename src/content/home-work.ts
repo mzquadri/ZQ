@@ -44,12 +44,27 @@ export interface WorkCard {
 
 export const selectedWork: readonly WorkCard[] = [
   {
+    /*
+     * Named for the thesis, so it opens the thesis.
+     *
+     * This card used to point at /work/transport-uq while carrying this name.
+     * That was fine while both routes were titled "Master's Thesis: Uncertainty
+     * for a Traffic GNN", and stopped being fine when the case study was
+     * renamed to "Uncertainty Quantification for Traffic Prediction (Project)"
+     * to end the duplicate title: the card would have named the thesis and
+     * opened the project.
+     *
+     * The name is the one worth keeping on a front page, so the destination
+     * moved to match it rather than the other way round. /research/thesis is
+     * the thesis record; the case study is still one click from there and from
+     * the /work index.
+     */
     name: "Master's Thesis: Uncertainty for a Traffic GNN",
     context: "TU Munich",
     what: "A graph neural network predicts how Paris traffic changes when a road policy changes, and reports how confident it is in each prediction.",
     result: "Calibration error cut by 82%, and setting aside the least confident half of the predictions lowered the error on the rest by 41%.",
     tech: ["PyTorch", "PyTorch Geometric", "Conformal prediction", "MATSim"],
-    href: "/work/transport-uq",
+    href: "/research/thesis",
   },
   {
     name: "Legal Knowledge Base",
