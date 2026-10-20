@@ -240,6 +240,100 @@ for (const [name, launcher] of Object.entries({ chromium, firefox, webkit })) {
   await browser.close();
 }
 
+/* ---- 5b. A finger on the photograph, with no permission anywhere ------------------------------ */
+
+{
+  /*
+   * The fallback that needs nothing granted. `requestPermission` is defined
+   * and always denies, which is the worst case a real iPhone can present, and
+   * the portrait still has to answer a drag.
+   */
+  const browser = await chromium.launch({ args: SWIFT });
+  const ctx = await browser.newContext({
+    viewport: { width: 393, height: 852 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 3,
+  });
+  await ctx.addInitScript(() => {
+    if (typeof DeviceOrientationEvent === "undefined") window.DeviceOrientationEvent = function () {};
+    DeviceOrientationEvent.requestPermission = () => Promise.resolve("denied");
+  });
+  const page = await ctx.newPage();
+  await page.goto(`${ORIGIN}/`, { waitUntil: "load" });
+  await settle(page, 2600);
+
+  const s = await page.evaluate(SHOWING);
+  if (!s.live) {
+    check("touch drag: skipped, the shader did not start on this viewport", true, "no live canvas");
+  } else {
+    await page.locator(".hero-tilt").click({ timeout: 4000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    const noted = await page.evaluate(() => Boolean(document.querySelector(".hero-tilt-note")));
+    check("touch drag: a denied permission says so instead of going quiet", noted === true);
+
+    const moved = await page.evaluate(async () => {
+      const canvas = document.querySelector(".hero-portrait-canvas");
+      const box = canvas.getBoundingClientRect();
+      const before = canvas.toDataURL();
+      const send = (type, x, y) =>
+        canvas.parentElement.dispatchEvent(
+          new PointerEvent(type, { clientX: x, clientY: y, pointerType: "touch", bubbles: true }),
+        );
+      send("pointerdown", box.left + box.width * 0.2, box.top + box.height * 0.3);
+      for (let i = 0; i <= 10; i += 1) {
+        send("pointermove", box.left + box.width * (0.2 + i * 0.06), box.top + box.height * 0.3);
+        await new Promise((r) => setTimeout(r, 40));
+      }
+      await new Promise((r) => setTimeout(r, 900));
+      return canvas.toDataURL() !== before;
+    });
+    check("touch drag: dragging a finger across the photograph moves it", moved === true);
+  }
+  await browser.close();
+}
+
+/* ---- 5c. A gate that throws instead of rejecting ---------------------------------------------- */
+
+{
+  /*
+   * Safari raises NotAllowedError synchronously when it does not consider the
+   * call a gesture. A `.catch()` on the promise never sees that, so the first
+   * version left an uncaught error in the click handler and a button that
+   * looked broken.
+   */
+  const browser = await chromium.launch({ args: SWIFT });
+  const ctx = await browser.newContext({
+    viewport: { width: 393, height: 852 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 3,
+  });
+  await ctx.addInitScript(() => {
+    if (typeof DeviceOrientationEvent === "undefined") window.DeviceOrientationEvent = function () {};
+    DeviceOrientationEvent.requestPermission = () => {
+      throw new Error("NotAllowedError");
+    };
+  });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(String(e.message).split("\n")[0]));
+  await page.goto(`${ORIGIN}/`, { waitUntil: "load" });
+  await settle(page, 2600);
+
+  const s = await page.evaluate(SHOWING);
+  if (!s.live) {
+    check("sync throw: skipped, the shader did not start", true, "no live canvas");
+  } else {
+    await page.locator(".hero-tilt").click({ timeout: 4000 }).catch(() => {});
+    await page.waitForTimeout(600);
+    check("sync throw: the tap does not raise an uncaught error", errors.length === 0, errors.join(" | "));
+    const stillOffering = await page.evaluate(() => Boolean(document.querySelector(".hero-tilt")));
+    check("sync throw: the button stops offering what it cannot deliver", stillOffering === false);
+  }
+  await browser.close();
+}
+
 /* ---- 6. Off screen, and in a background tab --------------------------------------------------- */
 
 {

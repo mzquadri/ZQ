@@ -627,46 +627,6 @@
   transition: visibility 0s linear 420ms;
 }
 
-/*
- * The tilt control, which only ever renders on iOS.
- *
- * Every other platform fires `deviceorientation` without being asked, so this
- * button has no reason to exist there and the component does not render it.
- * On iOS it is the only way the reader can be offered the third input the
- * hero has, because Safari will not deliver a single orientation event until
- * `requestPermission()` has been called from inside a gesture.
- *
- * It sits over the faded foot of the portrait rather than below it, so it does
- * not add height to a hero that is already tall on a phone, and it is a solid
- * ground rather than a tint because what is behind it is a photograph.
- */
-.hero-tilt {
-  position: absolute;
-  left: 50%;
-  bottom: 0.5rem;
-  translate: -50% 0;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  /* 44px, the floor for a standalone control on a phone. */
-  min-height: 44px;
-  padding: 0.55rem 1rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.01em;
-  cursor: pointer;
-}
-
-.hero-tilt:focus-visible {
-  outline: 3px solid var(--paper-raised);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 5px var(--ink);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-portrait-canvas {
     display: none;
@@ -689,6 +649,17 @@
   .hero-portrait:has(.hero-portrait-canvas[data-live]) .hero-portrait-img,
   .hero-portrait-canvas[data-live] ~ .hero-portrait-img {
     visibility: visible;
+    /*
+     * And no delay on the way back.
+     *
+     * The rule being overridden here carries `transition: visibility 0s linear
+     * 420ms`, which exists to hold the photograph in place while the canvas
+     * fades in. That delay applies to the change in either direction, so
+     * turning reduced motion on left four hundred milliseconds in which the
+     * canvas was already `display: none` and the photograph had not come back
+     * yet. Nothing is fading here, so nothing should wait.
+     */
+    transition: none;
   }
 
   /* No shader, no tilt to offer. */
@@ -738,5 +709,59 @@
 @media (hover: hover) {
   .hero-tilt:hover {
     border-color: var(--ink-soft);
+  }
+}
+
+/*
+ * Said once, and only when the answer was no.
+ *
+ * A denied permission used to remove the button and say nothing at all, which
+ * reads as a button that does not work. The portrait still answers a finger,
+ * so there is something true and useful to say instead of nothing.
+ */
+.hero-tilt-note {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  translate: -50% 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+/*
+ * The `?herodebug=1` readout.
+ *
+ * No query parameter, no element, so this costs a reader nothing. It exists
+ * because every reason the hero can sit still on a phone is invisible from the
+ * outside, and a phone cannot be attached to a debugger from a desktop.
+ */
+.hero-debug {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  margin: 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The note is about motion that is not going to happen either way. */
+  .hero-tilt-note {
+    display: none;
   }
 }

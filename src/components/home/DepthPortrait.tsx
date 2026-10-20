@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 /**
  * The hero portrait, given depth.
@@ -109,6 +109,43 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
   /* Set when the device has tilt to give and has not been asked for it yet. */
   const [offerTilt, setOfferTilt] = useState(false);
   const enableTilt = useRef<null | (() => void)>(null);
+  /*
+   * What happened when tilt was asked for. Carried as state rather than a
+   * boolean because "denied", "failed" and "there is no such thing here" are
+   * three different answers and only one of them is worth telling a reader
+   * about. It is also what the readout below prints, which is the only way to
+   * find out what a real iPhone did without holding one.
+   */
+  const [tilt, setTilt] = useState<
+    "idle" | "open" | "granted" | "denied" | "failed" | "unavailable"
+  >("idle");
+  /*
+   * `?herodebug=1` prints what this device actually decided.
+   *
+   * A phone cannot be attached to a debugger from a desktop, and every reason
+   * the hero can sit still on one is invisible from the outside: reduced
+   * motion on in iOS accessibility settings, no WebGL context, the frame-rate
+   * fallback having fired, a denied permission, or orientation events simply
+   * never arriving. Printing those is the difference between diagnosing it and
+   * guessing at it.
+   *
+   * Read through `useSyncExternalStore` rather than set from an effect. It
+   * never changes after load, so there is nothing to subscribe to, and the
+   * server snapshot is false so the markup matches on hydration.
+   */
+  const debug = useSyncExternalStore(
+    () => () => {},
+    () => new URLSearchParams(window.location.search).has("herodebug"),
+    () => false,
+  );
+  /*
+   * The live count lives on a ref because it changes at the rate orientation
+   * events arrive, and `tiltCount` is the copy the readout renders. The
+   * interval below moves one to the other, which keeps the count out of the
+   * render path and out of React's update queue sixty times a second.
+   */
+  const tiltEvents = useRef(0);
+  const [tiltCount, setTiltCount] = useState(0);
 
   /*
    * Tracked, not sampled once.
@@ -126,6 +163,7 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
     query.addEventListener("change", sync);
     return () => query.removeEventListener("change", sync);
   }, []);
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -232,27 +270,94 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
 
     let raf = 0;
     const target = { x: 0, y: 0 };
+    /*
+     * Counts orientation events that actually arrived. "Granted" and "the
+     * device is sending readings" are not the same claim, and on a phone where
+     * tilt looks dead it is the one that separates a permission problem from a
+     * hardware or listener problem.
+     */
+    let tiltSeen = 0;
     const shown = { x: 0, y: 0 };
 
-    const onPointer = (event: PointerEvent) => {
+    const clamp = (n: number) => Math.max(-1, Math.min(1, n));
+
+    /*
+     * Four inputs write to one offset, so they need an order of precedence.
+     *
+     * Scroll is ambient: it runs on its own whenever the page moves, and it
+     * used to overwrite whatever tilt or a finger had just set, on the next
+     * scroll event. On a phone that is continuous, because iOS fires scroll
+     * through momentum and rubber-banding, so a deliberate input was erased
+     * within a frame of being made. A touch or a tilt now claims the offset
+     * for a moment and scroll keeps out of the way until the claim lapses.
+     *
+     * The mouse does not claim, so a desktop reader can still move the
+     * portrait with the pointer and then hand it back to the scroll by
+     * scrolling, which is how it behaved before.
+     */
+    let claimedUntil = 0;
+    const claim = () => {
+      claimedUntil = performance.now() + 1400;
+    };
+
+    const fromPoint = (clientX: number, clientY: number) => {
       const rect = canvas.getBoundingClientRect();
-      target.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-      target.y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+      if (rect.width === 0 || rect.height === 0) return;
+      /*
+       * Clamped, which it was not.
+       *
+       * This reads a point relative to the portrait, and the listener was on
+       * `window`, so a touch anywhere on the page was converted against a rect
+       * that might be a thousand pixels above the viewport. That produced
+       * offsets of twenty or more where the shader expects minus one to one,
+       * and the sampler ran off the edge of the photograph and stuck there.
+       */
+      target.x = clamp(((clientX - rect.left) / rect.width - 0.5) * 2);
+      target.y = clamp(((clientY - rect.top) / rect.height - 0.5) * 2);
+    };
+
+    /* The mouse, on a pointer-and-keyboard machine. Unchanged in behaviour. */
+    const onPointer = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return;
+      fromPoint(event.clientX, event.clientY);
     };
     const onLeave = () => {
       target.x = 0;
       target.y = 0;
     };
+
+    /*
+     * A finger on the photograph, which is the input every phone has.
+     *
+     * Tilt needs a permission on iOS and hardware that reports orientation;
+     * a drag needs neither, so this is what makes the hero respond on a phone
+     * whether or not the reader ever grants anything. It is deliberately not
+     * `preventDefault`ed and the element keeps its default `touch-action`: a
+     * swipe up the page still scrolls the page. The portrait follows the
+     * finger while the finger is down and hands back to the scroll when it
+     * lifts, so nothing is taken away from the reader to pay for it.
+     */
+    const onTouch = (event: PointerEvent) => {
+      if (event.pointerType !== "touch") return;
+      claim();
+      fromPoint(event.clientX, event.clientY);
+    };
+
     const onScroll = () => {
+      if (performance.now() < claimedUntil) return;
       const rect = canvas.getBoundingClientRect();
       /* Where the hero sits in the viewport, as -1 to 1. */
       const centre = (rect.top + rect.height / 2) / window.innerHeight;
-      target.y = (centre - 0.5) * -1.1;
+      target.y = clamp((centre - 0.5) * -1.1);
     };
+
     const onTilt = (event: DeviceOrientationEvent) => {
       if (event.gamma === null || event.beta === null) return;
-      target.x = Math.max(-1, Math.min(1, event.gamma / 28));
-      target.y = Math.max(-1, Math.min(1, (event.beta - 45) / 28));
+      tiltSeen += 1;
+      tiltEvents.current = tiltSeen;
+      claim();
+      target.x = clamp(event.gamma / 28);
+      target.y = clamp((event.beta - 45) / 28);
     };
 
     Promise.all([loadTexture(color, 0), loadTexture(depth, 1)])
@@ -275,11 +380,22 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
         window.addEventListener("pointermove", onPointer, { passive: true });
         canvas.addEventListener("pointerleave", onLeave);
         window.addEventListener("scroll", onScroll, { passive: true });
+
+        /*
+         * The drag listens on the portrait's own box, not on the window, so a
+         * finger anywhere else on the page does not move it.
+         */
+        const surface = canvas.parentElement ?? canvas;
+        surface.addEventListener("pointerdown", onTouch, { passive: true });
+        surface.addEventListener("pointermove", onTouch, { passive: true });
+
         cleanups.push(() => {
           window.removeEventListener("pointermove", onPointer);
           canvas.removeEventListener("pointerleave", onLeave);
           window.removeEventListener("scroll", onScroll);
           window.removeEventListener("deviceorientation", onTilt);
+          surface.removeEventListener("pointerdown", onTouch);
+          surface.removeEventListener("pointermove", onTouch);
         });
 
         /*
@@ -300,15 +416,36 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
         if (orientationNeedsPermission()) {
           enableTilt.current = () => {
             const gate = DeviceOrientationEvent as OrientationGate;
-            gate
-              .requestPermission?.()
-              .then((verdict) => {
-                if (disposed) return;
-                if (verdict === "granted") window.addEventListener("deviceorientation", onTilt);
-                /* Asked and answered, either way. Nobody wants to be asked twice. */
-                setOfferTilt(false);
-              })
-              .catch(() => setOfferTilt(false));
+            /*
+             * `requestPermission` can throw where it is expected to reject.
+             *
+             * Safari raises `NotAllowedError` synchronously when it decides
+             * the call did not come from a user gesture, and a synchronous
+             * throw walks straight past a `.catch()` on the promise. It left
+             * the click handler with an uncaught error, the button still on
+             * screen and nothing to show for the tap, which is exactly what a
+             * broken button looks like.
+             */
+            try {
+              const asked = gate.requestPermission?.();
+              if (!asked) {
+                setTilt("unavailable");
+                return;
+              }
+              asked
+                .then((verdict) => {
+                  if (disposed) return;
+                  if (verdict === "granted") {
+                    window.addEventListener("deviceorientation", onTilt);
+                    setTilt("granted");
+                  } else {
+                    setTilt("denied");
+                  }
+                })
+                .catch(() => setTilt("failed"));
+            } catch {
+              setTilt("failed");
+            }
           };
           setOfferTilt(true);
           cleanups.push(() => {
@@ -316,7 +453,13 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
             setOfferTilt(false);
           });
         } else {
+          /*
+           * No gate: Android Chrome and desktop. The event may still never
+           * arrive, on a machine with no orientation hardware, which is what
+           * the drag above is for.
+           */
           window.addEventListener("deviceorientation", onTilt);
+          setTilt("open");
         }
 
         /*
@@ -435,6 +578,13 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
    */
   const drawing = live && still === false;
 
+  /* Only while the readout is on screen, and only to refresh its numbers. */
+  useEffect(() => {
+    if (!debug) return undefined;
+    const id = window.setInterval(() => setTiltCount(tiltEvents.current), 500);
+    return () => window.clearInterval(id);
+  }, [debug]);
+
   return (
     <div className={className} style={{ position: "relative" }}>
       {/*
@@ -469,7 +619,7 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
         * is a prompt nobody understands, and because a keyboard reaches a
         * button.
         */}
-      {drawing && offerTilt ? (
+      {drawing && offerTilt && tilt === "idle" ? (
         <button
           className="hero-tilt"
           onClick={() => enableTilt.current?.()}
@@ -477,6 +627,30 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
         >
           Tilt to look around
         </button>
+      ) : null}
+      {/*
+        * Said once, and only when the answer was no.
+        *
+        * A denied permission used to remove the button and say nothing, which
+        * reads as a button that does not work. The portrait still responds to
+        * a finger, so there is something true and useful to say instead.
+        */}
+      {drawing && tilt === "denied" ? (
+        <p className="hero-tilt-note">Motion access is off. Drag the photo instead.</p>
+      ) : null}
+      {debug ? (
+        <pre className="hero-debug">
+          {[
+            `reduced motion  ${still === null ? "unknown" : still}`,
+            `shader drawing  ${drawing}`,
+            `canvas live     ${live}`,
+            `tilt gate       ${orientationNeedsPermission() ? "ios, needs permission" : "open"}`,
+            `tilt state      ${tilt}`,
+            `tilt events     ${tiltCount}`,
+            `button shown    ${drawing && offerTilt && tilt === "idle"}`,
+            `touch points    ${typeof navigator === "undefined" ? "?" : navigator.maxTouchPoints}`,
+          ].join("\n")}
+        </pre>
       ) : null}
     </div>
   );
