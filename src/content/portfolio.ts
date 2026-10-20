@@ -221,7 +221,7 @@ const mlopsBaselineMargin =
 const authoredProjects: readonly Project[] = [
   {
     slug: "transport-uq",
-    title: "Master's Thesis: Uncertainty for a Traffic GNN",
+    title: "Uncertainty Quantification for Traffic Prediction (Project)",
     eyebrow: "Master's thesis on reliable machine learning",
     classification: "Academic research",
     authors: [{ name: site.name, url: site.github }],
