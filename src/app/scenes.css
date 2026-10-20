@@ -802,12 +802,24 @@
   align-content: center;
 }
 
+/*
+ * The accent, pulled a fifth of the way towards the page ink.
+ *
+ * `--accent` is one of the eight scene accents on most routes, and those are
+ * ink strength and clear AA comfortably. On a route with no world it falls
+ * back to the site violet, which is fill strength: 4.39:1 against paper, short
+ * of 4.5 by a hundredth or two, which is a real axe failure for a real reason.
+ *
+ * Mixing towards `--ink` rather than hard-coding a darker violet keeps this
+ * correct for whichever accent the route carries, including any added later,
+ * and the shift is small enough that the label still reads as the accent.
+ */
 .case-story-verb {
   margin: 0;
   font-family: var(--mono);
   font-size: 0.7rem;
   letter-spacing: 0.01em;
-  color: var(--accent);
+  color: color-mix(in oklab, var(--accent) 80%, var(--ink));
 }
 
 .case-story-text {
@@ -824,7 +836,13 @@
   min-height: 0;
 }
 
-.case-story-caveat .case-story-verb { color: var(--orange); }
+/*
+ * `--orange-text`, not `--orange`. The first aliases `--violet-ink`, the
+ * second aliases `--violet`, which is fill strength and measured 4.39:1 on
+ * paper: the caveat label "What this does not show" missed AA on every case
+ * study that has one.
+ */
+.case-story-caveat .case-story-verb { color: var(--orange-text); }
 
 .case-story-caveat .case-story-text {
   color: var(--stage-ink-soft);

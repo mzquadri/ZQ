@@ -180,10 +180,26 @@
   color: var(--ink-soft);
 }
 
+/*
+ * The pressed state, at a contrast white can actually sit on.
+ *
+ * It was `background: var(--teal)` with `color: #ffffff`, and `--teal` is
+ * `--teal-accent`, a fill-strength colour chosen to be seen against paper. It
+ * is not dark enough to carry white text: 3.30:1 in the light theme, and 2.06:1
+ * in the dark one, where the token resolves to a pale teal and white on it is
+ * close to unreadable. axe reported it on /work/engineering-model and it is the
+ * same trap HANDOFF section 4 describes, which is that an accent reads fine as
+ * a fill and fails as a ground for text.
+ *
+ * `--teal-ink` is the palette's own darker step, so the button keeps its
+ * colour. The text follows the theme rather than being white in both: white on
+ * the dark teal is 5.36:1, and in the dark theme the token is a pale teal, so
+ * the ink goes dark against it at 9.17:1. Checked with tools/check-contrast.mjs.
+ */
 .nodeButton[aria-pressed="true"] {
-  background: var(--teal);
-  border-color: var(--teal-dark);
-  color: #ffffff;
+  background: var(--teal-ink);
+  border-color: var(--teal-ink);
+  color: light-dark(#ffffff, #0d1117);
   font-weight: 600;
 }
 

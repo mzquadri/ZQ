@@ -71,6 +71,29 @@
   --orange-text: var(--violet-ink);
   --yellow: var(--blue);
 
+  /*
+   * Filled chips, and the only text colour that is legible on them.
+   *
+   * `--teal`, `--blue` and the rest of that family are fill strength: chosen to
+   * be seen against paper, which makes them too light to carry white text.
+   * Every place that wrote `background: var(--teal); color: white` was between
+   * 2.06:1 and 3.57:1, and the dark theme was always the worse half because the
+   * token resolves paler there.
+   *
+   * These two pairs say it once. The ground is the palette's ink-strength step,
+   * so the colour is unchanged to look at, and the text flips with the theme
+   * because the ground does: dark teal with white in light, pale teal with near
+   * black in dark. Measured by tools/check-contrast.mjs at 5.36:1 and 9.17:1
+   * for teal, 6.17:1 and 8.20:1 for blue.
+   *
+   * If a filled chip is ever added, use these. A raw accent as a ground for
+   * text is the bug HANDOFF section 4 describes and it has now been made three
+   * times.
+   */
+  --teal-fill: var(--teal-ink);
+  --blue-fill: var(--blue-ink);
+  --fill-ink: light-dark(#ffffff, #0d1117);
+
   --line: light-dark(rgba(28, 36, 48, 0.2), rgba(230, 235, 242, 0.18));
   --line-strong: light-dark(rgba(28, 36, 48, 0.45), rgba(230, 235, 242, 0.4));
   --content: 76rem;
@@ -680,10 +703,11 @@ ol {
   background: var(--paper-raised);
 }
 
+/* The last stage is the filled one, so it takes the fill pair. */
 .pipeline-figure li:last-child {
   border-right: 0;
-  background: var(--teal);
-  color: white;
+  background: var(--teal-fill);
+  color: var(--fill-ink);
 }
 
 .pipeline-figure li > span {
@@ -692,8 +716,9 @@ ol {
   font-size: 0.72rem;
 }
 
+/* The numeral follows the chip's text colour, which flips with the theme. */
 .pipeline-figure li:last-child > span {
-  color: white;
+  color: var(--fill-ink);
 }
 
 .pipeline-figure strong {
@@ -1142,8 +1167,17 @@ ol {
   color: var(--paper-raised);
 }
 
+/*
+ * Inverted, because the panel it sits in is.
+ *
+ * `.limitation-panel` grounds itself on `--ink`, which is dark in the light
+ * theme and light in the dark one. `--yellow` aliases `--blue`, which runs the
+ * same way round as the page, so the index was a mid blue on a dark panel at
+ * 3.57:1 in light, and a pale blue on a light panel at 1.92:1 in dark. Both
+ * halves need the blue from the *other* theme: 6.77:1 and 5.15:1.
+ */
 .limitation-panel .section-index {
-  color: var(--yellow);
+  color: light-dark(#87aeda, #3a6490);
 }
 
 .editorial-list {
@@ -2185,9 +2219,9 @@ ol {
 }
 
 .retention-options input:checked + span {
-  border-color: var(--teal);
-  background: var(--teal);
-  color: white;
+  border-color: var(--teal-fill);
+  background: var(--teal-fill);
+  color: var(--fill-ink);
 }
 
 .retention-options input:focus-visible + span {
@@ -2221,8 +2255,8 @@ ol {
 .decision-accepted {
   flex: none;
   justify-content: flex-start;
-  background: var(--teal);
-  color: white;
+  background: var(--teal-fill);
+  color: var(--fill-ink);
 }
 
 .decision-review {
@@ -2311,8 +2345,18 @@ ol {
   font-size: var(--label-strong);
 }
 
+/*
+ * The selected row is a filled chip the width of the table, so it needs the
+ * fill pair for the same reason. `--yellow` aliases `--blue`, which put the
+ * page ink on a mid blue at 3.57:1 in the light theme and 1.92:1 in the dark.
+ */
 .research-data-table tr[data-selected] {
-  background: var(--yellow);
+  background: var(--blue-fill);
+}
+
+.research-data-table tr[data-selected] th,
+.research-data-table tr[data-selected] td {
+  color: var(--fill-ink);
 }
 
 .chart-visual svg {
@@ -2949,10 +2993,24 @@ ol {
   padding: 1rem 0;
 }
 
+/*
+ * A ground that follows the theme, because the text on it does.
+ *
+ * This was a fixed `#e8e6dc`, a warm cream that does not change with the
+ * theme while everything inside it does. In the dark theme the page ink is
+ * near-white, so the callout's own paragraph rendered at 1.04:1: a light grey
+ * sentence on a light cream panel, which is no sentence at all. The title,
+ * which takes the teal, was 2.52:1 there and 4.28:1 in the light theme, so it
+ * missed AA in both.
+ *
+ * `--paper-deep` is the token for a recessed panel and carries the warmth in
+ * the light theme and a darker ground in the dark one, so the pairing the rest
+ * of the site relies on holds here too.
+ */
 .article-callout {
   padding: 1.4rem;
   border-left: 4px solid var(--orange);
-  background: #e8e6dc;
+  background: var(--paper-deep);
 }
 
 .article-callout-title {

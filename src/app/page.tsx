@@ -32,7 +32,23 @@ import { site } from "@/content/portfolio";
  * page are the two places a description matters most.
  */
 export const metadata: Metadata = createPageMetadata({
-  title: "AI/ML Engineer",
+  /*
+   * The name is written out here, rather than left to the layout's template.
+   *
+   * `layout.tsx` declares `title.template: "%s | Mohd Zamin Quadri"`, and every
+   * other route gets the name from it: `/work` sets "Projects" and renders
+   * "Projects | Mohd Zamin Quadri". A template only applies to *child* route
+   * segments, though, and `app/page.tsx` is the same segment as `app/layout.tsx`
+   * -- `node_modules/next/dist/docs/01-app/03-api-reference/04-functions/generate-metadata.md`
+   * says so outright: "title.template defined in layout.js will not apply to a
+   * title defined in a page.js of the same route segment."
+   *
+   * So setting a bare title here does not extend the default, it replaces it,
+   * and the front page was the one page on the site whose tab, bookmark and
+   * search result did not carry the owner's name. Spelling it out matches the
+   * layout's own default exactly and keeps the share card right too.
+   */
+  title: `${site.name} | ${site.role}`,
   /*
    * The same sentence as `site.description`, which is the default every other
    * route uses. The front page is the one that matters most in a search

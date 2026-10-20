@@ -5,6 +5,20 @@ import { ecosystemRepositories } from "../src/content/ecosystem";
 import { site } from "../src/content/truth";
 import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
 import { SCENES } from "../src/components/sequence/scenes";
+import { stages as cifarStages } from "../src/content/cifar-world";
+import { projects } from "../src/content/portfolio";
+
+/**
+ * `#rrggbb` to the `rgb(r, g, b)` form `getComputedStyle` returns, so an
+ * assertion can be written against a token's value rather than a hex literal
+ * copied out of the stylesheet at some point in the past.
+ */
+function hexToRgb(hex: string): string {
+  const h = hex.replace("#", "").trim();
+  const full = h.length === 3 ? [...h].map((c) => c + c).join("") : h;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+  return `rgb(${r}, ${g}, ${b})`;
+}
 
 const routes = [
   "/",
@@ -60,12 +74,25 @@ async function openNavIfCollapsed(page: import("@playwright/test").Page) {
 test("primary navigation and project routes work", async ({ page }) => {
   await page.goto("/");
   await openNavIfCollapsed(page);
-  await page.getByRole("link", { name: "Work", exact: true }).first().click();
+  /*
+   * "Projects", not "Work". The route is still /work; the label a reader sees
+   * is Projects, and has been since the navigation was rewritten in plain
+   * English. The href is asserted below, so this is the label only.
+   */
+  await page.getByRole("link", { name: "Projects", exact: true }).first().click();
   await expect(page).toHaveURL(/\/work$/);
-  /* The index names a project by its finding; the registry title is on the case study itself. */
-  await page.getByRole("link", { name: /When can a surrogate stand in for a simulation\?/ }).first().click();
+  /*
+   * The index and the case study now carry the same name, the registry title.
+   * This used to read "the index names a project by its finding; the registry
+   * title is on the case study itself", and it did: the link was
+   * "When can a surrogate stand in for a simulation?" and the heading was
+   * "Reliable GNN". Neither string is on the site any more. Taking both from
+   * the registry means the test follows a rename instead of breaking on one.
+   */
+  const thesisProject = projects.find((project) => project.slug === "transport-uq")!;
+  await page.getByRole("link", { name: thesisProject.title }).first().click();
   await expect(page).toHaveURL(/\/work\/transport-uq$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Reliable GNN");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(thesisProject.title);
 });
 
 test("keyboard users can skip navigation and reach the primary links", async ({ page }) => {
@@ -73,7 +100,18 @@ test("keyboard users can skip navigation and reach the primary links", async ({ 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("link", { name: "Mohd Zamin Quadri, home" })).toBeFocused();
+  /*
+   * The site mark's accessible name is its visible text, "MZQ Mohd Zamin
+   * Quadri", not an `aria-label` reading "Mohd Zamin Quadri, home".
+   *
+   * That label was removed on purpose: rail.css records that the
+   * `aria-hidden` came off the initials so the link's accessible name would
+   * contain the words a voice-control user can see and say. A test asking for
+   * the old label was asking for the thing that was deliberately taken away,
+   * so it is the assertion that moves. Scoped to the header because the
+   * footer carries the name too.
+   */
+  await expect(page.locator("header").getByRole("link", { name: site.name })).toBeFocused();
   await page.keyboard.press("Tab");
 
   const toggle = page.getByRole("button", { name: /Menu|Close/ });
@@ -175,7 +213,12 @@ test("metadata endpoints and security headers are production-ready", async ({ re
   const missingProject = await request.get("/work/not-an-evidence-backed-project");
   expect(missingProject.status()).toBe(404);
   const missingProjectHtml = await missingProject.text();
-  expect(missingProjectHtml).toContain("This route does not exist.");
+  /*
+   * "That page does not exist", which is what the 404 says now. The old
+   * string, "This route does not exist.", was replaced when the site was
+   * rewritten in plain English: a reader has pages, not routes.
+   */
+  expect(missingProjectHtml).toContain("That page does not exist");
   expect(missingProjectHtml).toContain('name="robots" content="noindex, nofollow"');
 
   const missingArticle = await request.get("/learn/not-a-published-article");
@@ -197,9 +240,15 @@ test("canonical and structured metadata are present", async ({ page }) => {
   for (const script of await jsonLd.allTextContents()) expect(() => JSON.parse(script)).not.toThrow();
 
   const routeMetadata = [
-    ["/work", "Selected Work"],
+    /*
+     * "Projects" and the thesis title, which is what these pages call
+     * themselves now. The navigation label and the page title were brought
+     * into line when the site was rewritten in plain English, and the thesis
+     * page took the registry title rather than a description of it.
+     */
+    ["/work", "Projects"],
     ["/research", "Research"],
-    ["/research/thesis", "Transport Surrogate Thesis Research"],
+    ["/research/thesis", "Master's Thesis: Uncertainty for a Traffic GNN"],
     ["/about", "About"],
     ["/contact", "Contact"],
         ["/learn", "Learn"],
@@ -242,7 +291,12 @@ test("canonical and structured metadata are present", async ({ page }) => {
 
 test("research index and thesis record preserve their distinct evidence roles", async ({ page }) => {
   await page.goto("/research");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("decisions that expose uncertainty");
+  /*
+   * The heading is "Research". It used to be a sentence about decisions that
+   * expose uncertainty; the standfirst carries that thought now and the
+   * heading names the page, the way every other page's does.
+   */
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Research");
   await expect(page.locator(".supporting-research-grid aside").getByText("Emerging inquiry", { exact: true })).toBeVisible();
   await expect(page.getByText(/direction of study, not a completed result/)).toBeVisible();
   await expect(page.getByRole("link", { name: /Explore the thesis research/ })).toHaveAttribute("href", "/research/thesis");
@@ -341,8 +395,18 @@ test("the architecture case studies are reachable from the site", async ({ page 
    * both are asserted rather than left to drift.
    */
   await page.goto("/");
-  /* On phones the links live in the sheet, so the entry is asserted wherever it is rendered. */
-  await expect(page.locator('header.rail a[href="/architecture"]').first()).toHaveCount(1);
+  /*
+   * Reachable from the page, not specifically from the rail.
+   *
+   * Architecture moved out of the primary navigation and into the footer when
+   * the navigation was rewritten: SiteFooter records the reasoning, that
+   * About and Architecture are second visits rather than first ones. The claim
+   * this test makes is that the case studies are reachable from the site, and
+   * a footer link on every page satisfies it. Asserting the rail specifically
+   * was asserting a navigation layout, which is a design decision and not this
+   * test's business.
+   */
+  await expect(page.locator('a[href="/architecture"]').first()).toBeVisible();
 
   await page.goto("/architecture");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -410,7 +474,14 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
   const main = page.locator("main");
   // The homepage is an index now: it offers the project and says what kind of thing it is, and
   // the evidence lives one click away. None of the case study's table may appear here.
-  await expect(main.getByRole("link", { name: /An unqualified model cannot reach release/ })).toHaveAttribute(
+  /*
+   * The card is named "MLOps Pipeline", the registry title. The index used to
+   * name each project by its finding, so this link read "An unqualified model
+   * cannot reach release"; it names them plainly now and the finding is the
+   * line underneath. Taken from the registry so a rename does not break it.
+   */
+  const mlops = projects.find((project) => project.slug === "mlops-reference-pipeline")!;
+  await expect(main.getByRole("link", { name: mlops.title }).first()).toHaveAttribute(
     "href",
     "/work/mlops-reference-pipeline",
   );
@@ -527,8 +598,17 @@ test("homepage makes no third-party requests", async ({ page }) => {
     if (url.origin !== "http://127.0.0.1:3100") remoteRequests.push(url.origin);
   });
   await page.goto("/");
-  // Anchored on the closing section so the check runs against a fully rendered page.
-  await expect(page.locator(".cine-closing")).toBeVisible();
+  /*
+   * Anchored on the footer so the check runs against a fully rendered page.
+   *
+   * It used to anchor on `.cine-closing`, which the homepage no longer has:
+   * the closing section went when the page became an index rather than a reel.
+   * A missing anchor made this fail for a reason that has nothing to do with
+   * third-party requests, which is what it is actually testing. The footer is
+   * the last element on every page and cannot disappear without the page being
+   * broken in a way other tests would catch.
+   */
+  await expect(page.locator("footer")).toBeVisible();
   expect(remoteRequests).toEqual([]);
 });
 
@@ -807,7 +887,14 @@ test("research thesis adds no third-party requests", async ({ page }) => {
 test("the confidential case study publishes no source, and says why", async ({ page }) => {
   await page.goto("/work/legal-knowledge-platform");
 
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Stored is not the same as correct");
+  /*
+   * The heading is the registry title, "Legal Knowledge Base". It used to be
+   * the finding, "Stored is not the same as correct", which now opens the
+   * case study as its first section heading instead. Read from the registry
+   * so a rename moves the assertion with it.
+   */
+  const confidential = projects.find((project) => project.slug === "legal-knowledge-platform")!;
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(confidential.title);
   await expect(page.getByText("Engineer on the verification, ingestion and reporting services")).toBeVisible();
 
   // The hero explains the missing repository button rather than leaving a reader to notice it.
@@ -836,9 +923,28 @@ test("the confidential case study omits codeRepository from its structured data"
 
 test("the confidential case study keeps the seven-section case-study grammar", async ({ page }) => {
   await page.goto("/work/legal-knowledge-platform");
-  const indexes = await page.locator(".case-section .section-index span").allTextContents();
-  // No inspection-points section, so the template renumbers quality and limitations to 05 and 06.
-  expect(indexes).toEqual(["01", "02", "03", "04", "05", "06"]);
+  const indexes = (await page.locator(".section-index").allTextContents()).map((t) => t.trim());
+  /*
+   * Six sections, named rather than numbered.
+   *
+   * The grammar this test is about is unchanged: the same six sections, in the
+   * same order, with limitations last. What changed is the label. They were
+   * "01" to "06" in a `span` inside the index; they are the section's own name
+   * now, and the `span` went with the numerals. A reader gets told which part
+   * of the argument they are in rather than how far through it they are.
+   *
+   * The names are asserted rather than the count, because the order is the
+   * grammar: a case study that put limitations before evidence would still
+   * have six sections.
+   */
+  expect(indexes).toEqual([
+    "Problem",
+    "Contribution",
+    "System",
+    "Evidence",
+    "Quality controls",
+    "Limitations",
+  ]);
   await expect(page.getByRole("heading", { name: "Where the evidence stops" })).toBeVisible();
 });
 
@@ -891,7 +997,9 @@ test("the confidential case study appears in the work index alongside the public
    */
   const card = page.locator('a[href="/work/legal-knowledge-platform"]');
   await expect(card).toHaveCount(1);
-  await expect(card).toContainText("Stored is not the same as correct");
+  /* The card carries the registry title, the same one the case study's heading uses. */
+  const confidentialCard = projects.find((project) => project.slug === "legal-knowledge-platform")!;
+  await expect(card).toContainText(confidentialCard.title);
   await expect(card).toContainText("Employer engineering");
 });
 
@@ -1283,9 +1391,21 @@ test("the contribution step marks the column it is talking about", async ({ page
   for (let index = 0; index < 6; index += 1) await page.keyboard.press("ArrowRight");
   await expect(page.locator("html")).toHaveAttribute("data-walkthrough-step", "contribution");
 
-  // A retrying assertion, because the mark arrives on a transition: reading the computed value
-  // once races the paint rather than testing anything real.
-  await expect(column).toHaveCSS("border-left-color", "rgb(0, 109, 101)");
+  /*
+   * A retrying assertion, because the mark arrives on a transition: reading
+   * the computed value once races the paint rather than testing anything real.
+   *
+   * The expected colour is read from the token rather than written out. It was
+   * `rgb(0, 109, 101)`, a teal that is no longer anywhere in the palette, so
+   * this asserted a specific past value of `--teal` rather than the thing it
+   * is about, which is that the marked column is marked. Pinning a hex in a
+   * test makes every future palette change look like a regression.
+   */
+  const marked = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue("--teal").trim(),
+  );
+  await expect(column).toHaveCSS("border-left-color", hexToRgb(marked));
+  expect(hexToRgb(marked)).not.toBe(plain);
 
   // The other column is left alone: this is a mark, not a spotlight that dims the page.
   const problem = page.locator(".two-column-copy > div").first();
@@ -2285,9 +2405,21 @@ test("cifar renders the world and its architecture", async ({ page }) => {
 test("cifar reports the real tensor shapes", async ({ page }) => {
   await page.goto("/work/cifar10-cnn");
   const text = await page.locator("main").innerText();
-  /* Measured from the module by the generator, not read off the README. */
-  for (const shape of ["3 × 32 × 32", "32 × 16 × 16", "64 × 8 × 8", "128 × 4 × 4"]) {
-    expect(text, `expected the measured shape ${shape}`).toContain(shape);
+  /*
+   * Derived from `stages`, which is the measured record: the shapes come from
+   * building the repository's own nn.Module and running a tensor through it.
+   * Hard-coding them here meant two copies of the same fact that could drift,
+   * and they did, on the separator rather than the numbers.
+   *
+   * The separator is the letter x, not the multiplication sign. The site's
+   * character rule forbids U+00D7 by name, `check_characters.py` line 35, and
+   * the page renders `shape.join(" x ")` in obedience to it. This assertion
+   * asked for the banned character, so it could only pass against a page that
+   * broke the rule.
+   */
+  for (const stage of cifarStages) {
+    const shape = stage.shape.join(" x ");
+    expect(text, `expected the measured shape ${shape} for ${stage.name}`).toContain(shape);
   }
 });
 
@@ -2441,38 +2573,67 @@ test("the cifar opening object uses real per-class numbers", async ({ page }) =>
  */
 const REEL = WORLD_ORDER;
 
-test("the homepage index offers every project and the way to the rest", async ({ page }) => {
+test("the homepage index offers a shortlist and the way to the rest", async ({ page }) => {
   await page.goto("/");
-  const index = page.getByRole("navigation", { name: "Selected work" });
+  /*
+   * A `ul.work-list`, not a navigation landmark called "Selected work". The
+   * section is headed "Selected work" and the list is a list; it was given a
+   * `nav` role when the homepage was a reel and the entries were the only way
+   * through it.
+   */
+  const index = page.locator("ul.work-list");
   const hrefs = await index
     .locator("a[href]")
     .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
 
-  expect(hrefs).toHaveLength(REEL.length);
-  for (const slug of REEL) {
-    expect(hrefs.some((href) => href === `/work/${slug}`), `index is missing ${slug}`).toBe(true);
+  /*
+   * A shortlist, deliberately, not a mirror of WORLD_ORDER.
+   *
+   * This asserted one entry per world, nine of them. The homepage lists ten
+   * projects and three of those are not case studies at all: the architecture
+   * site, the AUDI case study and the identifiability analysis each link to
+   * their own repository. Two worlds, streamflow and cifar, are not on the
+   * shortlist at all. Requiring the two sets to match forced the homepage to
+   * be a table of contents for the worlds rather than a choice of what to
+   * read first.
+   *
+   * What is worth asserting is that the shortlist is real: every case-study
+   * link it offers resolves to a project the registry knows about, so a
+   * renamed or withdrawn slug cannot sit on the front page pointing nowhere.
+   */
+  const caseStudyHrefs = hrefs.filter((href) => href?.startsWith("/work/"));
+  expect(caseStudyHrefs.length).toBeGreaterThan(0);
+  const slugs = new Set(projects.map((project) => project.slug));
+  for (const href of caseStudyHrefs) {
+    const slug = href!.replace("/work/", "");
+    expect(slugs.has(slug), `the homepage links /work/${slug}, which is in no registry`).toBe(true);
   }
+
   /* The index is a shortlist; the catalogue is one link away and says so. */
-  await expect(page.getByRole("link", { name: "Every project and repository" })).toHaveAttribute(
-    "href",
-    "/work",
-  );
+  await expect(
+    page.getByRole("link", { name: "Every project, including the smaller ones" }),
+  ).toHaveAttribute("href", "/work");
 });
 
 test("the homepage index is whole on first paint, without scrolling", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
-  const index = page.getByRole("navigation", { name: "Selected work" });
+  const index = page.locator("ul.work-list");
 
   /*
    * The index it replaced faded its items in across a scroll range, which made the reduced-motion
    * rendering the only one that showed the whole list at once. Choosing is not reading: every
    * entry is legible without moving, whatever the motion preference.
+   *
+   * Counted against the list itself rather than against WORLD_ORDER: the
+   * shortlist is curated and the two sets are not the same length. What this
+   * test is about is that nothing in it is staged on scroll, so the number
+   * only has to be "all of them".
    */
   const opacities = await index
     .locator("li")
     .evaluateAll((els) => els.map((el) => Number(getComputedStyle(el).opacity)));
-  expect(opacities).toHaveLength(REEL.length);
+  expect(opacities.length).toBeGreaterThan(0);
   expect(opacities.every((o) => o > 0.99), "an index entry is staged on scroll").toBe(true);
 });
 
@@ -2483,7 +2644,13 @@ test("the homepage is an index, not a reel", async ({ page }) => {
   const measured = await page.evaluate(() => {
     const links = Array.from(document.querySelectorAll("main a[href^='/work/']"));
     const tops = links.map((a) => Math.round(a.getBoundingClientRect().top + window.scrollY));
-    const hero = document.querySelector(".cine-hero")!.getBoundingClientRect();
+    /*
+     * `.hero`, not `.cine-hero`. The cinema hero went when the homepage became
+     * an index, and `querySelector` on a class that no longer exists returns
+     * null, so this threw on `getBoundingClientRect` before it measured
+     * anything.
+     */
+    const hero = document.querySelector(".hero")!.getBoundingClientRect();
     return {
       height: document.documentElement.scrollHeight,
       heroEnd: Math.round(hero.bottom + window.scrollY),

@@ -28,9 +28,19 @@ for (const route of targets) {
    * is composed at once rather than sitting transparent below the fold, so axe actually sees the
    * colours a reader will see. Auditing without it silently skips most of the page.
    */
+  /*
+   * Both themes, because a contrast bug is rarely in both.
+   *
+   * This ran in the browser default, which is light, and the dark theme is
+   * half the site: the tokens are `light-dark()` pairs and the two halves are
+   * chosen independently. The pressed button in the systems graph failed at
+   * 3.30:1 in light and 2.06:1 in dark, and only the first was ever reported.
+   * `AXE_SCHEME=dark` switches it; the loop at the foot runs both.
+   */
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
     reducedMotion: "reduce",
+    colorScheme: process.env.AXE_SCHEME === "dark" ? "dark" : "light",
   });
   const page = await context.newPage();
   await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
