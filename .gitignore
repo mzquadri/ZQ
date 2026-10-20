@@ -138,3 +138,4 @@ tools/lh/
 
 # Motion recordings and extracted frames from tools/record-motion.mjs.
 tools/shots/recording/
+compat-ledger.jsonl

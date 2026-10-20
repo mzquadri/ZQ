@@ -178,6 +178,27 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/*
+ * The notch, in one rule.
+ *
+ * With `viewportFit: "cover"` the page is allowed to paint to the physical
+ * edges of the screen, which is what makes the safe-area insets non-zero and
+ * what makes them necessary: an iPhone held sideways puts the notch and the
+ * rounded corner on the long edge, right where a line of text starts. Every
+ * content width on the site is written as `min(100% - gutter, --content)`, so
+ * insetting the two containers those widths resolve against moves all of them
+ * at once; there are seventeen such declarations and they do not need to learn
+ * about hardware.
+ *
+ * On everything without a notch each inset is 0px and this costs nothing. The
+ * rail carries its own copy because it is sticky and sits outside `main`.
+ */
+main,
+.site-footer {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
 a {
   color: inherit;
   text-decoration-thickness: 0.08em;
@@ -3168,11 +3189,30 @@ ol {
   border-left: 1px solid var(--line);
 }
 
-.education-list li {
+/*
+ * `min-width: 0`, for the same reason it is on `.research-table-wrap` and
+ * `.section-index`, and found the same way.
+ *
+ * A grid item's automatic minimum is its min-content width, so a cell holding
+ * an unbreakable run of text refuses to go narrower than that run and widens
+ * the track instead. At the default text size the university names fit and
+ * nothing shows. At a browser default of 24px they do not: each cell wanted
+ * 218px of a 161px column and the page scrolled 39px sideways on a 360px
+ * phone, on all three engines. The pair of declarations is the fix: the item
+ * is allowed to be narrow, and the text is allowed to break rather than
+ * setting the width.
+ */
+.education-list > li {
+  min-width: 0;
   min-height: 13rem;
   padding: 1.5rem;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
+}
+
+.education-list h3,
+.education-list li > p {
+  overflow-wrap: break-word;
 }
 
 .education-list h3 {

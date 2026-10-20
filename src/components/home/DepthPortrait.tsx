@@ -83,15 +83,54 @@ interface Props {
   className?: string;
 }
 
+/*
+ * iOS has gated device orientation behind a permission call since 13, and the
+ * call only works from inside a user gesture. Safari is the only engine that
+ * defines it, so its presence is the test for "this device will not give us
+ * tilt until somebody taps something".
+ */
+type OrientationGate = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<"granted" | "denied" | "default">;
+};
+
+const orientationNeedsPermission = () =>
+  typeof DeviceOrientationEvent !== "undefined" &&
+  typeof (DeviceOrientationEvent as OrientationGate).requestPermission === "function";
+
 export default function DepthPortrait({ color, depth, alt, width, height, className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [live, setLive] = useState(false);
+  /*
+   * `null` until the client has been asked. Starting at `false` would run the
+   * whole WebGL setup and tear it down again one tick later for a reader who
+   * asked for reduced motion, which is the one reader who should cost nothing.
+   */
+  const [still, setStill] = useState<boolean | null>(null);
+  /* Set when the device has tilt to give and has not been asked for it yet. */
+  const [offerTilt, setOfferTilt] = useState(false);
+  const enableTilt = useRef<null | (() => void)>(null);
+
+  /*
+   * Tracked, not sampled once.
+   *
+   * This used to read the media query at mount and return. Reduced motion is a
+   * setting a reader changes *because* something is moving, so the one moment
+   * it matters is after the page has loaded, and that was the one moment this
+   * ignored. The shader now stops when the preference is turned on and starts
+   * again when it is turned off.
+   */
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setStill(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (still !== false) return;
 
     const gl = canvas.getContext("webgl", {
       alpha: true,
@@ -111,6 +150,21 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
 
     let disposed = false;
     const cleanups: Array<() => void> = [];
+
+    /*
+     * A lost context is not a rare event on a phone. Backgrounding the tab,
+     * rotating the device or the system reclaiming GPU memory all take the
+     * context away, and when that happens the canvas keeps its `data-live`
+     * attribute and the stylesheet keeps the flat photograph hidden behind it:
+     * the hero becomes an empty rectangle where a face was. Dropping back to
+     * the photograph is the same fallback as having no WebGL at all.
+     */
+    const onContextLost = (event: Event) => {
+      event.preventDefault();
+      setLive(false);
+    };
+    canvas.addEventListener("webglcontextlost", onContextLost);
+    cleanups.push(() => canvas.removeEventListener("webglcontextlost", onContextLost));
 
     const compile = (type: number, src: string) => {
       const sh = gl.createShader(type);
@@ -221,7 +275,6 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
         window.addEventListener("pointermove", onPointer, { passive: true });
         canvas.addEventListener("pointerleave", onLeave);
         window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("deviceorientation", onTilt);
         cleanups.push(() => {
           window.removeEventListener("pointermove", onPointer);
           canvas.removeEventListener("pointerleave", onLeave);
@@ -229,7 +282,105 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
           window.removeEventListener("deviceorientation", onTilt);
         });
 
-        const frame = () => {
+        /*
+         * Tilt, and the tap iOS requires before it will give any.
+         *
+         * `window.addEventListener("deviceorientation", ...)` is all Android
+         * Chrome needs. On iOS 13 and later the event never fires until
+         * `DeviceOrientationEvent.requestPermission()` has resolved to
+         * "granted", and that call is rejected unless it happens inside a user
+         * gesture, so a listener added on mount is simply dead. This hero has
+         * carried three inputs in its own documentation and shipped two of them
+         * to every iPhone.
+         *
+         * Where the gate exists a reader is offered a control and nothing is
+         * requested until they press it. Where it does not, the listener is
+         * attached the way it always was.
+         */
+        if (orientationNeedsPermission()) {
+          enableTilt.current = () => {
+            const gate = DeviceOrientationEvent as OrientationGate;
+            gate
+              .requestPermission?.()
+              .then((verdict) => {
+                if (disposed) return;
+                if (verdict === "granted") window.addEventListener("deviceorientation", onTilt);
+                /* Asked and answered, either way. Nobody wants to be asked twice. */
+                setOfferTilt(false);
+              })
+              .catch(() => setOfferTilt(false));
+          };
+          setOfferTilt(true);
+          cleanups.push(() => {
+            enableTilt.current = null;
+            setOfferTilt(false);
+          });
+        } else {
+          window.addEventListener("deviceorientation", onTilt);
+        }
+
+        /*
+         * The loop runs only while the hero is on screen and the tab is in
+         * front.
+         *
+         * It used to run from mount until navigation, at the full frame rate,
+         * whether or not the portrait was anywhere near the viewport. On a
+         * desktop that is invisible; on a mid-range phone it is a fragment
+         * shader with four texture reads per pixel competing with the scroll of
+         * every section below it, and it keeps running while the reader is in
+         * another tab.
+         */
+        let visible = true;
+        let focused = !document.hidden;
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            visible = entry.isIntersecting;
+            pump();
+          },
+          { rootMargin: "100px" },
+        );
+        observer.observe(canvas);
+        const onVisibility = () => {
+          focused = !document.hidden;
+          pump();
+        };
+        document.addEventListener("visibilitychange", onVisibility);
+        cleanups.push(() => {
+          observer.disconnect();
+          document.removeEventListener("visibilitychange", onVisibility);
+        });
+
+        /*
+         * Four readings are taken after a warm-up, and a device that cannot
+         * hold a readable rate gives up and shows the photograph.
+         *
+         * "Falls back when WebGL is missing" was true and was not the whole
+         * promise: a phone with a slow GPU gets a context, compiles the shader
+         * and then renders a portrait that judders every time the reader
+         * scrolls, which is worse than the flat image it replaced. The warm-up
+         * is skipped past because the first frames land while the rest of the
+         * page is still arriving and are slow for reasons that are not the GPU.
+         */
+        const WARMUP = 24;
+        const SAMPLE = 40;
+        /* 40ms is 25 frames a second, the point where easing stops reading as motion. */
+        const TOO_SLOW = 40;
+        let seen = 0;
+        let elapsed = 0;
+        let last = 0;
+
+        const frame = (now: number) => {
+          if (last) {
+            seen += 1;
+            if (seen > WARMUP && seen <= WARMUP + SAMPLE) elapsed += now - last;
+            if (seen === WARMUP + SAMPLE && elapsed / SAMPLE > TOO_SLOW) {
+              raf = 0;
+              setLive(false);
+              return;
+            }
+          }
+          last = now;
+
           /* Ease towards the target. 0.055 is slow enough to read as weight. */
           shown.x += (target.x - shown.x) * 0.055;
           shown.y += (target.y - shown.y) * 0.055;
@@ -239,8 +390,24 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
           gl.drawArrays(gl.TRIANGLES, 0, 3);
           raf = requestAnimationFrame(frame);
         };
-        frame();
-        cleanups.push(() => cancelAnimationFrame(raf));
+
+        function pump() {
+          const wanted = visible && focused && !disposed;
+          if (wanted && !raf) {
+            /* A gap in the timestamps is not a slow frame. */
+            last = 0;
+            raf = requestAnimationFrame(frame);
+          } else if (!wanted && raf) {
+            cancelAnimationFrame(raf);
+            raf = 0;
+          }
+        }
+
+        pump();
+        cleanups.push(() => {
+          if (raf) cancelAnimationFrame(raf);
+          raf = 0;
+        });
       })
       .catch(() => {
         /* Stays false, so the flat photograph remains visible. */
@@ -251,7 +418,22 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
       disposed = true;
       for (const fn of cleanups) fn();
     };
-  }, [color, depth, width, height]);
+  }, [color, depth, width, height, still]);
+
+  /*
+   * Derived, not stored.
+   *
+   * `live` means "the textures arrived and the loop is drawing". The first
+   * version of this cleared it from inside the effect when reduced motion came
+   * on, which is a setState in an effect body: React treats that as a cascading
+   * render and defers it. Measured, the canvas kept `data-live` for about two
+   * seconds after the reduced-motion rule had already set it to
+   * `display: none`, and for those two seconds the stylesheet was still hiding
+   * the photograph behind a canvas that was not there. The reader saw an empty
+   * box. Reading both pieces of state at render time means the attribute and
+   * the media query cannot disagree, because one render decides both.
+   */
+  const drawing = live && still === false;
 
   return (
     <div className={className} style={{ position: "relative" }}>
@@ -274,9 +456,28 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
       <canvas
         aria-hidden="true"
         className="hero-portrait-canvas"
-        data-live={live ? "" : undefined}
+        data-live={drawing ? "" : undefined}
         ref={canvasRef}
       />
+      {/*
+        * Only on a device that has tilt to give and has not been asked yet, and
+        * only once the shader is actually drawing: offering to add motion to a
+        * flat photograph would be an offer the page cannot keep.
+        *
+        * It is a real button rather than a tap anywhere on the portrait,
+        * because a permission prompt that appears from touching a photograph
+        * is a prompt nobody understands, and because a keyboard reaches a
+        * button.
+        */}
+      {drawing && offerTilt ? (
+        <button
+          className="hero-tilt"
+          onClick={() => enableTilt.current?.()}
+          type="button"
+        >
+          Tilt to look around
+        </button>
+      ) : null}
     </div>
   );
 }

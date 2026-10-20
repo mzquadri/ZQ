@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import test from "node:test";
 
@@ -404,4 +405,42 @@ test("a production build drops the unapproved draft from the rendered site", () 
     !result.rendered.includes(CONFIDENTIAL_SLUG),
     "a production build must not render an unapproved confidential draft",
   );
+});
+
+test("every dynamic route refuses a slug it did not prerender", () => {
+  /*
+   * The content gate and the routing gate are different promises, and only the
+   * first one was being tested.
+   *
+   * `generateStaticParams` is built from the filtered `projects`, so every test
+   * above correctly shows the draft missing from a hidden build. None of them
+   * could see that the route still answered for it: Next renders a slug outside
+   * `generateStaticParams` on demand unless told not to, so the page resolved
+   * the project again at request time against whatever the environment said
+   * then. A server started without HIDE_DRAFTS served the entire case study at
+   * HTTP 200 from a build that had correctly excluded it, and wrote the render
+   * into the route cache, where every later request was served it.
+   *
+   * Production was never exposed: `VERCEL_ENV` is "production" at build and at
+   * runtime, and the first clause of `draftsAreVisible` holds on its own. This
+   * pins the structural guarantee rather than the environmental one.
+   *
+   * Read as source rather than imported. Importing a route module pulls in the
+   * whole component tree, `next/og` included, which does not resolve under the
+   * test runner and would make this assert on the wrong thing.
+   */
+  const routes = [
+    "src/app/work/[slug]/page.tsx",
+    "src/app/learn/[slug]/page.tsx",
+    "src/app/learn/topic/[topic]/page.tsx",
+    "src/app/learn/level/[level]/page.tsx",
+  ];
+  for (const route of routes) {
+    const source = readFileSync(resolve(import.meta.dirname, "..", route), "utf8");
+    assert.match(
+      source,
+      /^export const dynamicParams = false;$/m,
+      `${route} must set dynamicParams = false, or an unknown slug is rendered on demand`,
+    );
+  }
 });

@@ -107,11 +107,33 @@ export default function SiteHeader({ current, identity }: { current?: string; id
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     document.addEventListener("keydown", onKey);
+
+    /*
+     * Everything behind the sheet leaves the tab order while it is open.
+     *
+     * The sheet covers the page and the page kept its focusable elements, so
+     * Tab walked straight out of the menu into twenty-six links and buttons
+     * that were underneath an opaque panel: focus vanished, and the only way
+     * back was to Tab through the whole document. `inert` is the one mechanism
+     * that removes an element from the tab order, from the accessibility tree
+     * and from pointer events together, which is exactly what "the rest of the
+     * page is not here right now" means.
+     *
+     * The header is left alone deliberately. The close button lives in it, and
+     * a modal that disables its own dismiss control is worse than no modal.
+     */
+    const header = sheetRef.current?.closest("header");
+    const muted = Array.from(document.body.children).filter(
+      (el): el is HTMLElement => el instanceof HTMLElement && el !== header && !el.inert,
+    );
+    for (const el of muted) el.inert = true;
+
     sheetRef.current?.querySelector<HTMLAnchorElement>("a")?.focus();
 
     return () => {
       document.body.style.overflow = previous;
       document.removeEventListener("keydown", onKey);
+      for (const el of muted) el.inert = false;
     };
   }, [open, close]);
 
@@ -173,13 +195,24 @@ export default function SiteHeader({ current, identity }: { current?: string; id
         </button>
       </div>
 
+      {/*
+        * `role="dialog"` and `aria-modal`, which the comment at the top of this
+        * file has claimed since it was written while the element was a plain
+        * div with a label on it. A screen reader announced it as a group, gave
+        * no indication that the page behind it had gone away, and offered none
+        * of the dialog navigation a user expects from something that covers the
+        * screen. `aria-modal` is only honest now that the rest of the body is
+        * actually inert while it is open; the two belong together.
+        */}
       <div
         aria-label="Site navigation"
+        aria-modal={open ? true : undefined}
         className="rail-sheet"
         data-open={open ? "" : undefined}
         id={sheetId}
         inert={!open}
         ref={sheetRef}
+        role="dialog"
       >
         <ul>
           {NAV.map((item, i) => (
@@ -194,9 +227,11 @@ export default function SiteHeader({ current, identity }: { current?: string; id
             </li>
           ))}
         </ul>
-        <div className="rail-sheet-theme">
-          <ThemeToggle />
-        </div>
+        {/*
+          * No theme control here. There is one in the bar at every width, and
+          * it stays visible while this is open, so a second copy was two
+          * buttons with the same accessible name on the same screen.
+          */}
         <p className="rail-sheet-foot">
           <a href={identity.github}>GitHub</a>
           <a href={identity.linkedin}>LinkedIn</a>

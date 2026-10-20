@@ -54,6 +54,31 @@ interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }
 
+/*
+ * A slug this build did not prerender does not exist.
+ *
+ * `dynamicParams` defaults to true, which means a request for any other slug is
+ * rendered on demand instead of refused. `/learn/[slug]`, `/learn/topic/[topic]`
+ * and `/learn/level/[level]` all set it to false; this route, the only one that
+ * can render the confidential case study, did not.
+ *
+ * What that cost: `generateStaticParams` is built from `projects`, which is
+ * already filtered by `isPublishable`, so a drafts-hidden build correctly
+ * prerendered nothing for the withheld study. A request for it still reached
+ * the page, which called `getProject` again *at request time*, against an
+ * environment that might no longer say the same thing. A server started without
+ * `HIDE_DRAFTS` set then rendered the whole case study at HTTP 200 and wrote it
+ * into the route cache, where every later request was served it, including from
+ * a process that did have the variable set.
+ *
+ * Production was never exposed, because `VERCEL_ENV` is "production" at build
+ * and at runtime and the first clause of `draftsAreVisible` holds on its own.
+ * But that is the draft staying withheld because an environment variable agreed
+ * with itself, and the rule for this material is that it must 404. With this
+ * line the absence is a property of the build: there is no route to render.
+ */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
 }

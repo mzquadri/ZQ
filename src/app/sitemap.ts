@@ -18,6 +18,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
    * model and the capability graph. All three are substantive pages and all three were invisible
    * to a crawler.
    */
+  /*
+   * `/experience`, `/certificates` and `/datenschutz` were missing from this
+   * list for the same reason the three work pages above were: a page with its
+   * own file rather than a registry entry has to be named here, and these
+   * three never were. Two of them are items in the primary navigation, which
+   * made them the most linked pages on the site and invisible to a crawler at
+   * the same time.
+   */
   const routes = [
     "",
     "/work",
@@ -27,11 +35,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/work/reliable-knowledge-systems",
     "/research",
     "/research/thesis",
+    "/experience",
+    "/certificates",
     "/architecture",
     "/learn",
     "/learn/all",
     "/about",
     "/contact",
+    "/datenschutz",
   ];
   const projectRoutes = projects.map((project) => `/work/${project.slug}`);
   /*

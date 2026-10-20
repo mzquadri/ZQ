@@ -10,14 +10,69 @@
  * else rather than staying black on a light page.
  */
 
+/*
+ * The bar height, in one place.
+ *
+ * `.rail-inner` sets it, `.rail-sheet` starts below it and the contact section
+ * subtracts it, and those three numbers were written out separately as 4.2rem
+ * each. A variable is not tidying here: the sheet is pinned to the viewport, so
+ * if the bar ever grows and the sheet does not follow, the sheet opens
+ * underneath the bar it belongs to. It sits on :root because the contact
+ * section is nowhere near this element.
+ */
+:root {
+  --rail-h: 4.2rem;
+}
+
 .rail {
   position: sticky;
   top: 0;
   z-index: 60;
-  background: color-mix(in oklab, var(--stage) 88%, transparent);
-  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--stage-line);
   color: var(--stage-ink);
+  /*
+   * The notch and the rounded corners, in landscape. The bar's own ground is
+   * painted by ::before across the full width, so the inset only moves the
+   * content inwards and nothing shows through beside it.
+   */
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/*
+ * The blur is a pseudo-element, and that is load-bearing rather than tidy.
+ *
+ * `backdrop-filter` on `.rail` itself made `.rail` the containing block for
+ * every `position: fixed` descendant, which is what `.rail-sheet` is. The sheet
+ * asks for `inset: var(--rail-h) 0 0`, meaning "from under the bar to the
+ * bottom of the screen"; resolved against a 68px bar instead of the viewport,
+ * its content box collapsed to nothing and it rendered as a 95px strip holding
+ * one and a half navigation links, on every phone and every tablet. A
+ * pseudo-element carries the same blur and traps nothing, because it has no
+ * element children to trap.
+ *
+ * `-webkit-` first, for Safari before 18, which is also the reason the bug was
+ * invisible on an older iPhone: no backdrop-filter, no containing block, a
+ * working menu.
+ */
+.rail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in oklab, var(--stage) 88%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/*
+ * Where the blur is unavailable the ground has to be opaque, or the page scrolls
+ * through the bar and the links sit on top of moving text.
+ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .rail::before {
+    background: var(--stage);
+  }
 }
 
 /* ---- Reading progress ----------------------------------------------------------------------- */
@@ -37,7 +92,7 @@
 .rail-inner {
   width: min(100% - 2.5rem, var(--content));
   margin: 0 auto;
-  min-height: 4.2rem;
+  min-height: var(--rail-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -175,12 +230,33 @@
 
 .rail-sheet {
   position: fixed;
-  inset: 4.2rem 0 0;
+  inset: var(--rail-h) 0 0;
   z-index: 55;
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  padding: clamp(2rem, 7vh, 4rem) 1.25rem 2.5rem;
+  /*
+   * `dvh` rather than leaving the height to `inset` alone. On iOS the fixed
+   * viewport is the *large* one, so a sheet pinned to `bottom: 0` ends up under
+   * the address bar until the bar retracts, which hides the two footer links.
+   * `dvh` is the box actually on screen right now.
+   */
+  max-height: calc(100dvh - var(--rail-h));
+  /*
+   * The bottom pad is a share of the screen, not a fixed 2.5rem.
+   *
+   * On a 375 by 667 phone the sheet gets 600px and its contents wanted 606:
+   * six links, the footer row, and 40px of bottom padding that does not care
+   * how much room there is. Six pixels is not visible, but it is six pixels of
+   * scroll in a menu that should not scroll at all, and the smallest phone in
+   * common use is the wrong place to spend them. At this height the pad comes
+   * to 27px and everything fits; on a tall phone it is back to its old value.
+   */
+  padding:
+    clamp(1.25rem, 5vh, 4rem)
+    calc(1.25rem + env(safe-area-inset-right, 0px))
+    calc(clamp(1.5rem, 4vh, 2.5rem) + env(safe-area-inset-bottom, 0px))
+    calc(1.25rem + env(safe-area-inset-left, 0px));
   background: var(--stage-deep);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -198,12 +274,20 @@
   gap: 0.35rem;
 }
 
+/*
+ * Sized by the shorter of the two axes.
+ *
+ * `8vw` alone is right in portrait and wrong in landscape: a phone turned
+ * sideways is 667 by 375, so 8vw asked for 53px type in a 308px-tall sheet and
+ * six links needed 725px of it. Taking the smaller of the width and height
+ * reading keeps portrait exactly as it was and makes the landscape sheet fit.
+ */
 .rail-sheet a {
   display: block;
   padding: 0.7rem 0;
   border-bottom: 1px solid var(--stage-line);
   font-family: var(--sans);
-  font-size: clamp(1.6rem, 8vw, 2.4rem);
+  font-size: clamp(1.25rem, min(8vw, 6vh), 2.4rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   text-decoration: none;
@@ -221,6 +305,41 @@
   font-family: var(--mono);
   font-size: 0.74rem;
   letter-spacing: 0.01em;
+}
+
+/*
+ * Two columns when the screen is short.
+ *
+ * A phone held sideways gives the sheet 308px of height and six destinations
+ * that want 376px of it. It scrolled, so nothing was unreachable, but half the
+ * navigation sat below the fold of a menu, which is not what a menu is for.
+ * Three rows of two fit with room to spare, and the type comes down to a size
+ * that suits a 375px-tall screen rather than a 780px-tall one.
+ *
+ * Keyed on height, not on orientation: a desktop window dragged short has the
+ * same problem and `orientation: landscape` would not catch it.
+ */
+@media (max-height: 520px) {
+  .rail-sheet {
+    justify-content: flex-start;
+    gap: 1rem;
+    padding-top: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .rail-sheet ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.5rem;
+  }
+
+  .rail-sheet a {
+    font-size: clamp(1rem, 4.5vh, 1.5rem);
+    padding: 0.45rem 0;
+  }
+
+  .rail-sheet-foot {
+    margin-top: 1rem;
+  }
 }
 
 .rail-sheet-foot a {
@@ -256,6 +375,19 @@
 
 .rail .skip-link:focus-visible {
   transform: none;
+}
+
+/*
+ * Out of the way while the menu is open.
+ *
+ * The header stays live when the sheet opens, because the close button is in
+ * it. That left exactly one control reachable by Tab that should not have
+ * been: a skip link pointing at `#main-content`, which is inert for as long as
+ * the sheet is up. Following it would have moved focus into a region the
+ * browser has been told is not there.
+ */
+.rail[data-open] .skip-link {
+  display: none;
 }
 
 /* ---- Motion ---------------------------------------------------------------------------------- */
@@ -295,6 +427,30 @@
   .rail-nav { display: none; }
   .rail-toggle { display: inline-flex; }
   .rail-name { display: none; }
+
+  /*
+   * The gutter and the gap stop being multiples of the text size here.
+   *
+   * Everything in this bar is sized in rem, including the 2.5rem gutter and
+   * the 2rem gap, so a reader who has set their browser's default text to 24px
+   * gets a 60px gutter and a 48px gap on a 375px phone before any of the three
+   * controls has been drawn. The bar wanted 343px of a 315px line and pushed
+   * the whole document 25px sideways, which is the one failure a phone layout
+   * cannot have. The controls themselves still scale with the text; only the
+   * space between them is held in pixels, because that space is not reading
+   * matter.
+   */
+  .rail-inner {
+    width: min(100% - 24px, var(--content));
+    gap: 12px;
+  }
+
+  .rail-mark > span:first-child { flex: none; }
+
+  .rail-toggle {
+    flex: none;
+    padding: 0.6rem 12px;
+  }
 }
 
 @media (min-width: 861px) {
@@ -305,19 +461,19 @@
 /* ---- Theme control --------------------------------------------------------------------------- */
 
 /*
- * Two instances, one visible at a time. On a pointer layout the control sits in
- * the bar beside the links; below the sheet breakpoint the bar has no room for
- * it, so the one in the sheet takes over. Each is hidden at the other's size
- * rather than moved, because moving a focused control between two parents mid
- * resize loses the focus.
- */
-/*
  * Visible at every width, and only once.
  *
  * While this was a three-state radio group it was too wide for the phone bar,
  * so it was duplicated into the navigation sheet and each copy hidden at the
  * other's size. A single 40px icon fits the bar, so there is one control now,
  * always reachable without opening a menu first.
+ *
+ * The copy in the sheet was removed from the markup rather than hidden here.
+ * The paragraph above used to be preceded by the older note describing the two
+ * instances and which rule hid each one, and that rule had already gone: the
+ * duplicate was rendering, so an open menu on a phone offered two buttons with
+ * the same accessible name, one of them announced twice to a screen reader
+ * walking the page.
  */
 .rail-theme {
   display: flex;
@@ -330,6 +486,8 @@
   .rail-theme {
     /* Sits between the wordmark and the menu button rather than pushed right. */
     margin-left: auto;
-    padding-right: 0.5rem;
+    /* Pixels, for the same reason the gutter and the gap above are pixels. */
+    padding-left: 0;
+    padding-right: 8px;
   }
 }

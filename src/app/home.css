@@ -608,14 +608,135 @@
 /*
  * The flat image is hidden once the canvas is live, by visibility rather than
  * display, so it keeps its box and the canvas keeps its size from it.
+ *
+ * It is hidden *after* the canvas has finished fading in, not at the moment
+ * the attribute appears. The canvas takes 420ms to reach full opacity and the
+ * photograph was going away on the first frame of that, so for four hundred
+ * milliseconds the hero was a half-transparent portrait over nothing. The
+ * delayed `visibility` step holds the photograph underneath for exactly the
+ * length of the fade, which turns a flash into a crossfade between two
+ * renderings of the same photograph.
+ *
+ * Only the hide is delayed. Going the other way the rule stops matching and
+ * the photograph returns on the next frame, which is what a lost context and
+ * a reduced-motion switch both need.
  */
 .hero-portrait-canvas[data-live] ~ .hero-portrait-img,
 .hero-portrait:has(.hero-portrait-canvas[data-live]) .hero-portrait-img {
   visibility: hidden;
+  transition: visibility 0s linear 420ms;
+}
+
+/*
+ * The tilt control, which only ever renders on iOS.
+ *
+ * Every other platform fires `deviceorientation` without being asked, so this
+ * button has no reason to exist there and the component does not render it.
+ * On iOS it is the only way the reader can be offered the third input the
+ * hero has, because Safari will not deliver a single orientation event until
+ * `requestPermission()` has been called from inside a gesture.
+ *
+ * It sits over the faded foot of the portrait rather than below it, so it does
+ * not add height to a hero that is already tall on a phone, and it is a solid
+ * ground rather than a tint because what is behind it is a photograph.
+ */
+.hero-tilt {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  translate: -50% 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  /* 44px, the floor for a standalone control on a phone. */
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.hero-tilt:focus-visible {
+  outline: 3px solid var(--paper-raised);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-portrait-canvas {
     display: none;
+  }
+
+  /*
+   * The photograph comes back, whatever `data-live` says.
+   *
+   * The rule above hides the canvas, and the rule further up hides the
+   * photograph whenever a live canvas is present in the DOM. `:has()` matches
+   * on the document, not on what is painted, so anything that leaves the
+   * attribute set while this media query is on satisfies both rules at once
+   * and the reader sees neither.
+   *
+   * The component no longer leaves it set: `data-live` is derived from the
+   * shader state and the motion preference together. This is the half of the
+   * guarantee that holds without a React render, which is what the lost-context
+   * path and a stale hydration both need.
+   */
+  .hero-portrait:has(.hero-portrait-canvas[data-live]) .hero-portrait-img,
+  .hero-portrait-canvas[data-live] ~ .hero-portrait-img {
+    visibility: visible;
+  }
+
+  /* No shader, no tilt to offer. */
+  .hero-tilt {
+    display: none;
+  }
+}
+
+/*
+ * The tilt control, which exists on iPhones and iPads and nowhere else.
+ *
+ * iOS will not deliver device orientation until it has been asked from inside
+ * a user gesture, so the third of the hero's three inputs needs something to
+ * press. It sits low over the portrait, where the mask has already faded the
+ * photograph out, so it covers nothing of the face.
+ *
+ * Sized and coloured as a control rather than a caption: 44px of target, a
+ * solid ground rather than a translucent one so it is legible over whatever
+ * part of the photograph is behind it, and its own border in forced colours.
+ */
+.hero-tilt {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  translate: -50% 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.hero-tilt:focus-visible {
+  outline: 3px solid var(--paper-raised);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--ink);
+}
+
+@media (hover: hover) {
+  .hero-tilt:hover {
+    border-color: var(--ink-soft);
   }
 }

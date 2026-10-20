@@ -106,6 +106,19 @@ export const metadata: Metadata = {
  */
 export const viewport: Viewport = {
   colorScheme: "light dark",
+  /*
+   * `viewportFit: "cover"` is what makes `env(safe-area-inset-*)` mean
+   * anything.
+   *
+   * Without it iOS letterboxes the page inside the safe area and every inset
+   * resolves to zero, so the one rule in the stylesheet that reached for
+   * `env(safe-area-inset-bottom)` had been doing nothing since it was written.
+   * With it the page is allowed to reach the physical edges, which is why the
+   * rail, the navigation sheet and the page gutters now add the insets back
+   * themselves: on a phone held sideways the notch is on the long edge, and
+   * that is where the text starts.
+   */
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f7f8fa" },
     { media: "(prefers-color-scheme: dark)", color: "#10151c" },

@@ -255,10 +255,22 @@
  * 6. Contact - the ending scene
  * ========================================================================================== */
 
+/*
+ * `svh`, not `vh`.
+ *
+ * On a phone `100vh` is the *large* viewport, the height the page would have if
+ * the browser's address bar were retracted. It is not the height on screen when
+ * the page loads, so a section asking for a screenful got one address bar more
+ * than a screenful and the closing scene always had a strip of dead scroll
+ * under it. `svh` is the small viewport: the height that is reliably visible,
+ * and the one a full-height section actually wants. The `vh` line above it is
+ * for anything that does not know the unit.
+ */
 .ending {
   background: var(--stage-deep);
   color: var(--stage-ink);
-  min-height: calc(100vh - 4.2rem);
+  min-height: calc(100vh - var(--rail-h));
+  min-height: calc(100svh - var(--rail-h));
   display: grid;
   align-items: center;
   padding: clamp(3.5rem, 10vh, 7rem) 0;
@@ -318,9 +330,24 @@
   border-top: 1px solid var(--stage-line);
 }
 
+/*
+ * Every track may shrink, and the items inside may be narrow.
+ *
+ * `9rem 1fr auto` with grid items at their default `min-width: auto` is two
+ * ways of saying the same thing: nothing here is allowed to be smaller than
+ * its content. At a 24px browser default the label column alone asked for
+ * 216px of a 312px row, the email address is a single unbreakable token, and
+ * the contact page scrolled 17px sideways on a 360px phone, on all three
+ * engines. `minmax(0, ...)` lets the tracks give way and `overflow-wrap`
+ * below lets the address break instead of setting the width.
+ */
+.ending-channels > li {
+  min-width: 0;
+}
+
 .ending-channels a {
   display: grid;
-  grid-template-columns: 9rem 1fr auto;
+  grid-template-columns: minmax(0, 9rem) minmax(0, 1fr) auto;
   gap: 1rem;
   align-items: baseline;
   padding: 1.05rem 0;
@@ -328,6 +355,11 @@
   text-decoration: none;
   color: var(--stage-ink);
   transition: padding-left var(--dur-base) var(--ease-exit), color var(--dur-quick) var(--ease-exit);
+}
+
+/* The address is one long token. Without this it sets the column width. */
+.ending-channels a > * {
+  overflow-wrap: anywhere;
 }
 
 .ending-channels a:hover,
@@ -636,10 +668,17 @@
   /* Nine states. Shorter than this and they blur together; longer and it becomes a chore. */
   .thesis-world-track { height: 620vh; }
 
+  /*
+   * A pinned stage is sized in `svh` deliberately. `dvh` would be the height
+   * that is visible right now, which is correct until a toolbar retracts
+   * mid-scroll and resizes a WebGL canvas under the reader. `svh` is the
+   * smallest the viewport gets, so the stage always fits and never resizes.
+   */
   .thesis-world-viewport {
     position: sticky;
     top: 0;
     height: 100vh;
+    height: 100svh;
   }
 }
 
@@ -945,7 +984,8 @@
 
 @media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
   .world-track { height: 760vh; }
-  .world-viewport { position: sticky; top: 0; height: 100vh; padding: 0; }
+  /* `svh` for the same reason as the thesis stage above it. */
+  .world-viewport { position: sticky; top: 0; height: 100vh; height: 100svh; padding: 0; }
 }
 
 .world-canvas { position: absolute; inset: 0; }
@@ -2950,9 +2990,25 @@
 }
 
 /* A German legal term inside English prose, marked so it is read as a citation. */
+/*
+ * `nowrap` only while the term actually fits on a line.
+ *
+ * The longest of these terms sets 351px wide, and the reading column on a
+ * 360px phone is 336px, so the privacy page scrolled sideways by 7px on
+ * Firefox and WebKit. Chromium hid it because its default scrollbar had
+ * already taken those pixels out of the viewport, which is why it only showed
+ * up on two engines out of three. Keeping a legal term unbroken is worth
+ * having where there is room for it and is not worth a page that scrolls.
+ */
 .legal-term {
   color: var(--ink-soft);
   white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .legal-term {
+    white-space: normal;
+  }
 }
 
 .legal code {
@@ -3004,7 +3060,22 @@
   border-top: 1px solid var(--line);
 }
 
+/*
+ * The same 24px floor the links above it were given.
+ *
+ * `.footer-links a` carries a comment explaining that a footer link is a
+ * standalone control rather than a word in a sentence, so it needs a target a
+ * thumb can hit, and it was raised to 24px for that reason. This link sits in
+ * the row below, is reached the same way, and was left at 21px. The padding
+ * grows the hit area without moving the text; the negative margin gives the row
+ * back the spacing it had.
+ */
 .footer-legal a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding-block: 0.25rem;
+  margin-block: -0.25rem;
   color: var(--ink-soft);
   font-size: 0.82rem;
   text-decoration: none;
