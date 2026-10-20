@@ -9,6 +9,7 @@ import {
 } from "@/components/home/HomeSections";
 import PageShell from "@/components/PageShell";
 import { createPageMetadata } from "@/lib/metadata";
+import { site } from "@/content/portfolio";
 
 /*
  * The home page.
@@ -32,8 +33,14 @@ import { createPageMetadata } from "@/lib/metadata";
  */
 export const metadata: Metadata = createPageMetadata({
   title: "AI/ML Engineer",
-  description:
-    "AI/ML engineer in Munich. M.Sc. Mathematics in Science and Engineering, TU Munich. I build machine learning systems from the first look at the data to a service running in production.",
+  /*
+   * The same sentence as `site.description`, which is the default every other
+   * route uses. The front page is the one that matters most in a search
+   * result, so it should not be the one saying something different: this used
+   * to run to thirty-one words and past the length Google renders, and the
+   * second half repeated the first line of the page it was describing.
+   */
+  description: site.description,
   path: "/",
 });
 

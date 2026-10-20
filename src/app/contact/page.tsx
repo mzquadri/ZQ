@@ -43,13 +43,21 @@ export default function ContactPage() {
             <p className="ending-eyebrow">Contact / Full-time opportunities</p>
             <h1 className="ending-line">Get in touch</h1>
             <p className="ending-support">
-              I work at the boundary between modelling and systems. The fastest way to judge
-              whether that is useful to you is the evidence itself.
+              Open to full-time Machine Learning and Applied AI roles and PhD positions. The
+              quickest way to reach me is email.
             </p>
 
-            <p className="ending-availability">
-              {site.availability}, {site.location}
-            </p>
+            {/*
+              * The location only.
+              *
+              * This line used to read `{site.availability}, {site.location}`, and
+              * `site.availability` is "Open to full-time Machine Learning and Applied AI
+              * roles" - the same sentence the line above now opens with. Stating it twice,
+              * two lines apart, reads as a page that was assembled rather than written. The
+              * fuller statement is the one a reader wants, so it stays and this keeps the
+              * part it does not carry.
+              */}
+            <p className="ending-availability">{site.location}</p>
 
             <ul className="ending-channels contact-links">
               <li>

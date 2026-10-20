@@ -20,7 +20,13 @@ export function createPageMetadata({
   path,
   type = "website",
   imagePath = "/opengraph-image",
-  imageAlt = `${site.name} portfolio`,
+  /*
+   * The default alt for a share card, which is what nearly every route uses.
+   * `${site.name} portfolio` said nothing a screen reader could use; this says
+   * who and what. The layout sets the same words for the root metadata, and a
+   * page with a figure worth describing passes its own.
+   */
+  imageAlt = `${site.name}, ${site.role} in Munich`,
   publishedTime,
   modifiedTime,
   authors,

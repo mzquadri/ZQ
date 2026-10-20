@@ -78,7 +78,8 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Mohd Zamin Quadri, Applied ML, reliable systems, scientific computing",
+        /* Read aloud when the link is shared, so it says who and where, not a list of fields. */
+        alt: "Mohd Zamin Quadri, AI/ML Engineer in Munich",
       },
     ],
   },

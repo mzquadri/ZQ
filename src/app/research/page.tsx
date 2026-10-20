@@ -59,7 +59,7 @@ export default function ResearchPage() {
 
       <StageHero
         accent="var(--accent-graph)"
-        eyebrow="Reliable machine learning and scientific modelling"
+        eyebrow="Research"
         title="Research"
         standfirst="My work asks how a machine learning model can report more than a single answer: where it is likely to be wrong, whether its stated confidence can be trusted, and when a prediction should be sent to a person instead."
       >

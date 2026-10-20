@@ -155,13 +155,6 @@ export const truthRegistry = {
       verifiedAt,
       public: true,
     },
-    positioning: {
-      value: "AI/ML Engineer building reliable intelligent systems from models to production.",
-      source: { tier: "approved-document", reference: "Portfolio positioning decision" },
-      verifiedAt,
-      reviewAfter: currentFactReviewAfter,
-      public: true,
-    },
   },
   professional: {
     role: {
@@ -581,7 +574,6 @@ export const truthRegistry = {
 } as const;
 
 export const currentPublicFacts: readonly TruthFact<unknown>[] = [
-  truthRegistry.identity.positioning,
   truthRegistry.professional.role,
   truthRegistry.professional.location,
   truthRegistry.professional.availability,
@@ -600,7 +592,6 @@ export const currentPublicFacts: readonly TruthFact<unknown>[] = [
 
 export const publishedFacts: readonly TruthFact<unknown>[] = [
   truthRegistry.identity.name,
-  truthRegistry.identity.positioning,
   truthRegistry.professional.role,
   truthRegistry.professional.location,
   truthRegistry.professional.availability,
@@ -632,10 +623,15 @@ export const site = {
   name: truthRegistry.identity.name.value,
   shortName: "MZQ",
   role: truthRegistry.professional.role.value,
-  positioning: truthRegistry.identity.positioning.value,
   domain: truthRegistry.profiles.domain.value,
+  /*
+   * The site's one public sentence: meta description, OpenGraph, Twitter card
+   * and the WebSite JSON-LD all read this, so it is what a search result and a
+   * shared link show. It was a list of fields; it is now who and where and
+   * what, which is what someone scanning a result is deciding on.
+   */
   description:
-    "AI/ML engineer working across reliable ML, graph neural networks, scientific computing, and production-oriented AI systems.",
+    "AI/ML engineer in Munich with an M.Sc. from TUM. I build machine learning systems from data to deployment.",
   location: truthRegistry.professional.location.value,
   availability: truthRegistry.professional.availability.value,
   supportingIdentity: truthRegistry.professional.supportingIdentity.value,

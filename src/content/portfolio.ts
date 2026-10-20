@@ -228,7 +228,7 @@ const authoredProjects: readonly Project[] = [
     projectRole: "Researcher and thesis author",
     institution: thesis.institution,
     summary:
-      "An evidence-led study of when a graph neural network surrogate is accurate, when it is uncertain, and how that uncertainty can support review decisions.",
+      "A study of when a graph neural network surrogate is accurate, when it is uncertain, and how that uncertainty can support review decisions.",
     problem:
       "Paris-scale transport simulations are expensive, while a fast surrogate can fail unevenly across road links and policy regimes. Point predictions alone do not tell an analyst when to trust the approximation.",
     contribution:
@@ -879,7 +879,12 @@ export const projects: readonly Project[] = allProjects.filter((project) => isPu
 export const capabilities = [
   {
     title: "Machine Learning & Research",
-    summary: "Graph models, uncertainty quantification, calibration, experiments, and evidence-led evaluation",
+    /*
+     * "evidence-led evaluation" became "evaluation". These five lines name what
+     * the work is; "evidence-led" named how good it is, which is a claim the
+     * case studies either support or do not and is not the job of a label.
+     */
+    summary: "Graph models, uncertainty quantification, calibration, experiments, and evaluation",
     proof: ["transport-uq", "hydrology-uq"],
   },
   {
