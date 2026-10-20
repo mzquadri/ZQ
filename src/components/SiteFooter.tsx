@@ -28,9 +28,19 @@ export default function SiteFooter() {
             <span>{site.role}</span>
             <span>{site.location}</span>
           </p>
-          <p className="footer-note">
-            Evidence-led ML engineering. No tracking, cookies, or contact-form data.
-          </p>
+          {/*
+            * A statement of fact, not a claim about the work.
+            *
+            * This line used to read "Evidence-led ML engineering. No tracking,
+            * cookies, or contact-form data." Two things were wrong with it. The
+            * first half was a slogan, and the pages below it already demonstrate
+            * the thing it asserted. The second half put a privacy claim in the
+            * furniture of every page, where it is not where anyone looks for one
+            * and where it has to be kept true by whoever edits the footer next.
+            * The privacy statement lives on /datenschutz, which is linked from
+            * the row below this one and is the page that carries it properly.
+            */}
+          <p className="footer-note">AI/ML Engineer in Munich.</p>
         </div>
         <nav aria-label="Footer navigation" className="footer-links">
           {/* Certificates moved into the main navigation, so it is not repeated

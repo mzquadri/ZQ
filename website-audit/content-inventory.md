@@ -14,8 +14,8 @@ Two sites were in play, and only one is the professional website.
 | | |
 |---|---|
 | **Website repository** | `github.com/mzquadri/ZQ` (Next.js 16, React 19, TypeScript) |
-| **Deployment** | Vercel, on every push to `main` |
-| **Production URL** | `https://mzquadri.de` (`zq-one.vercel.app` serves the same build) |
+| **Deployment** | Vercel project `mzquadri`, on every push to `main` |
+| **Production URL** | `https://mzquadri.de` |
 | **Architecture case studies** | `github.com/mzquadri/ai-engineering-portfolio`, served by GitHub Pages at `mzquadri.github.io/ai-engineering-portfolio/` |
 
 The case-study site stays where it is. It is a separate artifact with its own
