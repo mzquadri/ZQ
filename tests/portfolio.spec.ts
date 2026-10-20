@@ -274,7 +274,7 @@ test("canonical and structured metadata are present", async ({ page }) => {
     ["/learn", "Writing"],
     ["/learn/selective-prediction-when-models-should-abstain", "Selective Prediction: When Models Should Abstain"],
     /* The registry title, the same one the heading and the index now use. */
-    ["/work/transport-uq", "Uncertainty Quantification for Traffic Prediction"],
+    ["/work/transport-uq", "Uncertainty Quantification for Traffic Prediction (Project)"],
     ["/work/insureassist-rag", "InsureAssist: A Measured RAG Benchmark"],
     ["/work/mlops-reference-pipeline", "A Testable End-to-End MLOps Pipeline"],
     ["/work/hydrology-uq", "Uncertainty Quantification in Hydrology"],

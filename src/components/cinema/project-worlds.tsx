@@ -66,7 +66,7 @@ function evidenceOf(slug: string, index = 0) {
 export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   "transport-uq": {
     accent: "var(--accent-graph)",
-    title: "Uncertainty Quantification for Traffic Prediction",
+    title: "Uncertainty Quantification for Traffic Prediction (Project)",
     eyebrow: "Master's thesis / Transport",
     question:
       "A graph network answers in milliseconds what a traffic simulator takes hours to compute. The question is not whether it is fast. It is when it may be believed.",
