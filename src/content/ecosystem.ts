@@ -244,11 +244,11 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     title: "InsureAssist: A Measured RAG Service",
     category: "Active",
     language: "Python",
-    topics: ["Retrieval-Augmented Generation", "Qdrant", "FastAPI", "Docker", "Kubernetes"],
+    topics: ["Retrieval-Augmented Generation", "Qdrant", "FastAPI", "Docker", "Kubernetes", "Azure Container Apps"],
     description:
       "A local-first question-answering service over the three NFIP Standard Flood Insurance Policy forms. It retrieves the governing passages, answers from them behind a typed FastAPI contract, and returns citations that resolve to character offsets in the source text.",
     boundary:
-      "An engineering prototype, built to be measured rather than demonstrated, and the measurements are published with it: unanswerable questions are not detected, 28% of answers cite a block that was never supplied, and results cover one jurisdiction, one peril and three documents. Kubernetes manifests are authored, but no completed cloud deployment and no regulated-data validation are claimed.",
+      "An engineering prototype, built to be measured rather than demonstrated, and the measurements are published with it: unanswerable questions are not detected, 28% of answers cite a block that was never supplied, and results cover one jurisdiction, one peril and three documents. The Kubernetes manifests have been applied on a local kind cluster and the API alone is deployed on Azure Container Apps, so no full stack runs in the cloud and no regulated-data validation is claimed.",
     caseStudySlug: "insureassist-rag",
   },
   {

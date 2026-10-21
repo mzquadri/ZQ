@@ -375,7 +375,7 @@ const authoredProjects: readonly Project[] = [
       "Unanswerable questions are not detected. No similarity threshold was defensible on this data, so none is claimed",
       "Answer quality is not measured; only one local model is available and grading its own output would be circular",
       "One jurisdiction, one peril, three documents. Results do not transfer to insurance documents generally",
-      "Kubernetes manifests are authored and CI-validated but have never been applied to a cluster",
+      "The Kubernetes manifests have been applied only to a local kind cluster, and the Azure Container Apps deployment hosts the API alone, with its readiness probe reporting the vector store absent by design; no full stack runs in the cloud, and the Google Cloud guide has never been run",
       "A fine-tuning notebook exists but is archived: its training data was the earlier evaluation set, so no tuned-model result could be honest",
     ],
     learned:
