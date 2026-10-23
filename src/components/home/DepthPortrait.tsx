@@ -240,10 +240,21 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
     gl.uniform1i(gl.getUniformLocation(prog, "uColor"), 0);
     gl.uniform1i(gl.getUniformLocation(prog, "uDepth"), 1);
     /*
-     * 3.2% of the frame at full deflection. Enough to read as depth on a face
-     * at this size, small enough that the silhouette does not visibly slide.
+     * 6% of the frame at full deflection.
+     *
+     * It was 3.2%, chosen to be certain the silhouette never slid. That was too
+     * quiet to read as motion at all: the effect was working and looked like a
+     * still photograph unless you knew to look for it, which is the whole
+     * complaint this answers. Raised on the owner's instruction, 23 October 2026.
+     *
+     * The silhouette is safe at this amount for a structural reason rather than
+     * a cautious one: the fragment shader takes alpha from the *unshifted*
+     * coordinate (`c.a = texture2D(uColor, vUv).a`), so the cut-out edge is
+     * fixed no matter how far the colour is displaced. What grows with this
+     * number is interior parallax, and the depth map is deliberately smooth
+     * across the face so that slides in layers rather than shearing.
      */
-    gl.uniform1f(uAmount, 0.032);
+    gl.uniform1f(uAmount, 0.06);
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import DepthPortrait from "@/components/home/DepthPortrait";
-import { heroLinks, homeIntro, parisNetwork, portrait, portraitNote } from "@/content/home";
+import { heroLinks, homeIntro, parisNetwork, portrait } from "@/content/home";
 import { site } from "@/content/portfolio";
 
 /*
@@ -89,13 +89,6 @@ export default async function Hero() {
             height={portrait.height}
             width={portrait.width}
           />
-          {/*
-            * The portrait is generated, and it is photorealistic enough that a
-            * reader would otherwise take it for a photograph. A figcaption is
-            * the element that says what a figure is, so the label is one, not
-            * a tooltip or a line of alt text only a screen reader reaches.
-            */}
-          <figcaption className="hero-portrait-note">{portraitNote}</figcaption>
         </figure>
       </div>
 

@@ -9,8 +9,9 @@ import { site } from "@/content/portfolio";
  * The image is committed from 22 October 2026. It is the same generated portrait the
  * hero carries, square-cropped against its own backdrop rather than cut out, because
  * this frame is a squircle with a background of its own and fills it with
- * `object-fit: cover`. The page labels it: see `portraitNote` in src/content/home.ts,
- * rendered in the caption beside this by src/app/about/page.tsx.
+ * `object-fit: cover`. It carried a visible "AI-generated portrait" label beside
+ * it until the owner removed that on 23 October 2026; the `alt` text still says
+ * the portrait is generated.
  *
  * The fallback is kept. A missing file must not break the build or leave a broken image
  * on the page, and the existence check runs on the server at build time, so a page

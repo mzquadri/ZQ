@@ -11,7 +11,6 @@ import { DomainsCanvas } from "@/components/scene/PersonalCanvases";
 import PageShell from "@/components/PageShell";
 import PhotoStrip from "@/components/about/PhotoStrip";
 import ProfilePortrait from "@/components/ProfilePortrait";
-import { portraitNote } from "@/content/home";
 import { capabilities, getProject, site, thesis } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
 import { ArrowLabel } from "@/components/Icon";
@@ -78,13 +77,6 @@ export default function AboutPage() {
             */}
             <p className="portrait-caption">
               <strong>{site.name}</strong>
-              {/*
-                * The same label the hero carries, read from the same constant,
-                * because this is the same generated portrait. Two pages
-                * showing one picture must not be able to disagree about what
-                * it is.
-                */}
-              <span className="portrait-note">{portraitNote}</span>
             </p>
           </div>
         </div>

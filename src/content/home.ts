@@ -84,12 +84,15 @@ export const parisNetwork = {
  * This is not a photograph. It is a synthetic portrait the owner generated
  * from his own photograph, published here from 22 October 2026 at his
  * instruction, replacing the third-party photograph that stood here before.
- * Because it is photorealistic a reader would otherwise take it for a
- * photograph, so the page says what it is underneath it: see `portraitNote`
- * below, which is rendered as the figure's caption and is not optional
- * decoration. The CVs and LinkedIn keep the real photograph; that split, and
- * the reversal of the earlier decision, are recorded in
+ * The CVs and LinkedIn keep the real photograph; that split, and the reversal
+ * of the earlier decision, are recorded in
  * `_portfolio-work/photos/PHOTOS.md`.
+ *
+ * It carried a visible on-page label, `portraitNote`, rendered as the hero
+ * figure's caption and beside the /about portrait. The owner removed it on
+ * 23 October 2026. The `alt` text below still says "generated portrait", so
+ * the claim survives for a screen reader and in the markup; what is gone is
+ * the line a sighted reader saw.
  *
  * Colour and depth are produced together by
  * `_portfolio-work/photos/make_hero_avatar.py` from one alpha matte and one
@@ -114,13 +117,3 @@ export const portrait = {
   alt: `${site.name}, generated portrait`,
 } as const;
 
-/**
- * What the portrait is, said on the page rather than only in this file.
- *
- * A site that argues for labelled evidence cannot publish a photorealistic
- * generated likeness as though it were a photograph. This is the label, and it
- * is rendered wherever that portrait is: the hero figure's caption and the
- * /about portrait's caption both read from here, so neither can drift from the
- * other or be removed by editing one page.
- */
-export const portraitNote = "AI-generated portrait, based on my own photograph";

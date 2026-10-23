@@ -4117,29 +4117,6 @@ ol {
 }
 
 /*
- * What the portrait is, under the name.
- *
- * Deliberately not the mono accent above, which is the site's style for a
- * credential and would set a disclosure in the typeface it uses to make a
- * claim. This matches `.hero-portrait-note` in home.css instead: the same
- * label, on the two pages that show the same picture, reading the same quiet
- * way on both.
- *
- * `span.portrait-note` rather than `.portrait-caption .portrait-note`: the
- * rule above is `.portrait-caption span:last-child`, which carries a
- * pseudo-class and so outweighs two plain classes. This matches its weight and
- * comes after it.
- */
-.portrait-caption span.portrait-note {
-  font-family: var(--sans);
-  font-size: 0.78rem;
-  letter-spacing: normal;
-  line-height: 1.4;
-  color: var(--ink-soft);
-  text-wrap: balance;
-}
-
-/*
  * Parallax, done with a scroll-driven CSS animation so it costs no JavaScript and
  * disappears entirely where the feature or the motion preference is absent. Travel is
  * capped at 12px; only transform is animated, so nothing reflows.

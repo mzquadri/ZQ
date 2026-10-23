@@ -212,27 +212,6 @@
   mask-image: linear-gradient(to bottom, #000 40%, transparent 92%);
 }
 
-/*
- * What the portrait is.
- *
- * The image above it is generated and photorealistic, so the page says so
- * rather than letting a reader assume a photograph. It is set quiet - the
- * footnote's size and colour - because it is a label and not a claim the hero
- * is making, but it is never hidden, and it sits inside the figure so it
- * cannot be separated from the picture it describes.
- *
- * Negative top margin: the image's own mask fades its last fifth to nothing,
- * so the box ends well below the last visible pixel and a caption spaced off
- * the box edge reads as drifting away from the portrait.
- */
-.hero-portrait-note {
-  margin: -2.2rem 0 0;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
-  line-height: 1.4;
-  text-wrap: balance;
-}
-
 .hero-footnote {
   position: relative;
   z-index: 1;
