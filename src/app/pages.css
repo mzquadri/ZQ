@@ -1429,6 +1429,172 @@
 .reliable-invariants span { font-size: 0.9rem; line-height: 1.55; }
 .reliable-invariants em { font-size: 0.82rem; font-style: normal; opacity: 0.7; }
 
+/* ---- The four verbs ---------------------------------------------------------------------------
+ *
+ * `VerbScene` in components/cinema/scenes.tsx draws four small figures: Ingest, Represent, Verify,
+ * Observe. It shipped without a stylesheet, and an SVG shape with no CSS takes the SVG defaults -
+ * `fill: black`, `stroke: none` - so every figure rendered as solid black blobs at whatever size
+ * the grid gave them, and nothing animated. These are the rules it always needed.
+ *
+ * Painted from theme tokens rather than fixed colours, so the figures follow light and dark the
+ * way the rest of the page does. Structure is drawn in the muted ink and the thing that *moves*
+ * is drawn in the section accent, so each figure reads as one action against a fixed frame.
+ */
+
+.verb-track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.verb {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+}
+
+.verb-mark {
+  display: block;
+  width: 100%;
+  max-width: 96px;
+}
+
+.verb-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.verb-name {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+/*
+ * The resting state is the finished state. Every rule below describes a figure that has already
+ * arrived, which is what a reader gets with reduced motion on, without scroll-driven timelines,
+ * or before the animation range is reached.
+ */
+.verb-svg [class^="verb-"] {
+  vector-effect: non-scaling-stroke;
+}
+
+.verb-arrive,
+.verb-arrive-head,
+.verb-branch,
+.verb-return,
+.verb-tick,
+.verb-trace {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Structure: the things that were already there and do not move. */
+.verb-hold,
+.verb-derived {
+  fill: color-mix(in oklab, var(--accent) 12%, transparent);
+  stroke: var(--ink-soft);
+  stroke-width: 1.6;
+}
+
+.verb-source,
+.verb-form,
+.verb-reading {
+  fill: var(--accent);
+  stroke: none;
+}
+
+/* The trace is a reading taken over time, so it is thinner than an action. */
+.verb-trace {
+  stroke-width: 2;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /*
+     * CONNECT for everything with a `pathLength={100}` in the component: the stroke draws itself
+     * along its own length. The component sets pathLength so the dash maths is the same 0-100 on
+     * every path regardless of its real geometry.
+     */
+    .verb-arrive,
+    .verb-branch,
+    .verb-return,
+    .verb-tick,
+    .verb-trace {
+      stroke-dasharray: 100;
+      --path-length: 100;
+      animation: mz-connect 1s var(--ease-precise) both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 35%;
+    }
+
+    /* The arrowhead lands after the line that brought it. */
+    .verb-arrive-head {
+      animation: mz-verify 1s var(--ease-exit) both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 42%;
+    }
+
+    /* EXPAND - the holding box had extent all along. */
+    .verb-hold,
+    .verb-derived {
+      transform-origin: center;
+      animation: mz-expand 1s var(--ease-exit) both;
+      animation-timeline: view();
+      animation-range: entry 18% cover 38%;
+    }
+
+    /* PROPAGATE - a node that information reached. */
+    .verb-source,
+    .verb-form,
+    .verb-reading {
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: mz-propagate 1s var(--ease-weighted) both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 40%;
+    }
+
+    /*
+     * Represent fans out: each branch and its form follow the one before.
+     *
+     * The delay goes on the animated elements, not on the `<g>` that carries `--i`:
+     * `animation-delay` does not inherit, but a custom property does, so `--i` reaches here from
+     * whichever ancestor set it - the `<g>` inside Represent, and the `<li>` for the other three,
+     * which staggers the four figures against each other for free.
+     */
+    .verb-arrive,
+    .verb-arrive-head,
+    .verb-branch,
+    .verb-return,
+    .verb-tick,
+    .verb-trace,
+    .verb-hold,
+    .verb-derived,
+    .verb-source,
+    .verb-form,
+    .verb-reading {
+      animation-delay: calc(var(--i, 0) * var(--stagger) * -1);
+    }
+  }
+}
+
+@media (max-width: 560px) {
+  .verb-track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
 /* ---- mlops: the promotion gate ---- */
 
 .mlops-flat {
