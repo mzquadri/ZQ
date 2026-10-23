@@ -57,6 +57,16 @@ const FLOORS: Record<string, Floor[]> = {
       ],
       note: "Unauthenticated RCE on Windows-hosted servers and RCE in the Image Optimization API for AVIF input (fixed in 16.3.3); RCE in next/og ImageResponse, which every opengraph-image route here uses (fixed in 16.3.6); and SSRF in Image Optimization plus cache-poisoning and information-disclosure advisories (fixed in 16.3.8).",
     },
+    {
+      line: "16.4",
+      minimum: "16.4.1",
+      advisories: [
+        "GHSA-2464-fhr4-w9xw",
+        "GHSA-p3m5-59mp-jv5r",
+        "GHSA-673q-mjm6-r5xr",
+      ],
+      note: "Unauthenticated RCE in the Image Optimization API for SVG input, and unauthenticated RCE in `use cache` functions returning typed arrays, both critical; plus a denial of service in the App Router through Server Actions. All three are >=16.0.0 <=16.4.0, so the whole 16.3 line this project ran on was exposed and no 16.3 patch closes them - the fix is the 16.4 line. The first advisory reaches this site: next/image is used on /about and in the about photo strip. The minimum is the first patched release rather than the newest, per the rule above; package.json pins 16.4.2.",
+    },
   ],
   sharp: [
     {
