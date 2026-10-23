@@ -705,12 +705,12 @@ const authoredProjects: readonly Project[] = [
       },
       {
         label: "Median decision",
-        value: "99.6 µs",
-        note: "Roughly 0.3 ms of policy per tool call across three stages, against a call that touches a disk or a network.",
+        value: "191 µs",
+        note: "A property of the machine it ran on rather than of the system: eight runs on one machine ranged from 191 to 710 µs. Read the order of magnitude, which is well under a millisecond of policy per call, against a call that touches a disk or a network.",
       },
     ],
     quality: [
-      "108 tests: unit, engine properties, corpus hygiene, and integration over a real MCP subprocess",
+      "234 tests: unit, engine properties, corpus hygiene, and integration over a real MCP subprocess",
       "CI runs lint, format, mypy, the tests, the benchmark and the end-to-end demo on 3.11, 3.12 and 3.13",
       "The benchmark reproduces exactly from a clean clone, with no API key, network or GPU",
       "Headline numbers are pinned by tests, and the three known failures are named exactly so a new one fails the build",

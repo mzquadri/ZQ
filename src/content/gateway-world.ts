@@ -1,4 +1,4 @@
-/**
+﻿/**
  * mcp-policy-gateway, as evidence.
  *
  * Every number here is copied from a generated file in the repository, not from a README and not
@@ -23,7 +23,7 @@ const gatewayRepository = "https://github.com/mzquadri/mcp-policy-gateway";
  * would have relabelled the citation and left every evidence link on the old commit, still
  * resolving and quietly quoting different numbers.
  */
-const gatewayCommit = "11c0017";
+const gatewayCommit = "4a14af8";
 
 export const gatewaySource = {
   repository: gatewayRepository,
@@ -94,14 +94,22 @@ export const stages = [
   },
 ] as const;
 
-/** From assets/summary.json. */
+/**
+ * From assets/summary.json at the pinned commit.
+ *
+ * `tests/fixtures/mcp-policy-gateway-summary.json` is that file, copied verbatim, and
+ * `gateway-evidence.test.ts` asserts these fields equal it. Until 2026-10-23 this object held
+ * `cases: 44`, `benign: 18` and `medianMicros: 99.6`, which are the numbers from commit `b6ebf71`
+ * of 2026-08-31, while the pin above already read `11c0017`. The page cited one commit and quoted
+ * another, and every check here passed because they only ever compared this object with itself.
+ */
 export const verdict = {
-  cases: 44,
+  cases: 47,
   attacks: 26,
-  benign: 18,
+  benign: 21,
   attackClasses: 10,
   controls: 9,
-  medianMicros: 99.6,
+  medianMicros: 190.7,
 } as const;
 
 /**
@@ -118,7 +126,7 @@ export const configurations = [
     note: "What an MCP client does today.",
     caught: 0.0,
     falseBlock: 0.0,
-    micros: 0,
+    micros: 0.9,
   },
   {
     key: "keyword",
@@ -126,7 +134,7 @@ export const configurations = [
     note: "Substring matching on the obvious phrases. What gets built first.",
     caught: 0.3846,
     falseBlock: 0.3333,
-    micros: 3,
+    micros: 4.9,
   },
   {
     key: "gateway",
@@ -134,7 +142,7 @@ export const configurations = [
     note: "Nine controls across three stages.",
     caught: 0.9615,
     falseBlock: 0.0952,
-    micros: 99.6,
+    micros: 190.7,
   },
 ] as const;
 
