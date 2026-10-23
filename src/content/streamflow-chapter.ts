@@ -49,9 +49,23 @@ export const chapterZoom = [
   [0.9832, 242.84, 240.67],
 ] as const;
 
+/*
+ * r2 and sarimaxR2 were 0.9786 and 0.7206 until 2026-10-23. Those are the earlier
+ * reference run's numbers; `results/benchmark.json` gives XGBoost 0.9848 and SARIMAX
+ * 0.963. See the header of `streamflow-world.ts` for why the generator that wrote both
+ * files can no longer run, and `tests/streamflow-evidence.test.ts` for what now checks
+ * them.
+ *
+ * `persistenceR2` is new and is the point: XGBoost's R2 alone reads as a success, and it
+ * is only meaningful next to the one-line baseline that beats it.
+ *
+ * topTwoShare, lag1 and lag2 are feature importances from the model file the repository
+ * no longer publishes, so they cannot be re-derived and are left as the earlier run's.
+ */
 export const chapter = {
-  r2: 0.9786,
-  sarimaxR2: 0.7206,
+  r2: 0.9848,
+  persistenceR2: 0.9882,
+  sarimaxR2: 0.963,
   naiveR2: -11.692,
   topTwoShare: 0.9444,
   lag1: 0.4768,
