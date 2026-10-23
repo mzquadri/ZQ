@@ -651,8 +651,15 @@ check(
   /^[0-9a-f]{40}$/.test(canonicalMlopsEvidence.commit),
   "MLOps evidence commit must be a full 40-character SHA",
 );
+// Moved deliberately on 2026-10-23, from ada5465 to the merge commit of that repository's
+// review pass. Two things made it worth moving rather than leaving: `bundleFormat` was the one
+// field that differs between the two commits, 1.1 to 1.2 with every metric unchanged, and the
+// test counts this site publishes were wrong at either commit. They came from that repository's
+// docs/TESTING.md, which said "99 tests: 93 offline, 6 container" while a collect-only run gave
+// 164, 153, 5 and 6; the README had been right all along. Both are fixed upstream and mirrored
+// here by re-running tools/gen-mlops-world.py against this commit's own two inputs.
 check(
-  canonicalMlopsEvidence.commit === "ada5465993295a9dd4d995846b77852d1fc4de5e",
+  canonicalMlopsEvidence.commit === "a4d3613d48c2e474fa0f231355a16fd3e91a53b4",
   "MLOps evidence commit changed unexpectedly",
 );
 check(

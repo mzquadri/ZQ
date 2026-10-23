@@ -71,7 +71,7 @@ export default function Readout({ state }: { state: MlopsKey }) {
           items={[
             { label: "Task", note: experiment.model, value: experiment.task },
             { label: "Lifecycle stages", note: "data through serving, in one repository", value: "Nine" },
-            { label: "Tests", note: `${tests.offline} offline, ${tests.container} in a container`, value: `${tests.total}` },
+            { label: "Tests", note: `${tests.offline} offline, ${tests.network} on the licensed data, ${tests.container} in a container`, value: `${tests.total}` },
           ]}
         />
       );

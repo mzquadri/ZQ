@@ -100,7 +100,10 @@ jobs:
 
       - name: Cache the Playwright browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        # v6, not v4. v4 targets the deprecated Node 20 and GitHub force-runs it on
+        # Node 24 with an annotation on every run; the current majors differ per action,
+        # so this one cannot be inferred from checkout@v7 or setup-node@v7.
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ms-playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}

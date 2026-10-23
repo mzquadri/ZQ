@@ -1,0 +1,26 @@
+{
+  "_source": "EXPECTED in scripts/check_reference_run.py at mzquadri/MLOps-End-to-End-Pipeline@a4d3613",
+  "bundle_format_version": "1.2",
+  "dataset": {
+    "key": "uci-sentiment-labelled-sentences",
+    "kind": "licensed-download",
+    "license": "CC BY 4.0",
+    "sha256": "afc26626d710899948693e1a61405dce197f57ffa719fa1130d346b4cc095343"
+  },
+  "metric_tolerance": 0.02,
+  "metrics": {
+    "accuracy": 0.8067,
+    "accuracy_over_baseline": 0.3067,
+    "baseline_accuracy": 0.5,
+    "f1_weighted": 0.8067,
+    "pr_auc": 0.8895,
+    "roc_auc": 0.8795
+  },
+  "split": {
+    "random_state": 42,
+    "stratified": true,
+    "test_rows": 600,
+    "train_rows": 1800,
+    "validation_rows": 600
+  }
+}
