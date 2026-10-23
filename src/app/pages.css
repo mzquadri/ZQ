@@ -2351,6 +2351,71 @@
   .scene-margin-track { grid-column: 1 / -1; }
 }
 
+/* ---- BM25 parity: one ranking, and the pair that nearly ties ---------------------------------
+ *
+ * The bars are to scale against the top score, so the near-tie at the top reads as a near-tie
+ * rather than as two rows of text that happen to carry similar numbers. The scores are set in
+ * mono, which on this site means a measured thing.
+ */
+
+.scene-parity { display: grid; gap: 0.75rem; width: 100%; }
+
+.scene-parity-list { display: grid; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-parity-row {
+  display: grid;
+  grid-template-columns: 1.1rem 7.5rem 1fr 4.2rem;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.scene-parity-rank {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.scene-parity-id { font-size: 0.74rem; color: var(--ink-soft); }
+
+.scene-parity-track {
+  display: block;
+  height: 0.5rem;
+  border-radius: 1px;
+  background: color-mix(in oklab, var(--paper-raised) 70%, transparent);
+}
+
+.scene-parity-bar {
+  display: block;
+  width: var(--w);
+  height: 100%;
+  border-radius: 1px;
+  transform-origin: left center;
+  background: var(--accent);
+}
+
+/* The two that nearly tie, which is the point of the figure. */
+.scene-parity-row:nth-child(-n + 2) .scene-parity-bar {
+  background: color-mix(in oklab, var(--accent) 100%, transparent);
+}
+
+.scene-parity-row:nth-child(n + 3) .scene-parity-bar {
+  background: color-mix(in oklab, var(--ink-soft) 45%, transparent);
+}
+
+.scene-parity-score {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.74rem;
+  text-align: right;
+  color: var(--ink);
+}
+
+.scene-parity-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-parity-row { grid-template-columns: 1.1rem 1fr 3.8rem; }
+  .scene-parity-track { grid-column: 1 / -1; }
+}
+
 /*
  * Reserve a floor for the readout, where the readout actually varies.
  *

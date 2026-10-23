@@ -9,6 +9,7 @@ import {
   GraphSurrogateScene,
   HorizonScene,
   MarginIntervalScene,
+  ParityScene,
   PipelineScene,
   RetrievalScene,
 } from "@/components/cinema/scenes";
@@ -182,6 +183,25 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "bm25-rrf-java": {
+    accent: "var(--accent-corpus)",
+    title: "Two Implementations, One Ranking",
+    eyebrow: "Reference implementation / Retrieval",
+    question:
+      "Rewriting BM25 in another language is not the hard part. Getting it to return the same order, when two of the scores differ in the fourth decimal, is.",
+    evidence: evidenceOf("bm25-rrf-java"),
+    href: "/work/bm25-rrf-java",
+    figureNote:
+      "One real ranking from the parity fixture. The top two are four thousandths apart, which is the pair a different summation order would swap.",
+    scale: "compact",
+    scene: () => <ParityScene />,
+    seam: {
+      from: "ranking",
+      to: "evidence",
+      note: "An order two implementations agree on becomes a packet that has to carry where it came from.",
     },
   },
 

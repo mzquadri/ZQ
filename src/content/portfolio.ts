@@ -15,6 +15,12 @@ import {
   testRows as munichTestRows,
   windows as munichWindows,
 } from "./munich-chapter";
+import {
+  closestGap as parityClosest,
+  parity as parityFacts,
+  repository as parityRepository,
+  sample as paritySampleQ,
+} from "./parity-chapter";
 import { tests as mlopsTests } from "./mlops-world";
 import { site, thesis, truthRegistry } from "./truth";
 import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "./research";
@@ -536,6 +542,67 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "bm25-rrf-java",
+    title: "Two Implementations, One Ranking",
+    eyebrow: "Retrieval on the JVM",
+    classification: "Reference implementation",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author",
+    summary:
+      "Okapi BM25 and reciprocal rank fusion written on the JVM and held to an existing Python implementation by a parity test over fifty real queries, with the rankings compared exactly.",
+    metaDescription:
+      "BM25 and reciprocal rank fusion on the JVM, held to a Python reference: 314 chunks and 50 queries compared exactly, scores to a relative 1e-12.",
+    problem:
+      "Rewriting a retrieval scorer in another language is easy to do approximately and hard to do identically. Floating-point addition is not associative, so summing the same contributions in a different order can land a few units in the last place away, and on this corpus the top two results for the first question are about four thousandths apart. That is close enough for a reordering to look like a bug in the ranking rather than a difference in arithmetic.",
+    contribution:
+      "Implemented the tokenizer, chunker, BM25 index and rank fusion with no dependencies in the main source, then wrote the parity test that loads the corpus, verifies it against a pinned SHA-256, chunks it independently and compares its own output against the Python reference rather than trusting the exported fixture.",
+    workflow: [
+      "Verify the corpus against its checksum",
+      "Chunk it on the JVM, not from the fixture",
+      "Build the index and score",
+      "Fuse the ranked lists by position",
+      "Compare order exactly, scores to a tolerance",
+    ],
+    tools: ["Java 21", "Maven", "JUnit 5", "Jackson", "GitHub Actions"],
+    evidence: [
+      {
+        label: "Rankings compared exactly",
+        value: `${parityFacts.questions} questions`,
+        note: `BM25 order and identifiers at depth ${parityFacts.bm25Depth}, fused order at depth ${parityFacts.rrfDepth}, both compared exactly rather than to a tolerance. Scores are allowed a relative ${parityFacts.scoreTolerance}.`,
+      },
+      {
+        label: "Chunking compared first",
+        value: `all ${parityFacts.chunks} chunks`,
+        note: "Count, identifiers, offsets and text, across three corpus files. Java chunks the corpus itself rather than reading the exported chunks, so a chunking difference fails as a chunking mismatch instead of surfacing later as a confusing BM25 discrepancy.",
+      },
+      {
+        label: "The pair most at risk",
+        value: `${parityClosest} apart`,
+        note: `The top two results for ${paritySampleQ.questionId} differ by that much. A different summation order would swap them, which is why the loop order matches the reference, an inverted index is deliberately not used, and the logarithm is StrictMath rather than Math.`,
+      },
+    ],
+    quality: [
+      "No dependencies in the main source: BM25 and rank fusion need arithmetic, a hash and a regex, and a retrieval library would hide the thing the repository exists to show",
+      "The corpus is verified against a SHA-256 in its own manifest before anything is indexed",
+      "Chunking is compared before scoring, so failures surface at the layer that caused them",
+      "StrictMath rather than Math, because the latter is permitted a unit in the last place of error and may be swapped for a JIT intrinsic",
+      "Repeated query terms are not collapsed, because the reference does not collapse them either",
+    ],
+    limitations: [
+      "Parity is against one reference implementation on one corpus. It shows the two agree, not that either is correct",
+      "The dense vectors are an exported fixture rather than recomputed on the JVM, and the embedding model is pinned by name only, so re-exporting on a different stack can change those lists",
+      "Fifty questions over three near-duplicate policy forms is a parity harness, not a retrieval benchmark, and no relevance judgement is involved",
+      "A library-free implementation chosen for comparability rather than for speed: the slower document-major loop is the correct one here",
+    ],
+    learned:
+      "Agreement between two implementations is only meaningful if the comparison is exact, and making it exact meant giving up the obvious optimisation. An inverted index would visit documents in posting-list order, which reorders the additions, which moves the last few bits, which swaps a pair four thousandths apart.",
+    repository: parityRepository,
+    systemSummary:
+      "The test is the artefact. It verifies the corpus, chunks it independently, builds an index, fuses two ranked lists, and compares order against a committed reference produced by a different language's implementation of the same specification.",
+    nextStep:
+      "Recompute the dense side on the JVM. The sparse half is held to the reference exactly; the dense half is a fixture, so the fused ranking is only as reproducible as an embedding model pinned by name.",
   },
   {
     slug: "munich-accident-forecasting",

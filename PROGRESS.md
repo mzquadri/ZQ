@@ -25,8 +25,8 @@ reduced motion, commit, push, deploy, verify live, then move on.
 |---|---|---|---|
 | 1 | `drift-aware-ml-platform` | `drift-aware-platform` | **done** |
 | 2 | `munich-accident-forecasting` | `munich-accident-forecasting` | **done** |
-| 3 | `bm25-rrf-java` | `bm25-rrf-java` | next |
-| 4 | `r-ggplot2-eurostat-report` | `eurostat-modal-split` | todo |
+| 3 | `bm25-rrf-java` | `bm25-rrf-java` | **done** |
+| 4 | `r-ggplot2-eurostat-report` | `eurostat-modal-split` | next |
 | 5 | `tf-keras-vs-pytorch-cifar10` | `keras-pytorch-parity` | todo |
 | 6 | `audi-release-tracking-case-study` | `audi-release-tracking` | todo |
 | 7 | `Deep-Learning-Flood-Prediction-LSTM` | `flood-lstm` | todo |
@@ -75,6 +75,15 @@ Still open, for Phase 1 rather than now:
 |---|---|---|
 | 1 | Bring every existing work page to the same motion standard | todo |
 | 2 | Full review: 390/768/1440, light/dark, reduced motion, links, copy, Lighthouse, meta, sitemap, 404 | todo |
+
+## The ecosystem index was missing four public repositories
+
+`ecosystemSnapshot.method` says the index is a manual audit of every public
+repository on the profile. Four were absent: `bm25-rrf-java`,
+`r-ggplot2-eurostat-report`, `tf-keras-vs-pytorch-cifar10` and
+`audi-release-tracking-case-study`. Each is added as its page is built, which
+is also what the content test requires: a case study whose repository is not
+in the index fails the build.
 
 ## Already covered, no work needed
 

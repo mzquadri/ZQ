@@ -114,6 +114,18 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     caseStudySlug: "medico",
   },
   {
+    name: "bm25-rrf-java",
+    title: "BM25 and Rank Fusion on the JVM, Held to a Python Reference",
+    category: "Reference",
+    language: "Java",
+    topics: ["BM25", "Reciprocal Rank Fusion", "Parity Testing", "Floating Point"],
+    description:
+      "Okapi BM25 and reciprocal rank fusion with no dependencies in the main source, held to an existing Python implementation by a parity test over fifty real queries. Rankings are compared exactly and scores to a relative 1e-12, and the Java side chunks the corpus itself rather than trusting the exported fixture, so a chunking difference fails as a chunking mismatch.",
+    boundary:
+      "Parity against one reference implementation on one corpus shows the two agree, not that either is correct. The dense vectors are an exported fixture rather than recomputed on the JVM, and the embedding model is pinned by name only. Fifty questions over three near-duplicate policy forms is a parity harness, not a retrieval benchmark, and no relevance judgement is involved.",
+    caseStudySlug: "bm25-rrf-java",
+  },
+  {
     name: "munich-accident-forecasting",
     title: "Munich Accident Forecasting: A Result, and Whether It Holds",
     category: "Engineering",

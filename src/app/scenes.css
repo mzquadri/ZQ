@@ -426,7 +426,9 @@
     :is(.case-stage, .case-story-body) .scene-drift-row,
     :is(.case-stage, .case-story-body) .scene-drift-note,
     :is(.case-stage, .case-story-body) .scene-margin-row,
-    :is(.case-stage, .case-story-body) .scene-margin-note {
+    :is(.case-stage, .case-story-body) .scene-margin-note,
+    :is(.case-stage, .case-story-body) .scene-parity-row,
+    :is(.case-stage, .case-story-body) .scene-parity-note {
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
@@ -452,6 +454,16 @@
      * so the reader sees the range before the number sitting inside it. That ordering is the
      * argument: the interval is the measurement and the point is a summary of it.
      */
+    :is(.case-stage, .case-story-body) .scene-parity-row { animation-name: mz-verify; }
+    :is(.case-stage, .case-story-body) .scene-parity-note { animation-name: mz-reveal; }
+
+    /* The bar grows to the score it represents, which is what makes the near-tie visible. */
+    :is(.case-stage, .case-story-body) .scene-parity-bar {
+      animation: mz-expand 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
+
     :is(.case-stage, .case-story-body) .scene-margin-row { animation-name: mz-verify; }
     :is(.case-stage, .case-story-body) .scene-margin-note { animation-name: mz-reveal; }
 

@@ -8,6 +8,12 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  closestGap as parityClosestGap,
+  parity as parityConfig,
+  sample as paritySample,
+  sampleMax as paritySampleMax,
+} from "@/content/parity-chapter";
+import {
   axisPercent as munichAxisPercent,
   seriesTotal as munichSeriesTotal,
   testMonths as munichTestMonths,
@@ -488,6 +494,52 @@ export function FeatureMapScene() {
       <p className="scene-cifar-note" {...at(66, 88)}>
         {cifarChapter.topCount} {cifarChapter.topFrom} images were predicted as{" "}
         {cifarChapter.topTo}.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * BM25 parity - the ranking two implementations have to agree on
+ *
+ * The claim is not that BM25 can be written in Java. It is that two independent implementations
+ * return the same order, and the figure has to make clear why that is hard rather than obvious.
+ *
+ * So it draws one real ranking from the fixture and marks the pair at the top that are four
+ * thousandths apart. That gap is the whole reason the Java side keeps the Python loop order and
+ * refuses an inverted index: floating-point addition is not associative, and a few units in the
+ * last place would swap exactly this pair. The scores are the fixture's own.
+ * ========================================================================================== */
+export function ParityScene() {
+  const width = (s: number) => `${Math.round((s / paritySampleMax) * 1000) / 10}%`;
+  return (
+    <div
+      className="scene-parity"
+      role="img"
+      aria-label={`The BM25 ranking for question ${paritySample.questionId}. The top two chunks score ${paritySample.hits[0].score} and ${paritySample.hits[1].score}, ${parityClosestGap} apart. Both implementations return this order for all ${parityConfig.questions} questions.`}
+    >
+      <ol className="scene-parity-list">
+        {paritySample.hits.map((h, i) => (
+          <li className="scene-parity-row" key={h.id} {...at(6 + i * 7, 30 + i * 7)}>
+            <span className="scene-parity-rank" aria-hidden="true">
+              {h.rank}
+            </span>
+            <span className="scene-parity-id" aria-hidden="true">
+              {h.form}
+            </span>
+            <span className="scene-parity-track" aria-hidden="true">
+              <i className="scene-parity-bar" style={{ "--w": width(h.score) } as React.CSSProperties} />
+            </span>
+            <span className="scene-parity-score" aria-hidden="true">
+              {h.score.toFixed(4)}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="scene-parity-note" {...at(46, 72)}>
+        The top two are {parityClosestGap} apart. Summing the same contributions in a different
+        order would swap them, so the Java side keeps the Python loop order and both return this
+        ranking for all {parityConfig.questions} questions.
       </p>
     </div>
   );
