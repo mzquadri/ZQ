@@ -76,6 +76,14 @@ const FLOORS: Record<string, Floor[]> = {
       note: "libheif and librsvg vulnerabilities reachable through sharp, which arrives as a transitive dependency of Next.js rather than a direct one. Next 16.3.8 still allows ^0.35.4, so package.json overrides it to ^0.35.5.",
     },
   ],
+  zod: [
+    {
+      line: "4.6",
+      minimum: "4.6.6",
+      advisories: ["GHSA-mrhx-c7xc-m3w5"],
+      note: "Memory exhaustion while validating oversized constrained collections, high severity, affecting <4.6.6. This repository ran 4.4.3 and the advisory landed on 2026-10-23, turning the production audit step red on a branch that had not touched dependencies. zod is a real production dependency here rather than a stray one: src/content/writing/schema.ts validates the writing front matter with it. The reachability is limited, since that schema only ever sees front matter committed to this repository and not user input, but a high-severity advisory in a production dependency is not something to carry for that reason. The minimum is the first patched release, 4.6.6, per the rule above; package.json pins 4.6.7, which is what npm resolved.",
+    },
+  ],
 };
 
 const failures: string[] = [];
