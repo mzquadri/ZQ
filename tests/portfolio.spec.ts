@@ -6,7 +6,7 @@ import { site } from "../src/content/truth";
 import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
 import { SCENES } from "../src/components/sequence/scenes";
 import { stages as cifarStages } from "../src/content/cifar-world";
-import { projects } from "../src/content/portfolio";
+import { canonicalMlopsEvidence, mlopsReferenceRun, projects } from "../src/content/portfolio";
 import { selectedWork } from "../src/content/home-work";
 
 /**
@@ -461,7 +461,7 @@ test("the MLOps case study publishes the released reference run, not the retired
   await expect(body).toContainText("ROC-AUC 0.8795");
   await expect(body).toContainText("0.5000");
   await expect(body).toContainText("CC BY 4.0");
-  await expect(body).toContainText("99 tests");
+  await expect(body).toContainText(`${mlopsReferenceRun.tests.total} tests`);
 
   // The milestone completed by the upstream release must not still read as future work.
   await expect(body).not.toContainText(/licensed-data run/i);
@@ -473,8 +473,17 @@ test("the MLOps case study publishes the released reference run, not the retired
   await expect(body).toContainText("600 held-out test rows");
   await expect(body).toContainText("never carried production traffic");
 
-  // Evidence links are pinned to the released commit, not to a floating branch.
-  const pinned = page.locator('a[href*="ada5465993295a9dd4d995846b77852d1fc4de5e"]');
+  /*
+   * Evidence links are pinned to the released commit, not to a floating branch.
+   *
+   * The SHA is read from the content rather than written here. It used to be a literal, and
+   * when the pin advanced on 2026-10-23 this assertion failed with "Expected: >= 4, Received:
+   * 0" - correct, since the old commit had genuinely gone from the page, but it said nothing
+   * about whether the new links were pinned at all. Reading the pin means this test asks the
+   * question it is named for: are the evidence links pinned to whatever commit the site
+   * claims? `scripts/validate-content.ts` is what stops that commit moving unnoticed.
+   */
+  const pinned = page.locator(`a[href*="${canonicalMlopsEvidence.commit}"]`);
   expect(await pinned.count()).toBeGreaterThanOrEqual(4);
   await expect(
     page.locator('main a[href*="MLOps-End-to-End-Pipeline/tree/main"], main a[href*="MLOps-End-to-End-Pipeline/blob/main"]'),
@@ -513,7 +522,7 @@ test("the repository index and homepage stay concise about MLOps", async ({ page
   await expect(main).not.toContainText("0.8067");
   await expect(main).not.toContainText("1,800 / 600 / 600");
   await expect(main).not.toContainText("Byte-identical");
-  await expect(main).not.toContainText("99 tests");
+  await expect(main).not.toContainText(`${mlopsReferenceRun.tests.total} tests`);
 });
 
 /**
