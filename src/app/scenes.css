@@ -394,64 +394,98 @@
      * One binding for every staged element in every scene. `--range` is set inline per element,
      * which is what lets a scene sequence itself; the fallback range covers the whole chapter so
      * an element that forgets to set one still behaves.
+     *
+     * Two hosts, not one. These selectors were written as `.case-stage .scene-*` when the scene
+     * lived in the hero, and the scene later moved into the story: `CaseStory` renders it inside
+     * `.case-story-body`, which declares its own `--chapter` further down this file. The
+     * descendant combinator then matched nothing at all, so every staged element on every project
+     * page computed `animation-name: none` and the figures rendered as their finished state and
+     * stayed there. That is why all of them looked static at every width. Both hosts are named
+     * here so the binding follows the scene rather than the other way round.
      */
-    .case-stage .scene-edge,
-    .case-stage .scene-node,
-    .case-stage .scene-ring,
-    .case-stage .scene-doc,
-    .case-stage .scene-chunk,
-    .case-stage .scene-query,
-    .case-stage .scene-query-radius,
-    .case-stage .scene-tether,
-    .case-stage .scene-answer,
-    .case-stage .scene-rail,
-    .case-stage .scene-stage,
-    .case-stage .scene-artifact,
-    .case-stage .scene-member,
-    .case-stage .scene-envelope,
-    .case-stage .scene-history,
-    .case-stage .scene-issue,
-    .case-stage .scene-cone,
-    .case-stage .scene-lead,
-    .case-stage .scene-plane,
-    .case-stage .scene-class {
+    :is(.case-stage, .case-story-body) .scene-edge,
+    :is(.case-stage, .case-story-body) .scene-node,
+    :is(.case-stage, .case-story-body) .scene-ring,
+    :is(.case-stage, .case-story-body) .scene-doc,
+    :is(.case-stage, .case-story-body) .scene-chunk,
+    :is(.case-stage, .case-story-body) .scene-query,
+    :is(.case-stage, .case-story-body) .scene-query-radius,
+    :is(.case-stage, .case-story-body) .scene-tether,
+    :is(.case-stage, .case-story-body) .scene-answer,
+    :is(.case-stage, .case-story-body) .scene-rail,
+    :is(.case-stage, .case-story-body) .scene-stage,
+    :is(.case-stage, .case-story-body) .scene-artifact,
+    :is(.case-stage, .case-story-body) .scene-member,
+    :is(.case-stage, .case-story-body) .scene-envelope,
+    :is(.case-stage, .case-story-body) .scene-history,
+    :is(.case-stage, .case-story-body) .scene-issue,
+    :is(.case-stage, .case-story-body) .scene-cone,
+    :is(.case-stage, .case-story-body) .scene-lead,
+    :is(.case-stage, .case-story-body) .scene-plane,
+    :is(.case-stage, .case-story-body) .scene-class,
+    :is(.case-stage, .case-story-body) .scene-drift-row,
+    :is(.case-stage, .case-story-body) .scene-drift-note {
       animation-timeline: --chapter;
-      animation-range: var(--range, contain 0% contain 100%);
+      animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
       animation-timing-function: linear;
       animation-duration: 1s;
     }
 
-    .case-stage .scene-node,
-    .case-stage .scene-chunk,
-    .case-stage .scene-query { animation-name: mz-propagate; }
+    /*
+     * The drift comparison.
+     *
+     * The row arrives, and the bar inside it grows along its own length. The fill is scaled
+     * rather than animated on width so the browser can run it off the main thread, and its
+     * resting transform is the identity, which is what keeps the finished bar correct for a
+     * reader with reduced motion or a browser without scroll timelines.
+     */
+    :is(.case-stage, .case-story-body) .scene-drift-row { animation-name: mz-verify; }
+    :is(.case-stage, .case-story-body) .scene-drift-note { animation-name: mz-reveal; }
 
-    .case-stage .scene-edge,
-    .case-stage .scene-tether,
-    .case-stage .scene-member,
-    .case-stage .scene-history { animation-name: mz-connect; --path-length: 100; stroke-dasharray: 100; }
+    :is(.case-stage, .case-story-body) .scene-drift-fill {
+      transform-origin: left center;
+      animation: mz-expand 1s linear both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
 
-    .case-stage .scene-ring,
-    .case-stage .scene-query-radius,
-    .case-stage .scene-lead,
-    .case-stage .scene-issue { animation-name: mz-verify; }
+    :is(.case-stage, .case-story-body) .scene-drift-gate {
+      animation: mz-verify 1s var(--ease-exit) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
 
-    .case-stage .scene-doc,
-    .case-stage .scene-answer,
-    .case-stage .scene-stage { animation-name: mz-reveal; }
+    :is(.case-stage, .case-story-body) .scene-node,
+    :is(.case-stage, .case-story-body) .scene-chunk,
+    :is(.case-stage, .case-story-body) .scene-query { animation-name: mz-propagate; }
 
-    .case-stage .scene-envelope,
-    .case-stage .scene-cone { animation-name: mz-converge; }
+    :is(.case-stage, .case-story-body) .scene-edge,
+    :is(.case-stage, .case-story-body) .scene-tether,
+    :is(.case-stage, .case-story-body) .scene-member,
+    :is(.case-stage, .case-story-body) .scene-history { animation-name: mz-connect; --path-length: 100; stroke-dasharray: 100; }
 
-    .case-stage .scene-rail,
-    .case-stage .scene-class i { animation-name: mz-expand; }
+    :is(.case-stage, .case-story-body) .scene-ring,
+    :is(.case-stage, .case-story-body) .scene-query-radius,
+    :is(.case-stage, .case-story-body) .scene-lead,
+    :is(.case-stage, .case-story-body) .scene-issue { animation-name: mz-verify; }
 
-    .case-stage .scene-plane { animation-name: mz-settle; }
+    :is(.case-stage, .case-story-body) .scene-doc,
+    :is(.case-stage, .case-story-body) .scene-answer,
+    :is(.case-stage, .case-story-body) .scene-stage { animation-name: mz-reveal; }
 
-    .case-stage .scene-class { animation-name: mz-reveal; }
+    :is(.case-stage, .case-story-body) .scene-envelope,
+    :is(.case-stage, .case-story-body) .scene-cone { animation-name: mz-converge; }
+
+    :is(.case-stage, .case-story-body) .scene-rail,
+    :is(.case-stage, .case-story-body) .scene-class i { animation-name: mz-expand; }
+
+    :is(.case-stage, .case-story-body) .scene-plane { animation-name: mz-settle; }
+
+    :is(.case-stage, .case-story-body) .scene-class { animation-name: mz-reveal; }
 
     /* The artifact crosses the rail rather than appearing on it. */
-    .case-stage .scene-artifact { animation-name: scene-cross; }
+    :is(.case-stage, .case-story-body) .scene-artifact { animation-name: scene-cross; }
 
     @keyframes scene-cross {
       from { left: 5%; }
@@ -459,7 +493,7 @@
     }
 
     /* Chunks travel from the document into the space, so their origin is meaningful. */
-    .case-stage .scene-chunk {
+    :is(.case-stage, .case-story-body) .scene-chunk {
       animation-name: scene-chunk-fly;
     }
 
@@ -663,11 +697,11 @@
   color: var(--stage-ink-soft);
 }
 
-.case-stage .scene-svg { max-height: 46vh; }
+:is(.case-stage, .case-story-body) .scene-svg { max-height: 46vh; }
 
 @media (max-width: 900px) {
   .case-stage-inner { grid-template-columns: minmax(0, 1fr); }
-  .case-stage .scene-svg { max-height: none; }
+  :is(.case-stage, .case-story-body) .scene-svg { max-height: none; }
 
   /*
    * On a phone the object leads.

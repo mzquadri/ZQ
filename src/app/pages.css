@@ -189,7 +189,7 @@
     .page-stage .domain-centre,
     .page-stage .domain-centre-label {
       animation-timeline: --chapter;
-      animation-range: var(--range, contain 0% contain 100%);
+      animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
       animation-timing-function: linear;
       animation-duration: 1s;
@@ -2179,6 +2179,86 @@
   color: var(--ink-soft);
 }
 .scene-cifar-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+/* ---- Drift platform: two scores, one scale ----------------------------------------------------
+ *
+ * Both bars share a 0 to 1 scale so the comparison is the figure rather than something the
+ * caption has to assert. Each carries its own threshold marker, because the two are tested
+ * against different thresholds and a single shared line would be a quieter kind of wrong.
+ */
+
+.scene-drift { display: grid; gap: 0.85rem; width: 100%; }
+
+.scene-drift-row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.scene-drift-name {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.scene-drift-track {
+  position: relative;
+  height: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--paper-raised) 70%, transparent);
+}
+
+/*
+ * The two bars must not read as the same measurement at different lengths.
+ * The feature score is the one that did not fire, so it is drawn in the
+ * neutral ink; the target score is the finding, and it takes the section
+ * accent. These were both slate to begin with, which made the comparison
+ * depend entirely on length and lost most of its force at a glance.
+ */
+.scene-drift-fill {
+  display: block;
+  width: var(--v);
+  height: 100%;
+  border-radius: 1px;
+  background: color-mix(in oklab, var(--ink-soft) 52%, transparent);
+}
+
+.scene-drift-row[data-kind="target"] .scene-drift-fill { background: var(--accent); }
+
+/* The threshold the score is actually compared against. */
+.scene-drift-gate {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: var(--t);
+  width: 2px;
+  background: var(--ink-soft);
+}
+
+.scene-drift-read {
+  display: grid;
+  gap: 0.05rem;
+  margin: 0;
+  justify-items: end;
+  text-align: right;
+}
+
+.scene-drift-read strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.scene-drift-read span { font-size: 0.7rem; color: var(--ink-soft); }
+
+.scene-drift-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-drift-row { grid-template-columns: 3.6rem 1fr; }
+  .scene-drift-read { grid-column: 2; justify-items: start; text-align: left; }
+}
 
 /*
  * Reserve a floor for the readout, where the readout actually varies.
