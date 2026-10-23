@@ -1,0 +1,96 @@
+{
+  "_source": "results/benchmark.json at mzquadri/Time-Series-Streamflow-Forecasting@e57711b",
+  "best_daily": "ridge_on_features",
+  "daily": {
+    "day_of_year_mean": {
+      "mae": 89.9354,
+      "mape_percent": 39.0925,
+      "n": 730,
+      "nse": -11.692,
+      "r2": -11.692,
+      "rmse": 90.2985
+    },
+    "day_of_year_mean_plus_trend": {
+      "mae": 5.5407,
+      "mape_percent": 2.4127,
+      "n": 730,
+      "nse": 0.9208,
+      "r2": 0.9208,
+      "rmse": 7.1347
+    },
+    "persistence": {
+      "mae": 2.139,
+      "mape_percent": 0.9266,
+      "n": 730,
+      "nse": 0.9882,
+      "r2": 0.9882,
+      "rmse": 2.7569
+    },
+    "random_walk_with_drift": {
+      "mae": 2.1402,
+      "mape_percent": 0.9271,
+      "n": 730,
+      "nse": 0.9882,
+      "r2": 0.9882,
+      "rmse": 2.7567
+    },
+    "ridge_on_features": {
+      "mae": 1.5958,
+      "mape_percent": 0.6971,
+      "n": 730,
+      "nse": 0.9938,
+      "r2": 0.9938,
+      "rmse": 2.0033
+    },
+    "xgboost": {
+      "mae": 2.4303,
+      "mape_percent": 1.0311,
+      "n": 730,
+      "nse": 0.9848,
+      "r2": 0.9848,
+      "rmse": 3.1233
+    }
+  },
+  "mechanism": {
+    "daily_change_std": 2.887
+  },
+  "monthly": {
+    "persistence": {
+      "mae": 11.5887,
+      "mape_percent": 5.0295,
+      "n": 24,
+      "nse": 0.6869,
+      "r2": 0.6869,
+      "rmse": 13.6083
+    },
+    "random_walk_with_drift": {
+      "mae": 11.5887,
+      "mape_percent": 5.0374,
+      "n": 24,
+      "nse": 0.689,
+      "r2": 0.689,
+      "rmse": 13.5616
+    },
+    "sarimax": {
+      "mae": 3.8286,
+      "mape_percent": 1.672,
+      "n": 24,
+      "nse": 0.963,
+      "r2": 0.963,
+      "rmse": 4.679
+    }
+  },
+  "robustness": {
+    "seeds_tested": 5,
+    "xgboost_beats_persistence_count": 0
+  },
+  "split": {
+    "note": "models lose the first 365 rows to the longest lag; baselines are rescored on the same rows",
+    "scored_daily_rows": 730,
+    "strategy": "chronological",
+    "test_days": 730,
+    "test_years": 2,
+    "train_days": 4745
+  },
+  "xgboost_beats_persistence": false
+}
