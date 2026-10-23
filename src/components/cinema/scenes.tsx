@@ -6,6 +6,7 @@ import {
   chapterClasses as cifarChapterClasses,
   chapterSample as cifarChapterSample,
 } from "@/content/cifar-chapter";
+import { drift as driftScores } from "@/content/drift-chapter";
 import { chapter, chapterEvent, chapterMaxQ } from "@/content/hydrology-chapter";
 import {
   chapter as streamflowChapter,
@@ -481,6 +482,76 @@ export function FeatureMapScene() {
       <p className="scene-cifar-note" {...at(66, 88)}>
         {cifarChapter.topCount} {cifarChapter.topFrom} images were predicted as{" "}
         {cifarChapter.topTo}.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Drift platform - the inputs barely moved, the target moved a lot
+ *
+ * The whole project turns on one comparison, so the figure is that comparison and nothing else:
+ * two drift scores on one shared scale, each against the threshold it is actually tested
+ * against. The feature bar stops short of its line. The target bar runs past its own.
+ *
+ * What is deliberately *not* drawn: eleven per-column bars. The repository publishes the drift
+ * share across the feature columns and names the one column that crossed, and it does not
+ * publish a score per column. Eleven bars at plausible heights would be the figure inventing
+ * ten numbers to look more detailed, which is the thing this site argues against. So the
+ * feature side shows what is known: a share, a count, and which column it was.
+ * ========================================================================================== */
+export function DriftScene() {
+  const pct = (n: number) => `${Math.round(n * 1000) / 10}%`;
+  return (
+    <div
+      className="scene-drift"
+      role="img"
+      aria-label={`Two drift scores on one scale. The features moved ${driftScores.featureShare}, below their ${driftScores.columnThreshold} threshold, with ${driftScores.movedColumn} the only one of ${driftScores.featureColumns} columns to cross it. The target moved ${driftScores.target}, far past its ${driftScores.targetThreshold} threshold.`}
+    >
+      <div className="scene-drift-row" data-kind="features" {...at(8, 38)}>
+        <p className="scene-drift-name" aria-hidden="true">
+          Features
+        </p>
+        <div className="scene-drift-track" aria-hidden="true">
+          <i
+            className="scene-drift-fill"
+            style={{ "--v": pct(driftScores.featureShare) } as React.CSSProperties}
+          />
+          <span
+            className="scene-drift-gate"
+            style={{ "--t": pct(driftScores.columnThreshold) } as React.CSSProperties}
+          />
+        </div>
+        <p className="scene-drift-read" aria-hidden="true">
+          <strong>{driftScores.featureShare}</strong>
+          <span>
+            {driftScores.movedColumn} only, 1 of {driftScores.featureColumns}
+          </span>
+        </p>
+      </div>
+
+      <div className="scene-drift-row" data-kind="target" {...at(26, 62)}>
+        <p className="scene-drift-name" aria-hidden="true">
+          Target
+        </p>
+        <div className="scene-drift-track" aria-hidden="true">
+          <i
+            className="scene-drift-fill"
+            style={{ "--v": pct(driftScores.target) } as React.CSSProperties}
+          />
+          <span
+            className="scene-drift-gate"
+            style={{ "--t": pct(driftScores.targetThreshold) } as React.CSSProperties}
+          />
+        </div>
+        <p className="scene-drift-read" aria-hidden="true">
+          <strong>{driftScores.target}</strong>
+          <span>past its {driftScores.targetThreshold} line</span>
+        </p>
+      </div>
+
+      <p className="scene-drift-note" {...at(56, 78)}>
+        A monitor watching the inputs alone would have declined to act.
       </p>
     </div>
   );

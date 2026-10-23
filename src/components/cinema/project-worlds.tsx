@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import BranchFlat from "@/components/scene/BranchFlat";
 import { BranchCanvas } from "@/components/scene/ProjectedCanvases";
 import {
+  DriftScene,
   EnsembleScene,
   FeatureMapScene,
   GraphSurrogateScene,
@@ -180,6 +181,25 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "drift-aware-platform": {
+    accent: "var(--accent-systems)",
+    title: "A Retraining Loop That Watches the Target",
+    eyebrow: "Reference implementation / Monitoring",
+    question:
+      "The monitor you would build first watches the inputs. Here the inputs barely move, and the thing being predicted moves enormously.",
+    evidence: evidenceOf("drift-aware-platform"),
+    href: "/work/drift-aware-platform",
+    figureNote:
+      "Two drift scores on one scale, each against the threshold it is tested against. The features stop short of their line; the target runs well past its own.",
+    scale: "compact",
+    scene: () => <DriftScene />,
+    seam: {
+      from: "axis",
+      to: "rail",
+      note: "The line a measurement is plotted against becomes the line a release travels along.",
     },
   },
 

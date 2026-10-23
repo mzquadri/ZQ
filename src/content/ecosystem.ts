@@ -374,6 +374,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Hourly demand forecasting where the monitor watches the target as well as the inputs, because on this data the covariates hold still while the relationship between them and the target moves. Promotion re-scores the live champion on the challenger's own validation window rather than comparing two numbers measured on different data.",
     boundary:
       "A portfolio project on a public dataset, run on one machine, and not production experience. The Terraform module describes a deployment that has not been applied against a live project, there is no feature store, retraining is a full refit, and the prediction log is a file on a volume, which is fine for one instance and wrong for several.",
+    caseStudySlug: "drift-aware-platform",
   },
   {
     name: "jobhunter",

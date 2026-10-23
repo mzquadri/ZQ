@@ -1,4 +1,12 @@
 import { gatewaySource } from "./gateway-world";
+import {
+  detector as driftDetector,
+  drift as driftScores,
+  repository as driftRepository,
+  rescored as driftRescored,
+  runs as driftRuns,
+  seasonalFix as driftSeasonalFix,
+} from "./drift-chapter";
 import { tests as mlopsTests } from "./mlops-world";
 import { site, thesis, truthRegistry } from "./truth";
 import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "./research";
@@ -520,6 +528,73 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "drift-aware-platform",
+    title: "A Retraining Loop That Watches the Target",
+    eyebrow: "ML systems engineering",
+    classification: "Reference implementation",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author and engineer",
+    summary:
+      "An hourly demand service that monitors the distribution of the thing it predicts rather than only its inputs, because on this data the inputs barely move while the target moves enormously.",
+    metaDescription:
+      "A retraining loop whose drift signal is in the target, not the features: 0.679 against 0.09, with a promotion gate that refuses a model for not beating itself.",
+    problem:
+      "The obvious way to monitor a deployed model is to watch its input features for drift. On this dataset that design is almost silent. Between 2011 and 2012 one feature column of eleven crosses its threshold, a feature drift share of 0.09, while the target's distribution moves 0.679. A monitor watching inputs alone would have reported nothing worth acting on.",
+    contribution:
+      "Built the loop and its policy: a drift check that measures the target first because that is the signal that fires here, two promotion gates a challenger has to clear, and a split between measurement and policy so the policy can be unit tested without a library, a network or any data.",
+    workflow: [
+      "Pin the dataset by SHA-256",
+      "Fit a challenger and gate it",
+      "Compare a serving window against the same seasons a year earlier",
+      "Decide retrain, on either signal",
+      "Move the champion alias the service loads",
+    ],
+    tools: ["scikit-learn", "MLflow", "Evidently", "Airflow", "FastAPI", "Prometheus", "Terraform"],
+    evidence: [
+      {
+        label: "Where the drift actually was",
+        value: `${driftScores.target} against ${driftScores.featureShare}`,
+        note: `Target drift against feature drift share, comparing 2012 with the same seasons in 2011. Only ${driftScores.movedColumn} crossed the ${driftScores.columnThreshold} per-column threshold, one of ${driftScores.featureColumns} feature columns.`,
+      },
+      {
+        label: "What that drift cost",
+        value: `MAE ${driftRescored.championOnNewWindow} to ${driftRescored.challengerOnNewWindow}`,
+        note: "The 2011 champion re-scored on the 2012 window against a model fitted to it. An old mapping fitting worse than a new one is the stronger evidence that the relationship moved, rather than the drift score itself.",
+      },
+      {
+        label: "A gate that refuses",
+        value: `${driftRuns[2].promoted ? "promoted" : "refused"}`,
+        note: `The exported run record carries the reason verbatim: "${driftRuns[2].reason}". The same model, offered twice, is turned down the second time for not being better than itself.`,
+      },
+      {
+        label: "A streaming detector was not faster",
+        value: `row ${driftDetector.firstAlarmRow}`,
+        note: `${driftDetector.name} at delta ${driftDetector.delta}, the most sensitive setting that raises ${driftDetector.controlAlarms} alarms on the control window, first speaks at row ${driftDetector.firstAlarmRow} of ${driftDetector.currentRows}. The window monitor already in the service crosses its threshold in the same span, with one fewer dependency.`,
+      },
+    ],
+    quality: [
+      "Measurement and policy are separate, so the policy has unit tests that need no library, no network and no data",
+      "The window guard runs before the drift check, because a handful of rows fails a distribution test for reasons that have nothing to do with the world moving",
+      "A refused promotion writes its reason to the run summary, so it is auditable rather than mysterious",
+      "The dataset is pinned by SHA-256 and downloaded on demand rather than committed",
+      "The architecture diagram is generated from the code that describes it, not drawn by hand",
+      "Both Airflow DAGs have been run, and the transcript is in the repository",
+    ],
+    limitations: [
+      "The target drift score is label shift, a distance between two marginal distributions of the target. It is a proxy for the relationship moving rather than a measurement of it; real concept drift is not monitored directly",
+      "Nothing here produces a confidence interval on a prediction. The word calibrated in this repository refers to one thing only, the streaming detector's delta parameter",
+      "A reference implementation on a public dataset that has never carried production traffic",
+      "The drift comparison is between two years of one dataset, so the seasonal alignment that fixes the false alarm is tuned to data with a yearly cycle",
+      "No delayed-label path exists, so the loop measures distributions rather than accuracy after deployment",
+    ],
+    learned:
+      "The monitor you would build first is the one that would have missed this. Watching inputs is the obvious design and it is nearly silent here, and the gate that was supposed to protect production was comparing two numbers measured on different windows, which made it block the retraining that drift had just correctly called for.",
+    repository: driftRepository,
+    systemSummary:
+      "Three loops that only meet through artefacts. Training fits a challenger and ships it only through two gates. Monitoring compares a serving window against the same seasons a year earlier and applies the policy. Serving loads whichever version the champion alias points at, and appends its traffic to the log the drift job reads.",
+    nextStep: `A delayed-label path. Everything here measures distributions, which is what is available at serving time, but the honest signal is accuracy against outcomes once they arrive. Until that exists the loop can tell that the world moved and cannot tell whether the retrained model is actually better in production. The seasonal fix brought the real signal forward from about day ${driftSeasonalFix.realSignalWasDay} to day ${driftSeasonalFix.realSignalNowDay}, and the next thing worth measuring is what happens after the retrain.`,
   },
   {
     slug: "hydrology-uq",
