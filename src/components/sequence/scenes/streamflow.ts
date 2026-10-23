@@ -36,7 +36,7 @@ import type { Surface } from "../surface";
  *   0.20   the window is magnified: observed flow, day by day
  *   0.32   features are cut from it - seven lags, three rolling windows, 26 in all
  *   0.44   the prediction arrives on top of the observation
- *   0.56   and it is very close. R2 0.9786, MAE 2.865
+ *   0.56   and it is very close. R2 0.9848, MAE 2.4303, which persistence still beats
  *   0.68   the top decile of flow is marked
  *   0.78   there, the model comes in under the peak
  *   0.88   and the reason: two features carry 94% of it, both of them yesterday's river
@@ -266,7 +266,7 @@ export const streamflow: SceneDefinition = {
   portraitTravel: 2.9,
   rest: 0,
   label:
-    "Fifteen years of synthetic daily streamflow drawn as a ribbon, with the two-year chronological holdout marked. A 120-day window is taken out of the test period and magnified; lag and rolling-window features are cut from it, and a one-step-ahead prediction is laid over the observation, matching it closely at an R-squared of 0.9786. The top decile of flow is then marked, and the model is shown coming in under every peak in it. The sequence ends on the feature importances, where lag-1 and lag-2 together carry 94 per cent of the model, against a lag-1 autocorrelation of 0.9941.",
+    "Fifteen years of synthetic daily streamflow drawn as a ribbon, with the two-year chronological holdout marked. A 120-day window is taken out of the test period and magnified; lag and rolling-window features are cut from it, and a one-step-ahead prediction is laid over the observation, matching it closely at an R-squared of 0.9848. The top decile of flow is then marked, and the model is shown coming in under every peak in it. Close is not the same as useful here: repeating yesterday's value scores 0.9882 on the same rows, so the gradient-boosted model is beaten by the baseline, and a ridge model on the same features is the only method that improves on it. The sequence ends on the feature importances, where lag-1 and lag-2 together carry 94 per cent of the model, which is the reason.",
   palette: palette("pipeline"),
   draw,
 };
