@@ -636,7 +636,7 @@ export default function DepthPortrait({ color, depth, alt, width, height, classN
         * a finger, so there is something true and useful to say instead.
         */}
       {drawing && tilt === "denied" ? (
-        <p className="hero-tilt-note">Motion access is off. Drag the photo instead.</p>
+        <p className="hero-tilt-note">Motion access is off. Drag the portrait instead.</p>
       ) : null}
       {debug ? (
         <pre className="hero-debug">

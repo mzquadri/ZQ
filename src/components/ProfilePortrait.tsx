@@ -6,10 +6,16 @@ import { site } from "@/content/portfolio";
 /**
  * The profile portrait, with a deterministic fallback.
  *
- * The photograph is not committed yet, and a missing file must not break the build or
- * leave a broken image on the page. The existence check runs on the server at build
- * time, so a page either renders the real portrait or a generated monogram, never an
- * empty box and never a request for a file that is not there.
+ * The image is committed from 22 October 2026. It is the same generated portrait the
+ * hero carries, square-cropped against its own backdrop rather than cut out, because
+ * this frame is a squircle with a background of its own and fills it with
+ * `object-fit: cover`. The page labels it: see `portraitNote` in src/content/home.ts,
+ * rendered in the caption beside this by src/app/about/page.tsx.
+ *
+ * The fallback is kept. A missing file must not break the build or leave a broken image
+ * on the page, and the existence check runs on the server at build time, so a page
+ * either renders the portrait or a generated monogram, never an empty box and never a
+ * request for a file that is not there.
  *
  * The fallback is drawn from the existing theme tokens rather than a new palette, so it
  * reads as part of the design rather than as a missing asset.
@@ -83,7 +89,7 @@ export default function ProfilePortrait({
       <div className="portrait-frame">
         {hasPortrait ? (
           <Image
-            alt={`${site.name}, ${site.role}`}
+            alt={`${site.name}, generated portrait`}
             className="portrait-image"
             height={size}
             priority={priority}
