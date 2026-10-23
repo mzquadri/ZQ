@@ -13,7 +13,7 @@ import { ArrowLabel } from "@/components/Icon";
 export const metadata: Metadata = createPageMetadata({
   title: "Projects",
   description:
-    "Evidence-rich case studies across reliable knowledge systems, agent security, retrieval, MLOps and uncertainty quantification, plus a catalogued index of public repositories.",
+    "Evidence-rich case studies across agent security, retrieval, MLOps and uncertainty quantification, plus a catalogued index of public repositories.",
   path: "/work",
 });
 

@@ -70,6 +70,21 @@ interface ProjectBase {
   projectRole: string;
   institution?: string;
   summary: string;
+  /**
+   * The search snippet, where the summary is too long to be one.
+   *
+   * `summary` is page prose and is written to be read on the page; four of
+   * these run past 165 characters and one past 500, and a search engine cuts
+   * a description at about 160. The cut does not fall where the sentence does,
+   * so the snippet a reader sees ends mid-clause - and on this site the clause
+   * that gets cut is usually the limitation, which is the half that must not
+   * be the optional half.
+   *
+   * So: written, not truncated, and only where it is needed. A project whose
+   * summary already fits does not carry one, and `generateMetadata` falls back
+   * to the summary.
+   */
+  metaDescription?: string;
   problem: string;
   contribution: string;
   workflow: readonly string[];
@@ -330,6 +345,8 @@ const authoredProjects: readonly Project[] = [
     projectRole: "Project author and engineer",
     summary:
       "A retrieval-augmented question-answering service over real federal flood-insurance policy text, built so its retrieval quality can be measured rather than demonstrated.",
+    metaDescription:
+      "A retrieval-augmented question-answering service over real federal flood-insurance policy text, built so its retrieval quality can be measured.",
     problem:
       "The three NFIP policy forms are near-duplicates by design: they share a skeleton and much verbatim wording but differ in substance. A retriever matching on topic finds the right provision in the wrong document, and nothing in a demo reveals that.",
     contribution:
@@ -597,6 +614,8 @@ const authoredProjects: readonly Project[] = [
     projectRole: "Project author",
     summary:
       "A controlled benchmark that scores ridge, XGBoost and SARIMAX against the baselines that actually matter on a daily series, and finds that the gradient booster loses to predicting yesterday's value.",
+    metaDescription:
+      "A controlled benchmark scoring ridge, XGBoost and SARIMAX against the baselines that matter on a daily series. The gradient booster loses to them.",
     problem:
       "An earlier version of this repository ranked XGBoost at R2 0.979 above SARIMAX at 0.721. The two numbers were scored on different targets, daily and monthly, and the only baseline offered was a day-of-year mean that could not win. The question became which methods beat a fair baseline on the same rows.",
     contribution:
@@ -644,6 +663,8 @@ const authoredProjects: readonly Project[] = [
     projectRole: "Sole author of the gateway, controls, corpus, benchmark and trace format",
     summary:
       "An MCP client trusts three things at three different times: the tool declarations a server publishes, the arguments a model builds, and the content a tool returns. The security tooling that exists reads declarations before use, which covers the first and cannot reach the third, a poisoned search result does not exist until the search runs. This puts an enforcement point at the protocol boundary, where all three are visible, and then measures what each control is worth against a corpus that includes the legitimate traffic a careless rule would break.",
+    metaDescription:
+      "An enforcement point at the MCP protocol boundary, measuring what each control is worth against a corpus that includes traffic a careless rule breaks.",
     problem:
       "A tool description is prose the client concatenates into a prompt, and a tool result is prose appended to the conversation. A model has no reliable way to tell a sentence that describes data from a sentence that instructs it, and there is no parameterised query for a prompt. So the question is not how to make the model resistant to persuasion; it is how much of the deputy's authority can be taken away at the boundary before the cost in refused legitimate calls makes an operator switch the control off.",
     contribution:
@@ -745,6 +766,8 @@ const authoredProjects: readonly Project[] = [
     institution: "BP-IT Consulting & Solutions GmbH",
     summary:
       "Loading a legal document into a database is the straightforward part. Establishing that its structured, vector and graph representations still correspond to the published source, after the source is amended and after the code that reads it is corrected, is the part that needs evidence.",
+    metaDescription:
+      "Establishing that a legal document's structured, vector and graph representations still correspond to the published source, after it is amended.",
     problem:
       "A corpus rarely fails loudly. It is loaded once, and then the publisher amends the text, an extractor is corrected, a load is replayed, and the stored units, the search vectors and the reference edges drift apart from one another and from the published document. The reassurance normally offered for this is a count: twelve stored units, twelve indexed vectors, therefore correct. It is not. Equal totals agree about quantity and say nothing about content, because one unit removed and another added leaves the total unchanged. Knowing that a corpus still says what its source says needs comparisons on identity and content rather than on size.",
     contribution:

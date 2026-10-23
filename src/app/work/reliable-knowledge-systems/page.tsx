@@ -27,7 +27,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = createPageMetadata({
   title: "Reliable knowledge systems",
   description:
-    "A synthetic model of keeping several derived representations of one source honest: capture, derivation, verification that runs backwards, and rebuilding derived state from evidence. Illustrative throughout; describes no deployed system.",
+    "A synthetic model of keeping several derived representations of one source honest. Illustrative throughout; it describes no deployed system.",
   path: "/work/reliable-knowledge-systems",
 });
 
