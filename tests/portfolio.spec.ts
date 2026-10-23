@@ -7,6 +7,7 @@ import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
 import { SCENES } from "../src/components/sequence/scenes";
 import { stages as cifarStages } from "../src/content/cifar-world";
 import { canonicalMlopsEvidence, mlopsReferenceRun, projects } from "../src/content/portfolio";
+import { models as streamflowModels } from "../src/content/streamflow-world";
 import { selectedWork } from "../src/content/home-work";
 
 /**
@@ -2290,18 +2291,44 @@ test("streamflow renders the world and its leaderboard", async ({ page }) => {
   await page.goto("/work/streamflow-forecasting");
   await expect(page.locator(".world-stage.streamflow-world")).toBeVisible();
   const text = await page.locator("main").innerText();
-  for (const value of ["0.9786", "0.7206", "-11.692"]) {
-    expect(text, `expected the published metric ${value}`).toContain(value);
+
+  /*
+   * Read from the content rather than written here. These used to be the literals
+   * "0.9786", "0.7206", "3.71" and "2.865", which were the earlier reference run's numbers
+   * and had become wrong: the benchmark's actual XGBoost R2 is 0.9848 and SARIMAX's is
+   * 0.963. Pinning them here made this test agree with the drift instead of catching it.
+   * `streamflow-evidence.test.ts` is what checks the content against the repository's own
+   * benchmark.json; this test checks the page renders what the content says.
+   */
+  for (const model of streamflowModels) {
+    expect(text, `expected ${model.label} R2 ${model.r2} on the page`).toContain(String(model.r2));
+    expect(text, `expected ${model.label} RMSE ${model.rmse}`).toContain(String(model.rmse));
   }
 });
 
-test("streamflow metrics are the reference run's, not a retraining's", async ({ page }) => {
+test("streamflow publishes the finding, not just a leaderboard", async ({ page }) => {
   await page.goto("/work/streamflow-forecasting");
   const text = await page.locator("main").innerText();
-  /* Each of these is recomputed by the generator and checked against forecast_results.json. */
-  for (const value of ["3.71", "2.865", "90.299", "89.935"]) {
-    expect(text, `expected the generated value ${value}`).toContain(value);
-  }
+
+  /*
+   * The defect this guards. The page used to show XGBoost at R2 0.985 beside a
+   * day-of-year mean at -11.69 and no persistence baseline at all, which reads as
+   * gradient boosting having worked. The repository's title is "When gradient boosting is
+   * the wrong tool" and its finding is that persistence beats it on all five seeds.
+   */
+  expect(text, "persistence must appear; it is the baseline XGBoost loses to").toContain(
+    "Persistence",
+  );
+  expect(text, "ridge must appear; it is the only method that beats persistence").toMatch(
+    /Ridge on features/i,
+  );
+
+  const persistence = streamflowModels.find((m) => m.key === "persistence")!;
+  const xgboost = streamflowModels.find((m) => m.key === "xgboost")!;
+  expect(
+    persistence.rmse,
+    "the published numbers must still show persistence beating XGBoost",
+  ).toBeLessThan(xgboost.rmse);
 });
 
 test("streamflow names the models the repository actually uses", async ({ page }) => {
@@ -2309,7 +2336,8 @@ test("streamflow names the models the repository actually uses", async ({ page }
   const text = await page.locator("main").innerText();
   expect(text).toContain("XGBoost");
   expect(text).toContain("SARIMAX");
-  expect(text).toContain("Seasonal Naive");
+  /* The repository calls this one day_of_year_mean; it used to be labelled Seasonal Naive. */
+  expect(text).toContain("Day-of-year mean");
 });
 
 test("streamflow states its horizon honestly", async ({ page }) => {
@@ -2382,11 +2410,21 @@ test("streamflow gives a reduced-motion reader the whole argument", async ({ pag
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/work/streamflow-forecasting");
   await expect(page.locator(".streamflow-flat-board")).toBeVisible();
+  /*
+   * One row per published model, read from the content. This was `toBe(3)`, which was the
+   * three models the page used to carry; it is five now that persistence and ridge are
+   * published, and a hard-coded count would have failed for the change that fixed the
+   * page rather than for a regression.
+   */
   const rows = await page.locator(".streamflow-flat-rows li").count();
-  expect(rows).toBe(3);
+  expect(rows, "the flat board must list every published model").toBe(streamflowModels.length);
+
   /* The scored-on column is the finding and must never be the thing that gets dropped. */
   const scored = await page.locator(".streamflow-flat-scored").allInnerTexts();
   expect(scored.join(" ")).toContain("monthly means");
+  expect(scored.join(" "), "the daily rows must state the scored row count").toContain(
+    "730 daily values",
+  );
   const limits = await page.locator(".streamflow-flat-limits li").count();
   expect(limits).toBeGreaterThanOrEqual(5);
 });
