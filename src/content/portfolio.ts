@@ -151,7 +151,7 @@ export const canonicalMlopsEvidence = {
 } as const;
 
 const insureAssistRepository = "https://github.com/mzquadri/insureassist-rag-mlops";
-const insureAssistCommit = "526495a7e4c92bedb2492af68278232ffac75c32";
+const insureAssistCommit = "a9bc6c8a62814ef97a12a2500f4cc701468cde8f";
 
 /**
  * Evidence links for the InsureAssist RAG benchmark, pinned to the released commit.
