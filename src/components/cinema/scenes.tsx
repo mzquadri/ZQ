@@ -8,6 +8,12 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  differences as translationDiffs,
+  model as translationModel,
+  resolvedCount as translationResolved,
+  totalCount as translationTotal,
+} from "@/content/translation-chapter";
+import {
   axis as modalAxis,
   axisPercent as modalAxisPercent,
   coverage as modalCoverage,
@@ -501,6 +507,49 @@ export function FeatureMapScene() {
       <p className="scene-cifar-note" {...at(66, 88)}>
         {cifarChapter.topCount} {cifarChapter.topFrom} images were predicted as{" "}
         {cifarChapter.topTo}.
+      </p>
+    </div>
+  );
+}
+
+
+/* ============================================================================================
+ * Keras against PyTorch - the list of things that cannot be matched
+ *
+ * The repository's own framing: this is a translation, not a race, and the interesting part is
+ * not an accuracy number. It is the five differences between the frameworks and what each one
+ * costs, four of which were corrected for and one of which is the irreducible floor.
+ *
+ * The figure draws exactly that. No accuracy appears in it, because the Keras run has not been
+ * made: the repository's results directory holds a .gitkeep and its own table records the number
+ * as pending. A figure showing two bars here would be inventing the project's only missing
+ * result.
+ * ========================================================================================== */
+export function TranslationScene() {
+  return (
+    <div
+      className="scene-translation"
+      role="img"
+      aria-label={`Five differences between the two frameworks. ${translationResolved} of ${translationTotal} were corrected for; the reduction order of the kernels is accepted as the irreducible floor. Both models are asserted at ${translationModel.parameters.toLocaleString("en-US")} trainable parameters.`}
+    >
+      <ol className="scene-translation-list">
+        {translationDiffs.map((d, i) => (
+          <li
+            className="scene-translation-row"
+            data-resolved={d.resolved ? "" : undefined}
+            key={d.key}
+            {...at(26 + i * 4, 44 + i * 4)}
+          >
+            <span className="scene-translation-what" aria-hidden="true">{d.what}</span>
+            <span className="scene-translation-rule" aria-hidden="true" />
+            <span className="scene-translation-how" aria-hidden="true">{d.handled}</span>
+          </li>
+        ))}
+      </ol>
+      <p className="scene-translation-note" {...at(52, 68)}>
+        {translationResolved} of {translationTotal} corrected for. The last is the floor on any
+        comparison of this kind, and both models are asserted at{" "}
+        {translationModel.parameters.toLocaleString("en-US")} trainable parameters on every push.
       </p>
     </div>
   );

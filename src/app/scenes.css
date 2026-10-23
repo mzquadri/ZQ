@@ -445,7 +445,9 @@
     .scene-parity-row,
     .scene-parity-note,
     .scene-modal-row,
-    .scene-modal-note {
+    .scene-modal-note,
+    .scene-translation-row,
+    .scene-translation-note {
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
@@ -471,6 +473,16 @@
      * so the reader sees the range before the number sitting inside it. That ordering is the
      * argument: the interval is the measurement and the point is a summary of it.
      */
+    .scene-translation-row { animation-name: mz-verify; }
+    .scene-translation-note { animation-name: mz-reveal; }
+
+    /* The rule draws across to what the difference was handled with. */
+    .scene-translation-rule {
+      animation: mz-expand 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
+
     .scene-modal-row { animation-name: mz-verify; }
     .scene-modal-note { animation-name: mz-reveal; }
 

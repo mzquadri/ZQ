@@ -27,8 +27,8 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | 2 | `munich-accident-forecasting` | `munich-accident-forecasting` | **done** |
 | 3 | `bm25-rrf-java` | `bm25-rrf-java` | **done** |
 | 4 | `r-ggplot2-eurostat-report` | `eurostat-modal-split` | **done** |
-| 5 | `tf-keras-vs-pytorch-cifar10` | `keras-pytorch-parity` | next |
-| 6 | `audi-release-tracking-case-study` | `audi-release-tracking` | todo |
+| 5 | `tf-keras-vs-pytorch-cifar10` | `keras-pytorch-parity` | **done** |
+| 6 | `audi-release-tracking-case-study` | `audi-release-tracking` | next |
 | 7 | `Deep-Learning-Flood-Prediction-LSTM` | `flood-lstm` | todo |
 | 8 | `Neural-Network-Identifiability-Analysis` | `nn-identifiability` | todo |
 | 9 | `Battery-SOC-Estimation-ML` | `battery-soc` | todo |
@@ -95,7 +95,7 @@ Still open, for Phase 1 rather than now:
 `ecosystemSnapshot.method` says the index is a manual audit of every public
 repository on the profile. Four were absent: `bm25-rrf-java`,
 `r-ggplot2-eurostat-report`, `tf-keras-vs-pytorch-cifar10` and
-`audi-release-tracking-case-study`. Each is added as its page is built, which
+`audi-release-tracking-case-study`. Only the last is still absent. Each is added as its page is built, which
 is also what the content test requires: a case study whose repository is not
 in the index fails the build.
 

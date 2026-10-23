@@ -3748,3 +3748,56 @@
 .research-record > p {
   max-width: var(--measure);
 }
+
+/* ---- Keras against PyTorch: five differences, four of them closed ----------------------------
+ *
+ * Deliberately not two accuracy bars. The Keras run has not been made, and a comparison figure
+ * would be inventing the project's only missing number. What exists is the list, so the list is
+ * the figure, with the one unresolved row marked rather than hidden among the others.
+ */
+
+.scene-translation { display: grid; gap: 0.8rem; width: 100%; }
+
+.scene-translation-list { display: grid; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-translation-row {
+  display: grid;
+  grid-template-columns: 10rem 1fr 12.5rem;
+  gap: 0.6rem;
+  align-items: center;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+
+.scene-translation-what { color: var(--ink); }
+
+.scene-translation-rule {
+  display: block;
+  height: 1px;
+  transform-origin: left center;
+  background: var(--line-strong);
+}
+
+.scene-translation-how {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  color: var(--accent);
+}
+
+/* The one that could not be closed reads as unresolved rather than as another entry. */
+.scene-translation-row:not([data-resolved]) .scene-translation-rule {
+  background: repeating-linear-gradient(
+    to right,
+    var(--line-strong) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+.scene-translation-row:not([data-resolved]) .scene-translation-how { color: var(--ink-soft); }
+
+.scene-translation-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-translation-row { grid-template-columns: 1fr; gap: 0.1rem; }
+  .scene-translation-rule { display: none; }
+}

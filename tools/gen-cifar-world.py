@@ -28,9 +28,27 @@ import json
 import os
 import urllib.request
 
-CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".cifar-cache")
 REPO = "https://github.com/mzquadri/CNN-Image-Classification-PyTorch"
-RAW = "https://raw.githubusercontent.com/mzquadri/CNN-Image-Classification-PyTorch/main"
+
+# The commit the published numbers were generated from. This used to read "main",
+# which had two consequences worth stating, because both are how a mirror comes to
+# disagree with what it cites. The generated numbers described whatever main
+# happened to be at generation time, with nothing recording which commit that was,
+# so a reader following an evidence link could reach a file that no longer held
+# them. And fetch() caches by path and never revalidates, so a later run reused
+# whatever was downloaded first even if main had moved underneath it.
+#
+# Pinning fixes both: the cache is keyed by commit below, so moving this pin
+# invalidates it rather than silently reusing the old bytes.
+COMMIT = "d86a55aeed5587fbb765182e2b74be381fcecd2d"
+RAW = f"https://raw.githubusercontent.com/mzquadri/CNN-Image-Classification-PyTorch/{COMMIT}"
+
+CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".cifar-cache")
+
+# Only the fetched repository files are keyed by commit. CIFAR-10 itself is 170 MB
+# and is the same dataset whatever this pin says, so it stays in CACHE and is
+# downloaded once.
+FILES = os.path.join(CACHE, "files", COMMIT[:12])
 
 CLASSES = ["airplane", "automobile", "bird", "cat", "deer",
            "dog", "frog", "horse", "ship", "truck"]
@@ -41,8 +59,8 @@ VEHICLES = {"airplane", "automobile", "ship", "truck"}
 
 
 def fetch(path):
-    os.makedirs(CACHE, exist_ok=True)
-    local = os.path.join(CACHE, path.replace("/", "_"))
+    os.makedirs(FILES, exist_ok=True)
+    local = os.path.join(FILES, path.replace("/", "_"))
     if not os.path.exists(local):
         with urllib.request.urlopen(RAW + "/" + path) as r:
             data = r.read()
@@ -283,10 +301,19 @@ w(" *")
 w(" * There are no activations and no per-image predictions here, because the repository")
 w(" * deliberately does not version a checkpoint. Nothing in this module is a guess at what the")
 w(" * trained model would have produced.")
+w(" *")
+w(" * Every value below was read from files at commit " + COMMIT[:7] + ", and `project.commit`")
+w(" * records it, so an evidence link resolves to the file the number actually came from. The")
+w(" * generator used to fetch `main` instead, which left nothing saying which commit a published")
+w(" * number described. tests/cifar-evidence.test.ts compares this module with a committed")
+w(" * fixture of that file, so moving the pin without regenerating fails.")
 w(" */")
 w("")
 w("export const project = {")
 w('  repository: "' + REPO + '",')
+w('  commit: "' + COMMIT + '",')
+w('  /** The results file every headline number here was read from, at the pinned commit. */')
+w('  metricsSource: "results/test_results.json",')
 w('  dataset: "CIFAR-10",')
 w("  classes: " + str(len(CLASSES)) + ",")
 w('  imageSize: "32 x 32 RGB",')

@@ -114,6 +114,18 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     caseStudySlug: "medico",
   },
   {
+    name: "tf-keras-vs-pytorch-cifar10",
+    title: "Keras Against PyTorch on One Exported Split",
+    category: "Experiment",
+    language: "Python",
+    topics: ["TensorFlow", "Keras", "PyTorch", "Reproducibility"],
+    description:
+      "The CIFAR-10 CNN from the PyTorch experiment translated to Keras and trained on exactly the same images, with the 15,000 indices exported by running torch rather than reproduced in NumPy. The 815,018 parameter count is derived by hand and asserted on every push, and the five differences between the frameworks are enumerated with the correction each needed.",
+    boundary:
+      "The Keras run has not been made: the results directory is empty and the README records the accuracy as pending, so no framework comparison is published. Kernel reduction orders differ between frameworks and devices, so an exact match was never available. The parameter count is a floor rather than a proof, and the repository documents what it cannot catch.",
+    caseStudySlug: "keras-pytorch-parity",
+  },
+  {
     name: "r-ggplot2-eurostat-report",
     title: "Modal Split of Inland Passenger Transport, in R",
     category: "Experiment",

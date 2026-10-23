@@ -11,6 +11,7 @@ import {
   MarginIntervalScene,
   ModalSplitScene,
   ParityScene,
+  TranslationScene,
   PipelineScene,
   RetrievalScene,
 } from "@/components/cinema/scenes";
@@ -184,6 +185,25 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "keras-pytorch-parity": {
+    accent: "var(--accent-pipeline)",
+    title: "A Translation, Not a Race",
+    eyebrow: "Reproducible experiment / Frameworks",
+    question:
+      "Rebuilding a model in a second framework is easy to do loosely. The useful question is which differences between the two cannot be removed at all, and what each one costs.",
+    evidence: evidenceOf("keras-pytorch-parity"),
+    href: "/work/keras-pytorch-parity",
+    figureNote:
+      "The five differences between the frameworks and how each was handled. Four were corrected for; the reduction order of the kernels is the floor.",
+    scale: "compact",
+    scene: () => <TranslationScene />,
+    seam: {
+      from: "translation",
+      to: "share",
+      note: "Two implementations of one model becomes one measurement across thirty-five countries.",
     },
   },
 

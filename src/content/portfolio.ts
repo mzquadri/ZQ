@@ -24,6 +24,13 @@ import {
   spread as modalSpreadFacts,
 } from "./modal-split-chapter";
 import {
+  missedByTheCount as translationMissed,
+  model as translationModel,
+  repository as translationRepository,
+  resolvedCount as translationResolved,
+  totalCount as translationTotal,
+} from "./translation-chapter";
+import {
   closestGap as parityClosest,
   parity as parityFacts,
   repository as parityRepository,
@@ -550,6 +557,66 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "keras-pytorch-parity",
+    title: "A Translation, Not a Race",
+    eyebrow: "Frameworks compared",
+    classification: "Reproducible experiment",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author",
+    summary:
+      "The CIFAR-10 model from the PyTorch experiment rebuilt in Keras and trained on exactly the same images, to separate what a framework changes from what everything else changes.",
+    metaDescription:
+      "A CIFAR-10 CNN translated from PyTorch to Keras on the same exported split, with 815,018 parameters asserted on every push and five framework differences enumerated.",
+    problem:
+      "A framework comparison is worth nothing if the two models see different images or are not the same model. Both are easy to get wrong quietly: two random number streams cannot be made to draw the same augmentations, and two block diagrams can agree while the models underneath them do not.",
+    contribution:
+      "Exported the exact training indices by running torch rather than reproducing them in NumPy, translated the architecture with the parameter count derived by hand and asserted in CI, and enumerated the five differences between the frameworks with the correction each one needed.",
+    workflow: [
+      "Export the split by running torch",
+      "Translate the architecture",
+      "Derive the parameter count by hand",
+      "Correct for each framework difference",
+      "Assert the count on every push",
+    ],
+    tools: ["TensorFlow", "Keras", "NumPy", "Docker", "GitHub Actions"],
+    evidence: [
+      {
+        label: "Both models, asserted",
+        value: `${translationModel.parameters.toLocaleString("en-US")} parameters`,
+        note: "Derived by hand per layer and asserted on every push by a check that needs no data, no compile and no fit, because the training runs elsewhere and the number was otherwise only as true as somebody's memory of the last run.",
+      },
+      {
+        label: "The same images",
+        value: `${translationModel.subsetTotal.toLocaleString("en-US")} indices`,
+        note: `${translationModel.trainImages.toLocaleString("en-US")} train and ${translationModel.validationImages.toLocaleString("en-US")} validation, exported by running torch rather than reproduced in NumPy, because torch's random stream cannot be replicated there and guessing would have made the comparison meaningless without saying so.`,
+      },
+      {
+        label: "Differences enumerated",
+        value: `${translationResolved} of ${translationTotal} corrected`,
+        note: "Weight decay, the learning-rate schedule, channel dropout and the augmentation definitions were each corrected for. The reduction order of the kernels is accepted as the irreducible floor on any comparison of this kind.",
+      },
+    ],
+    quality: [
+      "The parameter count is asserted rather than stated, by a check that runs on every push in seconds",
+      "The split travels as exported indices, so the two frameworks cannot quietly see different images",
+      "Weight decay is halved for Keras, because the penalty enters the loss there rather than the gradient and its derivative carries a factor of two",
+      "The two dropout rates are kept as separate constants, because the count cannot catch them being confused",
+      "CIFAR-10 itself is never committed; only the index file travels",
+    ],
+    limitations: [
+      "The Keras run has not been made. The repository's results directory is empty and its own table records the Keras accuracy as pending, so no comparison figure is published here",
+      "Even with every correction applied, kernel reduction orders differ between frameworks and devices, so an exact match was never available",
+      "The parameter count is a floor, not a proof: it catches a wrong channel width or a missing bias, and it cannot catch the two dropout rates being confused, which is the worked example in the repository",
+      "One architecture on one subset of one dataset, which says nothing general about either framework",
+    ],
+    learned: `The assertion that protects the comparison also shows its limit. ${translationMissed.detail} So the count is where the checking starts rather than where it ends.`,
+    repository: translationRepository,
+    systemSummary:
+      "The architecture, the split and the parameter count are three separate artefacts that have to agree. The count is checked without training, the split is checked before training, and the training script refuses to run if either disagrees.",
+    nextStep:
+      "Run it. Everything needed for the comparison is in place and the one thing missing is the Keras number, which has to come from a GPU rather than from this repository's CI.",
   },
   {
     slug: "eurostat-modal-split",
