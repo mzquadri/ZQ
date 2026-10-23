@@ -114,6 +114,18 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     caseStudySlug: "medico",
   },
   {
+    name: "r-ggplot2-eurostat-report",
+    title: "Modal Split of Inland Passenger Transport, in R",
+    category: "Experiment",
+    language: "R",
+    topics: ["Quarto", "ggplot2", "Official Statistics", "Reproducibility"],
+    description:
+      "A Quarto report on the Eurostat modal split table, with every number in the prose computed at render time rather than typed in, so the text cannot drift away from the figures. JSON-stat is decoded by hand rather than through the Eurostat package, and the raw API response is committed and pinned by SHA-256 that CI recomputes.",
+    boundary:
+      "Descriptive only: it measures shares and says nothing about why any of them moved. Modal split is a share of distance, so a steady car share is consistent with total distance rising or falling underneath it. Coverage is uneven across countries and years, and the snapshot is pinned on a date rather than live.",
+    caseStudySlug: "eurostat-modal-split",
+  },
+  {
     name: "bm25-rrf-java",
     title: "BM25 and Rank Fusion on the JVM, Held to a Python Reference",
     category: "Reference",

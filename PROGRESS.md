@@ -26,8 +26,8 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | 1 | `drift-aware-ml-platform` | `drift-aware-platform` | **done** |
 | 2 | `munich-accident-forecasting` | `munich-accident-forecasting` | **done** |
 | 3 | `bm25-rrf-java` | `bm25-rrf-java` | **done** |
-| 4 | `r-ggplot2-eurostat-report` | `eurostat-modal-split` | next |
-| 5 | `tf-keras-vs-pytorch-cifar10` | `keras-pytorch-parity` | todo |
+| 4 | `r-ggplot2-eurostat-report` | `eurostat-modal-split` | **done** |
+| 5 | `tf-keras-vs-pytorch-cifar10` | `keras-pytorch-parity` | next |
 | 6 | `audi-release-tracking-case-study` | `audi-release-tracking` | todo |
 | 7 | `Deep-Learning-Flood-Prediction-LSTM` | `flood-lstm` | todo |
 | 8 | `Neural-Network-Identifiability-Analysis` | `nn-identifiability` | todo |
@@ -61,6 +61,20 @@ scrollport and collapses to zero length when it does not. `.case-story-body`
 measures 1.28x the viewport at 768, 1.43x at 390 and 1.87x at 1440, so the
 range was zero-length everywhere and progress was pinned at 0. `at()` now
 emits `cover`, which is well defined at any subject size.
+
+**3. A figure staged on its own timeline stalls where the stage is sticky.** Binding
+each figure to its own `view-timeline` looked like the robust fix and is wrong
+at desktop: `.case-story-stage` is sticky above 1000px, and a sticky element
+stops moving relative to the viewport once it pins, so its own view progress
+freezes exactly while the reader is looking at it. The figures stage against
+the chapter track, whose subject keeps scrolling.
+
+**What that leaves.** `--range` is a position in the *chapter's* travel, and the
+chapter's cover begins when the story body first touches the viewport, well
+before the figure is on screen. The new figures start at 26% rather than 8% for
+that reason. Where a figure is above the fold at load, no scroll window remains
+and it renders complete, which is the site's own contract rather than a defect:
+demanding motion there would be demanding an arrival animation.
 
 Still open, for Phase 1 rather than now:
 

@@ -16,6 +16,14 @@ import {
   windows as munichWindows,
 } from "./munich-chapter";
 import {
+  coverage as modalCoverageFacts,
+  euCarShare as modalEuShare,
+  rail as modalRail,
+  repository as modalRepository,
+  source as modalSource,
+  spread as modalSpreadFacts,
+} from "./modal-split-chapter";
+import {
   closestGap as parityClosest,
   parity as parityFacts,
   repository as parityRepository,
@@ -542,6 +550,72 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "eurostat-modal-split",
+    title: "Twenty-Four Years, Half a Point",
+    eyebrow: "Official statistics in R",
+    classification: "Reproducible experiment",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author",
+    summary:
+      "A Quarto and ggplot2 report on the Eurostat modal split of inland passenger transport, where every number in the prose is computed at render time so the text cannot drift away from the figures.",
+    metaDescription:
+      "The EU car share of inland passenger transport was 82.0% in 2000 and 82.5% in 2024. A reproducible Quarto report on the Eurostat table, pinned by SHA-256.",
+    problem:
+      "A report that types its findings into its prose can be correct on the day it is written and wrong the next time the data is refreshed, with nothing to catch the gap. And the finding here is an absence: the share of inland passenger distance taken by car in the EU has barely moved since 2000, which is harder to publish honestly than a trend, because a flat line read on its own says nothing happened rather than this is the result.",
+    contribution:
+      "Decoded the JSON-stat response by hand rather than using the Eurostat package, committed the raw response with a pinned SHA-256 that CI recomputes, and wrote every figure in the prose as a computed value rather than a literal, so the text and the charts are produced from one pass over the same data.",
+    workflow: [
+      "Retrieve the table and commit the response",
+      "Pin it by SHA-256, recomputed in CI",
+      "Decode JSON-stat by hand",
+      "Select the comparison year by coverage",
+      "Render prose and figures from one pass",
+    ],
+    tools: ["R", "Quarto", "ggplot2", "jsonlite", "Docker", "GitHub Actions"],
+    evidence: [
+      {
+        label: "What 24 years moved",
+        value: `+${modalEuShare.changePoints} points`,
+        note: `The ${modalEuShare.aggregate} car share was ${modalEuShare.from} per cent in ${modalEuShare.fromYear} and ${modalEuShare.to} in ${modalEuShare.toYear}. Whatever has changed in European transport policy over that period, it has not changed what share of distance is driven.`,
+      },
+      {
+        label: "What a border moves",
+        value: `${modalSpreadFacts.points} points`,
+        note: `In ${modalCoverageFacts.comparisonYear} the spread across countries runs from ${modalSpreadFacts.lowest.share} per cent in ${modalSpreadFacts.lowest.country} to ${modalSpreadFacts.highest.share} in ${modalSpreadFacts.highest.country}. Germany is ${modalSpreadFacts.germany.share}, ranking ${modalSpreadFacts.germany.rank} of ${modalSpreadFacts.germany.of}.`,
+      },
+      {
+        label: "Rail",
+        value: `${modalRail.gainedIn} of ${modalRail.of} countries`,
+        note: `Gained share between each country's own first and last reported year. The largest gain is ${modalRail.largest.country}, up ${modalRail.largest.points} points.`,
+      },
+      {
+        label: "Reproducibility",
+        value: "Pinned and recomputed",
+        note: `${modalSource.publisher} ${modalSource.dataset}, retrieved ${modalSource.retrievedAt} and committed with its SHA-256. CI recomputes the digest and fails if it stops matching the README and the provenance file, so the snapshot, the prose and the figures cannot drift apart.`,
+      },
+    ],
+    quality: [
+      "Every figure in the prose is computed at render time; none is typed in",
+      "The raw API response is committed, so the report renders offline and reproducibly",
+      "The comparison year is selected by reporting coverage rather than by taking the latest year present",
+      "JSON-stat is decoded by hand, which is the part of the work worth showing, so the Eurostat package is deliberately not a dependency",
+      "The output is one self-contained HTML file with the figures and CSS inlined",
+    ],
+    limitations: [
+      "A descriptive report. It measures shares and says nothing about why any of them moved or did not",
+      "Modal split is a share of distance, so a country can hold its car share steady while total distance travelled rises or falls underneath it",
+      "Coverage is uneven across countries and years, which is why the single-year comparisons use one year chosen by coverage rather than the latest available",
+      "One snapshot of one table, pinned on a date. It is reproducible rather than live",
+    ],
+    learned:
+      "An absence is a finding, but it only reads as one next to something that did change. The flat EU line means nothing on its own and means a great deal beside a 30.9 point spread between two countries in a single year.",
+    repository: modalRepository,
+    systemSummary:
+      "One Quarto document is the whole pipeline: it reads the committed response, decodes it, derives every figure, and emits the prose and the charts together. There is no step in which a number is copied from one artefact into another.",
+    nextStep:
+      "A second table. Modal split is a share, and a share cannot distinguish a country where driving fell from one where everything else rose faster. Passenger-kilometres alongside it would separate the two.",
   },
   {
     slug: "bm25-rrf-java",

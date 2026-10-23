@@ -2416,6 +2416,83 @@
   .scene-parity-track { grid-column: 1 / -1; }
 }
 
+/* ---- Eurostat modal split: a change, and a difference ----------------------------------------
+ *
+ * Both spans are on one axis so the comparison needs no caption to land: the 24-year change is
+ * barely wider than its own minimum width, and the single-year spread across countries runs most
+ * of the track. The axis is truncated at 60 per cent, which the figure says out loud.
+ */
+
+.scene-modal { display: grid; gap: 0.9rem; width: 100%; }
+
+.scene-modal-row {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.scene-modal-name { margin: 0; font-size: 0.74rem; line-height: 1.35; color: var(--ink-soft); }
+
+.scene-modal-track {
+  position: relative;
+  height: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.scene-modal-span {
+  position: absolute;
+  top: 50%;
+  left: var(--l);
+  width: var(--w);
+  height: 0.46rem;
+  /* A half-point change would otherwise be sub-pixel and vanish entirely. */
+  min-width: 3px;
+  translate: 0 -50%;
+  border-radius: 2px;
+  transform-origin: left center;
+}
+
+.scene-modal-span[data-kind="change"] { background: var(--accent); }
+
+.scene-modal-span[data-kind="spread"] {
+  background: color-mix(in oklab, var(--ink-soft) 40%, transparent);
+}
+
+/* Germany, named in the note rather than left as an unexplained tick. */
+.scene-modal-mark {
+  position: absolute;
+  top: 50%;
+  left: var(--p);
+  width: 2px;
+  height: 0.8rem;
+  translate: -50% -50%;
+  background: var(--ink);
+}
+
+.scene-modal-read {
+  display: grid;
+  gap: 0.05rem;
+  margin: 0;
+  justify-items: end;
+  text-align: right;
+}
+
+.scene-modal-read strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.scene-modal-read span { font-size: 0.7rem; color: var(--ink-soft); }
+
+.scene-modal-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-modal-row { grid-template-columns: 1fr auto; }
+  .scene-modal-track { grid-column: 1 / -1; }
+}
+
 /*
  * Reserve a floor for the readout, where the readout actually varies.
  *

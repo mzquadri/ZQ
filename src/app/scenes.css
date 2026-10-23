@@ -391,6 +391,21 @@
     }
 
     /*
+     * Why these stage against the chapter and not against themselves.
+     *
+     * A figure's own view timeline looks like the obvious choice and is wrong here: at desktop
+     * widths `.case-story-stage` is sticky, and a sticky element stops moving relative to the
+     * viewport the moment it pins, so its own view progress stalls exactly while the reader is
+     * looking at it. The chapter's subject is the story body, which keeps scrolling, so that is
+     * the track every staged element reads.
+     *
+     * The consequence is that `--range` is a position within the *chapter's* travel, not within
+     * the figure's. The chapter's cover range begins when the body first touches the viewport,
+     * which is well before the figure is on screen, so a range starting at 8% has elapsed before
+     * there is anything to watch. The figures below start at 25% for that reason.
+     */
+
+    /*
      * One binding for every staged element in every scene. `--range` is set inline per element,
      * which is what lets a scene sequence itself; the fallback range covers the whole chapter so
      * an element that forgets to set one still behaves.
@@ -423,12 +438,14 @@
     :is(.case-stage, .case-story-body) .scene-lead,
     :is(.case-stage, .case-story-body) .scene-plane,
     :is(.case-stage, .case-story-body) .scene-class,
-    :is(.case-stage, .case-story-body) .scene-drift-row,
-    :is(.case-stage, .case-story-body) .scene-drift-note,
-    :is(.case-stage, .case-story-body) .scene-margin-row,
-    :is(.case-stage, .case-story-body) .scene-margin-note,
-    :is(.case-stage, .case-story-body) .scene-parity-row,
-    :is(.case-stage, .case-story-body) .scene-parity-note {
+    .scene-drift-row,
+    .scene-drift-note,
+    .scene-margin-row,
+    .scene-margin-note,
+    .scene-parity-row,
+    .scene-parity-note,
+    .scene-modal-row,
+    .scene-modal-note {
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
@@ -444,8 +461,8 @@
      * resting transform is the identity, which is what keeps the finished bar correct for a
      * reader with reduced motion or a browser without scroll timelines.
      */
-    :is(.case-stage, .case-story-body) .scene-drift-row { animation-name: mz-verify; }
-    :is(.case-stage, .case-story-body) .scene-drift-note { animation-name: mz-reveal; }
+    .scene-drift-row { animation-name: mz-verify; }
+    .scene-drift-note { animation-name: mz-reveal; }
 
     /*
      * The margin interval.
@@ -454,39 +471,55 @@
      * so the reader sees the range before the number sitting inside it. That ordering is the
      * argument: the interval is the measurement and the point is a summary of it.
      */
-    :is(.case-stage, .case-story-body) .scene-parity-row { animation-name: mz-verify; }
-    :is(.case-stage, .case-story-body) .scene-parity-note { animation-name: mz-reveal; }
+    .scene-modal-row { animation-name: mz-verify; }
+    .scene-modal-note { animation-name: mz-reveal; }
 
-    /* The bar grows to the score it represents, which is what makes the near-tie visible. */
-    :is(.case-stage, .case-story-body) .scene-parity-bar {
+    /* The span grows from its own left edge, so the half-point change stays a mark. */
+    .scene-modal-span {
       animation: mz-expand 1s var(--ease-precise) both;
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
     }
 
-    :is(.case-stage, .case-story-body) .scene-margin-row { animation-name: mz-verify; }
-    :is(.case-stage, .case-story-body) .scene-margin-note { animation-name: mz-reveal; }
-
-    :is(.case-stage, .case-story-body) .scene-margin-interval {
-      animation: mz-expand 1s var(--ease-precise) both;
-      animation-timeline: --chapter;
-      animation-range: var(--range, cover 0% cover 100%);
-    }
-
-    :is(.case-stage, .case-story-body) .scene-margin-point {
+    .scene-modal-mark {
       animation: mz-propagate 1s var(--ease-weighted) both;
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
     }
 
-    :is(.case-stage, .case-story-body) .scene-drift-fill {
+    .scene-parity-row { animation-name: mz-verify; }
+    .scene-parity-note { animation-name: mz-reveal; }
+
+    /* The bar grows to the score it represents, which is what makes the near-tie visible. */
+    .scene-parity-bar {
+      animation: mz-expand 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
+
+    .scene-margin-row { animation-name: mz-verify; }
+    .scene-margin-note { animation-name: mz-reveal; }
+
+    .scene-margin-interval {
+      animation: mz-expand 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
+
+    .scene-margin-point {
+      animation: mz-propagate 1s var(--ease-weighted) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
+
+    .scene-drift-fill {
       transform-origin: left center;
       animation: mz-expand 1s linear both;
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
     }
 
-    :is(.case-stage, .case-story-body) .scene-drift-gate {
+    .scene-drift-gate {
       animation: mz-verify 1s var(--ease-exit) both;
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);

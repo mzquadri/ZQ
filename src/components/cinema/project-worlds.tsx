@@ -9,6 +9,7 @@ import {
   GraphSurrogateScene,
   HorizonScene,
   MarginIntervalScene,
+  ModalSplitScene,
   ParityScene,
   PipelineScene,
   RetrievalScene,
@@ -183,6 +184,25 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "eurostat-modal-split": {
+    accent: "var(--accent-flow)",
+    title: "Twenty-Four Years, Half a Point",
+    eyebrow: "Reproducible experiment / Official statistics",
+    question:
+      "The share of inland passenger distance taken by car in the EU was 82.0 per cent in 2000. In 2024 it is 82.5. The finding is the absence of a finding, which is harder to publish than a trend.",
+    evidence: evidenceOf("eurostat-modal-split"),
+    href: "/work/eurostat-modal-split",
+    figureNote:
+      "One axis of car share carrying both comparisons: what 24 years of policy moved, and what differs between two countries in a single year.",
+    scale: "compact",
+    scene: () => <ModalSplitScene />,
+    seam: {
+      from: "share",
+      to: "series",
+      note: "A share that did not move becomes a series measured every month to see whether anything does.",
     },
   },
 

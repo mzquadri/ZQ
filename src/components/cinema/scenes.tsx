@@ -8,6 +8,13 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  axis as modalAxis,
+  axisPercent as modalAxisPercent,
+  coverage as modalCoverage,
+  euCarShare as modalEu,
+  spread as modalSpread,
+} from "@/content/modal-split-chapter";
+import {
   closestGap as parityClosestGap,
   parity as parityConfig,
   sample as paritySample,
@@ -429,7 +436,7 @@ function HorizonFlat() {
         <polyline className="scene-sf-truth" points={sfTruth} pathLength={100} {...at(8, 46)} />
         <polyline className="scene-sf-pred" points={sfPred} pathLength={100} {...at(24, 62)} />
       </svg>
-      <p className="scene-sf-caption" {...at(56, 78)}>
+      <p className="scene-sf-caption" {...at(50, 66)}>
         <strong>R2 {streamflowChapter.r2}</strong>
         <span>
           one step ahead, given yesterday&rsquo;s measurement &mdash; lag&nbsp;1 and lag&nbsp;2
@@ -500,6 +507,76 @@ export function FeatureMapScene() {
 }
 
 /* ============================================================================================
+ * Eurostat modal split - what 24 years moved, against what a border moves
+ *
+ * The report's finding is an absence: the EU car share went from 82.0 to 82.5 per cent between
+ * 2000 and 2024. A line chart of that is a flat line, and a flat line read on its own says
+ * "nothing here" rather than "this is the result".
+ *
+ * So the figure puts the change next to something that did move. One axis of car share carries
+ * both: the 24-year EU change, which is half a point wide and barely a mark, and the spread
+ * across countries in a single year, which is 30.9 points. The comparison is the argument.
+ * ========================================================================================== */
+export function ModalSplitScene() {
+  const { from, to, fromYear, toYear, changePoints, years } = modalEu;
+  const left = modalAxisPercent(Math.min(from, to));
+  const width = Math.max(modalAxisPercent(Math.max(from, to)) - left, 0.6);
+  const spreadLeft = modalAxisPercent(modalSpread.lowest.share);
+  const spreadWidth = modalAxisPercent(modalSpread.highest.share) - spreadLeft;
+  return (
+    <div
+      className="scene-modal"
+      role="img"
+      aria-label={`Car share of inland passenger transport. The European Union aggregate moved from ${from} per cent in ${fromYear} to ${to} in ${toYear}, a change of ${changePoints} points over ${years} years. In ${modalCoverage.comparisonYear} the spread across countries is ${modalSpread.points} points, from ${modalSpread.lowest.share} per cent in ${modalSpread.lowest.country} to ${modalSpread.highest.share} in ${modalSpread.highest.country}, with Germany at ${modalSpread.germany.share}.`}
+    >
+      <div className="scene-modal-row" {...at(26, 46)}>
+        <p className="scene-modal-name" aria-hidden="true">
+          The EU, {fromYear} to {toYear}
+        </p>
+        <div className="scene-modal-track" aria-hidden="true">
+          <i
+            className="scene-modal-span"
+            data-kind="change"
+            style={{ "--l": `${left}%`, "--w": `${width}%` } as React.CSSProperties}
+          />
+        </div>
+        <p className="scene-modal-read" aria-hidden="true">
+          <strong>+{changePoints}</strong>
+          <span>points in {years} years</span>
+        </p>
+      </div>
+
+      <div className="scene-modal-row" {...at(34, 54)}>
+        <p className="scene-modal-name" aria-hidden="true">
+          Across countries, {modalCoverage.comparisonYear}
+        </p>
+        <div className="scene-modal-track" aria-hidden="true">
+          <i
+            className="scene-modal-span"
+            data-kind="spread"
+            style={{ "--l": `${spreadLeft}%`, "--w": `${spreadWidth}%` } as React.CSSProperties}
+          />
+          <b
+            className="scene-modal-mark"
+            style={{ "--p": `${modalAxisPercent(modalSpread.germany.share)}%` } as React.CSSProperties}
+          />
+        </div>
+        <p className="scene-modal-read" aria-hidden="true">
+          <strong>{modalSpread.points}</strong>
+          <span>points wide</span>
+        </p>
+      </div>
+
+      <p className="scene-modal-note" {...at(52, 68)}>
+        {modalSpread.lowest.share} per cent in {modalSpread.lowest.country} to{" "}
+        {modalSpread.highest.share} in {modalSpread.highest.country}, with Germany marked at{" "}
+        {modalSpread.germany.share}. The axis starts at {modalAxis.min}, not zero.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
  * BM25 parity - the ranking two implementations have to agree on
  *
  * The claim is not that BM25 can be written in Java. It is that two independent implementations
@@ -520,7 +597,7 @@ export function ParityScene() {
     >
       <ol className="scene-parity-list">
         {paritySample.hits.map((h, i) => (
-          <li className="scene-parity-row" key={h.id} {...at(6 + i * 7, 30 + i * 7)}>
+          <li className="scene-parity-row" key={h.id} {...at(26 + i * 4, 44 + i * 4)}>
             <span className="scene-parity-rank" aria-hidden="true">
               {h.rank}
             </span>
@@ -536,7 +613,7 @@ export function ParityScene() {
           </li>
         ))}
       </ol>
-      <p className="scene-parity-note" {...at(46, 72)}>
+      <p className="scene-parity-note" {...at(52, 68)}>
         The top two are {parityClosestGap} apart. Summing the same contributions in a different
         order would swap them, so the Java side keeps the Python loop order and both return this
         ranking for all {parityConfig.questions} questions.
@@ -581,7 +658,7 @@ export function MarginIntervalScene() {
             className="scene-margin-row"
             data-clears={w.clearsZero ? "" : undefined}
             key={w.key}
-            {...at(10 + i * 18, 40 + i * 18)}
+            {...at(26 + i * 10, 46 + i * 10)}
           >
             <p className="scene-margin-name" aria-hidden="true">
               {w.label}
@@ -611,7 +688,7 @@ export function MarginIntervalScene() {
           </div>
         );
       })}
-      <p className="scene-margin-note" {...at(46, 70)}>
+      <p className="scene-margin-note" {...at(50, 66)}>
         The lower interval crosses zero, so on {munichTestMonths} months that margin is not
         separable from no difference at all.
       </p>
@@ -640,7 +717,7 @@ export function DriftScene() {
       role="img"
       aria-label={`Two drift scores on one scale. The features moved ${driftScores.featureShare}, below their ${driftScores.columnThreshold} threshold, with ${driftScores.movedColumn} the only one of ${driftScores.featureColumns} columns to cross it. The target moved ${driftScores.target}, far past its ${driftScores.targetThreshold} threshold.`}
     >
-      <div className="scene-drift-row" data-kind="features" {...at(8, 38)}>
+      <div className="scene-drift-row" data-kind="features" {...at(26, 48)}>
         <p className="scene-drift-name" aria-hidden="true">
           Features
         </p>
@@ -662,7 +739,7 @@ export function DriftScene() {
         </p>
       </div>
 
-      <div className="scene-drift-row" data-kind="target" {...at(26, 62)}>
+      <div className="scene-drift-row" data-kind="target" {...at(34, 56)}>
         <p className="scene-drift-name" aria-hidden="true">
           Target
         </p>
@@ -682,7 +759,7 @@ export function DriftScene() {
         </p>
       </div>
 
-      <p className="scene-drift-note" {...at(56, 78)}>
+      <p className="scene-drift-note" {...at(50, 66)}>
         A monitor watching the inputs alone would have declined to act.
       </p>
     </div>
