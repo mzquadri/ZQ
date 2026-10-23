@@ -7,7 +7,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Raised from 15 after a cancelled run. The browser cache and dropping one of three
+    # builds are what bring the job back inside the limit; this is headroom on top of that,
+    # not the fix, so a slow runner reports a result rather than being cancelled.
+    timeout-minutes: 25
     permissions:
       contents: read
     steps:
@@ -79,17 +82,53 @@ jobs:
       - name: Dependency audit (production, high and above)
         run: npm audit --omit=dev --audit-level=high
 
+      # Ends in `npm run build`, a non-production build, which is what the end-to-end suite
+      # below then serves. Nothing between the two rebuilds it.
       - run: npm run check
 
+      # Cache the browser binaries, keyed on the Playwright version that is actually
+      # installed rather than on a lockfile hash, so the key moves exactly when the browser
+      # it names does.
+      #
+      # Without this the job timed out. Downloading Chromium on every run, on top of three
+      # separate production builds, took run 39987675614 past the 15 minute limit and it was
+      # cancelled in the middle of the suite: a cancelled run reports neither pass nor fail,
+      # which is the worst of the three outcomes.
+      - name: Resolve the Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache the Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      # The browsers are cached; the apt packages they link against are not, because they
+      # are installed into the runner image and the image is new every run. So a cache hit
+      # still needs install-deps, which is apt only and downloads no browser.
+      - name: Install the browser and its system dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install the browser's system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # `playwright test` directly, not `npm run test:e2e`, which is `npm run build &&
+      # playwright test`. The build it wants is the one `npm run check` already produced,
+      # and the webServer in playwright.config.ts serves it with `npm start`. The npm script
+      # keeps its build because it is the one a person runs locally from a cold tree.
+      - run: npx playwright test
+
       # The confidential draft is withheld by `draftsAreVisible`, which only excludes it
-      # when VERCEL_ENV is "production" -- the environment Vercel builds in. `npm run check`
-      # above builds without it, on purpose, so the draft is present and reviewable there.
-      # That leaves the exclusion itself unexercised, so rebuild the way production does and
-      # scan the output. tools/privacy-scan.mjs existed for exactly this and ran nowhere.
+      # when VERCEL_ENV is "production" -- the environment Vercel builds in. Every build
+      # above is a non-production one, on purpose, so the draft is present and reviewable in
+      # the suite. That leaves the exclusion itself unexercised, so rebuild the way
+      # production does and scan the output. This step runs last because its build is the
+      # one nothing else may inherit.
       - name: Privacy scan against a production build
         run: npm run build && npm run privacy:scan
         env:
           VERCEL_ENV: production
-
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e

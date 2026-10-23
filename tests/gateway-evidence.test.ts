@@ -87,6 +87,60 @@ test("the published rates are rates, and the ranking the site argues holds", () 
   assert.equal(by("baseline").caught, 0, "a baseline that catches something is not a baseline");
 });
 
+/*
+ * The check the other tests in this file could not make.
+ *
+ * Everything below compares this site's copy of the gateway numbers with itself, which is why
+ * `cases: 44`, `benign: 18` and `medianMicros: 99.6` sat here until 2026-10-23 while the pin above
+ * them read `11c0017`. Those three are the numbers from `b6ebf71` of 2026-08-31; by `11c0017` the
+ * corpus was already 47 cases with 21 benign. The page cited one commit and quoted another, each
+ * part agreed with every other part, and every assertion passed.
+ *
+ * A mirror cannot be kept honest by internal agreement alone. So the pinned
+ * `assets/summary.json` is committed verbatim as a fixture and compared field by field. Updating
+ * the pin now means replacing the fixture, and a pin moved without it fails here.
+ *
+ * The fixture is a copy rather than a fetch on purpose: the test suite runs offline, and a test
+ * that reaches GitHub would fail for reasons that have nothing to do with this repository.
+ */
+test("the published numbers match assets/summary.json at the pinned commit", () => {
+  const fixture = JSON.parse(
+    readFileSync(path.join(process.cwd(), "tests", "fixtures", "mcp-policy-gateway-summary.json"), "utf8"),
+  ) as Record<string, number>;
+
+  assert.equal(verdict.cases, fixture.corpus_cases, "corpus total does not match the pinned file");
+  assert.equal(verdict.attacks, fixture.attacks, "attack count does not match the pinned file");
+  assert.equal(verdict.benign, fixture.benign, "benign count does not match the pinned file");
+  assert.equal(
+    verdict.attackClasses,
+    fixture.attack_classes,
+    "attack class count does not match the pinned file",
+  );
+  assert.equal(verdict.controls, fixture.controls, "control count does not match the pinned file");
+  assert.equal(
+    verdict.medianMicros,
+    fixture.median_micros,
+    "median decision time does not match the pinned file",
+  );
+
+  const expected: Record<string, { caught: number; falseBlock: number }> = {
+    baseline: { caught: fixture.baseline_caught, falseBlock: 0 },
+    keyword: { caught: fixture.keyword_caught, falseBlock: fixture.keyword_false_block },
+    gateway: { caught: fixture.gateway_caught, falseBlock: fixture.gateway_false_block },
+  };
+
+  for (const [key, want] of Object.entries(expected)) {
+    const found = configurations.find((configuration) => configuration.key === key);
+    assert.ok(found, `${key} is missing from the table`);
+    assert.equal(found.caught, want.caught, `${key} catch rate does not match the pinned file`);
+    assert.equal(
+      found.falseBlock,
+      want.falseBlock,
+      `${key} false-block rate does not match the pinned file`,
+    );
+  }
+});
+
 test("the corpus totals, the control count and the timing agree across the page", () => {
   assert.equal(
     verdict.cases,

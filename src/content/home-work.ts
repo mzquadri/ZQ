@@ -94,7 +94,7 @@ export const selectedWork: readonly WorkCard[] = [
   {
     name: "MCP Policy Gateway",
     what: "A proxy that applies security policy to AI tool calls, checking both the arguments going out and the results coming back.",
-    result: "Blocked 96.2% of attacks at a 9.5% false-refusal rate on a 47-case corpus, against a keyword filter's 38.5%, with a median decision time of 249 microseconds.",
+    result: "Blocked 96.2% of attacks at a 9.5% false-refusal rate on a 47-case corpus, against a keyword filter's 38.5%, and decided in well under a millisecond per call.",
     tech: ["Python", "Model Context Protocol", "pytest"],
     href: "/work/mcp-policy-gateway",
   },
