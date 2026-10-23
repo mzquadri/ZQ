@@ -1,4 +1,5 @@
 import { gatewaySource } from "./gateway-world";
+import { tests as mlopsTests } from "./mlops-world";
 import { site, thesis, truthRegistry } from "./truth";
 import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "./research";
 import { insureAssistBenchmark } from "@/content/insureassist-benchmark";
@@ -210,7 +211,16 @@ export const mlopsReferenceRun = {
     prAuc: 0.8895,
     baselineAccuracy: 0.5,
   },
-  tests: { total: 99, layers: ["unit", "integration", "container"] },
+  /*
+   * Read from the generated module, not restated.
+   *
+   * This said `total: 99` until 2026-10-23, inside the block whose own comment above calls
+   * itself the single source for every MLOps number on this site. It was not: `mlops-world.ts`
+   * carries its own `tests`, generated from the repository, and the two had diverged. Updating
+   * only the generated one left production still serving "99 tests" from here, which is how
+   * this was caught.
+   */
+  tests: { total: mlopsTests.total, layers: ["unit", "integration", "container"] },
   bundle: { checksummedArtifacts: 5 },
   /**
    * Held-out confusion matrix published in docs/EVALUATION.md at the pinned commit.
