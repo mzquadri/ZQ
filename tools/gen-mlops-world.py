@@ -12,7 +12,26 @@ Nothing here is transcribed by hand. That matters more than usual on this projec
 a gate that refuses to promote a model on insufficient evidence, and a portfolio page that retyped
 its thresholds would be the one link in the chain with no check on it.
 
-Usage: python tools/gen-mlops-world.py mlops_check.py mlops_cfg.yaml
+The test counts are the one thing neither input carries, so they are a required argument
+rather than a literal buried at the bottom of this file. They used to be exactly that
+literal, `total: 99, offline: 93, container: 6`, with a comment saying "as the README
+states them" - and by 2026-10-23 the real figures were 164, 153, 5 and 6. They had been
+copied from `docs/TESTING.md`, which was itself two generations stale while the README was
+correct. A number with no check on it is the thing this generator exists to prevent, so
+now it is passed in, and this script asserts the parts sum to the total.
+
+Derive them in a checkout of the source repository:
+
+    pytest --collect-only -q                            # total
+    pytest --collect-only -q -m "not docker and not network"
+    pytest --collect-only -q -m network
+    pytest --collect-only -q -m docker
+
+Count from `--collect-only`, never from a tally of `def test_`: parametrised cases make
+the latter wrong.
+
+Usage:
+    python tools/gen-mlops-world.py mlops_check.py mlops_cfg.yaml 164,153,5,6
 """
 
 import ast
@@ -24,6 +43,27 @@ import sys
 CHECK = sys.argv[1] if len(sys.argv) > 1 else "mlops_check.py"
 CFG = sys.argv[2] if len(sys.argv) > 2 else "mlops_cfg.yaml"
 OUT = "src/content/mlops-world.ts"
+
+# total,offline,network,container. Required, because getting these wrong silently is
+# exactly what happened the last time they lived in this file as a literal.
+if len(sys.argv) <= 3:
+    sys.exit(
+        "usage: python tools/gen-mlops-world.py <check_reference_run.py> "
+        "<train_config.yaml> total,offline,network,container\n"
+        "see the module docstring for the pytest commands that produce the counts"
+    )
+try:
+    T_TOTAL, T_OFFLINE, T_NETWORK, T_CONTAINER = (int(n) for n in sys.argv[3].split(","))
+except ValueError:
+    sys.exit(f"test counts must be four integers, got {sys.argv[3]!r}")
+
+# The markers partition the suite, so the parts have to account for the whole. This is
+# the check the old literal did not have: 93 + 6 came to 99 and looked self-consistent
+# while the real total was 164.
+assert T_OFFLINE + T_NETWORK + T_CONTAINER == T_TOTAL, (
+    f"test counts do not add up: {T_OFFLINE} offline + {T_NETWORK} network + "
+    f"{T_CONTAINER} container = {T_OFFLINE + T_NETWORK + T_CONTAINER}, not {T_TOTAL}"
+)
 
 check_src = io.open(CHECK, encoding="utf-8").read()
 cfg_src = io.open(CFG, encoding="utf-8").read()
@@ -208,8 +248,11 @@ for label, note in [
     w(f'  {{ label: {q(label)}, note: {q(note)} }},')
 w("] as const;\n")
 
-w("/** Test counts, as the README states them. */")
-w("export const tests = { total: 99, offline: 93, container: 6 } as const;\n")
+w("/** Test counts, measured in the source repository. */")
+w(
+    f"export const tests = {{ total: {T_TOTAL}, offline: {T_OFFLINE}, "
+    f"network: {T_NETWORK}, container: {T_CONTAINER} }} as const;\n"
+)
 
 io.open(OUT, "w", encoding="utf-8", newline="").write("\n".join(L) + "\n")
 print(f"wrote {OUT}: gate thresholds "

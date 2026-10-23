@@ -20,7 +20,7 @@ export const experiment = {
   datasetKind: "licensed-download",
   licence: "CC BY 4.0",
   datasetSha256: "afc26626d710",
-  bundleFormat: "1.1",
+  bundleFormat: "1.2",
 } as const;
 
 /** One seed derives both splits, so the partition is reproducible from the config alone. */
@@ -113,6 +113,6 @@ export const limits = [
   { label: "The synthetic fixture is not evidence", note: "It exists so tests can run offline; a linear model scores about 1.0 on it, and nothing quoted as a result comes from it." },
 ] as const;
 
-/** Test counts, as the README states them. */
-export const tests = { total: 99, offline: 93, container: 6 } as const;
+/** Test counts, measured in the source repository. */
+export const tests = { total: 164, offline: 153, network: 5, container: 6 } as const;
 
