@@ -12,7 +12,7 @@ import { ArrowLabel } from "@/components/Icon";
 export const metadata: Metadata = createPageMetadata({
   title: "Public repositories",
   description:
-    "Every public repository, grouped by portfolio status rather than by technical quality: flagship work, active projects, research, experiments and references, each stating what it does and does not establish.",
+    "Every public repository, grouped by portfolio status rather than by technical quality, each stating what it does and does not establish.",
   path: "/work/repositories",
 });
 

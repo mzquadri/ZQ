@@ -12,7 +12,7 @@ import ResearchFeed from "@/components/writing/ResearchFeed";
 export const metadata: Metadata = createPageMetadata({
   title: "Writing",
   description:
-    "Technical tutorials on reliable AI systems, event-driven backends, retrieval, document intelligence, MLOps, calibration and explainability, each written from work with stated evidence and limitations.",
+    "Technical tutorials on reliable AI systems, retrieval, document intelligence, MLOps and calibration, each written from work with evidence and limitations.",
   path: "/learn",
 });
 

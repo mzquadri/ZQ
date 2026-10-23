@@ -16,7 +16,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = createPageMetadata({
   title: "Medico: multi-label chest X-ray modelling",
   description:
-    "A research prototype for multi-label chest X-ray classification with DenseNet-121 and a mask-aware focal loss. No trained weights, no patient data, no held-out metrics, and no clinical validation.",
+    "A research prototype for multi-label chest X-ray classification with DenseNet-121. No trained weights, no patient data, and no clinical validation.",
   path: "/work/medico",
 });
 

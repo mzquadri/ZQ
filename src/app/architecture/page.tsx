@@ -14,7 +14,7 @@ import styles from "./Architecture.module.css";
 export const metadata: Metadata = createPageMetadata({
   title: "Architecture",
   description:
-    "Architecture case studies of the AI systems I contributed to at BP-ITCS: ingestion, verification, retrieval, document intelligence, and an interactive walkthrough built for technical interviews.",
+    "Architecture case studies of the AI systems I contributed to at BP-ITCS: ingestion, verification, retrieval and document intelligence, with a walkthrough.",
   path: "/architecture",
   imagePath: "/architecture/opengraph-image",
   imageAlt:

@@ -90,7 +90,9 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
   return createPageMetadata({
     title: project.title,
-    description: project.summary,
+    // The search snippet where one is written, the page prose otherwise. The
+    // JSON-LD below keeps the full summary: structured data is not truncated.
+    description: project.metaDescription ?? project.summary,
     path: `/work/${project.slug}`,
     type: "article",
     imagePath: `/work/${project.slug}/opengraph-image`,

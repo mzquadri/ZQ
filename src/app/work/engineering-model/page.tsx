@@ -12,7 +12,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = createPageMetadata({
   title: "Engineering model",
   description:
-    "A synthetic model of a problem common to data platforms, one source, several representations, independently checked, and a map of where each public project sits between data and a decision.",
+    "A synthetic model of a problem common to data platforms: one source, several representations, independently checked, and where each project sits.",
   path: "/work/engineering-model",
 });
 
