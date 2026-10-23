@@ -24,8 +24,8 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | # | Repository | Slug | State |
 |---|---|---|---|
 | 1 | `drift-aware-ml-platform` | `drift-aware-platform` | **done** |
-| 2 | `munich-accident-forecasting` | `munich-accident-forecasting` | next |
-| 3 | `bm25-rrf-java` | `bm25-rrf-java` | todo |
+| 2 | `munich-accident-forecasting` | `munich-accident-forecasting` | **done** |
+| 3 | `bm25-rrf-java` | `bm25-rrf-java` | next |
 | 4 | `r-ggplot2-eurostat-report` | `eurostat-modal-split` | todo |
 | 5 | `tf-keras-vs-pytorch-cifar10` | `keras-pytorch-parity` | todo |
 | 6 | `audi-release-tracking-case-study` | `audi-release-tracking` | todo |

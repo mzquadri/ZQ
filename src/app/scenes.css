@@ -424,7 +424,9 @@
     :is(.case-stage, .case-story-body) .scene-plane,
     :is(.case-stage, .case-story-body) .scene-class,
     :is(.case-stage, .case-story-body) .scene-drift-row,
-    :is(.case-stage, .case-story-body) .scene-drift-note {
+    :is(.case-stage, .case-story-body) .scene-drift-note,
+    :is(.case-stage, .case-story-body) .scene-margin-row,
+    :is(.case-stage, .case-story-body) .scene-margin-note {
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
@@ -442,6 +444,28 @@
      */
     :is(.case-stage, .case-story-body) .scene-drift-row { animation-name: mz-verify; }
     :is(.case-stage, .case-story-body) .scene-drift-note { animation-name: mz-reveal; }
+
+    /*
+     * The margin interval.
+     *
+     * The span grows from its own left edge and the point estimate arrives on it afterwards,
+     * so the reader sees the range before the number sitting inside it. That ordering is the
+     * argument: the interval is the measurement and the point is a summary of it.
+     */
+    :is(.case-stage, .case-story-body) .scene-margin-row { animation-name: mz-verify; }
+    :is(.case-stage, .case-story-body) .scene-margin-note { animation-name: mz-reveal; }
+
+    :is(.case-stage, .case-story-body) .scene-margin-interval {
+      animation: mz-expand 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
+
+    :is(.case-stage, .case-story-body) .scene-margin-point {
+      animation: mz-propagate 1s var(--ease-weighted) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
 
     :is(.case-stage, .case-story-body) .scene-drift-fill {
       transform-origin: left center;

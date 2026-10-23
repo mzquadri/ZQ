@@ -8,6 +8,7 @@ import {
   FeatureMapScene,
   GraphSurrogateScene,
   HorizonScene,
+  MarginIntervalScene,
   PipelineScene,
   RetrievalScene,
 } from "@/components/cinema/scenes";
@@ -181,6 +182,31 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "munich-accident-forecasting": {
+    /*
+     * Teal, which this site reserves for measurement, rather than the steel the
+     * neighbouring chapters use. The figure's whole job is to separate a margin
+     * that survived resampling from one that did not, and against a neutral grey
+     * interval the steel accent was close enough to read as the same colour.
+     */
+    accent: "var(--accent-graph)",
+    title: "A Published Margin That Does Not Survive an Ordinary Year",
+    eyebrow: "Reproducible experiment / Forecasting",
+    question:
+      "The model beats its baseline by 23.4 per cent. Run the same protocol three years earlier and the sign flips, because the baseline on the published window repeats a pandemic.",
+    evidence: evidenceOf("munich-accident-forecasting"),
+    href: "/work/munich-accident-forecasting",
+    figureNote:
+      "Two runs of one protocol on one axis through zero. The published margin stays clear of it; the ordinary-years margin crosses it, and crossing it is the finding.",
+    scale: "compact",
+    scene: () => <MarginIntervalScene />,
+    seam: {
+      from: "series",
+      to: "axis",
+      note: "Fifteen years measured every month becomes one margin measured against nothing.",
     },
   },
 

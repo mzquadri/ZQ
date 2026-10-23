@@ -2260,6 +2260,97 @@
   .scene-drift-read { grid-column: 2; justify-items: start; text-align: left; }
 }
 
+/* ---- Munich forecasting: a margin and its interval --------------------------------------------
+ *
+ * The interval is the figure, not an error bar decorating a point: the whole argument is that
+ * one of these two margins cannot be distinguished from zero. So the zero line is drawn through
+ * both tracks, the interval is a solid span, and the point estimate is a mark on it rather than
+ * the other way round.
+ */
+
+.scene-margin { display: grid; gap: 1rem; width: 100%; }
+
+.scene-margin-row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr auto;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.scene-margin-name {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.scene-margin-track {
+  position: relative;
+  height: 1.15rem;
+}
+
+/* The line the argument turns on. */
+.scene-margin-zero {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--z);
+  width: 1px;
+  background: var(--line-strong);
+}
+
+.scene-margin-interval {
+  position: absolute;
+  top: 50%;
+  left: var(--l);
+  width: var(--w);
+  height: 0.42rem;
+  translate: 0 -50%;
+  border-radius: 2px;
+  transform-origin: left center;
+  background: color-mix(in oklab, var(--ink-soft) 42%, transparent);
+}
+
+/* A margin whose interval stays off zero is the one that survived resampling. */
+.scene-margin-row[data-clears] .scene-margin-interval {
+  background: color-mix(in oklab, var(--accent) 55%, transparent);
+}
+
+.scene-margin-point {
+  position: absolute;
+  top: 50%;
+  left: var(--p);
+  width: 3px;
+  height: 1.15rem;
+  translate: -50% -50%;
+  background: var(--ink);
+}
+
+.scene-margin-row[data-clears] .scene-margin-point { background: var(--accent); }
+
+.scene-margin-read {
+  display: grid;
+  gap: 0.05rem;
+  margin: 0;
+  justify-items: end;
+  text-align: right;
+}
+
+.scene-margin-read strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.scene-margin-read span { font-size: 0.7rem; color: var(--ink-soft); }
+
+.scene-margin-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-margin-row { grid-template-columns: 1fr auto; }
+  .scene-margin-track { grid-column: 1 / -1; }
+}
+
 /*
  * Reserve a floor for the readout, where the readout actually varies.
  *

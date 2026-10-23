@@ -7,6 +7,12 @@ import {
   chapterSample as cifarChapterSample,
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
+import {
+  axisPercent as munichAxisPercent,
+  seriesTotal as munichSeriesTotal,
+  testMonths as munichTestMonths,
+  windows as munichWindows,
+} from "@/content/munich-chapter";
 import { chapter, chapterEvent, chapterMaxQ } from "@/content/hydrology-chapter";
 import {
   chapter as streamflowChapter,
@@ -482,6 +488,80 @@ export function FeatureMapScene() {
       <p className="scene-cifar-note" {...at(66, 88)}>
         {cifarChapter.topCount} {cifarChapter.topFrom} images were predicted as{" "}
         {cifarChapter.topTo}.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Munich forecasting - a margin, and the same margin three years earlier
+ *
+ * This is the site's own device used on the project it was made for: the interval, not the
+ * point. The published result is a single confident number, and the repository spends most of
+ * its length arguing against it, so a figure that drew the number alone would be taking the
+ * side the author does not take.
+ *
+ * Both rows are the same protocol on different held-out years, on one axis through zero. The
+ * published margin sits entirely to the right of it. The ordinary-years margin crosses it, and
+ * crossing it is the finding: on 24 months that margin cannot be told apart from no difference.
+ *
+ * The bounds are the moving-block bootstrap, which is the wider of the two the repository
+ * publishes and the one it says to believe.
+ * ========================================================================================== */
+export function MarginIntervalScene() {
+  const zero = munichAxisPercent(0);
+  return (
+    <div
+      className="scene-margin"
+      role="img"
+      aria-label={munichWindows
+        .map(
+          (w) =>
+            `${w.label}: margin ${(w.margin * 100).toFixed(1)} per cent, interval ${(w.low * 100).toFixed(1)} to ${(w.high * 100).toFixed(1)}, winning on ${w.seriesWon} of ${munichSeriesTotal} series.`,
+        )
+        .join(" ")}
+    >
+      {munichWindows.map((w, i) => {
+        const left = munichAxisPercent(w.low);
+        const right = munichAxisPercent(w.high);
+        return (
+          <div
+            className="scene-margin-row"
+            data-clears={w.clearsZero ? "" : undefined}
+            key={w.key}
+            {...at(10 + i * 18, 40 + i * 18)}
+          >
+            <p className="scene-margin-name" aria-hidden="true">
+              {w.label}
+            </p>
+            <div className="scene-margin-track" aria-hidden="true">
+              <span className="scene-margin-zero" style={{ "--z": `${zero}%` } as React.CSSProperties} />
+              <i
+                className="scene-margin-interval"
+                style={
+                  { "--l": `${left}%`, "--w": `${right - left}%` } as React.CSSProperties
+                }
+              />
+              <b
+                className="scene-margin-point"
+                style={{ "--p": `${munichAxisPercent(w.margin)}%` } as React.CSSProperties}
+              />
+            </div>
+            <p className="scene-margin-read" aria-hidden="true">
+              <strong>
+                {w.margin > 0 ? "+" : ""}
+                {(w.margin * 100).toFixed(1)}%
+              </strong>
+              <span>
+                {w.seriesWon} of {munichSeriesTotal} series
+              </span>
+            </p>
+          </div>
+        );
+      })}
+      <p className="scene-margin-note" {...at(46, 70)}>
+        The lower interval crosses zero, so on {munichTestMonths} months that margin is not
+        separable from no difference at all.
       </p>
     </div>
   );

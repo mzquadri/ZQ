@@ -7,6 +7,14 @@ import {
   runs as driftRuns,
   seasonalFix as driftSeasonalFix,
 } from "./drift-chapter";
+import {
+  dataset as munichDataset,
+  marginShareLost as munichMarginShareLost,
+  repository as munichRepository,
+  seriesTotal as munichSeriesTotal,
+  testRows as munichTestRows,
+  windows as munichWindows,
+} from "./munich-chapter";
 import { tests as mlopsTests } from "./mlops-world";
 import { site, thesis, truthRegistry } from "./truth";
 import { canonicalThesisEvidence, researchEvidence, thesisResearchPath } from "./research";
@@ -528,6 +536,72 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "munich-accident-forecasting",
+    title: "A Published Margin That Does Not Survive an Ordinary Year",
+    eyebrow: "Forecasting",
+    classification: "Reproducible experiment",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author",
+    summary:
+      "Monthly forecasts for the seven road accident series Munich publishes, and a measurement of how much of the headline result is the method rather than the two years it was scored on.",
+    metaDescription:
+      "A seasonal-trend forecaster beats its baseline by 23.4% on 2021 and 2022, and loses to it on 2018 and 2019. The repository measures that rather than caveating it.",
+    problem:
+      "The model beats a seasonal-naive baseline by 23.4% on the published window, on all seven series. That baseline repeats the previous calendar month, and on this window the previous year is 2020, so the baseline forecasts a pandemic. Saying so in a caveat is not the same as measuring it.",
+    contribution:
+      "Ran the identical protocol three years earlier, over a stretch where nothing unusual happened, with the same code, the same metrics and the same number of held-out rows. Then measured both margins against resampling, because a single number on 24 months says nothing about whether it would hold on a different 24 months.",
+    workflow: [
+      "Seven published series, one model each",
+      "Select the trend window on two validation years",
+      "Refit and score once on the two years after",
+      "Re-run the whole protocol on a pre-pandemic window",
+      "Bootstrap both margins over held-out months",
+    ],
+    tools: ["scikit-learn", "pandas", "FastAPI", "pytest", "GitHub Actions"],
+    evidence: [
+      {
+        label: "The published margin",
+        value: `+${(munichWindows[0].margin * 100).toFixed(1)}%`,
+        note: `Scaled MAE ${munichWindows[0].scaledMae} against a seasonal-naive ${munichWindows[0].naiveScaledMae} on ${munichTestRows} held-out monthly observations, winning on ${munichWindows[0].seriesWon} of ${munichSeriesTotal} series. A 3-month moving-block bootstrap puts it between ${(munichWindows[0].low * 100).toFixed(1)} and ${(munichWindows[0].high * 100).toFixed(1)} per cent, which stays clear of zero.`,
+      },
+      {
+        label: "The same protocol, ordinary years",
+        value: `${(munichWindows[1].margin * 100).toFixed(1)}%`,
+        note: `Selected on 2016 and 2017, scored once on ${munichWindows[1].testYears}. The sign flips and the model wins on ${munichWindows[1].seriesWon} of ${munichSeriesTotal} series. Its interval runs ${(munichWindows[1].low * 100).toFixed(1)} to ${(munichWindows[1].high * 100).toFixed(1)} per cent, so on 24 months this margin cannot be told apart from no difference either way.`,
+      },
+      {
+        label: "What the move costs",
+        value: `${munichMarginShareLost.toFixed(2)}x the margin`,
+        note: "Moving to an ordinary period costs more than the entire published margin, which is what the repository records rather than what it claims for the method.",
+      },
+      {
+        label: "The data",
+        value: `${munichDataset.monthlyObservations.toLocaleString("en-US")} monthly observations`,
+        note: `${munichDataset.series} series, ${munichDataset.firstYear} to ${munichDataset.lastYear}, from the ${munichDataset.source}. Errors are scaled by each series' own level before averaging, because the largest series is about 169 times the smallest.`,
+      },
+    ],
+    quality: [
+      "Both windows are produced by the same function, so the two rows are not two scripts that happen to agree",
+      "The held-out years are scored once; the trend window is chosen on separate validation years",
+      "The bootstrap is paired, so every method is scored on the same resampled months and what varies is the margin rather than the noise in each",
+      "It is run twice, independently and in blocks of three months, and the wider interval is the one the README tells you to believe",
+      "Errors are scaled per series before averaging, so the small series are not drowned out by the large ones",
+    ],
+    limitations: [
+      "Both margins rest on 24 months of seven series. Neither row should be read as settled, and the pre-pandemic one explicitly cannot be distinguished from zero",
+      "The two windows also select different models: a 12-year trend window against a 6-year one. Same procedure, different data, so the comparison is between two protocol runs rather than one model on two periods",
+      "Counts only. No exposure denominator, no severity weighting, and no causal claim about why any series moves",
+      "A coding-challenge project rebuilt afterwards, not a deployed forecasting service",
+    ],
+    learned:
+      "A baseline carries its own history, and on this window the history was a pandemic. The honest way to find that out was not to add a sentence of caveat but to run the whole protocol somewhere the pandemic was not, and then to check whether either answer survives being resampled. Only one of them does.",
+    repository: munichRepository,
+    systemSummary:
+      "One protocol, parameterised by which years are validation, which year training ends on, and which two years are held out. The published run and the pre-pandemic run are two calls to it, which is what makes them comparable at all.",
+    nextStep:
+      "More held-out periods. Two windows give two answers and no sense of the spread between them; running the same protocol across every available pair of years would say whether the published window is unusual or whether the margin is simply noisy from one period to the next.",
   },
   {
     slug: "drift-aware-platform",
