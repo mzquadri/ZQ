@@ -1,0 +1,24 @@
+{
+  "_source": "eval/reference_run.json at mzquadri/insureassist-rag-mlops@a9bc6c8",
+  "questions": {
+    "total": 50,
+    "answerable": 32,
+    "unanswerable": 18,
+    "by_split": {
+      "dev": 23,
+      "test": 27
+    }
+  },
+  "corpus": {
+    "documents": 3,
+    "chunks": 314,
+    "words": 35639
+  },
+  "metrics": {
+    "hit_rate@5": 0.5556,
+    "mrr": 0.42,
+    "top_document_accuracy": 0.5556,
+    "precision@5": 0.1111,
+    "recall@5": 0.463
+  }
+}
