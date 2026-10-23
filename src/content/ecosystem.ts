@@ -114,6 +114,18 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
     caseStudySlug: "medico",
   },
   {
+    name: "audi-release-tracking-case-study",
+    title: "Release Tracking at AUDI AG, a Case Study",
+    category: "Reference",
+    language: "Python",
+    topics: ["Excel VBA", "UserForms", "Case Study", "Internal Tooling"],
+    description:
+      "The problem, the design and what was learned from an Excel VBA application built during an internship: a release sheet of about 600 rows and 130 or more columns, read by scanning, replaced by a dropdown and a form whose fields are grouped by subject rather than by column order, writing back to the same sheet and linked through to the release system already in use.",
+    boundary:
+      "A case study, not the tool. No employer source code, no internal data, no part numbers, no suppliers, no real field values, no screenshots of the real interface and no colleagues' names. Every figure is drawn by a script from the internship report rather than captured. The report records no adoption count, no time saved and no error rate, and none is claimed.",
+    caseStudySlug: "audi-release-tracking",
+  },
+  {
     name: "tf-keras-vs-pytorch-cifar10",
     title: "Keras Against PyTorch on One Exported Split",
     category: "Experiment",

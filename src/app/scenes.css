@@ -447,7 +447,10 @@
     .scene-modal-row,
     .scene-modal-note,
     .scene-translation-row,
-    .scene-translation-note {
+    .scene-translation-note,
+    .scene-release-before,
+    .scene-release-frame,
+    .scene-release-note {
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
@@ -473,6 +476,17 @@
      * so the reader sees the range before the number sitting inside it. That ordering is the
      * argument: the interval is the measurement and the point is a summary of it.
      */
+    .scene-release-before { animation-name: mz-reveal; }
+    .scene-release-frame { animation-name: mz-converge; }
+    .scene-release-note { animation-name: mz-reveal; }
+
+    /* The ticks arrive as a block, then the frames converge out of them. */
+    .scene-release-ticks i {
+      animation: mz-expand 1s var(--ease-exit) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+    }
+
     .scene-translation-row { animation-name: mz-verify; }
     .scene-translation-note { animation-name: mz-reveal; }
 

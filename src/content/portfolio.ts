@@ -31,6 +31,14 @@ import {
   totalCount as translationTotal,
 } from "./translation-chapter";
 import {
+  adoption as releaseAdoption,
+  frames as releaseFrames,
+  markets as releaseMarkets,
+  milestones as releaseMilestones,
+  repository as releaseRepository,
+  sheet as releaseSheet,
+} from "./release-chapter";
+import {
   closestGap as parityClosest,
   parity as parityFacts,
   repository as parityRepository,
@@ -557,6 +565,73 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "audi-release-tracking",
+    title: "A Wide Sheet, and Four Frames",
+    eyebrow: "Internship engineering",
+    classification: "Employer engineering",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Intern, programming of workflows and linking of databases",
+    institution: "AUDI AG",
+    summary:
+      "An Excel VBA application that answered one question about one component from a dropdown and a click, kept the spreadsheet as the source of truth, and reached the release system the rest of the company already used.",
+    metaDescription:
+      "A release sheet of about 600 rows and 130 or more columns, read by scanning, replaced by a form with fields grouped by subject. A public case study with no employer code in it.",
+    problem:
+      "One spreadsheet carried the development release state for a department's components: about 600 rows and 130 or more columns. People wanted one record and the sheet made them look at all of them, repeatedly, as part of their job. Two markets carried different fields, so the same question had two shapes.",
+    contribution:
+      "Built the input and output masks: a dropdown that fills a form from the row behind it, fields regrouped by subject rather than by column order, create, update and delete written straight back to the source sheet, milestone annotation, one interface per market, and buttons wired through to the existing release system so the tool's view and the company's view could not drift apart.",
+    workflow: [
+      "Open on the sheet people already had",
+      "Pick the component from a list",
+      "Look up its row behind the form",
+      "Fill frames grouped by subject",
+      "Write back to the same sheet",
+    ],
+    tools: ["Excel VBA", "UserForms", "Event-driven programming", "Data validation"],
+    evidence: [
+      {
+        label: "What it replaced",
+        value: `about ${releaseSheet.rows} rows`,
+        note: `And ${releaseSheet.columns} or more columns, in one sheet, read by scanning the grid by eye. Both figures are approximate in the internship report and are published that way.`,
+      },
+      {
+        label: "What it produced",
+        value: `${releaseFrames.length} frames`,
+        note: `${releaseFrames.map((f) => f.label).join(", ")}. The column order is an accident of how the sheet grew; choosing the grouping was the work, and drawing the form was an afternoon of it.`,
+      },
+      {
+        label: "Taken up beyond the first",
+        value: "one department, then others",
+        note: `The internship report's own wording is that the interface was ${releaseAdoption.reportWording}. It records no count, no time saved and no error rate, and none is claimed here.`,
+      },
+      {
+        label: "Two markets",
+        value: `${releaseMarkets} interfaces`,
+        note: `Over one workbook, because the two markets ask for different fields. Milestones ${releaseMilestones.join(", ")} are annotated on the release data, each with its own comment.`,
+      },
+    ],
+    quality: [
+      "The sheet stayed the source of truth, so the tool never became a second copy of it",
+      "It lived in the workbook people already had open, rather than being a second place to look",
+      "Write-back was in from the start: the people reading the sheet were the people changing it, and a read-only viewer would have been abandoned",
+      "The link to the existing release system was wired through rather than reimplemented",
+      "The public case study carries no employer source code, no internal data, no part numbers, no suppliers, no real field values, no screenshots and no colleagues' names",
+    ],
+    limitations: [
+      "The tool itself is not public and cannot be. What is public is the problem, the design and the figures, drawn by a script from the internship report rather than captured from the application",
+      "The report records no adoption count, no time saved and no error rate, so none of the three is published",
+      "The row and column figures are approximate in the source and are not measurements",
+      "The wireframe is drawn from the layout the report describes, and no field on it carries a value",
+    ],
+    learned:
+      "The interface was the smallest part. Deciding which fields belong beside which others, and which of the columns nobody actually reads, took the rest of it. The hardest piece was connecting to the system that already existed, which is also the piece that made it worth building: a tool that keeps its own copy of the truth is a second source of truth, which is the problem it was supposed to solve.",
+    repository: releaseRepository,
+    systemSummary:
+      "The workbook held the forms, the modules and the data sheet, and the existing release system sat beside it with a link running between the two. Nothing was duplicated: the sheet other people read stayed the sheet the tool wrote to.",
+    nextStep:
+      "Nothing. The internship ended in June 2023 and the case study is a record of it rather than work in progress.",
   },
   {
     slug: "keras-pytorch-parity",

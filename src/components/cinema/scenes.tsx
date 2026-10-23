@@ -8,6 +8,11 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  frames as releaseFrames,
+  sheet as releaseSheet,
+  tickCount as releaseTicks,
+} from "@/content/release-chapter";
+import {
   differences as translationDiffs,
   model as translationModel,
   resolvedCount as translationResolved,
@@ -512,6 +517,53 @@ export function FeatureMapScene() {
   );
 }
 
+
+
+/* ============================================================================================
+ * Release tracking - a wide sheet, and four frames
+ *
+ * The case study's own summary of the work: the column order is an accident of how the sheet
+ * grew, and deciding which fields belong beside which others was the job. Drawing the tool would
+ * mean drawing an interface nobody outside the company may see, so the figure draws the change
+ * in shape instead, which is the part that is publishable and also the part that mattered.
+ *
+ * The ticks are a standing-in for a wide sheet, not a count: the repository says about 600 rows
+ * and 130 or more columns, and a figure claiming to show 130 of anything would be asserting a
+ * precision the source does not have.
+ * ========================================================================================== */
+export function ReleaseScene() {
+  return (
+    <div
+      className="scene-release"
+      role="img"
+      aria-label={`A sheet of about ${releaseSheet.rows} rows and ${releaseSheet.columns} or more columns, read by scanning, becoming ${releaseFrames.length} frames grouped by subject: ${releaseFrames.map((f) => f.label).join(", ")}.`}
+    >
+      <div className="scene-release-before" {...at(26, 44)}>
+        <p className="scene-release-label" aria-hidden="true">
+          about {releaseSheet.columns}+ columns, read by scanning
+        </p>
+        <div className="scene-release-ticks" aria-hidden="true">
+          {Array.from({ length: releaseTicks }, (_, i) => (
+            <i key={i} />
+          ))}
+        </div>
+      </div>
+
+      <ol className="scene-release-frames">
+        {releaseFrames.map((f, i) => (
+          <li className="scene-release-frame" key={f.key} {...at(34 + i * 4, 52 + i * 4)}>
+            <span aria-hidden="true">{f.label}</span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-release-note" {...at(54, 70)}>
+        The column order is an accident of how the sheet grew. The grouping is what a reader
+        actually wants, and choosing it was the work.
+      </p>
+    </div>
+  );
+}
 
 /* ============================================================================================
  * Keras against PyTorch - the list of things that cannot be matched

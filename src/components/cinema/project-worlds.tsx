@@ -11,6 +11,7 @@ import {
   MarginIntervalScene,
   ModalSplitScene,
   ParityScene,
+  ReleaseScene,
   TranslationScene,
   PipelineScene,
   RetrievalScene,
@@ -185,6 +186,25 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "audi-release-tracking": {
+    accent: "var(--accent-vision)",
+    title: "A Wide Sheet, and Four Frames",
+    eyebrow: "Employer engineering / Internship",
+    question:
+      "The answer was already in the sheet. Finding it meant reading across a screen that did not fit on a screen, many times a day, and the column order was an accident of how the sheet had grown.",
+    evidence: evidenceOf("audi-release-tracking"),
+    href: "/work/audi-release-tracking",
+    figureNote:
+      "What the work actually produced: a sheet too wide to read becoming four frames grouped by subject rather than by column order.",
+    scale: "compact",
+    scene: () => <ReleaseScene />,
+    seam: {
+      from: "frames",
+      to: "translation",
+      note: "Fields regrouped for a reader becomes a model rebuilt for a second framework.",
     },
   },
 
