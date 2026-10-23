@@ -703,7 +703,12 @@ check(
   mlopsReferenceRun.dataset.redistributed === false,
   "The MLOps dataset must not be described as redistributed",
 );
-check(mlopsReferenceRun.tests.total === 99, "MLOps test count diverges from the released run");
+// 164 since 2026-10-23, from `pytest --collect-only -q` in the pinned commit: 153 offline,
+// 5 network, 6 container. It was 99 here, which came from that repository's docs/TESTING.md
+// while its README said 164; the stale page is fixed upstream. This number is now read from
+// the generated mlops-world.ts rather than restated in portfolio.ts, so there is one source
+// and this check guards it rather than guarding a second copy of it.
+check(mlopsReferenceRun.tests.total === 164, "MLOps test count diverges from the released run");
 check(
   mlopsReferenceRun.split.train + mlopsReferenceRun.split.validation + mlopsReferenceRun.split.test ===
     mlopsReferenceRun.dataset.rows,

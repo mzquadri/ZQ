@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { experiment, gate, results, split, tests } from "../src/content/mlops-world";
-import { canonicalMlopsEvidence } from "../src/content/portfolio";
+import { canonicalMlopsEvidence, mlopsReferenceRun } from "../src/content/portfolio";
 
 /*
  * The MLOps numbers on this site are a hand-copied mirror of `EXPECTED` in
@@ -75,6 +75,20 @@ test("the test counts partition the suite", () => {
   for (const [name, value] of Object.entries(tests)) {
     assert.ok(Number.isInteger(value) && value > 0, `${name} is not a positive integer`);
   }
+
+  /*
+   * One source, checked.
+   *
+   * portfolio.ts has its own `mlopsReferenceRun.tests.total`, in a block whose comment
+   * calls itself the single source for every MLOps number on this site. It held 99 while
+   * the generated module held 164, and production served the 99 because the case study
+   * reads from portfolio.ts. It now reads from the generated module; this asserts it.
+   */
+  assert.equal(
+    mlopsReferenceRun.tests.total,
+    tests.total,
+    "portfolio.ts and the generated module disagree about the test total",
+  );
 });
 
 test("the split matches the pinned documented result", () => {
