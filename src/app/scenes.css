@@ -458,6 +458,9 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-weather-row,
+    .scene-weather-axis,
+    .scene-weather-note,
     .scene-water-row,
     .scene-water-axis,
     .scene-water-note,
@@ -525,6 +528,10 @@
     .scene-water-row { animation-name: mz-propagate; }
     .scene-water-axis { animation-name: mz-reveal; }
     .scene-water-note { animation-name: mz-reveal; }
+
+    .scene-weather-row { animation-name: mz-propagate; }
+    .scene-weather-axis { animation-name: mz-reveal; }
+    .scene-weather-note { animation-name: mz-reveal; }
 
     .scene-batt-read { animation-name: mz-verify; }
     .scene-batt-zoom { animation-name: mz-expand; }

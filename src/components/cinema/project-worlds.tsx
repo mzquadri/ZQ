@@ -15,6 +15,7 @@ import {
   BatteryScene,
   ClaimsThresholdScene,
   WaterIntervalScene,
+  WeatherRecoveryScene,
   IdentifiabilityScene,
   ReleaseScene,
   TranslationScene,
@@ -211,6 +212,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "weather-eda": {
+    accent: "var(--accent-graph)",
+    title: "Checking an Analysis Against Its Own Generator",
+    eyebrow: "Synthetic demonstration / Exploratory analysis",
+    question:
+      "Every number in this project was generated, so nothing it finds is evidence about weather. What can an exploratory analysis of invented data honestly be held to - and what does it catch when you do?",
+    evidence: evidenceOf("weather-eda"),
+    href: "/work/weather-eda",
+    figureNote:
+      "How far each recovered statistic landed from the value the generator was configured with. Temperature scatters around zero; humidity misses the same way in every city.",
+    scale: "compact",
+    scene: () => <WeatherRecoveryScene />,
   },
 
   "water-quality": {

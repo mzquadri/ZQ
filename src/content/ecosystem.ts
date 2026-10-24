@@ -183,6 +183,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "A wrangling-and-visualisation walkthrough over deterministic generated daily observations for six cities, covering statistical summaries, seasonality and correlation.",
     boundary:
       "Every observation is produced by a seeded generator. The figures are not weather-station records, climate evidence or forecasts, and support no operational or scientific claim.",
+    caseStudySlug: "weather-eda",
   },
   {
     name: "ML-Water-Quality-Classification",

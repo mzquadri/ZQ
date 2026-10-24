@@ -50,6 +50,15 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  amplitudeOrderRecovered as weatherAmpOrder,
+  cities as weatherCities,
+  dataset as weatherDataset,
+  humidityAllOneWay as weatherAllOneWay,
+  outputs as weatherOutputs,
+  repository as weatherRepository,
+  text as weatherText,
+} from "./weather-chapter";
+import {
   closestGap as waterClosestGap,
   commonBandText as waterBandText,
   commonBand as waterBand,
@@ -621,6 +630,65 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "weather-eda",
+    title: "Checking an Analysis Against Its Own Generator",
+    eyebrow: "Weather exploratory analysis",
+    classification: "Synthetic demonstration",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "Ten years of daily weather for six cities, all of it generated. Nothing it finds is evidence about weather - but the configuration and the summary statistics are both in the repository, so the analysis can be held against the thing that produced its data. Two of three comparisons come back clean, and the third does not.",
+    metaDescription:
+      "An exploratory analysis of generated weather data, checked against the generator's own configuration: temperature recovers exactly, humidity is systematically offset in every city.",
+    problem:
+      "An exploratory analysis of synthetic data is easy to present and hard to justify. Every chart looks like a finding and none of them is one, because the patterns were put there on purpose. The question worth answering is what such a project can be held to at all.",
+    contribution:
+      "Built the generator and the analysis, then used one against the other. Because the configured parameters are in source and the summary statistics are a tracked artefact, every recovered value has something to be wrong about - which turns a gallery of plots into a check that can fail.",
+    workflow: [
+      `Generate ${weatherDataset.records.toLocaleString("en-GB")} daily records for ${weatherDataset.cities} cities at seed ${weatherDataset.seed}`,
+      "Reverse the seasons for the southern-hemisphere cities",
+      "Summarise per city and track the result as an artefact",
+      ...weatherOutputs,
+      "Compare every recovered statistic with the value it was configured with",
+    ],
+    tools: ["Python", "pandas", "NumPy", "matplotlib", "seaborn"],
+    evidence: [
+      {
+        label: "Temperature, set against recovered",
+        value: `within ${weatherText.worstTemp} \u00b0C`,
+        note: `Across all ${weatherCities.length} cities the mean daily temperature in the tracked summary lands within ${weatherText.worstTemp} degrees of the base temperature the generator was configured with, scattered either side of it. ${weatherAmpOrder ? "The recovered spread also ranks the cities in exactly the configured order of seasonal amplitude." : "The recovered spread does not rank the cities in the configured order of seasonal amplitude."} Both are statements about the generator, not about any city.`,
+      },
+      {
+        label: "Humidity, set against recovered",
+        value: `+${weatherText.humidityLow} to +${weatherText.humidityHigh} points`,
+        note: `${weatherAllOneWay ? "Every one of the six cities" : "Some cities"} recovers a mean humidity above its configured base, by a similar amount each time. One sign and one size across six independent cities is a property of how the generator builds humidity rather than sampling noise, and it is the only thing in this project that nobody put there deliberately.`,
+      },
+      {
+        label: "What the data is",
+        value: "generated, not observed",
+        note: `${weatherDataset.years} years of daily values from ${weatherDataset.from} to ${weatherDataset.to}, produced at a fixed seed. The repository states that the dataset, findings and figures are not weather-station observations, climate evidence, forecasts, or a basis for operational, scientific or policy decisions.`,
+      },
+    ],
+    quality: [
+      "The configured parameters live in source and the summary statistics are committed, so the comparison on this page is computed from both rather than asserted",
+      "Southern-hemisphere cities have their seasons reversed in the generator, so a seasonal plot is not quietly wrong for two of the six",
+      "The README puts the synthetic-data warning in its first lines, and repeats that city-level conclusions describe configured distributions rather than measured climates",
+      "The figures are regenerated from the tracked artefact rather than pasted, so a changed run changes what is shown",
+    ],
+    limitations: [
+      "There is no weather here. A generator that is recovered accurately has demonstrated that the analysis is correct, not that anything is true",
+      "The humidity offset is a finding about the generator's own construction. It is interesting as a demonstration that the check works, and it is of no consequence to anyone",
+      "Six cities at one seed. Nothing here is repeated across seeds, so the comparison is a single observation rather than a distribution",
+      "The features are illustrative. They carry real units, which makes the plots readable and makes it correspondingly easy to misread them as measurements",
+    ],
+    learned:
+      "A synthetic dataset is usually treated as a reason to lower the standard. It is the opposite: because the answer is in the repository, the analysis is one of the few that can actually be marked. Doing that turned up an offset in every city in the same direction, which no amount of looking at the twelve plots had shown me.",
+    repository: weatherRepository,
+    systemSummary: `Two modules: a seeded generator with per-city temperature, amplitude, precipitation and humidity parameters, and one exploratory pass that writes ${weatherDataset.figures} figures plus a per-city summary table. The summary is tracked, which is what makes the configuration-versus-recovery comparison possible from outside the repository.`,
+    nextStep:
+      "Make the comparison part of the repository rather than part of this page. The configured values and the recovered ones are both already in the tree, so asserting the distance between them is a test - and the humidity offset is exactly the kind of thing that test should have failed on first.",
   },
   {
     slug: "water-quality",

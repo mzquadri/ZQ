@@ -97,7 +97,7 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | 9 | `Battery-SOC-Estimation-ML` | `battery-soc` | **done** |
 | 10 | `Insurance-Claims-Prediction-ML` | `insurance-claims-threshold` | **done** |
 | 11 | `ML-Water-Quality-Classification` | `water-quality` | **done** |
-| 12 | `Weather-Data-Analytics-EDA` | `weather-eda` | next |
+| 12 | `Weather-Data-Analytics-EDA` | `weather-eda` | **done** |
 | 13 | `Supply-Chain-Analytics-Dashboard` | `supply-chain-analytics` | todo |
 | 14 | `Statistical-Learning-Transportation` | `statistical-learning-transport` | todo |
 | 15 | `NLP-Text-Classification-Transformers` | `ag-news-classification` | todo |

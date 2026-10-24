@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "weather-eda": {
+    title: "What an analysis of invented data can be held to",
+    intro:
+      "Everything in this dataset was put there on purpose, so every pattern in it is a pattern someone chose. That sounds like a reason not to publish the analysis. It is actually the reason the analysis can be marked - the answer sheet is in the same repository.",
+    beats: [
+      {
+        verb: "Configure",
+        text: "Each city is a handful of parameters: a base temperature, a seasonal swing, a precipitation scale, a humidity level. Two of the six sit in the southern hemisphere and have their seasons reversed.",
+      },
+      {
+        verb: "Generate",
+        text: "Ten years of daily observations follow from those parameters at a fixed seed. The values carry real units, which makes the plots legible and makes them correspondingly easy to mistake for measurements.",
+      },
+      {
+        verb: "Explore",
+        text: "The exploratory pass does what such a pass does: distributions, seasonal comparisons, exceedance curves, correlations. On its own this is a gallery, and a gallery cannot be wrong about anything.",
+      },
+      {
+        verb: "Recover",
+        text: "So each summary statistic is put beside the parameter that produced it. Mean temperature comes back essentially exactly, and the spread ranks the cities in the configured order of seasonal swing. The analysis is doing its job.",
+      },
+      {
+        verb: "Catch",
+        text: "Humidity does not come back. Every city sits above its configured level, by about the same amount - one direction, one size, six times. That is the generator's construction showing through, and it is the only thing here nobody chose.",
+      },
+    ],
+    caveat:
+      "None of this is weather. The dataset, the findings and the figures are produced by a seeded generator and are not station observations, climate evidence, forecasts, or a basis for any operational, scientific or policy decision. The humidity offset is a fact about the generator and of no consequence outside it; it is shown because it demonstrates that the check is capable of failing.",
+  },
+
   "water-quality": {
     title: "What a leaderboard hides from itself",
     intro:

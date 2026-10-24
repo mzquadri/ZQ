@@ -4319,3 +4319,76 @@
   .scene-water-axis { margin: 0 3.1rem 0 6.9rem; }
   .scene-water-missing { font-size: 0.56rem; }
 }
+
+/* ---- Weather EDA: recovered against configured ----------------------------------------------
+ *
+ * Two zero-centred panels. The point is the contrast between them: scatter on the left, one
+ * direction on the right. Both axes are stated, because each panel has its own and they differ
+ * by a factor of twenty.
+ */
+
+.scene-weather { display: grid; gap: 0.5rem; width: 100%; }
+
+.scene-weather-heads,
+.scene-weather-axis,
+.scene-weather-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 1fr;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.scene-weather-heads span,
+.scene-weather-axis span {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.62rem;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.scene-weather-axis { margin: 0; }
+
+.scene-weather-rows { display: grid; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-weather-city { font-size: 0.72rem; color: var(--ink-soft); }
+
+.scene-weather-track {
+  position: relative;
+  display: block;
+  height: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.scene-weather-zero {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--line-strong);
+}
+
+.scene-weather-dot {
+  position: absolute;
+  top: 50%;
+  left: var(--p);
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+
+/* The offset that was not put there on purpose is the one worth colouring. */
+.scene-weather-dot[data-systematic] { background: var(--accent); }
+
+.scene-weather-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 640px) {
+  .scene-weather-heads,
+  .scene-weather-axis,
+  .scene-weather-row { grid-template-columns: 4.1rem 1fr 1fr; gap: 0.35rem; }
+  .scene-weather-city { font-size: 0.64rem; }
+  .scene-weather-heads span,
+  .scene-weather-axis span { font-size: 0.54rem; }
+}

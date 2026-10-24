@@ -8,6 +8,15 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  centredPercent as weatherCentred,
+  cities as weatherCities,
+  humidityAxis as weatherHumidityAxis,
+  humidityMiss as weatherHumidityMiss,
+  tempAxis as weatherTempAxis,
+  tempMiss as weatherTempMiss,
+  text as weatherText,
+} from "@/content/weather-chapter";
+import {
   axis as waterAxis,
   axisPercent as waterAxisPercent,
   commonBand as waterBand,
@@ -1072,6 +1081,86 @@ export function WaterIntervalScene() {
         {waterBandText.from} to {waterBandText.to}. The axis begins at {waterAxis.from} rather than
         zero so the intervals are legible, and the data is generated rather than measured: this
         says nothing about whether any real water is safe.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Weather EDA - the analysis against the generator that produced it
+ *
+ * Every number in this project comes out of a seeded generator, so no figure drawn from it says
+ * anything about weather. What the figure can do - and what makes the project checkable rather
+ * than decorative - is hold the analysis to the configuration that produced the data, because
+ * both are in the repository.
+ *
+ * Two panels, both centred on zero, both showing how far the recovered statistic landed from the
+ * value that was set. The temperature panel scatters either side of zero, which is what noise
+ * looks like. The humidity panel does not: every city misses the same way by about the same
+ * amount, which is a property of how the generator builds humidity and the only thing here that
+ * nobody put in deliberately.
+ * ========================================================================================== */
+export function WeatherRecoveryScene() {
+  return (
+    <div
+      className="scene-weather"
+      role="img"
+      aria-label={`For six cities, the distance between the value the generator was configured with and the value the analysis recovered. Mean temperature lands within ${weatherText.worstTemp} degrees in every city, scattered either side of zero. Mean humidity is above its configured value in all six, by between ${weatherText.humidityLow} and ${weatherText.humidityHigh} percentage points, which is a systematic offset rather than noise.`}
+    >
+      <div className="scene-weather-heads" aria-hidden="true">
+        <span />
+        <span>mean temperature, &deg;C</span>
+        <span>mean humidity, points</span>
+      </div>
+
+      <ol className="scene-weather-rows">
+        {weatherCities.map((c, i) => (
+          <li className="scene-weather-row" key={c.city} {...at(24 + i * 3.5, 42 + i * 3.5)}>
+            <span className="scene-weather-city" aria-hidden="true">
+              {c.city}
+            </span>
+
+            <span className="scene-weather-track" aria-hidden="true">
+              <i className="scene-weather-zero" />
+              <b
+                className="scene-weather-dot"
+                style={
+                  { "--p": `${weatherCentred(weatherTempMiss(c), weatherTempAxis)}%` } as React.CSSProperties
+                }
+              />
+            </span>
+
+            <span className="scene-weather-track" data-systematic="" aria-hidden="true">
+              <i className="scene-weather-zero" />
+              <b
+                className="scene-weather-dot"
+                data-systematic=""
+                style={
+                  {
+                    "--p": `${weatherCentred(weatherHumidityMiss(c), weatherHumidityAxis)}%`,
+                  } as React.CSSProperties
+                }
+              />
+            </span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-weather-axis" aria-hidden="true" {...at(46, 62)}>
+        <span />
+        <span>
+          &minus;{weatherTempAxis} &middot; 0 &middot; +{weatherTempAxis}
+        </span>
+        <span>
+          &minus;{weatherHumidityAxis} &middot; 0 &middot; +{weatherHumidityAxis}
+        </span>
+      </p>
+
+      <p className="scene-weather-note" {...at(52, 68)}>
+        Temperature lands within {weatherText.worstTemp}&nbsp;&deg;C of the figure it was set to,
+        either side of zero. Humidity misses high in all {weatherCities.length} cities, by{" "}
+        {weatherText.humidityLow} to {weatherText.humidityHigh} points &mdash; one sign, one size,
+        which is the generator rather than chance. None of it is weather.
       </p>
     </div>
   );
