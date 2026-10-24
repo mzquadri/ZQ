@@ -61,7 +61,16 @@ function draw(s: Surface, progress: number, p: Palette) {
   /** One network: an input, four hidden units in some order, and an output. */
   const network = (
     left: number,
-    order: readonly number[],
+    /**
+     * Where each hidden unit sits, as a slot that may be fractional.
+     *
+     * Fractional on purpose. Passing an integer ordering and re-sorting it made the units jump
+     * from slot to slot, and a jump is one changed frame: the whole scene measured under a per
+     * cent of pixel change against the reference chapters' three to five, because the thing it is
+     * about was over before it was visible. A relabelling that a reader can follow is a
+     * relabelling they can see is only a relabelling.
+     */
+    slotOf: (unit: number) => number,
     flips: readonly boolean[],
     flipAmount: number,
     alpha: number,
@@ -75,8 +84,7 @@ function draw(s: Surface, progress: number, p: Palette) {
     s.circle(outX, midY, s.unit * 0.02, { fill: p.raised, stroke: p.soft, width: 3, alpha: alpha * 0.9 });
 
     for (let unit = 0; unit < figure.hidden; unit += 1) {
-      const slot = order.indexOf(unit);
-      const y = unitY(slot);
+      const y = unitY(slotOf(unit));
       const flipped = flips[unit] ? flipAmount : 0;
       /* A sign flip is drawn as the pair of edges inverting, not as a colour change. */
       const edge = mix(1, -1, flipped);
@@ -90,7 +98,7 @@ function draw(s: Surface, progress: number, p: Palette) {
         width: 4,
         alpha: alpha * 0.8,
       });
-      s.circle(hidX, y, s.unit * 0.028, {
+      s.circle(hidX, y, s.unit * 0.034, {
         fill: flipped > 0.5 ? p.warn : p.raised,
         stroke: flipped > 0.5 ? p.warn : p.accent,
         width: 3,
@@ -108,12 +116,14 @@ function draw(s: Surface, progress: number, p: Palette) {
   };
 
   /* The first network keeps the identity order; the second slides into the permuted one. */
-  const identity = [0, 1, 2, 3];
-  const moving = identity.map((_, i) => mix(i, figure.permutation.indexOf(i), relabel));
-  const movingOrder = [...identity].sort((a, c) => moving[a] - moving[c]);
-
-  network(x0, identity, [false, false, false, false], 0, 1);
-  network(x0 + span - netW, movingOrder, figure.flipped, signs, 1);
+  network(x0, (unit) => unit, [false, false, false, false], 0, 1);
+  network(
+    x0 + span - netW,
+    (unit) => mix(unit, figure.permutation.indexOf(unit), relabel),
+    figure.flipped,
+    signs,
+    1,
+  );
 
   s.text(x0, netTop - s.unit * 0.026, "a network", {
     size: type * 0.9,
@@ -133,7 +143,7 @@ function draw(s: Surface, progress: number, p: Palette) {
   if (relabel > 0.02) {
     for (let unit = 0; unit < figure.hidden; unit += 1) {
       const fromY = unitY(unit);
-      const toY = unitY(movingOrder.indexOf(unit));
+      const toY = unitY(mix(unit, figure.permutation.indexOf(unit), relabel));
       const fromX = x0 + netW * 0.45 + s.unit * 0.02;
       const toX = x0 + span - netW + netW * 0.45 - s.unit * 0.02;
       s.line(fromX, fromY, mix(fromX, toX, relabel), mix(fromY, toY, relabel), {

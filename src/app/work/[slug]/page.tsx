@@ -26,6 +26,13 @@ import NlpWorld from "@/components/nlp-world/NlpWorld";
 import StatlearnWorld from "@/components/statlearn-world/StatlearnWorld";
 import SupplyWorld from "@/components/supply-world/SupplyWorld";
 import BatteryWorld from "@/components/battery-world/BatteryWorld";
+import FloodWorld from "@/components/flood-world/FloodWorld";
+import TranslationWorld from "@/components/translation-world/TranslationWorld";
+import ModalSplitWorld from "@/components/modalsplit-world/ModalSplitWorld";
+import MunichWorld from "@/components/munich-world/MunichWorld";
+import DriftWorld from "@/components/drift-world/DriftWorld";
+import ParityWorld from "@/components/parity-world/ParityWorld";
+import IdentifiabilityWorld from "@/components/identifiability-world/IdentifiabilityWorld";
 import ClaimsWorld from "@/components/claims-world/ClaimsWorld";
 import WaterWorld from "@/components/water-world/WaterWorld";
 import WeatherWorld from "@/components/weather-world/WeatherWorld";
@@ -291,6 +298,70 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "battery-soc" ? (
           <BatteryWorld flat={<SceneIdentity slug="battery-soc" />} />
+        ) : null}
+
+        {/*
+          Three networks at three depths. The second is the first with its hidden units relabelled
+          and two of them turned over; both land on one output and the third does not, which is
+          what makes the comparison a check rather than a demonstration.
+        */}
+        {project.slug === "nn-identifiability" ? (
+          <IdentifiabilityWorld flat={<SceneIdentity slug="nn-identifiability" />} />
+        ) : null}
+
+        {/*
+          Five columns under a ceiling the generator's own noise term puts there. The two the
+          finding compares - a 208,513-parameter network and a table of 365 numbers - stand next
+          to each other, and the distance between their tops is drawn rather than printed.
+        */}
+        {project.slug === "flood-lstm" ? (
+          <FloodWorld flat={<SceneIdentity slug="flood-lstm" />} />
+        ) : null}
+
+
+        {/*
+          Two frameworks as two walls, the five differences between them as spans across the gap,
+          and the parameter count as a beam that never moves - including when the one difference
+          it cannot see opens and closes underneath it.
+        */}
+        {project.slug === "keras-pytorch-parity" ? (
+          <TranslationWorld flat={<SceneIdentity slug="keras-pytorch-parity" />} />
+        ) : null}
+
+        {/*
+          One axis, two quantities, one scale: twenty-four years of change on the left and the
+          distance between countries in a single year on the right. Half a point against
+          thirty-one, drawn at the size they actually are.
+        */}
+        {project.slug === "eurostat-modal-split" ? (
+          <ModalSplitWorld flat={<SceneIdentity slug="eurostat-modal-split" />} />
+        ) : null}
+
+        {/*
+          Two runs of one protocol as two intervals, and zero as a wall standing between them.
+          The published window clears it. The identical protocol three years earlier is impaled
+          on it, which is what a margin failing to survive looks like as a solid.
+        */}
+        {project.slug === "munich-accident-forecasting" ? (
+          <MunichWorld flat={<SceneIdentity slug="munich-accident-forecasting" />} />
+        ) : null}
+
+        {/*
+          One promotion gate that moves. The third offer is the second model again, and the bar
+          it has to clear is now itself - which is what a two-per-cent improvement rule does once
+          it has been cleared, and the reason the refusal is a feature rather than a bug.
+        */}
+        {project.slug === "drift-aware-platform" ? (
+          <DriftWorld flat={<SceneIdentity slug="drift-aware-platform" />} />
+        ) : null}
+
+        {/*
+          Two stacks that have to be identical, and the four thousandths of a point between the
+          top two blocks of one question. Small enough that an inverted index would be allowed
+          to reorder them, which is why there is no inverted index.
+        */}
+        {project.slug === "bm25-rrf-java" ? (
+          <ParityWorld flat={<SceneIdentity slug="bm25-rrf-java" />} />
         ) : null}
 
         {/*

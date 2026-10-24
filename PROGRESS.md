@@ -106,6 +106,14 @@ flagship pages rather than a retrofit, and is left alone.
   old routes render the *new* markup. A correct change looked broken until the
   stale process - started three hours and seven commits earlier - was killed.
   Check what is listening on 3100 before believing an e2e failure.
+  It bit again on 24 October with a different tell: nine failures across
+  `transport-uq`, `insureassist-rag`, `mlops-reference-pipeline` and
+  `hydrology-uq`, all of them `expect(consoleErrors).toEqual([])`, on pages
+  none of that session's work had touched. A server left over from two builds
+  earlier was serving HTML that referenced chunk files the newer builds had
+  deleted. **Console errors on pages you did not change is the signature.** Kill
+  the port before the suite, every time; a rebuild between a server start and a
+  test run is enough.
 * **This machine cannot run the whole Playwright suite in one go, and when it
   fails it lies about why.** Two runs reported 324 and then 401 failures. None
   were real: Windows had run out of process headroom and was refusing to launch
@@ -392,6 +400,14 @@ check deliberately; not what the tool's name says it does.
 | 9 | `water-quality` | **done** | world 11/11, peak 15.2%, span 5% |
 | 10 | `insurance-claims-threshold` | **done** | world 11/11, peak 26.7%, span 10% |
 | 11 | `battery-soc` | **done** | world 11/11, peak 12.4%, span 14% |
+| 12 | `nn-identifiability` | **done** | world 11/11, peak 16.9%, span 13% |
+| 13 | `flood-lstm` | **done** | world 11/11, peak 50.7%, span 20% |
+| 14 | `keras-pytorch-parity` | **done** | world 11/11, peak 18.2%, span 12% |
+| 15 | `eurostat-modal-split` | **done** | world 11/11, peak 8.7%, span 5% |
+| 16 | `munich-accident-forecasting` | **done** | world 11/11, peak 15.5%, span 10% |
+| 17 | `drift-aware-platform` | **done** | world 11/11, peak 12.0%, span 9% |
+| 18 | `bm25-rrf-java` | **done** | world 11/11, peak 32.4%, span 7% |
+| 19 | `audi-release-tracking` | **built, held** | world 11/11, peak 28.2%, span 32% - shown to the owner, not deployed |
 
 **`mcp-policy-gateway`.** The page the before-audit found with nothing
 measurable moving at all. Its composition is depth-as-authorship: three planes
@@ -530,7 +546,53 @@ than only the inclusion:
 
 Measured after: 1.9%, 5.0%, 10.4% and 1.5% in page, none reporting static.
 
-### What is missing, grouped
+**The last seven, briefly.** Each one is the project's own finding built as the
+thing it is about, and the pattern that kept recurring is worth naming: in five
+of the seven the honest drawing needed the camera to do work the geometry must
+not. A quantity too small to see at the scale that matters is either invisible
+or exaggerated, and the third option - go and look, then pull back and watch it
+vanish - is the only one that does not lie.
+
+* **`nn-identifiability`** - three networks at three depths. The second is the
+  first with its hidden units relabelled and two turned over; both land on one
+  output and the third does not. The check has somewhere to fail, which is what
+  makes it a check.
+* **`flood-lstm`** - five columns under a ceiling the generator's own noise term
+  puts there. The 208,513-parameter network and a table of 365 numbers stand
+  next to each other, and the 0.0188 between their tops is drawn rather than
+  printed. The strongest world on the site at 50.7%.
+* **`keras-pytorch-parity`** - two walls, five spans, and a beam that never
+  moves. Four spans reach the far wall; the fifth stops short and is the floor.
+  The beam is the parameter count, and the beat before last is a sixth span
+  opening underneath it and closing again without it reacting.
+* **`eurostat-modal-split`** - one axis, two quantities, one scale. Twenty-four
+  years of policy on the left, the distance between countries in a single year
+  on the right, at 62 to one. The marks had to become *rules*: a sphere wide
+  enough to see at the wide shot is wider than the 0.5-point change it is
+  supposed to sit at, so it was one blob at every distance.
+* **`munich-accident-forecasting`** - zero as a wall and two intervals. The
+  published window clears it; the identical protocol three years earlier is
+  impaled on it.
+* **`drift-aware-platform`** - one promotion gate that *moves*. Drawn as a
+  single travelling object rather than three gates, because the reason the third
+  offer is refused is that the second offer moved the bar to where the second
+  offer is.
+* **`bm25-rrf-java`** - two stacks that must be identical, and the 0.004211
+  between the top two blocks of one question. The world dives at the gap, and
+  the beat after it, about an exact tie, has nothing left to look at.
+
+**`audi-release-tracking` is built and deliberately not deployed.** It uses only
+what the public case-study repository publishes: approximate sheet dimensions,
+the four subject groups, six milestone codes, two markets, and the report's own
+wording about adoption followed by three explicit "not recorded" rows. No
+department name, no system, no field, no value, no part, no supplier, no
+screenshot. The privacy scan is clean against a production build. It is held
+pending the owner's sign-off because the owner asked to see it first.
+
+### What was missing, grouped — the before-state, kept for the record
+
+This is what the first audit found, before any of the work above. Every line of
+it is now closed except where noted in "What is left" below.
 
 * **Layer 2 is missing from all 26.** No page renders a scrubbed scene stage.
 * **Layer 3 is missing from 19.** The seventeen catalogue pages, plus
@@ -549,6 +611,24 @@ Measured after: 1.9%, 5.0%, 10.4% and 1.5% in page, none reporting static.
 * **`mcp-policy-gateway` has no measurable moving figure.** Its seven sections
   are each taller than the viewport and never pin, so nothing about them can be
   compared frame to frame, and it has neither a story nor a world.
+
+### What is left
+
+Two things, both known and both documented rather than quietly carried.
+
+* **`hydrology-uq`'s story figure still reports STATIC in the aggregate audit.**
+  It is not static. The binding was fixed and the ranges were moved later so
+  they run while the stage is pinned, and direct measurement of that element
+  shows it changing; the aggregate tool's window lands outside its scrub range
+  on that page's particular height. The tool's blind spot is written down here
+  rather than worked around, because a measurement instrument that is quietly
+  adjusted until it agrees is not one.
+* **`audi-release-tracking` is built and held.** See the note above. Nothing
+  about it is unfinished; it is waiting on a person.
+
+Everything else in the before-state list is closed: all 26 work pages render a
+scrubbed scene stage, 25 of 26 carry a bespoke world that measures 11 of 11
+moving scroll steps, and no page has a figure the audit calls static.
 
 ## Order of work
 
