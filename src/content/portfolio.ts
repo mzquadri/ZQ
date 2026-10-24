@@ -50,6 +50,20 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  closestGap as waterClosestGap,
+  commonBandText as waterBandText,
+  commonBand as waterBand,
+  dataset as waterDataset,
+  pipeline as waterPipeline,
+  repository as waterRepository,
+  results as waterResults,
+  separated as waterSeparated,
+  separatedGap as waterSeparatedGap,
+  widestSd as waterWidestSd,
+  withInterval as waterWithInterval,
+  withoutInterval as waterWithoutInterval,
+} from "./water-chapter";
+import {
   breakEvenText as claimsBreakEvenText,
   calibration as claimsCalibration,
   costs as claimsCosts,
@@ -607,6 +621,63 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "water-quality",
+    title: "The Ranking the Run Does Not Support",
+    eyebrow: "Water quality classification",
+    classification: "Synthetic demonstration",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "A four-model comparison on a generated dataset, with the cross-validation statistics the headline table leaves out. Drawn as intervals rather than as places, three of the four models are not separated by the run at all - which is the most useful thing the project has to say.",
+    metaDescription:
+      "A synthetic water-quality classification run whose own cross-validation intervals overlap, so the leaderboard it reports does not separate three of its four models.",
+    problem:
+      "A model comparison that reports one score per model invites a reading it cannot support. Fold-to-fold variation is usually larger than the gaps being ranked, so the order is partly an artefact of which split was drawn - and the table that gets copied into a README is exactly the artefact that hides this.",
+    contribution:
+      "Built the pipeline and the comparison, then read the tracked artefact against its own headline table. The cross-validated F1 and its standard deviation are recorded per model in `results/model_results.json`; drawing them as intervals is what turns a ranking back into a measurement with a width.",
+    workflow: [
+      `Generate ${waterDataset.samples.toLocaleString("en-GB")} samples from the seeded generator`,
+      ...waterPipeline,
+      "Track the metrics as a committed artefact rather than a screenshot",
+    ],
+    tools: ["Python", "scikit-learn", "XGBoost", "pandas", "matplotlib"],
+    evidence: [
+      {
+        label: "Models the run separates",
+        value: `1 of ${waterWithInterval.length}`,
+        note: `Taking the cross-validated F1 of each model plus or minus one standard deviation across ${waterDataset.folds} folds, the intervals for the top ${waterBand.models} all overlap: a single value between ${waterBandText.from} and ${waterBandText.to} is consistent with every one of them. Only ${waterSeparated.name} sits clear, and it sits clear by ${waterSeparatedGap.toFixed(3)}. The ordering of the other three is not something this run established.`,
+      },
+      {
+        label: "Spread against the gap it is ranking",
+        value: `${waterWidestSd.cvSd.toFixed(4)} vs ${waterClosestGap.toFixed(4)}`,
+        note: `${waterWidestSd.name} moves ${waterWidestSd.cvSd.toFixed(4)} between folds, and the closest pair of contenders is ${waterClosestGap.toFixed(4)} apart. When the noise is more than twice the difference, the difference is not a finding - and no interval at all was recorded for ${waterWithoutInterval.map((r) => r.name).join(", ")}, which the headline table nonetheless lists among the leaders.`,
+      },
+      {
+        label: "What the numbers are about",
+        value: "generated data",
+        note: `All ${waterResults.length} rows measure how well a model recovers the deliberately class-correlated distributions of a seeded generator, at seed ${waterDataset.seed}, with ${Math.round(waterDataset.missingShare * 100)}% of values missing in ${waterDataset.missingIn.join(", ")}. The repository states it does not predict whether real water is safe to drink and must not be used for water-quality or regulatory decisions.`,
+      },
+    ],
+    quality: [
+      "The metrics are a committed artefact from a seeded run, so the figures on this page are computed from it rather than transcribed, and a changed run changes the page",
+      "Imputation and scaling sit inside the scikit-learn pipelines, so they are fit per fold rather than once over the whole training set",
+      "Cross-validation is stratified, which matters when the generated classes are split sixty-forty",
+      "The README says in its first lines that the labels are generated and that the repository must not be used for water-quality decisions, rather than leaving the caveat to the bottom of the page",
+    ],
+    limitations: [
+      "The data is generated. A model that recovers a generator's own correlations has demonstrated that the pipeline runs, not that anything can be predicted about water",
+      "One seeded split and five folds. The intervals here are the fold-to-fold standard deviation, which is the smallest honest account of the uncertainty rather than a confidence interval",
+      `No cross-validation statistics were recorded for ${waterWithoutInterval.map((r) => r.name).join(", ")}, so it cannot be compared with the rest on the same footing`,
+      "The nine features are described as illustrative and are explicitly not a standards-compliant representation of any authority's criteria",
+    ],
+    learned:
+      "Writing the comparison table was quick; reading it honestly took longer. The artefact already contained the standard deviations that undercut its own ordering, which is the uncomfortable and useful part - the evidence against the headline was sitting in the same file as the headline, and nothing but drawing it made that visible.",
+    repository: waterRepository,
+    systemSummary: `Two modules: a seeded generator and one pipeline that runs preprocessing, the four classifiers, cross-validation, a 27-point grid search for XGBoost and the evaluation plots. Metrics land in a tracked JSON file, which is what lets this page quote them without re-running anything.`,
+    nextStep:
+      "Repeat the whole comparison over several seeds rather than one, and report each model as an interval from the start. The run already shows that fold-to-fold movement swamps the gaps being ranked, so the next honest version of this table has no places in it at all.",
   },
   {
     slug: "insurance-claims-threshold",

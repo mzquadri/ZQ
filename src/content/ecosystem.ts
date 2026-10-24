@@ -194,6 +194,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Four pipelines - logistic regression, random forest, XGBoost and an RBF SVM - compared under cross-validation and hyperparameter tuning on a seeded five-thousand-sample dataset.",
     boundary:
       "The labels are generated, not laboratory measurements. The tracked scores measure how well each model recovers the generator's own class-correlated distributions, and say nothing about whether real water is safe to drink.",
+    caseStudySlug: "water-quality",
   },
   /*
    * `snake-water-gun` and `iftaar-invitation-2026` were listed here and are

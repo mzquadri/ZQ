@@ -458,6 +458,9 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-water-row,
+    .scene-water-axis,
+    .scene-water-note,
     .scene-claims-cross,
     .scene-claims-default,
     .scene-claims-labels,
@@ -518,6 +521,10 @@
       --path-length: 100;
       stroke-dasharray: 100;
     }
+
+    .scene-water-row { animation-name: mz-propagate; }
+    .scene-water-axis { animation-name: mz-reveal; }
+    .scene-water-note { animation-name: mz-reveal; }
 
     .scene-batt-read { animation-name: mz-verify; }
     .scene-batt-zoom { animation-name: mz-expand; }

@@ -14,6 +14,7 @@ import {
   FloodScene,
   BatteryScene,
   ClaimsThresholdScene,
+  WaterIntervalScene,
   IdentifiabilityScene,
   ReleaseScene,
   TranslationScene,
@@ -210,6 +211,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "water-quality": {
+    accent: "var(--accent-flow)",
+    title: "The Ranking the Run Does Not Support",
+    eyebrow: "Synthetic demonstration / Classification",
+    question:
+      "Five models, a table ordering them by score, and a clear winner in bold. The same run also recorded how much each model moved between folds - so how many of those places are real?",
+    evidence: evidenceOf("water-quality"),
+    href: "/work/water-quality",
+    figureNote:
+      "Cross-validated F1 with one-standard-deviation intervals. The shaded column is the range consistent with all three contenders at once.",
+    scale: "compact",
+    scene: () => <WaterIntervalScene />,
   },
 
   "insurance-claims-threshold": {

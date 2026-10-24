@@ -8,6 +8,14 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  axis as waterAxis,
+  axisPercent as waterAxisPercent,
+  commonBand as waterBand,
+  commonBandText as waterBandText,
+  withInterval as waterWithInterval,
+  withoutInterval as waterWithoutInterval,
+} from "@/content/water-chapter";
+import {
   breakEven as claimsBreakEven,
   breakEvenText as claimsBreakEvenText,
   cells as claimsCells,
@@ -965,6 +973,105 @@ export function ClaimsThresholdScene() {
         The matrix those four numbers come from is the repository&rsquo;s own example and is not a
         validated policy. The crossing is arithmetic, not a result: no data, no model and no score
         are published here.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Water quality - the leaderboard and the intervals underneath it
+ *
+ * This repository does publish numbers, so this figure uses them. What it draws is the half of
+ * the artefact the README's headline table leaves out: beside each model's single-split score,
+ * `model_results.json` also recorded the cross-validated F1 and its standard deviation across
+ * folds, and once those are drawn as intervals the ranking stops being a ranking.
+ *
+ * Three of the four intervals overlap - there is a single value of F1 consistent with all three
+ * at once, drawn here as the shaded column. Only logistic regression is separated from the rest.
+ * The tuned model, which the table bolds as competitive, has no interval at all, so it is drawn
+ * as a bare point and labelled as one rather than quietly given the benefit of the doubt.
+ *
+ * The axis starts at 0.65 instead of zero, which is stated on the figure: at full scale these
+ * intervals are a few pixels and the point of the drawing disappears.
+ * ========================================================================================== */
+export function WaterIntervalScene() {
+  return (
+    <div
+      className="scene-water"
+      role="img"
+      aria-label={`Cross-validated F1 for four models with one-standard-deviation intervals across folds. The intervals for ${waterWithInterval.slice(0, 3).map((r) => r.name).join(", ")} all overlap, leaving a band from ${waterBandText.from} to ${waterBandText.to} consistent with all three, so the run does not separate them. Only ${waterWithInterval[waterWithInterval.length - 1].name} sits clear of the others. No interval was recorded for ${waterWithoutInterval.map((r) => r.name).join(", ")}.`}
+    >
+      <ol className="scene-water-rows">
+        {waterWithInterval.map((r, i) => (
+          <li className="scene-water-row" key={r.name} {...at(24 + i * 4, 42 + i * 4)}>
+            <span className="scene-water-name" aria-hidden="true">
+              {r.name}
+            </span>
+            <span className="scene-water-track" aria-hidden="true">
+              {/*
+               * The band every contender's interval passes through - drawn only on the rows whose
+               * interval actually reaches it. Drawn on all of them it appeared behind logistic
+               * regression too, which is the one model the run does separate, and implied the
+               * opposite of the finding.
+               */}
+              {r.cvMean - r.cvSd <= waterBand.to && r.cvMean + r.cvSd >= waterBand.from ? (
+                <i
+                  className="scene-water-common"
+                  style={
+                    {
+                      "--from": `${waterAxisPercent(waterBand.from)}%`,
+                      "--to": `${waterAxisPercent(waterBand.to)}%`,
+                    } as React.CSSProperties
+                  }
+                />
+              ) : null}
+              <i
+                className="scene-water-interval"
+                style={
+                  {
+                    "--from": `${waterAxisPercent(r.cvMean - r.cvSd)}%`,
+                    "--to": `${waterAxisPercent(r.cvMean + r.cvSd)}%`,
+                  } as React.CSSProperties
+                }
+              />
+              <b
+                className="scene-water-point"
+                style={{ "--p": `${waterAxisPercent(r.cvMean)}%` } as React.CSSProperties}
+              />
+            </span>
+            <strong className="scene-water-value" aria-hidden="true">
+              {r.cvMean.toFixed(3)}
+            </strong>
+          </li>
+        ))}
+
+        {/* No fold statistics were recorded for the tuned model, so it gets no bar. */}
+        {waterWithoutInterval.map((r, i) => (
+          <li className="scene-water-row" data-bare="" key={r.name} {...at(40 + i * 4, 58 + i * 4)}>
+            <span className="scene-water-name" aria-hidden="true">
+              {r.name}
+            </span>
+            <span className="scene-water-track" aria-hidden="true">
+              <em className="scene-water-missing">no interval recorded</em>
+            </span>
+            <strong className="scene-water-value" aria-hidden="true">
+              &mdash;
+            </strong>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-water-axis" aria-hidden="true" {...at(50, 66)}>
+        <span>cross-validated F1, {waterAxis.from}</span>
+        <span>{waterAxis.to}</span>
+      </p>
+
+      <p className="scene-water-note" {...at(56, 72)}>
+        The shaded column is the range consistent with all {waterBand.models} intervals at once,
+        {" "}
+        {waterBandText.from} to {waterBandText.to}. The axis begins at {waterAxis.from} rather than
+        zero so the intervals are legible, and the data is generated rather than measured: this
+        says nothing about whether any real water is safe.
       </p>
     </div>
   );

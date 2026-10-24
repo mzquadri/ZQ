@@ -4220,3 +4220,102 @@
   .scene-claims-cells { grid-template-columns: 1fr; }
   .scene-claims-stages li { grid-template-columns: 3.8rem 1fr; font-size: 0.68rem; }
 }
+
+/* ---- Water quality: the intervals under the leaderboard -------------------------------------
+ *
+ * A forest plot, because the finding is that the intervals overlap. The axis is truncated and
+ * the figure says so on itself; at full scale a one-standard-deviation bar is a few pixels.
+ */
+
+.scene-water { display: grid; gap: 0.6rem; width: 100%; }
+
+.scene-water-rows { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-water-row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr 3rem;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.scene-water-name { font-size: 0.72rem; color: var(--ink-soft); }
+
+.scene-water-track {
+  position: relative;
+  display: block;
+  height: 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* The range consistent with every contender at once. Drawn behind the bars it explains. */
+.scene-water-common {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--from);
+  width: calc(var(--to) - var(--from));
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+}
+
+.scene-water-interval {
+  position: absolute;
+  top: 50%;
+  left: var(--from);
+  width: calc(var(--to) - var(--from));
+  height: 2px;
+  margin-top: -1px;
+  background: var(--line-strong);
+  transform-origin: left center;
+}
+
+.scene-water-point {
+  position: absolute;
+  top: 50%;
+  left: var(--p);
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.scene-water-value {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  text-align: right;
+  color: var(--ink-soft);
+  font-weight: 400;
+}
+
+/* A model with no recorded interval is marked as such rather than drawn as a confident point. */
+.scene-water-row[data-bare] .scene-water-track { border-bottom-style: dashed; }
+
+.scene-water-missing {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.62rem;
+  font-style: normal;
+  color: var(--ink-soft);
+  opacity: 0.75;
+}
+
+.scene-water-axis {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 3.6rem 0 9.1rem;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.62rem;
+  color: var(--ink-soft);
+}
+
+.scene-water-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 640px) {
+  .scene-water-row { grid-template-columns: 6.4rem 1fr 2.6rem; gap: 0.4rem; }
+  .scene-water-name { font-size: 0.66rem; }
+  .scene-water-axis { margin: 0 3.1rem 0 6.9rem; }
+  .scene-water-missing { font-size: 0.56rem; }
+}

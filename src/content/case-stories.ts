@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "water-quality": {
+    title: "What a leaderboard hides from itself",
+    intro:
+      "Four models, five rows, a winner in bold. The same run also recorded how far each model moved between folds, and that number was left out of the table it undermines. Putting it back is the whole of this section.",
+    beats: [
+      {
+        verb: "Generate",
+        text: "The dataset is produced by a seeded generator with deliberately class-correlated features. Anything measured here is about recovering those correlations, not about water.",
+      },
+      {
+        verb: "Compare",
+        text: "Each model runs inside a pipeline, so imputation and scaling are fitted per fold rather than once over everything. That is what makes the fold scores comparable with each other.",
+      },
+      {
+        verb: "Rank",
+        text: "Scored on a single held-out split, the models fall into a clean order with a clear best. This is the table that gets copied, and it is the reading the rest of this section takes apart.",
+      },
+      {
+        verb: "Widen",
+        text: "Each model also has a standard deviation across folds. Drawn as intervals rather than as points, the top three overlap - there is one value of F1 that every one of them is consistent with.",
+      },
+      {
+        verb: "Concede",
+        text: "So the finding is narrower than the table: one model is clearly worse than the others, and the order of the rest is not established. The tuned model has no interval at all, which is its own answer.",
+      },
+    ],
+    caveat:
+      "The labels and features are generated, not laboratory measurements, and the repository states it does not predict whether real water is safe to drink and must not be used for water-quality or regulatory decisions. The intervals here are fold-to-fold standard deviations from a single seeded run, which is a floor on the uncertainty rather than a confidence interval.",
+  },
+
   "insurance-claims-threshold": {
     title: "Three problems that get reported as one",
     intro:
