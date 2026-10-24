@@ -15,6 +15,7 @@ import {
   BatteryScene,
   ClaimsThresholdScene,
   WaterIntervalScene,
+  AuthorshipScene,
   CareerWeightScene,
   NewsLoaderScene,
   StatLearnScene,
@@ -216,6 +217,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "ai-engineering-portfolio": {
+    accent: "var(--accent-steel)",
+    title: "Four Classes of Having Built It",
+    eyebrow: "Architecture case studies / Attribution",
+    question:
+      "Publishing architecture from employer systems means describing work that was not all yours. What does an honest claim look like when the easy options are to say nothing or to say everything?",
+    evidence: evidenceOf("ai-engineering-portfolio"),
+    href: "/work/ai-engineering-portfolio",
+    figureNote:
+      "Measured commit shares, the four authorship classes they inform but do not decide, and the four claims the repository refuses to make.",
+    scale: "compact",
+    scene: () => <AuthorshipScene />,
   },
 
   "jobhunter": {

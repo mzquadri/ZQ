@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "ai-engineering-portfolio": {
+    title: "Describing work that was not all yours",
+    intro:
+      "Architecture from a workplace is the most useful thing an engineer can show and the hardest to publish honestly. A well-drawn diagram is an implicit claim of authorship over everything inside its border, and the border usually contains other people's work.",
+    beats: [
+      {
+        verb: "Draw",
+        text: "Four workstreams over one event-driven platform, diagrammed down to the stores and the gates. At this point the pictures are accurate and say nothing at all about who wrote what.",
+      },
+      {
+        verb: "Measure",
+        text: "So each component's commit share is taken with a named command on a stated date. That is evidence, and it is cheap, and it is the point at which most attribution stops.",
+      },
+      {
+        verb: "Overrule",
+        text: "A commit count measures weight, not authorship. Two classifications disagree with their own counts deliberately and say so on the contribution diagram, because the alternative is letting an easy number decide a question it cannot answer.",
+      },
+      {
+        verb: "Attribute",
+        text: "Every component then lands in one of four classes, from primary implementation down to existing platform. One of them is a service with none of my commits in it, named rather than omitted - that row is what gives the others their weight.",
+      },
+      {
+        verb: "Decline",
+        text: "Finally, the things that will not be said: no production deployment, no impact metrics, no certification, no clinical claim. Four sentences available to write and refused, which is what lets the rest be read at face value.",
+      },
+    ],
+    caveat:
+      "This is not official documentation of the employer's systems, and internal detail is generalised or omitted - so a reader outside the organisation cannot check the diagrams against what they describe. Commit share is a weak proxy for contribution, and where it is overridden the classification rests partly on self-report. The services ran in development and QA only; no production environment exists, no business impact was measured, and the medical-imaging work is a research prototype with no device, clearance, validation or accuracy figure.",
+  },
+
   "jobhunter": {
     title: "When a preference turns out to be a constraint",
     intro:

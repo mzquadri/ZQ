@@ -108,7 +108,7 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | 14 | `Statistical-Learning-Transportation` | `statistical-learning-transport` | todo |
 | 15 | `NLP-Text-Classification-Transformers` | `nlp-transformers` | **done** |
 | 16 | `jobhunter` | `jobhunter` | **done** |
-| 17 | `ai-engineering-portfolio` | `ai-engineering-portfolio` | next |
+| 17 | `ai-engineering-portfolio` | `ai-engineering-portfolio` | **done** |
 
 Slugs are provisional until the page is written; the row is updated with the
 one that shipped.

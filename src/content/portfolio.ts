@@ -50,6 +50,16 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  artefacts as authArtefacts,
+  classes as authClasses,
+  counted as authCounted,
+  employer as authEmployer,
+  measuredOn as authMeasuredOn,
+  notClaimed as authNotClaimed,
+  repository as authRepository,
+  workstreams as authWorkstreams,
+} from "./authorship-chapter";
+import {
   adapterCount as careerAdapterCount,
   employerCount as careerEmployerCount,
   languagePenalties as careerLanguagePenalties,
@@ -677,6 +687,67 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "ai-engineering-portfolio",
+    title: "Four Classes of Having Built It",
+    eyebrow: "Architecture case studies",
+    classification: "Reference implementation",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "The architecture half of this portfolio: diagrams and written decisions covering four AI workstreams on one event-driven platform. It exists as its own repository because publishing employer architecture needs a discipline the diagrams themselves cannot carry - an authorship class on every component, and a list of the things it will not claim.",
+    metaDescription:
+      "Architecture case studies of employer AI systems, published with a per-component authorship class, measured commit shares, and an explicit list of claims the repository refuses to make.",
+    problem:
+      "Architecture from a workplace is the most useful thing an engineer can show and the hardest to publish honestly. Say nothing and the work is invisible; say it plainly and every diagram quietly becomes a claim of sole authorship over systems that teams built, with impact figures nobody measured attached to them.",
+    contribution:
+      `Produced the diagrams, the decision record and the evidence notes, and built the attribution discipline around them: every component carries one of ${authClasses.length} authorship classes, commit shares are measured rather than estimated, and the repository states plainly that a commit count is evidence of weight rather than of authorship - two of its classifications disagree with the counts on purpose and say so.`,
+    workflow: [
+      `Diagram ${authWorkstreams.length} workstreams across one platform`,
+      "Measure the commit share of each component rather than recalling it",
+      `Assign one of ${authClasses.length} authorship classes, overriding the count where the count misleads`,
+      "Write the decisions down as context, reason, trade-off and limitation",
+      "State what is not claimed, before anyone has to ask",
+    ],
+    tools: ["diagrams.net", "Mermaid", "SVG", "Markdown", "Git"],
+    evidence: [
+      {
+        label: "Authorship, measured and then judged",
+        value: `${authClasses.length} classes`,
+        note: `${authClasses.map((c) => c.label).join(", ")}. Commit shares were taken with git shortlog on ${authMeasuredOn}: ${authCounted.filter((c) => c.mine > 0).map((c) => `${c.name} ${c.mine} of ${c.total}`).join(", ")}. The ${authCounted.find((c) => c.mine === 0)?.name} appears at ${authCounted.find((c) => c.mine === 0)?.mine} of ${authCounted.find((c) => c.mine === 0)?.total} and is classified as existing platform, which is what makes the rest of the list more than self-description.`,
+      },
+      {
+        label: "Claims the repository refuses",
+        value: `${authNotClaimed.length}`,
+        note: `${authNotClaimed.map((n) => `${n.label} (${n.detail})`).join("; ")}. Each is a sentence that could have been written and was not, and together they are the reason the architecture around them can be read at face value.`,
+      },
+      {
+        label: "What is published",
+        value: `${authArtefacts.diagrams} diagrams`,
+        note: `${authArtefacts.diagrams} architecture diagrams as SVG with ${authArtefacts.editableSources} editable sources and ${authArtefacts.mermaid} simplified Mermaid versions, ${authArtefacts.decisions} written design decisions, and a ${authArtefacts.slides}-slide deck. No code from the systems themselves: this is not official documentation of them, and internal detail is generalised or omitted.`,
+      },
+    ],
+    quality: [
+      "Every component carries an authorship class, so a diagram cannot imply sole authorship of a platform by being drawn well",
+      "Commit shares are measured and dated rather than remembered, and the measurement command is named",
+      "Where the count would mislead, the classification overrides it and the disagreement is stated rather than hidden",
+      "A component with zero commits of mine is listed by name, which is what gives the other classifications their weight",
+      "The non-claims are in the README rather than a footnote: no production deployment, no impact metrics, no certification, no clinical claim",
+    ],
+    limitations: [
+      "No code from the underlying systems is published, so the diagrams cannot be checked against the thing they describe by anyone outside it",
+      "Commit share is a proxy for contribution and a poor one; the repository says so and overrides it twice, which also means the classification rests partly on self-report",
+      "The systems ran as pods in development and QA. There is no production environment, so nothing here describes how any of it behaves under real load",
+      "No business impact is claimed because none was measured. The absence is a fact about the organisation rather than a modesty",
+      `It documents work at ${authEmployer} and is not official documentation of it; internal detail is generalised or omitted, which necessarily limits how much a reader can verify`,
+    ],
+    learned:
+      "The hard part of publishing work from a job is not redaction, it is attribution. I could describe every one of these systems accurately and still leave a false impression, just by not saying who else was in the repository. Measuring the commit shares was easy; the useful part was deciding that two of them were wrong about authorship and writing down that I had overruled them.",
+    repository: authRepository,
+    systemSummary: `${authWorkstreams.join(", ")} - diagrammed across ${authArtefacts.diagrams} architecture views, with the decision record and the evidence notes beside them. The companion to the case studies on this site rather than a duplicate of them: those describe what the systems do, this describes how they fit together and who built which part.`,
+    nextStep:
+      "Keep the classes honest as the work ages. An authorship class is accurate on the day it is measured and drifts quietly afterwards, so the next useful thing is a re-measurement with its own date beside the first - not a better claim, a second dated one.",
   },
   {
     slug: "jobhunter",

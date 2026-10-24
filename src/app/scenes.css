@@ -458,6 +458,11 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-auth-share,
+    .scene-auth-caveat,
+    .scene-auth-class,
+    .scene-auth-notclaimed li,
+    .scene-auth-note,
     .scene-career-row,
     .scene-career-legend,
     .scene-career-rejects,
@@ -572,6 +577,12 @@
     .scene-career-legend { animation-name: mz-reveal; }
     .scene-career-rejects { animation-name: mz-reveal; }
     .scene-career-note { animation-name: mz-reveal; }
+
+    .scene-auth-share { animation-name: mz-propagate; }
+    .scene-auth-caveat { animation-name: mz-reveal; }
+    .scene-auth-class { animation-name: mz-propagate; }
+    .scene-auth-notclaimed li { animation-name: mz-verify; }
+    .scene-auth-note { animation-name: mz-reveal; }
 
     .scene-batt-read { animation-name: mz-verify; }
     .scene-batt-zoom { animation-name: mz-expand; }

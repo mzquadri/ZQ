@@ -4769,3 +4769,100 @@
   .scene-career-row { grid-template-columns: 4.4rem 1fr 3.6rem; font-size: 0.66rem; }
   .scene-career-rejects li { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* ---- Architecture case studies: authorship, and what is not claimed ------------------------
+ *
+ * Two lists and no measurement, which is the subject. The zero-share row is kept rather than
+ * dropped: a component attributed to somebody else is what makes the rest of the list mean
+ * anything.
+ */
+
+.scene-auth { display: grid; gap: 0.5rem; width: 100%; }
+
+.scene-auth-shares { display: grid; gap: 0.26rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-auth-share {
+  display: grid;
+  grid-template-columns: 11rem 1fr 3.8rem;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.71rem;
+  color: var(--ink-soft);
+}
+
+.scene-auth-track {
+  display: block;
+  height: 0.5rem;
+  background: color-mix(in oklab, var(--line) 30%, transparent);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.scene-auth-track i {
+  display: block;
+  width: var(--w);
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+}
+
+/* Zero commits, kept in the figure on purpose. */
+.scene-auth-share[data-zero] .scene-auth-track { border: 1px dashed var(--line-strong); }
+
+.scene-auth-share strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-align: right;
+  color: var(--ink-soft);
+}
+
+.scene-auth-caveat {
+  margin: 0.1rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.scene-auth-classes,
+.scene-auth-notclaimed {
+  display: grid;
+  gap: 0.22rem;
+  margin: 0;
+  padding: 0.4rem 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.scene-auth-class,
+.scene-auth-notclaimed li {
+  display: grid;
+  /* "no business impact metrics" is the longest label and wrapped at 11rem, which broke its
+     strike-through across two lines. */
+  grid-template-columns: 12.6rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.71rem;
+  color: var(--ink-soft);
+}
+
+.scene-auth-class b,
+.scene-auth-notclaimed b {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+/* The strongest claim is the one that earns the accent; the weakest fades toward the platform. */
+.scene-auth-class[data-rank="0"] b { color: var(--accent); }
+.scene-auth-class[data-rank="3"] { opacity: 0.72; }
+
+/* Struck through: each is a sentence the repository could have written and did not. */
+.scene-auth-notclaimed b { text-decoration: line-through; text-decoration-thickness: 1px; }
+
+.scene-auth-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 640px) {
+  .scene-auth-share { grid-template-columns: 7.4rem 1fr 3.4rem; font-size: 0.65rem; }
+  .scene-auth-class,
+  .scene-auth-notclaimed li { grid-template-columns: 1fr; gap: 0; }
+}

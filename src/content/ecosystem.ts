@@ -232,6 +232,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "The separate case-study site: architecture diagrams of the employer systems contributed to, an interactive walkthrough, and a written record of what each claim rests on, published under its own redaction review.",
     boundary:
       "Documentation of systems built elsewhere, not an implementation. It states a contribution level for every component and claims no authorship of the platform it describes.",
+    caseStudySlug: "ai-engineering-portfolio",
   },
   {
     name: "ml_surrogates_for_agent_based_transport_models",

@@ -8,6 +8,12 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  classes as authClasses,
+  counted as authCounted,
+  notClaimed as authNotClaimed,
+  sharePercent as authSharePercent,
+} from "@/content/authorship-chapter";
+import {
   percentOfAxis as careerAxis,
   rejections as careerRejections,
   weights as careerWeights,
@@ -1497,6 +1503,75 @@ export function CareerWeightScene() {
         Those four are the only conditions that discard a posting, and each one answers whether
         the opportunity exists rather than whether the candidate is good enough. Everything else
         is a penalty, because a penalty can be read and argued with and a filter cannot.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Architecture case studies - the two lists that bound the claim
+ *
+ * There is no measurement to draw here, and that is the subject. This repository publishes
+ * architecture for systems built at an employer, which is the easiest kind of work to overstate
+ * and the hardest to evidence, so it is built around two lists instead.
+ *
+ * The first is authorship: four classes, strongest claim first, with the commit shares the
+ * repository measured where it has them. The RAG service is in the figure precisely because the
+ * share is zero - a component listed as somebody else's is what makes the other rows legible as
+ * something more than self-description.
+ *
+ * The second is what is not claimed. Drawn struck through, because each one is a sentence the
+ * repository could have written and chose not to.
+ * ========================================================================================== */
+export function AuthorshipScene() {
+  return (
+    <div
+      className="scene-auth"
+      role="img"
+      aria-label={`Authorship across four classes, from primary implementation down to existing platform, with measured commit shares for five components ranging from ${Math.round(authSharePercent(authCounted[0]))} percent down to zero. Beside them, four things the repository explicitly does not claim: ${authNotClaimed.map((n) => n.label).join(", ")}.`}
+    >
+      <ol className="scene-auth-shares">
+        {authCounted.map((c, i) => (
+          <li className="scene-auth-share" data-zero={c.mine === 0 ? "" : undefined} key={c.name} {...at(22 + i * 3, 40 + i * 3)}>
+            <span className="scene-auth-name" aria-hidden="true">
+              {c.name}
+            </span>
+            <span className="scene-auth-track" aria-hidden="true">
+              <i style={{ "--w": `${authSharePercent(c)}%` } as React.CSSProperties} />
+            </span>
+            <strong aria-hidden="true">
+              {c.mine}/{c.total}
+            </strong>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-auth-caveat" {...at(40, 56)}>
+        A commit count is evidence of weight, not of authorship &mdash; two classifications in the
+        repository disagree with these counts deliberately, and say so.
+      </p>
+
+      <ol className="scene-auth-classes" aria-hidden="true">
+        {authClasses.map((c, i) => (
+          <li className="scene-auth-class" data-rank={i} key={c.key} {...at(46 + i * 3, 60 + i * 3)}>
+            <b>{c.label}</b>
+            <span>{c.detail}</span>
+          </li>
+        ))}
+      </ol>
+
+      <ol className="scene-auth-notclaimed" aria-hidden="true">
+        {authNotClaimed.map((n, i) => (
+          <li key={n.key} {...at(58 + i * 3, 72 + i * 3)}>
+            <b>{n.label}</b>
+            <span>{n.detail}</span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-auth-note" {...at(70, 84)}>
+        Not official documentation of those systems, and internal detail is generalised or
+        omitted. The four lines above are the ones that keep everything else readable.
       </p>
     </div>
   );
