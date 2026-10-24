@@ -453,7 +453,10 @@
     .scene-release-note,
     .scene-flood-track,
     .scene-flood-keys li,
-    .scene-flood-note {
+    .scene-flood-note,
+    .scene-ident-unit,
+    .scene-ident-verdict,
+    .scene-ident-note {
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
@@ -479,6 +482,19 @@
      * so the reader sees the range before the number sitting inside it. That ordering is the
      * argument: the interval is the measurement and the point is a summary of it.
      */
+    .scene-ident-unit { animation-name: mz-propagate; }
+    .scene-ident-verdict { animation-name: mz-verify; }
+    .scene-ident-note { animation-name: mz-reveal; }
+
+    /* The relabelling draws itself between the two columns. */
+    .scene-ident-line {
+      animation: mz-connect 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+      --path-length: 100;
+      stroke-dasharray: 100;
+    }
+
     .scene-flood-track { animation-name: mz-reveal; }
     .scene-flood-keys li { animation-name: mz-verify; }
     .scene-flood-note { animation-name: mz-reveal; }

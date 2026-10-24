@@ -333,6 +333,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "An educational playground for a mathematical question: if two networks agree on every input, must their parameters agree? Accompanies a TUM mathematics seminar on neural-network identification.",
     boundary:
       "Source code and exploratory notebooks only. No versioned experiment configurations or numerical findings, so no empirical identifiability result is established.",
+    caseStudySlug: "nn-identifiability",
   },
   {
     name: "Supply-Chain-Analytics-Dashboard",

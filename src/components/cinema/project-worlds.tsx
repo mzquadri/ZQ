@@ -12,6 +12,7 @@ import {
   ModalSplitScene,
   ParityScene,
   FloodScene,
+  IdentifiabilityScene,
   ReleaseScene,
   TranslationScene,
   PipelineScene,
@@ -187,6 +188,25 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "nn-identifiability": {
+    accent: "var(--accent-corpus)",
+    title: "Same Answers, Different Weights",
+    eyebrow: "Academic seminar / Mathematics",
+    question:
+      "Two networks with identical weights do the same thing. The interesting question is the reverse: if two networks agree on every input, must their parameters be the same?",
+    evidence: evidenceOf("nn-identifiability"),
+    href: "/work/nn-identifiability",
+    figureNote:
+      "What the code constructs: one network, the same network with its hidden units relabelled and two of them sign-flipped, and the verdict of comparing them.",
+    scale: "compact",
+    scene: () => <IdentifiabilityScene />,
+    seam: {
+      from: "weights",
+      to: "ceiling",
+      note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
   },
 

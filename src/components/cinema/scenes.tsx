@@ -8,6 +8,10 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  comparison as identComparison,
+  figure as identFigure,
+} from "@/content/identifiability-chapter";
+import {
   axisPercent as floodAxisPercent,
   gapOverCalendar as floodGap,
   scores as floodScores,
@@ -524,6 +528,89 @@ export function FeatureMapScene() {
 
 
 
+
+
+/* ============================================================================================
+ * Identifiability - two networks that cannot be told apart by what they do
+ *
+ * There is no measurement in this figure because the repository publishes none, and says so: its
+ * experiments and results directories are deliberately empty of configurations, trained models
+ * and findings. So the figure draws the thing the code actually constructs and checks.
+ *
+ * Two columns of hidden units. The second is the first with its units relabelled and two of them
+ * sign-flipped, and the lines between them are the relabelling. The networks agree on sampled
+ * inputs; their weights do not look alike. The third row is the unrelated network the same
+ * comparison is run against, so that the check is one that can fail.
+ * ========================================================================================== */
+export function IdentifiabilityScene() {
+  const units = Array.from({ length: identFigure.hidden }, (_, i) => i);
+  return (
+    <div
+      className="scene-ident"
+      role="img"
+      aria-label={`Two networks of ${identFigure.hidden} hidden units. The second is the first with its units relabelled and two of them sign-flipped. They agree on sampled inputs while their parameters differ. An unrelated network put through the same comparison is rejected.`}
+    >
+      <div className="scene-ident-pair">
+        <ol className="scene-ident-col" aria-hidden="true">
+          {units.map((u, i) => (
+            <li className="scene-ident-unit" key={u} {...at(26 + i * 3, 42 + i * 3)}>
+              {u + 1}
+            </li>
+          ))}
+        </ol>
+
+        <div className="scene-ident-map" aria-hidden="true">
+          {units.map((u, i) => (
+            <i
+              className="scene-ident-line"
+              data-flip={identFigure.flipped[i] ? "" : undefined}
+              key={u}
+              {...at(
+                32 + i * 3,
+                50 + i * 3,
+                {
+                  "--from": `${(i + 0.5) * (100 / identFigure.hidden)}%`,
+                } as React.CSSProperties,
+              )}
+            />
+          ))}
+        </div>
+
+        <ol className="scene-ident-col" aria-hidden="true">
+          {units.map((u, i) => (
+            <li
+              className="scene-ident-unit"
+              data-flip={identFigure.flipped[identFigure.permutation.indexOf(u)] ? "" : undefined}
+              key={u}
+              {...at(30 + i * 3, 46 + i * 3)}
+            >
+              {identFigure.permutation.indexOf(u) + 1}
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <ol className="scene-ident-verdicts">
+        {identComparison.map((c, i) => (
+          <li
+            className="scene-ident-verdict"
+            data-agrees={c.agrees ? "" : undefined}
+            key={c.key}
+            {...at(46 + i * 5, 62 + i * 5)}
+          >
+            <span aria-hidden="true">{c.label}</span>
+            <strong aria-hidden="true">{c.agrees ? "outputs agree" : "rejected"}</strong>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-ident-note" {...at(58, 74)}>
+        A sign flip is drawn on the units that carry one. Nothing here is a measurement: the
+        repository keeps no trained model and publishes no numerical finding.
+      </p>
+    </div>
+  );
+}
 
 /* ============================================================================================
  * Flood LSTM - how little room there is, and how much of it the calendar already has
