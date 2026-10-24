@@ -420,6 +420,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Runs TF-IDF baselines and a fine-tuned DistilBERT against the same AG News task with the same evaluation, so the two tracks can be compared rather than asserted.",
     boundary:
       "Versions source and notebooks but not data, checkpoints, or metrics, so no accuracy, F1, or model-comparison claim is published.",
+    caseStudySlug: "nlp-transformers",
   },
   {
     name: "drift-aware-ml-platform",

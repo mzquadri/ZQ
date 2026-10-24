@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "nlp-transformers": {
+    title: "What to do when the data does not arrive",
+    intro:
+      "Two tracks, one task, one evaluation: TF-IDF baselines against a fine-tuned transformer on news headlines. The decision this section is about is not in either model. It is in the twenty lines that run before both of them.",
+    beats: [
+      {
+        verb: "Request",
+        text: "The pipeline needs a public dataset, fetched at run time. That is an ordinary dependency and, like every network dependency, it will sometimes not be there.",
+      },
+      {
+        verb: "Fail",
+        text: "There is a synthetic fixture in the repository for developing offline. Reaching for it automatically would keep the run green and produce a full results table, which is exactly the problem.",
+      },
+      {
+        verb: "Refuse",
+        text: "So the loader raises instead. The fixture stays reachable, but only by saying --synthetic out loud, and the README states its results are not comparable to anything.",
+      },
+      {
+        verb: "Count",
+        text: "The reason is in the fixture itself. Across its twenty sentences almost every word belongs to exactly one class, so separating them is a lookup rather than a classification - and the score would have been excellent.",
+      },
+      {
+        verb: "Compare",
+        text: "With real data the two tracks are then measured the same way, on a test split kept out of tuning entirely. That is the only arrangement under which comparing them says anything.",
+      },
+    ],
+    caveat:
+      "No result is published and none is claimed. The repository versions no data, no trained model, no checkpoints, no metrics and no run metadata, so there is no accuracy, no F1 and no verdict on whether the transformer earns its cost here. The vocabulary counts on this page describe the synthetic fixture, which exists for offline development and must not be used to report model capability.",
+  },
+
   "statistical-learning": {
     title: "What a report can be stopped from leaving out",
     intro:

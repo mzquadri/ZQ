@@ -458,6 +458,10 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-nlp-outcome,
+    .scene-nlp-why,
+    .scene-nlp-bar,
+    .scene-nlp-note,
     .scene-stat-wall,
     .scene-stat-mark,
     .scene-stat-key,
@@ -554,6 +558,11 @@
     .scene-stat-key { animation-name: mz-propagate; }
     .scene-stat-checks li { animation-name: mz-reveal; }
     .scene-stat-note { animation-name: mz-reveal; }
+
+    .scene-nlp-outcome { animation-name: mz-propagate; }
+    .scene-nlp-why { animation-name: mz-reveal; }
+    .scene-nlp-bar { animation-name: mz-propagate; }
+    .scene-nlp-note { animation-name: mz-reveal; }
 
     .scene-batt-read { animation-name: mz-verify; }
     .scene-batt-zoom { animation-name: mz-expand; }

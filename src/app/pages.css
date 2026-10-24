@@ -4577,3 +4577,87 @@
   .scene-stat-key em { grid-column: 1 / -1; font-size: 0.66rem; }
   .scene-stat-axis { height: 4rem; }
 }
+
+/* ---- News classification: the branch that refuses ------------------------------------------
+ *
+ * Three outcomes, drawn in the order the code reaches them. The stopping one is the default, so
+ * it is the one with the accent; the fallback is drawn as gated rather than as an alternative.
+ */
+
+.scene-nlp { display: grid; gap: 0.55rem; width: 100%; }
+
+.scene-nlp-flow { display: grid; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-nlp-outcome {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 0.6rem;
+  align-items: baseline;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.scene-nlp-outcome b {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+/* The default outcome when the data will not come down, and the point of the figure. */
+.scene-nlp-outcome[data-kind="stop"] { border-color: var(--accent); }
+.scene-nlp-outcome[data-kind="stop"] b { color: var(--accent); }
+
+/* Reachable, but only on request - drawn as a door that is shut rather than a second route. */
+.scene-nlp-outcome[data-kind="gated"] { border-style: dashed; opacity: 0.8; }
+
+.scene-nlp-why {
+  margin: 0.15rem 0 0;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.64rem;
+  color: var(--ink-soft);
+}
+
+.scene-nlp-bars { display: grid; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-nlp-bar {
+  display: grid;
+  grid-template-columns: 4.6rem 1fr 3.2rem;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.scene-nlp-track {
+  display: block;
+  height: 0.55rem;
+  background: color-mix(in oklab, var(--line) 30%, transparent);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.scene-nlp-track i {
+  display: block;
+  width: var(--w);
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+}
+
+.scene-nlp-bar strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-align: right;
+  color: var(--ink-soft);
+}
+
+.scene-nlp-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 600px) {
+  .scene-nlp-outcome { grid-template-columns: 1fr; gap: 0.1rem; }
+  .scene-nlp-bar { grid-template-columns: 4rem 1fr 2.9rem; font-size: 0.66rem; }
+}

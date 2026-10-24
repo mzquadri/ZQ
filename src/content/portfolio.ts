@@ -50,6 +50,15 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  repository as nlpRepository,
+  splits as nlpSplits,
+  task as nlpTask,
+  templateCount as nlpTemplateCount,
+  templatesPerClass as nlpTemplatesPerClass,
+  text as nlpText,
+  tracks as nlpTracks,
+} from "./nlp-chapter";
+import {
   baseline as statBaseline,
   bayesRun as statBayesRun,
   correctOf as statCorrectOf,
@@ -656,6 +665,64 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "nlp-transformers",
+    title: "The Line That Refuses to Run",
+    eyebrow: "News text classification",
+    classification: "Engineering prototype",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "Classical machine learning against a fine-tuned transformer on the same news-headline task, evaluated the same way. The decision worth writing about is not in either model: it is what the loader does when the dataset will not download.",
+    metaDescription:
+      "TF-IDF baselines against fine-tuned DistilBERT on AG News, built so the pipeline stops rather than silently scoring its own synthetic fixture.",
+    problem:
+      "A pipeline that depends on a download will eventually fail to get it, and there is almost always a fixture nearby that would let it keep going. Taking that option produces a number - and a number produced from template text is indistinguishable, in a results table, from one that means something.",
+    contribution:
+      `Built both tracks and the shared evaluation, and made the loader refuse: when ${nlpTask.dataset} cannot be fetched it raises, and the synthetic fixture is reachable only by passing --synthetic. The fixture is for developing code offline, and the code says so rather than treating it as a fallback.`,
+    workflow: [
+      `Load ${nlpTask.dataset}, or stop`,
+      ...nlpTracks.map((t) => `${t.label}: ${t.detail}`),
+      ...nlpSplits,
+      "Report classification metrics and confusion matrices, with latency optional",
+    ],
+    tools: ["Python", "Hugging Face Transformers", "Datasets", "scikit-learn", "PyTorch"],
+    evidence: [
+      {
+        label: "Why the fallback is not automatic",
+        value: `${nlpText.exclusiveShare} of its vocabulary`,
+        note: `The synthetic fixture is ${nlpTemplateCount} hand-written sentences, ${nlpTemplatesPerClass} per class across ${nlpTask.classes.join(", ")}. Counting the words in them, ${nlpText.exclusiveShare} appear in exactly one class - so almost every word gives its label away and a bag of words would separate them perfectly. A score measured there would look like a result and be a description of the template list, which is the number an automatic fallback would have produced.`,
+      },
+      {
+        label: "What is published",
+        value: "no model result",
+        note: "The repository versions source and notebooks but no downloaded data, no trained model, no checkpoints, no metrics, no plots and no run metadata. It states that it therefore makes no verified accuracy, F1, latency, parameter or model-comparison claim, and this page makes none.",
+      },
+      {
+        label: "What is compared",
+        value: `${nlpTracks.length} tracks, one evaluation`,
+        note: `${nlpTracks.map((t) => `${t.label} (${t.detail})`).join("; ")}. Both are scored the same way on the same task, which is the only arrangement under which the comparison means anything.`,
+      },
+    ],
+    quality: [
+      "The loader raises on a failed download rather than substituting its own fixture, so the pipeline cannot quietly produce a number about nothing",
+      "The synthetic path exists for offline development and is gated behind an explicit flag, with the README stating it must not be used to report capability",
+      "Transformer tuning uses a stratified validation split, and the published test split is kept for the final evaluation only",
+      "The README names what must be recorded before runs are compared - dataset revision, package versions, hardware, seed, training arguments, split policy - and notes that seeding does not make GPU operations deterministic",
+    ],
+    limitations: [
+      "Nothing is measured here. No data, model, checkpoint or metric is versioned, so there is no accuracy to compare and no claim that either track wins",
+      "The synthetic fixture is not a dataset. Its results are not comparable to AG News or to real news classification, and the page quotes it only to explain why it is not used by default",
+      "Single-task, single-dataset. Whether a fine-tuned transformer earns its cost over TF-IDF is exactly the kind of question this repository is set up to ask and has not answered",
+      "A learning and research project. It is not a deployed content-moderation, routing or editorial decision system, and the README says so first",
+    ],
+    learned:
+      "The failure mode I was guarding against is not a wrong number, it is a plausible one. A fallback that keeps the pipeline green converts a missing dataset into a results table, and by the time anyone reads that table the distinction is gone. Counting the fixture's vocabulary afterwards was the part that convinced me: eighty-six percent of the words are giveaways, so the fallback would not have scored badly - it would have scored beautifully.",
+    repository: nlpRepository,
+    systemSummary: `A loader that can refuse, two training paths behind one interface, a shared evaluation, and inference helpers for locally saved artefacts. Models and results are untracked by design, which is why the repository can be read without any of it being mistaken for a measurement.`,
+    nextStep:
+      "Run it and publish the comparison properly - the dataset revision, the seed, the hardware and the metrics together, as one artefact. The interesting question is not which track wins but by how much, and whether that margin survives being repeated.",
   },
   {
     slug: "statistical-learning",

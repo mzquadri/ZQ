@@ -8,6 +8,13 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  exclusivePercent as nlpExclusivePercent,
+  outcomes as nlpOutcomes,
+  templateCount as nlpTemplateCount,
+  text as nlpText,
+  vocabulary as nlpVocabulary,
+} from "@/content/nlp-chapter";
+import {
   baseline as statBaseline,
   correctOf as statCorrectOf,
   gradientChecks as statGradientChecks,
@@ -1354,6 +1361,69 @@ export function StatLearnScene() {
         exactly {statMarginPoints} tick ahead of Bayesian optimisation. The untouched
         configuration sits {statText.belowBaseline} below guessing the majority class; what fixed
         it was a learning rate {statText.lrFactor} times larger, not a better model.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * News classification - the branch that refuses
+ *
+ * No metric appears here; the repository publishes none. The figure draws the loader's control
+ * flow instead, because the decision in it is the thing worth showing: when the dataset will not
+ * download, the default outcome is to stop. The synthetic fixture exists and is unreachable
+ * without asking for it on the command line.
+ *
+ * The bars underneath are why. Almost every word in that fixture belongs to exactly one class,
+ * so a score measured on it would be a description of a template list wearing the clothes of a
+ * result - which is precisely the number an automatic fallback would have produced.
+ * ========================================================================================== */
+export function NewsLoaderScene() {
+  return (
+    <div
+      className="scene-nlp"
+      role="img"
+      aria-label={`The loader's three outcomes: AG News loads and evaluation proceeds on the published test split; the download fails and the loader raises, which is the default; or the synthetic fixture is used, which requires an explicit flag. Across that fixture's ${nlpTemplateCount} template sentences, ${nlpText.exclusiveShare} of the vocabulary appears in only one class, so a score measured on it would describe the templates rather than any model.`}
+    >
+      <ol className="scene-nlp-flow">
+        {nlpOutcomes.map((o, i) => (
+          <li
+            className="scene-nlp-outcome"
+            data-kind={o.kind}
+            key={o.key}
+            {...at(24 + i * 5, 42 + i * 5)}
+          >
+            <b>{o.label}</b>
+            <span>{o.detail}</span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-nlp-why" {...at(42, 58)}>
+        Why the middle one is the default
+      </p>
+
+      <ol className="scene-nlp-bars">
+        {nlpVocabulary.map((v, i) => (
+          <li className="scene-nlp-bar" key={v.label} {...at(46 + i * 3.5, 62 + i * 3.5)}>
+            <span className="scene-nlp-class" aria-hidden="true">
+              {v.label}
+            </span>
+            <span className="scene-nlp-track" aria-hidden="true">
+              <i style={{ "--w": `${nlpExclusivePercent(v)}%` } as React.CSSProperties} />
+            </span>
+            <strong aria-hidden="true">
+              {v.exclusive}/{v.words}
+            </strong>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-nlp-note" {...at(62, 78)}>
+        Words belonging to only one of the four classes, counted across the fixture&rsquo;s{" "}
+        {nlpTemplateCount} template sentences: {nlpText.exclusiveShare} of its vocabulary. Sorting
+        text like that is a lookup rather than a classification, which is why the loader will not
+        reach for it on its own. The repository publishes no accuracy, and this page reports none.
       </p>
     </div>
   );

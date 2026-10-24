@@ -15,6 +15,7 @@ import {
   BatteryScene,
   ClaimsThresholdScene,
   WaterIntervalScene,
+  NewsLoaderScene,
   StatLearnScene,
   SupplierWeightScene,
   WeatherRecoveryScene,
@@ -214,6 +215,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "nlp-transformers": {
+    accent: "var(--accent-retrieval)",
+    title: "The Line That Refuses to Run",
+    eyebrow: "Research project / Text classification",
+    question:
+      "The dataset will not download and there is a synthetic fixture sitting right there. Falling back to it would keep the pipeline green. What should the code do instead?",
+    evidence: evidenceOf("nlp-transformers"),
+    href: "/work/nlp-transformers",
+    figureNote:
+      "The loader's three outcomes, and the vocabulary statistic that explains why the stopping one is the default.",
+    scale: "compact",
+    scene: () => <NewsLoaderScene />,
   },
 
   "statistical-learning": {
