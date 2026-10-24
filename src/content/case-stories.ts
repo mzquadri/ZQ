@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "battery-soc": {
+    title: "Why a charge gauge goes wrong in one direction",
+    intro:
+      "A lithium-ion cell has no fuel gauge. Charge is inferred from voltage, and the voltage a cell shows at a given charge falls as it ages - so a gauge calibrated once is wrong later, by a predictable amount, in a predictable direction. This is that failure, drawn from the generator's own formula.",
+    beats: [
+      {
+        verb: "Infer",
+        text: "Nothing measures charge directly. It has to be read back out of voltage, current and temperature, which means the gauge is a model and not a sensor.",
+      },
+      {
+        verb: "Calibrate",
+        text: "A fresh cell gives the curve the lookup is built from: this voltage means this much charge. For as long as the cell stays fresh, that is a fair trade.",
+      },
+      {
+        verb: "Age",
+        text: "Cycling lowers the whole curve. The term that does it does not depend on charge at all, so the cell sits below its own calibration everywhere, not just when it is nearly empty.",
+      },
+      {
+        verb: "Misread",
+        text: "Read the aged cell's voltage against the fresh curve and the answer comes back low. The gauge now understates charge, which is the safer direction to be wrong in and still a fault.",
+      },
+      {
+        verb: "Hold back",
+        text: "So the split has to be by cycle, with the newest and most degraded cycles held out. Shuffle the rows instead and each test sample's near-identical neighbour sits in the training set, which hides this failure behind a very good score.",
+      },
+    ],
+    caveat:
+      "The curve is a synthetic cell, and the sinking term is one the repository's own demonstration generator applies. It is a statement about the code, not a measurement of a battery: there is no dataset here, no trained model and no score, and none of it may be used to operate a battery-management system.",
+  },
+
   "cifar10-cnn": {
     title: "Detail traded for meaning",
     intro:

@@ -12,6 +12,7 @@ import {
   ModalSplitScene,
   ParityScene,
   FloodScene,
+  BatteryScene,
   IdentifiabilityScene,
   ReleaseScene,
   TranslationScene,
@@ -208,6 +209,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "battery-soc": {
+    accent: "var(--accent-steel)",
+    title: "The Gauge Drifts Before the Battery Does",
+    eyebrow: "Research prototype / Time series",
+    question:
+      "A lithium-ion cell has no fuel gauge, so charge has to be inferred from voltage, current and temperature. What happens to that inference when the cell ages and the voltage curve it was calibrated against quietly moves?",
+    evidence: evidenceOf("battery-soc"),
+    href: "/work/battery-soc",
+    figureNote:
+      "The generator's own voltage formula at two cycle counts, evaluated rather than drawn, with the charge a fresh-cell lookup gives away marked between the two curves.",
+    scale: "compact",
+    scene: () => <BatteryScene />,
   },
 
   "flood-lstm": {

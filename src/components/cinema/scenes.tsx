@@ -8,6 +8,18 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  capacity as battCapacity,
+  detail as battDetail,
+  detailMagnification as battMagnification,
+  generator as battGenerator,
+  misread as battMisread,
+  misreadText as battMisreadText,
+  ocv as battOcv,
+  socRange as battSocRange,
+  split as battSplit,
+  voltageBand as battBand,
+} from "@/content/battery-chapter";
+import {
   comparison as identComparison,
   figure as identFigure,
 } from "@/content/identifiability-chapter";
@@ -607,6 +619,219 @@ export function IdentifiabilityScene() {
       <p className="scene-ident-note" {...at(58, 74)}>
         A sign flip is drawn on the units that carry one. Nothing here is a measurement: the
         repository keeps no trained model and publishes no numerical finding.
+      </p>
+    </div>
+  );
+}
+
+
+/* ============================================================================================
+ * Battery state of charge - the curve the gauge was calibrated on moves
+ *
+ * No measurement appears in this figure. The repository says it has no versioned split, run
+ * configuration, model artifact or metric report to substantiate a score, and that its synthetic
+ * results demonstrate code execution rather than estimation performance. So the figure draws the
+ * problem instead, and draws it by evaluating the generator's own voltage form rather than by
+ * hand: the curve below is `battOcv`, which is the formula transcribed out of `src/data_loader.py`.
+ *
+ * Two curves, a fresh cell and the same cell 200 cycles later. The ageing term does not depend on
+ * state of charge, so the whole curve sinks by a constant. Read that sunk voltage against the
+ * fresh curve - which is what a gauge calibrated once does - and the answer is wrong by a couple
+ * of points of charge, in the direction that tells a driver they have less than they do.
+ * ========================================================================================== */
+function BatteryPlot() {
+  /* Plot box inside the viewBox. The axis spans exactly the fresh curve's own range. */
+  const L = 36;
+  const R = 292;
+  const T = 16;
+  const B = 132;
+  const x = (soc: number) =>
+    L + ((soc - battSocRange.from) / (battSocRange.to - battSocRange.from)) * (R - L);
+  const y = (volts: number) =>
+    B - ((volts - battBand.low) / (battBand.high - battBand.low)) * (B - T);
+
+  const samples = Array.from({ length: 49 }, (_, i) => {
+    const t = i / 48;
+    return battSocRange.from + t * (battSocRange.to - battSocRange.from);
+  });
+  const curve = (cycle: number) =>
+    samples.map((soc) => `${x(soc).toFixed(1)},${y(battOcv(soc, cycle)).toFixed(1)}`).join(" ");
+
+  /* The read-off: the voltage an aged cell shows at its true charge, against both curves. */
+  const readVolts = battOcv(battMisread.truth, battGenerator.cycles);
+  const yRead = y(readVolts);
+
+  return (
+    <svg
+      className="scene-svg scene-batt-plot"
+      viewBox="0 0 300 150"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+    >
+      <g className="scene-batt-axes">
+        <line x1={L} x2={R} y1={B} y2={B} />
+        <line x1={L} x2={L} y1={T} y2={B} />
+      </g>
+
+      {/* The fresh cell: the curve a gauge would be calibrated against. */}
+      <polyline
+        className="scene-batt-curve"
+        data-age="fresh"
+        pathLength={100}
+        points={curve(1)}
+        {...at(22, 44)}
+      />
+
+      {/* The same cell after every cycle the generator produces, sunk by a constant. */}
+      <polyline
+        className="scene-batt-curve"
+        data-age="aged"
+        pathLength={100}
+        points={curve(battGenerator.cycles)}
+        {...at(34, 56)}
+      />
+
+      {/* Reading that voltage off the fresh curve lands short of the truth. */}
+      <g className="scene-batt-read" {...at(48, 66)}>
+        <line className="scene-batt-level" x1={L} x2={x(battMisread.truth)} y1={yRead} y2={yRead} />
+        <line
+          className="scene-batt-gap"
+          x1={x(battMisread.reads)}
+          x2={x(battMisread.truth)}
+          y1={yRead}
+          y2={yRead}
+        />
+        <circle className="scene-batt-dot" cx={x(battMisread.reads)} cy={yRead} r={3} />
+        <circle className="scene-batt-dot" data-truth="" cx={x(battMisread.truth)} cy={yRead} r={3} />
+      </g>
+
+      <g className="scene-batt-labels" {...at(56, 72)}>
+        <text x={L} y={146}>
+          empty
+        </text>
+        <text x={R} y={146} textAnchor="end">
+          full
+        </text>
+        <text className="scene-batt-vlabel" x={L - 6} y={T + 6} textAnchor="end">
+          V
+        </text>
+      </g>
+    </svg>
+  );
+}
+
+/*
+ * The magnified window.
+ *
+ * Same two curves, same formula, over a narrow band of charge either side of the read-off. The
+ * panel states its own magnification and the range it covers, because a zoomed axis that does not
+ * say it is zoomed is the oldest way to make a small effect look like a large one.
+ */
+function BatteryDetail() {
+  const L = 36;
+  const R = 292;
+  const T = 14;
+  const B = 56;
+
+  const lo = battOcv(battDetail.from, battGenerator.cycles);
+  const hi = battOcv(battDetail.to, 1);
+  const pad = (hi - lo) * 0.12;
+  const x = (soc: number) =>
+    L + ((soc - battDetail.from) / (battDetail.to - battDetail.from)) * (R - L);
+  const y = (volts: number) => B - ((volts - (lo - pad)) / (hi - lo + 2 * pad)) * (B - T);
+
+  const samples = Array.from({ length: 25 }, (_, i) => {
+    const t = i / 24;
+    return battDetail.from + t * (battDetail.to - battDetail.from);
+  });
+  const curve = (cycle: number) =>
+    samples.map((soc) => `${x(soc).toFixed(1)},${y(battOcv(soc, cycle)).toFixed(1)}`).join(" ");
+
+  const vFresh = battOcv(battMisread.truth, 1);
+  const vAged = battOcv(battMisread.truth, battGenerator.cycles);
+
+  return (
+    <svg
+      className="scene-svg scene-batt-detail"
+      viewBox="0 0 300 76"
+      preserveAspectRatio="xMidYMid meet"
+      aria-hidden="true"
+    >
+      <polyline className="scene-batt-curve" data-age="fresh" points={curve(1)} />
+      <polyline className="scene-batt-curve" data-age="aged" points={curve(battGenerator.cycles)} />
+
+      {/* The sink itself, which is the only thing this panel exists to show. */}
+      <line
+        className="scene-batt-sink"
+        x1={x(battMisread.truth)}
+        x2={x(battMisread.truth)}
+        y1={y(vFresh)}
+        y2={y(vAged)}
+      />
+      <circle className="scene-batt-dot" cx={x(battMisread.truth)} cy={y(vFresh)} r={1.5} />
+      <circle
+        className="scene-batt-dot"
+        data-truth=""
+        cx={x(battMisread.truth)}
+        cy={y(vAged)}
+        r={1.5}
+      />
+
+      <text className="scene-batt-detail-label" x={L} y={72}>
+        detail: charge {Math.round(battDetail.from * 100)}&ndash;{Math.round(battDetail.to * 100)}%,
+        magnified {battMagnification}&times;
+      </text>
+    </svg>
+  );
+}
+
+export function BatteryScene() {
+  return (
+    <div
+      className="scene-batt"
+      role="img"
+      aria-label={`Open-circuit voltage against state of charge for the repository's synthetic cell. Ageing lowers the whole curve by ${battMisreadText.volts} volts, so a gauge calibrated on a fresh cell reads ${battMisreadText.reads} percent when the charge is really ${battMisread.atSoc} percent, understating it by ${battMisreadText.points} points. Capacity over the same span falls from ${battCapacity.fresh.toFixed(1)} to ${battCapacity.aged.toFixed(1)} amp hours.`}
+    >
+      <BatteryPlot />
+
+      <div className="scene-batt-zoom" {...at(44, 62)}>
+        <BatteryDetail />
+      </div>
+
+      <ol className="scene-batt-keys" aria-hidden="true">
+        <li {...at(50, 66)}>
+          <span>the curve sinks with age</span>
+          <strong>{battMisreadText.volts} V</strong>
+        </li>
+        <li {...at(54, 70)}>
+          <span>so the gauge understates charge</span>
+          <strong>{battMisreadText.points} points</strong>
+        </li>
+        <li {...at(58, 74)}>
+          <span>capacity over the same span</span>
+          <strong>
+            {battCapacity.fresh.toFixed(1)} to {battCapacity.aged.toFixed(1)} Ah
+          </strong>
+        </li>
+      </ol>
+
+      {/* The split, drawn, because holding back the newest cycles is the only honest version. */}
+      <div className="scene-batt-split" {...at(62, 78)} aria-hidden="true">
+        <i
+          className="scene-batt-train"
+          style={{ "--w": `${(battSplit.trainTo / battGenerator.cycles) * 100}%` } as React.CSSProperties}
+        />
+        <span>
+          train {battSplit.trainFrom}&ndash;{battSplit.trainTo}
+        </span>
+        <b>
+          test {battSplit.testFrom}&ndash;{battSplit.testTo}
+        </b>
+      </div>
+
+      <p className="scene-batt-note" {...at(66, 82)}>
+        The curve is the generator&rsquo;s own voltage formula, evaluated rather than drawn. It is a
+        synthetic cell: the repository ships no battery data, no trained model and no score.
       </p>
     </div>
   );

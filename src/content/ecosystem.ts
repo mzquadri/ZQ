@@ -356,6 +356,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Compares regression models, clustering, cycle-aware features, and a genetic-fuzzy prototype for inferring lithium-ion state of charge from voltage, current, and temperature.",
     boundary:
       "A research prototype with no dataset, weights, or tracked evaluation. It must not be used to operate a battery-management system or make safety decisions.",
+    caseStudySlug: "battery-soc",
   },
   {
     name: "Time-Series-Streamflow-Forecasting",

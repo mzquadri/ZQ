@@ -15,6 +15,69 @@ negative results.
 Motion is scroll-driven or pointer-driven only, never ambient, and every scene
 keeps its reduced-motion fallback as the informative final frame.
 
+## The two-tier page structure, and what Phase 1 now has to do
+
+Found while building `battery-soc`, and it changes what "the same structure as
+the best existing pages" means.
+
+A case study renders its figure in one or both of two places:
+
+* the **hero** (`.case-stage`), when the project has no `SCENES` entry, and
+* the **story** (`.case-story-body`), when the project has a `caseStories`
+  entry - a pinned stage with the argument scrolling beside it.
+
+Only six projects have a story: `transport-uq`, `insureassist-rag`,
+`mlops-reference-pipeline`, `hydrology-uq`, `streamflow-forecasting`,
+`cifar10-cnn`. Those are the pages worth matching. Every other project page -
+including projects 1 to 8 here - renders a hero figure only, and **a hero
+figure cannot scroll-animate**: `.case-stage` is at the top of the document, so
+its own view timeline is already 40% to 55% elapsed before the reader scrolls
+at all, which left every staged element frozen partway through itself.
+
+Two fixes went in with project 9:
+
+1. `.case-stage .case-stage-figure *:not(figcaption) { animation: none }` so
+   the hero renders the finished figure. Measured before: six of eight pages
+   were showing a half-drawn diagram in the first viewport (release frames at
+   84%, 62% and 39%; drift rows at 98%; margin rows at 88%).
+2. `battery-soc` gets a `caseStories` entry, which is what gives it real
+   scroll-driven motion and the beat reveals.
+
+**So Phase 1 is now: give every project page a `caseStories` entry.** That is
+what "bring every work page to the same animation standard" actually requires.
+Projects 1-8 need it retrofitted.
+
+### Traps that cost time here, worth not repeating
+
+* Removing the *timeline* rather than the animation makes it worse. An
+  animation whose named timeline resolves to nothing is inactive, and an
+  inactive animation with `fill: both` holds its **first** keyframe - which
+  blanks the figure entirely.
+* `getComputedStyle` reports `opacity: 1` for such an element while Chrome
+  paints it at zero. These faults are only visible in a screenshot. Probing
+  computed styles says everything is fine.
+* A CSS override keyed on `[class*="scene-"]` misses the bare `<li>` elements
+  the key rows are built from. Match descendants, not classed descendants.
+* `stroke-dasharray: 100` without `pathLength={100}` means 100 *user units*,
+  which renders a polyline as disconnected segments. Already documented in
+  `GraphSurrogateFlat`; it caught the battery detail panel too.
+* `checkproject.mjs` reports `complete(above fold)` as a pass. For a page with
+  a story that verdict is about the **hero** copy and says nothing about the
+  story copy, which is the one that animates. Probe
+  `.case-story-body .scene-*` directly, and sample densely - a coarse sweep
+  steps straight over a 480px animation window and reports "static".
+
+### Open, not yet decided
+
+* `WORLD_ORDER` contains only the nine homepage chapters, so `NextSystem`
+  returns null on every new project page: they dead-end with no "next system"
+  link. Extending it changes the curated homepage running order, which is a
+  design decision rather than a bug fix - raise it rather than silently
+  restructure.
+* `cifar10-cnn`, `hydrology-uq` and `streamflow-forecasting` report only four
+  animations in their story body, which looks like the beat reveals alone.
+  Check in Phase 1 whether their scene figures are actually staged.
+
 ## Order of work
 
 One project at a time, fully finished before the next: read the repository,
@@ -31,8 +94,8 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | 6 | `audi-release-tracking-case-study` | `audi-release-tracking` | **done** |
 | 7 | `Deep-Learning-Flood-Prediction-LSTM` | `flood-lstm` | **done** |
 | 8 | `Neural-Network-Identifiability-Analysis` | `nn-identifiability` | **done** |
-| 9 | `Battery-SOC-Estimation-ML` | `battery-soc` | next |
-| 10 | `Insurance-Claims-Prediction-ML` | `insurance-claims-threshold` | todo |
+| 9 | `Battery-SOC-Estimation-ML` | `battery-soc` | **done** |
+| 10 | `Insurance-Claims-Prediction-ML` | `insurance-claims-threshold` | next |
 | 11 | `ML-Water-Quality-Classification` | `water-quality` | todo |
 | 12 | `Weather-Data-Analytics-EDA` | `weather-eda` | todo |
 | 13 | `Supply-Chain-Analytics-Dashboard` | `supply-chain-analytics` | todo |

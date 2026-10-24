@@ -50,6 +50,20 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  benchmarkNeeds as battBenchmarkNeeds,
+  capacity as battCapacity,
+  companions as battCompanions,
+  featureFamilies as battFeatureFamilies,
+  generator as battGenerator,
+  metrics as battMetrics,
+  misread as battMisread,
+  misreadText as battMisreadText,
+  models as battModels,
+  repository as battRepository,
+  rows as battRows,
+  split as battSplit,
+} from "./battery-chapter";
+import {
   activations as identActivations,
   diagnostics as identDiagnostics,
   references as identReferences,
@@ -584,6 +598,64 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "battery-soc",
+    title: "The Gauge Drifts Before the Battery Does",
+    eyebrow: "Battery state of charge",
+    classification: "Engineering prototype",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "A lithium-ion cell carries no fuel gauge, so its charge has to be inferred from voltage, current and temperature - signals that all drift as the cell ages. This prototype puts five regression models, cycle-aware features, clustering and a genetic-fuzzy estimator in one testable codebase so the ideas can be compared instead of trusted.",
+    metaDescription:
+      "A battery state-of-charge prototype: five regression models, cycle-aware features and a genetic-fuzzy estimator, with a temporal split and no published score.",
+    problem:
+      "Charge must be inferred from voltage, and the voltage a cell shows at a given charge falls as it ages. A gauge calibrated once against a fresh cell therefore grows wrong in a specific direction, and the usual way of measuring such a model - shuffle the rows, hold some out - hides the error completely, because two samples a second apart inside one discharge are very nearly the same row.",
+    contribution:
+      "Built the codebase that makes the comparison possible rather than a single model: NASA-compatible loading with a deterministic synthetic generator for development, four families of engineered feature, five regression models behind one metric function, and a split by cycle number so that the held-out cycles are genuinely unseen.",
+    workflow: [
+      "Load authorized source data, or generate the deterministic demonstration set",
+      "Engineer cycle-aware features from voltage, current, temperature and time",
+      `Hold back the last ${battSplit.testCycles} cycles by cycle number, without shuffling`,
+      "Fit and score the regression models through one metric function",
+      "Run the clustering, fuzzy and state-of-health analyses beside them",
+    ],
+    tools: ["Python", "scikit-learn", "XGBoost", "LightGBM", "PyTorch", "DEAP", "scikit-fuzzy", "pandas"],
+    evidence: [
+      {
+        label: "Ageing, in the generator's own formula",
+        value: `${battMisreadText.points} points of charge`,
+        note: `The demonstration generator lowers open-circuit voltage by 0.0001 V per cycle, a term that does not depend on charge, so by cycle ${battGenerator.cycles} the whole curve sits ${battMisreadText.volts} V lower. Read that voltage against the fresh-cell curve and it comes back as ${battMisreadText.reads}% when the charge is really ${battMisread.atSoc}%. That is a property of the synthetic cell the repository ships, not a measurement of a real one.`,
+      },
+      {
+        label: "What is published",
+        value: "no battery result",
+        note: "The repository ships no battery dataset, no trained weights and no tracked evaluation outputs, and it states that synthetic-data results demonstrate code execution only rather than estimation performance. It also lists what a benchmark would have to record first: " + battBenchmarkNeeds.join(", ") + ". This page claims nothing past that.",
+      },
+      {
+        label: "What is compared",
+        value: `${battModels.length} regression models`,
+        note: `${battModels.join(", ")}, scored through one function reporting ${battMetrics.join(", ")}, over ${battFeatureFamilies.length} families of engineered feature. Beside them sit ${battCompanions.join("; ")}.`,
+      },
+    ],
+    quality: [
+      `The split is by cycle number and nothing is shuffled: training is cycles ${battSplit.trainFrom} to ${battSplit.trainTo} and the test set is ${battSplit.testFrom} to ${battSplit.testTo}, which are the most degraded cycles in the set rather than a random sample of all of them`,
+      "Every model is scored by the same function, so the comparison between them is not a comparison of two different definitions of error",
+      "The demonstration generator is seeded, so a pipeline change shows up as a changed number rather than as noise",
+      "The README states what the repository does not have, and names the seven things a benchmark would need, instead of presenting a score table it cannot support",
+    ],
+    limitations: [
+      "No dataset, no trained weights and no tracked evaluation outputs. There is no score here because there is nothing versioned to substantiate one",
+      `The synthetic cell is one generated cell of ${battRows.toLocaleString("en-GB")} rows with linear capacity fade, which is far simpler than a real one: it says what the code does, not how well estimation works`,
+      "The split holds back the last cycles of a single cell. A real benchmark would hold back whole cells, and verify that no cell or cycle leaks between the two sides",
+      "A research prototype. It must not be used to operate a battery-management system or to make any safety decision, and the repository says so above everything else",
+    ],
+    learned:
+      "The interesting failure was not a model's. It was that the quantity being predicted and the signal it is predicted from drift apart as the cell ages, so the test split is the part of the experiment that decides whether the number means anything. Shuffling the rows would have produced a much better score and a worthless one.",
+    repository: battRepository,
+    systemSummary: `Six modules behind one pipeline: loading and the seeded generator, feature engineering, the regression models and their metric function, clustering, the genetic-fuzzy estimator, and the degradation analyses. Capacity in the generated set falls from ${battCapacity.fresh.toFixed(1)} to ${battCapacity.aged.toFixed(1)} Ah across its ${battGenerator.cycles} cycles, which is the drift the models are asked to survive.`,
+    nextStep: `Earn a number. The repository already lists what that takes - ${battBenchmarkNeeds.join(", ")} - and the honest next step is to obtain authorized cell data, split it by cell rather than by cycle, and record all seven so that the first score published is one that can be checked.`,
   },
   {
     slug: "nn-identifiability",
