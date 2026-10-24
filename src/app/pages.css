@@ -3851,3 +3851,76 @@
 @media (max-width: 560px) {
   .scene-release-frames { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ---- Flood LSTM: the ceiling, and what the calendar already reaches --------------------------
+ *
+ * The axis runs the whole way from nothing to the noise ceiling and is deliberately not
+ * truncated. Zooming in on the right-hand end would separate the two marks and make the gap
+ * look like the result; the point is that it is almost invisible at full scale.
+ */
+
+.scene-flood { display: grid; gap: 0.85rem; width: 100%; }
+
+.scene-flood-track {
+  position: relative;
+  height: 1.1rem;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--paper-raised) 70%, transparent);
+  border: 1px solid var(--line);
+}
+
+.scene-flood-fill {
+  display: block;
+  width: var(--w);
+  height: 100%;
+  border-radius: 1px;
+  transform-origin: left center;
+  background: color-mix(in oklab, var(--ink-soft) 22%, transparent);
+}
+
+/* What nothing can beat. */
+.scene-flood-ceiling {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: var(--p);
+  width: 2px;
+  background: var(--ink-soft);
+}
+
+.scene-flood-mark {
+  position: absolute;
+  top: 50%;
+  left: var(--p);
+  width: 3px;
+  height: 1.5rem;
+  translate: -50% -50%;
+  border-radius: 1px;
+}
+
+.scene-flood-mark[data-kind="calendar"] { background: var(--ink-soft); }
+.scene-flood-mark[data-kind="lstm"] { background: var(--accent); }
+
+.scene-flood-keys {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-flood-keys li { display: grid; gap: 0.1rem; }
+.scene-flood-keys span { font-size: 0.72rem; color: var(--ink-soft); }
+
+.scene-flood-keys strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.scene-flood-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-flood-keys { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -378,6 +378,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Trains an LSTM to read thirty days of precipitation, temperature, and soil moisture and predict next-day discharge, on a deterministic rainfall-runoff generator written for the repository.",
     boundary:
       "A reproducible synthetic-data demonstration. Reported metrics describe the generated benchmark only, not a validated flood-forecasting system.",
+    caseStudySlug: "flood-lstm",
   },
   {
     name: "CNN-Image-Classification-PyTorch",

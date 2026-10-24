@@ -39,6 +39,17 @@ import {
   sheet as releaseSheet,
 } from "./release-chapter";
 import {
+  bias as floodBias,
+  events as floodEvents,
+  gapOverCalendar as floodGap,
+  generator as floodGenerator,
+  generatorDefect as floodDefect,
+  model as floodModel,
+  repository as floodRepository,
+  scores as floodScores,
+  split as floodSplit,
+} from "./flood-chapter";
+import {
   closestGap as parityClosest,
   parity as parityFacts,
   repository as parityRepository,
@@ -565,6 +576,70 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "flood-lstm",
+    title: "What the Network Adds Over a Calendar",
+    eyebrow: "Time series on a generated signal",
+    classification: "Synthetic demonstration",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Project author",
+    summary:
+      "An LSTM reads thirty days of weather and predicts the next day's discharge on a catchment this repository generates, so that the composition of the signal is known exactly and the score can be read against what anything could achieve.",
+    metaDescription:
+      "On a generated catchment an LSTM reaches 0.921 and a lookup table of the calendar reaches 0.902, against a noise ceiling of 0.969. The gap is the result.",
+    problem:
+      "A forecasting score on its own says nothing, because it does not say what was available to be scored. On this signal the two seasonal terms carry 77 per cent of the target's variance and the rain-driven term carries 5.5, so a model can look strong by learning the calendar, and looking strong that way is not evidence of rainfall-runoff skill.",
+    contribution:
+      "Generated the catchment so the components could be measured rather than guessed, computed the ceiling that the generator's own independent noise imposes, and scored the network against three baselines on exactly the same held-out rows, including a lookup table that uses no weather input at all.",
+    workflow: [
+      "Generate twenty years from a fixed seed",
+      "Measure what the signal is made of",
+      "Split chronologically, fit scalers on train",
+      "Score the network and three baselines once",
+      "Read the gap against the noise ceiling",
+    ],
+    tools: ["PyTorch", "NumPy", "pandas", "Matplotlib", "pytest"],
+    evidence: [
+      {
+        label: "What the network adds",
+        value: `${floodGap} R2`,
+        note: `The network reaches ${floodScores.lstm} and a lookup table of mean discharge per calendar day reaches ${floodScores.calendar}, on ${floodSplit.scoredRows.toLocaleString("en-US")} held-out days scored once. That gap is the entire value the network adds over 365 numbers.`,
+      },
+      {
+        label: "What nothing can beat",
+        value: `${floodScores.ceiling} R2`,
+        note: "The generator adds independent noise every day that no method can predict, which caps the achievable score. Reporting a result without it would leave the reader unable to tell a good score from a nearly perfect one.",
+      },
+      {
+        label: "What the signal is made of",
+        value: `${Math.round(floodGenerator.seasonalShare * 100)}% seasonal`,
+        note: `Against ${(floodGenerator.rainShare * 100).toFixed(1)} per cent for the rain-driven term and ${(floodGenerator.noiseShare * 100).toFixed(1)} per cent irreducible noise. This matters more than any score here, because it is what a strong-looking number on this data would mostly be made of.`,
+      },
+      {
+        label: "Where the errors are",
+        value: `${floodBias.aboveThreshold} m3/s`,
+        note: `Mean error above the event threshold, against ${floodBias.belowThreshold} below it. The largest flows are systematically under-predicted, which is ordinary regression to the mean and matters here because the largest flows are the only ones anyone would care about. Recall ${floodEvents.lstm.recall} sits below precision ${floodEvents.lstm.precision} for the same reason.`,
+      },
+    ],
+    quality: [
+      "The ceiling is computed from the generator rather than assumed, so the score can be read against what was achievable",
+      "Three baselines are scored on exactly the same held-out rows, including one that uses no weather input",
+      "Splits are chronological and the scalers are fitted on training rows only; each split builds its windows from its own slice, so none spans a boundary",
+      "The target day is never inside its own input window and discharge is not among the inputs, so the model never sees past discharge",
+      "Persistence is reported but labelled as not a fair comparison, because it uses an input the model does not have",
+    ],
+    limitations: [
+      "The catchment is generated, not observed. There is no gauge and no site, and nothing here is flood forecasting, a warning system, or validated environmental modelling",
+      "Most of what the model scores is the seasonal cycle, which a table of 365 numbers also learns",
+      "The largest flows are under-predicted, so the regime the work would exist for is the regime it is weakest in",
+      "One generator, one seed, one architecture. Nothing here says the result would hold on a different synthetic catchment, let alone a real one",
+    ],
+    learned: `The generator had a defect worth more than the model did. Its soil-moisture bucket was mis-scaled and sat on its lower bound on ${Math.round(floodDefect.floorFractionBefore * 100)} per cent of days, so the term it was meant to drive barely moved and the rain-driven share of the target was ${(floodDefect.rainShareBefore * 100).toFixed(1)} per cent. Rebalanced, it sits at the floor on ${(floodDefect.floorFractionAfter * 100).toFixed(0)} per cent and the rain share is ${(floodDefect.rainShareAfter * 100).toFixed(1)}. Every result was taken after that, and finding it needed the components to be measurable at all.`,
+    repository: floodRepository,
+    systemSummary: `A ${floodModel.architecture} of ${floodModel.parameters.toLocaleString("en-US")} parameters reads a ${floodModel.window}-day window of three features. The generator, the baselines and the scoring are separate modules, so the thing being measured and the thing it is measured against cannot share an assumption by accident.`,
+    nextStep:
+      "A real catchment. Everything here is set up to be read honestly, and the one thing it cannot tell you is whether any of it survives contact with an observed gauge.",
   },
   {
     slug: "audi-release-tracking",

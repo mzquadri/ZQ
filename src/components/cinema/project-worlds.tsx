@@ -11,6 +11,7 @@ import {
   MarginIntervalScene,
   ModalSplitScene,
   ParityScene,
+  FloodScene,
   ReleaseScene,
   TranslationScene,
   PipelineScene,
@@ -186,6 +187,25 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       from: "rail",
       to: "axis",
       note: "The line a release travels along becomes the line a measurement is plotted against.",
+    },
+  },
+
+  "flood-lstm": {
+    accent: "var(--accent-flow)",
+    title: "What the Network Adds Over a Calendar",
+    eyebrow: "Synthetic demonstration / Time series",
+    question:
+      "On a signal whose composition is known exactly, does a network reading a weather window beat the simplest thing you would try first? It does, by 0.019, and the honest version of the result is that number rather than the headline.",
+    evidence: evidenceOf("flood-lstm"),
+    href: "/work/flood-lstm",
+    figureNote:
+      "An axis from nothing to the ceiling that independent noise imposes. The calendar and the network land almost on top of each other, and the axis is not truncated to hide it.",
+    scale: "compact",
+    scene: () => <FloodScene />,
+    seam: {
+      from: "ceiling",
+      to: "frames",
+      note: "A limit nothing can beat becomes a sheet nobody could read.",
     },
   },
 

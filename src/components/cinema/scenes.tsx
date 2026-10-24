@@ -8,6 +8,11 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  axisPercent as floodAxisPercent,
+  gapOverCalendar as floodGap,
+  scores as floodScores,
+} from "@/content/flood-chapter";
+import {
   frames as releaseFrames,
   sheet as releaseSheet,
   tickCount as releaseTicks,
@@ -518,6 +523,70 @@ export function FeatureMapScene() {
 }
 
 
+
+
+/* ============================================================================================
+ * Flood LSTM - how little room there is, and how much of it the calendar already has
+ *
+ * The repository's own blunt sentence is the figure's brief: most of what the model scores comes
+ * from learning the seasonal cycle, which a table of 365 numbers also learns. So the axis runs
+ * the whole way from nothing to the noise ceiling, and the two marks land almost on top of each
+ * other near the right-hand end. The clustering is the argument, which is why the axis is not
+ * truncated to make the gap look larger than it is.
+ * ========================================================================================== */
+export function FloodScene() {
+  const ceiling = floodAxisPercent(floodScores.ceiling);
+  const lstm = floodAxisPercent(floodScores.lstm);
+  const calendar = floodAxisPercent(floodScores.calendar);
+  return (
+    <div
+      className="scene-flood"
+      role="img"
+      aria-label={`Coefficient of determination on held-out days. Independent noise in the generator caps any method at ${floodScores.ceiling}. A lookup table of mean discharge per calendar day reaches ${floodScores.calendar}, and the network reaches ${floodScores.lstm}, a gap of ${floodGap}.`}
+    >
+      <div className="scene-flood-track" {...at(26, 48)}>
+        <i className="scene-flood-fill" style={{ "--w": `${ceiling}%` } as React.CSSProperties} />
+        <span
+          className="scene-flood-ceiling"
+          style={{ "--p": `${ceiling}%` } as React.CSSProperties}
+          aria-hidden="true"
+        />
+        <b
+          className="scene-flood-mark"
+          data-kind="calendar"
+          style={{ "--p": `${calendar}%` } as React.CSSProperties}
+          aria-hidden="true"
+        />
+        <b
+          className="scene-flood-mark"
+          data-kind="lstm"
+          style={{ "--p": `${lstm}%` } as React.CSSProperties}
+          aria-hidden="true"
+        />
+      </div>
+
+      <ol className="scene-flood-keys" aria-hidden="true">
+        <li {...at(34, 52)}>
+          <span>the calendar alone</span>
+          <strong>{floodScores.calendar}</strong>
+        </li>
+        <li {...at(38, 56)}>
+          <span>the network</span>
+          <strong>{floodScores.lstm}</strong>
+        </li>
+        <li {...at(42, 60)}>
+          <span>nothing can beat</span>
+          <strong>{floodScores.ceiling}</strong>
+        </li>
+      </ol>
+
+      <p className="scene-flood-note" {...at(54, 70)}>
+        The gap between a table of 365 numbers and the network is {floodGap}. That is the whole of
+        what the network adds, on a catchment that was generated rather than observed.
+      </p>
+    </div>
+  );
+}
 
 /* ============================================================================================
  * Release tracking - a wide sheet, and four frames
