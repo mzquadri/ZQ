@@ -1547,8 +1547,9 @@ export function AuthorshipScene() {
       </ol>
 
       <p className="scene-auth-caveat" {...at(40, 56)}>
-        A commit count is evidence of weight, not of authorship &mdash; two classifications in the
-        repository disagree with these counts deliberately, and say so.
+        The services are unnamed because their names are internal, and the shape is the point
+        either way. A commit count is evidence of weight, not of authorship &mdash; two
+        classifications in the repository disagree with these counts deliberately, and say so.
       </p>
 
       <ol className="scene-auth-classes" aria-hidden="true">

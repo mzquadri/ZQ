@@ -61,6 +61,14 @@ Projects 1-8 need it retrofitted.
 * `stroke-dasharray: 100` without `pathLength={100}` means 100 *user units*,
   which renders a polyline as disconnected segments. Already documented in
   `GraphSurrogateFlat`; it caught the battery detail panel too.
+* `npm run check` does **not** include `privacy:scan`, and CI runs that scan
+  separately with `VERCEL_ENV=production`. Vercel will therefore happily deploy
+  content the privacy gate rejects - which is how two internal service names
+  reached the live site for about fifteen minutes. Before pushing anything that
+  mentions employer systems, run
+  `VERCEL_ENV=production npm run build && npm run privacy:scan`; without that
+  env var the scan reports pre-existing `[build]` offences on routes production
+  does not emit, so a local run looks worse than CI rather than better.
 * Scroll-driven progress is not committed to `getComputedStyle` until the next
   frame. A fixed `waitForTimeout(35)` after scrolling reads the *previous*
   frame, which on a long page (jobhunter is 9,700px at 390) reported a scene

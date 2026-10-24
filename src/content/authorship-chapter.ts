@@ -22,23 +22,29 @@ export const repository = "https://github.com/mzquadri/ai-engineering-portfolio"
 export const employer = "BP-ITCS";
 
 export interface Component {
+  /** Deliberately not the service's name. See the note below. */
   readonly name: string;
   readonly mine: number;
   readonly total: number;
 }
 
 /**
- * The components the repository reports a commit share for.
+ * The commit shares the repository reports, with the components unnamed.
  *
- * It does not report one for every component, so this is the subset that can
- * be drawn rather than the whole classification.
+ * The names are internal service names and this site's privacy scan forbids
+ * them, which is correct and also loses nothing: the figure is about the shape
+ * of the distribution rather than about which service is which. Four
+ * components where most of the history is mine, and one where none of it is.
+ *
+ * The repository does not report a share for every component, so this is the
+ * subset that can be drawn rather than the whole classification.
  */
 export const counted: readonly Component[] = [
-  { name: "Ingestion Preprocessor", mine: 466, total: 498 },
-  { name: "Legal KB Dashboard", mine: 144, total: 167 },
-  { name: "Legal KB Health Service", mine: 123, total: 148 },
-  { name: "Ingestion Loader", mine: 77, total: 94 },
-  { name: "RAG service", mine: 0, total: 56 },
+  { name: "first service", mine: 466, total: 498 },
+  { name: "second service", mine: 144, total: 167 },
+  { name: "third service", mine: 123, total: 148 },
+  { name: "fourth service", mine: 77, total: 94 },
+  { name: "a fifth, for contrast", mine: 0, total: 56 },
 ];
 
 export function sharePercent(c: Component): number {
@@ -55,7 +61,7 @@ export const classes = [
   {
     key: "significant",
     label: "significant contribution",
-    detail: "a service created, dual extraction, a shared library, the imaging prototype",
+    detail: "a service created from nothing, dual extraction, a shared library, the imaging prototype",
   },
   {
     key: "integration",
@@ -65,7 +71,7 @@ export const classes = [
   {
     key: "existing",
     label: "existing platform",
-    detail: "the Java entity platform, the compliance product, the RAG service, every third-party store",
+    detail: "the platform itself, the product it serves, the retrieval path, every third-party store",
   },
 ] as const;
 
