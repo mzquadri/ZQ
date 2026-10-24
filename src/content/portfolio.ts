@@ -50,6 +50,17 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  components as supplyComponents,
+  distinctSignals as supplyDistinct,
+  duplicated as supplyDuplicated,
+  formulas as supplyFormulas,
+  modules as supplyModules,
+  notPublished as supplyNotPublished,
+  repository as supplyRepository,
+  serviceLevelDefault as supplyServiceLevel,
+  weightText as supplyWeightText,
+} from "./supply-chain-chapter";
+import {
   amplitudeOrderRecovered as weatherAmpOrder,
   cities as weatherCities,
   dataset as weatherDataset,
@@ -630,6 +641,59 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "supply-chain",
+    title: "Two Weights, One Number",
+    eyebrow: "Supply chain analytics",
+    classification: "Engineering prototype",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "Order data cleaned into KPIs, demand forecasts measured against naive baselines, classical inventory arithmetic, and a weighted supplier scorecard - in one dashboard. Reading that scorecard's weights against the functions they weight is what this page is about.",
+    metaDescription:
+      "A supply chain analytics dashboard whose supplier scorecard gives 55% of its weight to one signal counted twice, found by reading the weights against the code.",
+    problem:
+      "A composite score is persuasive in a way its parts are not: five weighted components read as five independent opinions, and nobody checks whether they are. In a supply chain scorecard the temptation is worse, because the fields that sound most different - reliability and quality - are often the only fields the source data can actually support.",
+    contribution:
+      "Built the pipeline and the dashboard, then audited the scorecard against itself. Two of the five components turn out to be the same computed series under different names, which is a defect in my own design rather than a caveat about the data, and the page leads with it because that is what the finding is worth.",
+    workflow: supplyModules,
+    tools: ["Python", "pandas", "Plotly Dash", "NumPy", "SciPy", "statsmodels"],
+    evidence: [
+      {
+        label: "Share of the score that is one signal",
+        value: supplyWeightText.duplicated,
+        note: `${supplyDuplicated.map((c) => `${c.label} normalises ${c.source}`).join("; ")}. The aggregation defines late_delivery_rate as one minus on_time_rate, and inverting a min-max normalisation of one minus a series returns the series exactly - so the two components are equal for every supplier. They carry ${supplyWeightText.duplicated} of the composite between them, which leaves ${supplyDistinct} distinct signals rather than ${supplyComponents.length}.`,
+      },
+      {
+        label: "What is published",
+        value: "no business metric",
+        note: `The repository versions source and notebooks only: no ${supplyNotPublished.join(", no ")}. It therefore makes no claim about any fill rate, on-time-delivery rate, region or forecast accuracy, and this page makes none either.`,
+      },
+      {
+        label: "What the inventory side computes",
+        value: `${supplyFormulas.length} classical formulas`,
+        note: `${supplyFormulas.map((f) => f.body).join("; ")}, at a default service level of ${Math.round(supplyServiceLevel * 100)}%. These are textbook identities rather than results: the repository calls their outputs illustrative and says the assumptions must be validated for a real operation.`,
+      },
+    ],
+    quality: [
+      "The supplier proxy is named as a proxy in the README rather than presented as supplier data: the source has no supplier identifiers, so departments and categories stand in for them",
+      "The quality-like component is already flagged in the README as derived from late delivery and not usable as a quality assessment - this page carries that through to what it does to the weighting",
+      "Forecasts are compared against naive baselines on a chronological holdout, so a seasonal series cannot look skilful by accident",
+      "Prophet is optional: the comparison records a warning and continues rather than failing, so the pipeline runs with whatever is installed",
+    ],
+    limitations: [
+      "The scorecard's weighting is wrong as it stands, and the fix is a design decision about what the remaining signals should be worth rather than a one-line change",
+      "No dataset, no processed data, no forecast artefacts and no verified metrics are versioned, so nothing here is measured",
+      "Suppliers are departments and categories standing in for suppliers. Any conclusion about a supplier is a conclusion about a grouping that is not one",
+      "The inventory outputs assume stable demand, a known lead-time distribution and a normal service-level factor. Those assumptions belong to whoever uses them, and the repository says so",
+    ],
+    learned:
+      "I built the scorecard and I did not notice. It took reading the weights beside the functions they weight, rather than reading either on its own, and the arithmetic was two lines long once I looked. A composite score hides its own structure by design - that is what composites are for - which is exactly why the weighting deserves the same scrutiny as the model.",
+    repository: supplyRepository,
+    systemSummary: `Five modules behind one Plotly Dash application: ${supplyModules.join(", ")}. The dataset is deliberately ignored by Git, which is why the repository can be read in full without any of it being mistaken for a result.`,
+    nextStep:
+      "Collapse the duplicate and decide the weighting again from four signals. The honest version probably has fewer components rather than a redistributed 55%, because the source data cannot support a quality term at all - and saying that is more useful than a scorecard that implies it can.",
   },
   {
     slug: "weather-eda",

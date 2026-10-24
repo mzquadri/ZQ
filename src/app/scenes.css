@@ -458,6 +458,11 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-supply-bar,
+    .scene-supply-brace,
+    .scene-supply-key,
+    .scene-supply-formulas li,
+    .scene-supply-note,
     .scene-weather-row,
     .scene-weather-axis,
     .scene-weather-note,
@@ -532,6 +537,12 @@
     .scene-weather-row { animation-name: mz-propagate; }
     .scene-weather-axis { animation-name: mz-reveal; }
     .scene-weather-note { animation-name: mz-reveal; }
+
+    .scene-supply-bar { animation-name: mz-expand; }
+    .scene-supply-brace { animation-name: mz-verify; }
+    .scene-supply-key { animation-name: mz-propagate; }
+    .scene-supply-formulas li { animation-name: mz-propagate; }
+    .scene-supply-note { animation-name: mz-reveal; }
 
     .scene-batt-read { animation-name: mz-verify; }
     .scene-batt-zoom { animation-name: mz-expand; }

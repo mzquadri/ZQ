@@ -8,6 +8,14 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  components as supplyComponents,
+  distinctSignals as supplyDistinct,
+  duplicated as supplyDuplicated,
+  duplicatedWeight as supplyDuplicatedWeight,
+  formulas as supplyFormulas,
+  weightText as supplyWeightText,
+} from "@/content/supply-chain-chapter";
+import {
   centredPercent as weatherCentred,
   cities as weatherCities,
   humidityAxis as weatherHumidityAxis,
@@ -1161,6 +1169,83 @@ export function WeatherRecoveryScene() {
         either side of zero. Humidity misses high in all {weatherCities.length} cities, by{" "}
         {weatherText.humidityLow} to {weatherText.humidityHigh} points &mdash; one sign, one size,
         which is the generator rather than chance. None of it is weather.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Supply chain - a scorecard that counts one signal twice
+ *
+ * No business metric appears here; the repository versions no data and publishes no figures.
+ * What it does publish is a weighting, and a weighting can be read against the functions it
+ * weights.
+ *
+ * Two of the five components are computed from the same column. One normalises the on-time rate
+ * ascending, the other normalises one minus the on-time rate descending, which is the same
+ * transform written backwards - so the scorecard's two largest weights are one signal under two
+ * names. The bar below is the weighting at true proportion, with those two segments joined.
+ * ========================================================================================== */
+export function SupplierWeightScene() {
+  return (
+    <div
+      className="scene-supply"
+      role="img"
+      aria-label={`The supplier scorecard's five weights drawn in proportion. ${supplyDuplicated.map((c) => c.label).join(" and ")} are computed from the same column by the same transform, so together they carry ${supplyWeightText.duplicated} of the composite as a single signal counted twice, leaving ${supplyDistinct} distinct signals rather than ${supplyComponents.length}.`}
+    >
+      <div className="scene-supply-bar" {...at(24, 44)} aria-hidden="true">
+        {supplyComponents.map((c) => (
+          <i
+            className="scene-supply-seg"
+            data-duplicate={c.duplicate ? "" : undefined}
+            key={c.key}
+            style={{ "--w": `${c.weight * 100}%` } as React.CSSProperties}
+          >
+            <span>{Math.round(c.weight * 100)}</span>
+          </i>
+        ))}
+      </div>
+
+      {/* The bracket spans exactly the two segments it is about. */}
+      <div
+        className="scene-supply-brace"
+        {...at(34, 52, { "--w": `${supplyDuplicatedWeight * 100}%` } as React.CSSProperties)}
+        aria-hidden="true"
+      >
+        <i />
+        <span>
+          one signal, counted twice &mdash; {supplyWeightText.duplicated} of the score
+        </span>
+      </div>
+
+      <ol className="scene-supply-keys" aria-hidden="true">
+        {supplyComponents.map((c, i) => (
+          <li
+            className="scene-supply-key"
+            data-duplicate={c.duplicate ? "" : undefined}
+            key={c.key}
+            {...at(42 + i * 2.5, 56 + i * 2.5)}
+          >
+            <b>{c.label}</b>
+            <span>{c.source}</span>
+          </li>
+        ))}
+      </ol>
+
+      {/* The inventory side is arithmetic the repository implements, stated as arithmetic. */}
+      <ol className="scene-supply-formulas" aria-hidden="true">
+        {supplyFormulas.map((f, i) => (
+          <li key={f.key} {...at(56 + i * 3, 70 + i * 3)}>
+            <b>{f.label}</b>
+            <code>{f.body}</code>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-supply-note" {...at(66, 80)}>
+        Inverting a min-max normalisation of one minus a series returns the series, so those two
+        components are equal for every supplier. The repository publishes no data and no metric;
+        the inventory formulas are classical and their assumptions are the user&rsquo;s to justify.
       </p>
     </div>
   );

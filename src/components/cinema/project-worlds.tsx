@@ -15,6 +15,7 @@ import {
   BatteryScene,
   ClaimsThresholdScene,
   WaterIntervalScene,
+  SupplierWeightScene,
   WeatherRecoveryScene,
   IdentifiabilityScene,
   ReleaseScene,
@@ -212,6 +213,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "supply-chain": {
+    accent: "var(--accent-pipeline)",
+    title: "Two Weights, One Number",
+    eyebrow: "Supply chain analytics / Scoring",
+    question:
+      "A supplier scorecard with five weighted components looks like five opinions about a supplier. Read the weights against the functions they weight - how many opinions are actually in there?",
+    evidence: evidenceOf("supply-chain"),
+    href: "/work/supply-chain",
+    figureNote:
+      "The scorecard's own weights at true proportion. The two accented segments are computed from the same column by the same transform.",
+    scale: "compact",
+    scene: () => <SupplierWeightScene />,
   },
 
   "weather-eda": {

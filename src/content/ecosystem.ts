@@ -347,6 +347,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Cleans order data, computes operational KPIs, compares demand-forecasting baselines, and illustrates classical inventory calculations inside a single Dash application.",
     boundary:
       "Versions source and notebooks only. No dataset, screenshots, or verified business metrics, so no fill-rate or forecast-accuracy claim is made.",
+    caseStudySlug: "supply-chain",
   },
   {
     name: "Battery-SOC-Estimation-ML",

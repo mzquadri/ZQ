@@ -4392,3 +4392,104 @@
   .scene-weather-heads span,
   .scene-weather-axis span { font-size: 0.54rem; }
 }
+
+/* ---- Supply chain: the weighting, at true proportion ----------------------------------------
+ *
+ * The bar is the scorecard's own weights. The two accented segments are the ones computed from
+ * the same column, which is the finding, so they are adjacent and braced rather than merely
+ * coloured.
+ */
+
+.scene-supply { display: grid; gap: 0.55rem; width: 100%; }
+
+.scene-supply-bar {
+  display: flex;
+  width: 100%;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  transform-origin: left center;
+}
+
+.scene-supply-seg {
+  display: grid;
+  place-items: center;
+  width: var(--w);
+  border-right: 1px solid var(--line);
+  background: color-mix(in oklab, var(--line) 22%, transparent);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.66rem;
+  color: var(--ink-soft);
+}
+
+.scene-supply-seg:last-child { border-right: 0; }
+
+.scene-supply-seg[data-duplicate] {
+  background: color-mix(in oklab, var(--accent) 20%, transparent);
+  color: var(--accent);
+}
+
+/* The brace spans the duplicated weight exactly, so its width is the finding. */
+.scene-supply-brace { display: grid; gap: 0.15rem; transform-origin: left center; }
+
+.scene-supply-brace i {
+  display: block;
+  width: var(--w);
+  height: 4px;
+  border: 1px solid var(--accent);
+  border-top: 0;
+}
+
+.scene-supply-brace span {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.64rem;
+  color: var(--accent);
+}
+
+.scene-supply-keys,
+.scene-supply-formulas {
+  display: grid;
+  gap: 0.22rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-supply-key,
+.scene-supply-formulas li {
+  display: grid;
+  /* Wide enough for "delivery reliability" on one line; below that it wrapped and made one
+     row twice the height of its neighbours. */
+  grid-template-columns: 10rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.71rem;
+  color: var(--ink-soft);
+}
+
+.scene-supply-key b,
+.scene-supply-formulas b {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.scene-supply-key[data-duplicate] b { color: var(--accent); }
+
+.scene-supply-formulas {
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--line);
+}
+
+.scene-supply-formulas code {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+}
+
+.scene-supply-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 600px) {
+  .scene-supply-key,
+  .scene-supply-formulas li { grid-template-columns: 1fr; gap: 0; }
+  .scene-supply-seg { font-size: 0.58rem; }
+}

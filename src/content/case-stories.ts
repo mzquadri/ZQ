@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "supply-chain": {
+    title: "How a composite score hides its own structure",
+    intro:
+      "Five weighted components, adding to one, presented as a single number per supplier. That shape is persuasive precisely because it stops you asking what is inside it. This section asks.",
+    beats: [
+      {
+        verb: "Aggregate",
+        text: "Orders are grouped into per-supplier metrics. The source has no supplier identifiers, so departments and categories stand in - which is a proxy, and is named as one before anything is computed from it.",
+      },
+      {
+        verb: "Weight",
+        text: "Five components are given weights that sum to one: reliability, quality, cost, lead time, flexibility. Read as a list, that is five different opinions about a supplier.",
+      },
+      {
+        verb: "Trace",
+        text: "Each component is a normalisation of one column. Reliability normalises the on-time rate upward; quality normalises the late-delivery rate downward. The aggregation defines the second as one minus the first.",
+      },
+      {
+        verb: "Collapse",
+        text: "Inverting a min-max normalisation of one minus a series returns the series. The two components are equal for every supplier, so the scorecard's two largest weights are one signal wearing two names.",
+      },
+      {
+        verb: "Concede",
+        text: "Which leaves four signals, not five, and more than half the score resting on delivery timeliness alone. That is a defect in the design rather than a caveat about the data, and it is mine.",
+      },
+    ],
+    caveat:
+      "Nothing here is measured. The repository versions source and notebooks only - no dataset, no processed data, no forecast artefacts, no verified metrics - and makes no claim about any fill rate, delivery rate, region or forecast accuracy. The supplier grouping is a proxy and must not be read as a supplier-quality assessment, and the inventory outputs are classical formulas whose assumptions belong to whoever applies them.",
+  },
+
   "weather-eda": {
     title: "What an analysis of invented data can be held to",
     intro:
