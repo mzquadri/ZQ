@@ -135,6 +135,130 @@ give everything else its own track, `CATALOGUE_ORDER`.
   one-column on catalogue pages (`[data-solo]`). Without that override the copy
   sat in `1fr` of a two-column grid with 46% of the band empty beside it.
 
+## Motion parity: the standard every work page has to meet
+
+Started 24 October 2026. The goal is that all 26 work pages carry the same
+scroll-driven experience the flagship chapters do, rather than the two tiers
+that exist now.
+
+### The instrument comes first, because three obvious metrics all lied
+
+`tools/audit-motion-parity.mjs`. It photographs each figure through one window,
+fixed in the figure's own coordinates, at a series of scroll positions across
+the stretch where it is pinned, and compares neighbouring frames with a
+per-pixel threshold. Everything about that sentence was forced by a failure.
+
+The test that forced each fix is the same one: **run it against production with
+reduced motion**, where every scroll-driven animation is switched off, so every
+figure must report static. It did not, three times.
+
+1. **Hashing screenshots counts antialiasing.** A sticky element lands on a
+   different subpixel offset at different scroll positions and every glyph and
+   vector edge re-renders against a different fractional grid. Reduced motion
+   reported two to six distinct hashes per figure, none of it animation. Frames
+   are now decoded, reduced to a small greyscale thumbnail and compared with a
+   threshold.
+2. **`locator.screenshot()` scrolls.** It calls `scrollIntoViewIfNeeded` first,
+   which throws away the scroll position the loop just set - so every sample
+   was taken at whatever offset Playwright chose and the figure was measured at
+   one progress over and over. It is a viewport clip now.
+3. **A clip to the visible intersection changes size.** Resizing two
+   differently-cropped rectangles to a common thumbnail compares different
+   parts of the picture, which reads as 26% to 44% movement on a page where
+   nothing moves. The window is now computed once, in the figure's own
+   coordinates, as the region on screen at every sampled position.
+
+Two more things it has to do, both of which changed the answer:
+
+* **Measure over the pinned plateau, not the whole track.** A uniform sweep
+  across a page carrying a world track several viewports tall steps straight
+  over a story figure's animation window. The tool finds the stretch where the
+  figure holds one position in the viewport - which is both when it animates
+  and when a reader is looking at it - and drops the outermost sample at each
+  end, because at the boundaries the figure is physically sliding.
+* **`--gpu`, or the worlds are invisible.** Headless Chromium rasterises with
+  SwiftShader and `worldRenderingIsWorthIt()` correctly refuses to mount a
+  world on a software renderer. Without the flag every WebGL world reports
+  static whether it works or not.
+
+**The residual.** `insureassist-rag` still reports `world:3/9` under reduced
+motion. Its readout caption updates with scroll position, which is information
+rather than motion, and is left alone deliberately.
+
+### The standard, taken from the best chapter
+
+`insureassist-rag` is the reference: it is the only page carrying all five
+layers that also moves on every layer that can be measured.
+
+| # | Layer | What it is | Selector |
+|---|---|---|---|
+| 1 | Hero identity | The project's own scene drawn at its resting progress, as SSR'd SVG. Deliberately still - it is at the top of the document, so no scroll window remains below it. | `.case-stage .scn-identity` |
+| 2 | Scrubbed scene stage | A pinned full-bleed canvas running `draw(surface, progress)` as a pure function of scroll. The same drawing is SSR'd to SVG as the reduced-motion and no-JS frame. | `.scn-frame` |
+| 3 | WebGL world | A bespoke 3D world for the project, lazy-loaded on its own page, gated on width, motion and a real renderer, with the flat figure as the fallback. | `.world-stage` |
+| 4 | Pinned story | `CaseStory` pins the project's flat figure while the argument scrolls beside it, staging the figure and revealing the beats. | `.case-story-stage` |
+| 5 | Staged sections | Diagrams and result charts built from the repository's committed numbers, staged on scroll. | `section.visual-section` |
+| 6 | Next-system object | The band at the foot of the page previews the next project with its own scene object rather than a link. Follows from having a `SCENES` entry. | `.next-system-object` |
+
+Layer 2 is the one that makes this tractable. `SceneStage` and `SceneCanvas`
+already exist, complete with their CSS in `scenes.css` - and are imported by
+**nothing**. They are left over from the removed homepage reel. Reviving them
+is what gives every page a scroll-scrubbed scene at every width, including the
+phone widths where a WebGL world deliberately does not render.
+
+### Measured before this work, production, 1440px, GPU
+
+`moving steps` is how many of nine sampled intervals changed; `peak` is the
+largest share of the picture that moved between two neighbours.
+
+| Page | 1 hero | 2 scene | 3 world | 4 story | 5 sect | 6 next | Measured |
+|---|---|---|---|---|---|---|---|
+| `transport-uq` | scene | - | - | yes | 1 | yes | story 9/9 (12.1%) |
+| `mcp-policy-gateway` | scene | - | - | - | 7 | yes | **nothing measurable** |
+| `reliable-knowledge-systems` | - | - | yes | - | 0 | yes | world 9/9 (26.5%) |
+| `medico` | - | - | yes | - | 0 | yes | world 9/9 (33.7%) |
+| `insureassist-rag` | scene | - | yes | yes | 1 | yes | world 9/9 (16.0%), story 9/9 (6.9%) |
+| `mlops-reference-pipeline` | scene | - | yes | yes | 1 | yes | world 9/9 (24.3%), story 8/9 (**0.5%**) |
+| `hydrology-uq` | scene | - | yes | yes | 1 | yes | world 9/9 (9.3%), story **0/9 STATIC** |
+| `streamflow-forecasting` | scene | - | yes | yes | 0 | yes | world 9/9 (9.7%), story **0/9 STATIC** |
+| `cifar10-cnn` | scene | - | yes | yes | 0 | yes | world 9/9 (44.0%), story **0/9 STATIC** |
+| `ai-engineering-portfolio` | flat | - | - | yes | 0 | - | story 9/9 (7.3%) |
+| `jobhunter` | flat | - | - | yes | 0 | - | story 9/9 (13.5%) |
+| `nlp-transformers` | flat | - | - | yes | 0 | - | story 9/9 (12.2%) |
+| `statistical-learning` | flat | - | - | yes | 0 | - | story 6/9 (3.3%) |
+| `supply-chain` | flat | - | - | yes | 0 | - | story 9/9 (10.3%) |
+| `weather-eda` | flat | - | - | yes | 0 | - | story 7/9 (10.6%) |
+| `water-quality` | flat | - | - | yes | 0 | - | story 7/9 (14.3%) |
+| `insurance-claims-threshold` | flat | - | - | yes | 0 | - | story 8/9 (2.4%) |
+| `battery-soc` | flat | - | - | yes | 0 | - | story 2/9 (**0.6%**) |
+| `nn-identifiability` | flat | - | - | yes | 0 | - | story 8/9 (8.4%) |
+| `flood-lstm` | flat | - | - | yes | 0 | - | story 7/9 (16.2%) |
+| `audi-release-tracking` | flat | - | - | yes | 0 | - | story 7/9 (19.2%) |
+| `keras-pytorch-parity` | flat | - | - | yes | 0 | - | story 7/9 (10.1%) |
+| `eurostat-modal-split` | flat | - | - | yes | 0 | - | story 5/9 (8.3%) |
+| `bm25-rrf-java` | flat | - | - | yes | 0 | - | story 6/9 (13.8%) |
+| `munich-accident-forecasting` | flat | - | - | yes | 0 | - | story 6/9 (6.7%) |
+| `drift-aware-platform` | flat | - | - | yes | 0 | - | story 6/9 (11.1%) |
+
+### What is missing, grouped
+
+* **Layer 2 is missing from all 26.** No page renders a scrubbed scene stage.
+* **Layer 3 is missing from 19.** The seventeen catalogue pages, plus
+  `transport-uq` (whose world lives on `/research/thesis`, not on its case
+  study) and `mcp-policy-gateway` (which has never had one).
+* **Layers 1 and 6 are missing from the seventeen catalogue pages**, because
+  both follow from a `SCENES` entry and only the nine chapters have one. Those
+  pages open on a flat hero figure and close on a band with no object.
+* **Layer 5 is missing from the seventeen**, which carry no staged diagram or
+  result section at all against the chapters' one to seven.
+* **Layer 4 is broken on three chapters** - `hydrology-uq`,
+  `streamflow-forecasting` and `cifar10-cnn` pin a figure that does not move -
+  and is close to it on `mlops-reference-pipeline` (0.5%) and `battery-soc`
+  (0.6%). The 2026-10-23 note above guessed this was "the beat reveals alone"
+  and guessed right for the wrong reason; it is measured now.
+* **`mcp-policy-gateway` has no measurable moving figure.** Its seven sections
+  are each taller than the viewport and never pin, so nothing about them can be
+  compared frame to frame, and it has neither a story nor a world.
+
 ## Order of work
 
 One project at a time, fully finished before the next: read the repository,
