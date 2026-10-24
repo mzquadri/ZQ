@@ -484,11 +484,11 @@ const authoredProjects: readonly Project[] = [
       "Raw MATSim data is not publicly redistributable; a fresh clone cannot reproduce raw simulation-to-graph processing",
       "Historical preprocessing used split-specific scalers, creating an evaluation-distribution methodology risk",
       "Uncertainty ranking weakens in some high-change regimes, and coverage is marginal rather than a per-scenario guarantee",
-      "The portfolio application analyzes cached artifacts; it is not a live policy simulator",
+      "The portfolio application analyses cached artifacts; it is not a live policy simulator",
       "On the same five features and the same held-out split, a gradient-boosted tree reaches R-squared 0.7414 against the best graph model's 0.6841. The graph surrogate is retained for its uncertainty behaviour, not for its accuracy.",
     ],
     learned:
-      "Reliable ML is not one score. Ranking, calibration, conditional behavior, compute cost, and the operational cost of review must be evaluated together.",
+      "Reliable ML is not one score. Ranking, calibration, conditional behaviour, compute cost, and the operational cost of review must be evaluated together.",
     repository: thesis.repository,
     systemSummary:
       "The research separates fast surrogate inference from uncertainty estimation, calibration, and the downstream accept-or-review decision. Each layer has a distinct evaluation protocol so confidence claims are not inferred from point accuracy alone.",
@@ -1861,7 +1861,7 @@ const authoredProjects: readonly Project[] = [
     limitations: [
       "Synthetic data cannot establish real-catchment performance",
       "The feature models see same-day observed weather, so they are nowcasts rather than pure one-step-ahead forecasts",
-      "The benchmark does not test recursive multi-day behavior or distribution shift",
+      "The benchmark does not test recursive multi-day behaviour or distribution shift",
     ],
     learned:
       "A leaderboard is only as good as its weakest baseline. On a series this persistent, repeating yesterday's value is the number every model has to beat.",
