@@ -635,6 +635,38 @@
       }
     }
 
+    /*
+     * The hero figure is not staged, and must not be.
+     *
+     * `.case-stage` sits at the top of the document, so its own view timeline is already 40% to
+     * 55% elapsed - depending on viewport - before a reader has scrolled at all. Ranges written
+     * for the narrative start around 25%, so they were part-spent on arrival and the hero
+     * rendered its figure frozen partway through itself: a discharge curve drawn two thirds of
+     * the way across, a detail panel caught half expanded, release frames stopped at 84%, 62%
+     * and 39%. That was measured rather than guessed, across six of eight case studies.
+     *
+     * Two things make this worth spelling out. The first is that removing the *timeline* instead
+     * of the animation makes it worse, not better: an animation whose named timeline resolves to
+     * nothing is inactive, and an inactive animation with `fill: both` holds its first keyframe,
+     * which empties the figure completely. The second is that `getComputedStyle` will cheerfully
+     * report `opacity: 1` for such an element while the compositor paints it at zero, so this is
+     * a fault that has to be seen in a screenshot - probing computed styles says it is fine.
+     *
+     * Hence: every descendant, not only the ones carrying a `scene-` class. The key rows here are
+     * bare `li` elements, and an earlier version of this rule keyed on the class attribute left
+     * them invisible while everything around them was fixed. The caption keeps its own entry
+     * reveal, which runs on its own timeline and is below the fold on narrow screens.
+     *
+     * With no animation the element renders its own CSS, and the contract this file is written
+     * under is that the resting state is the finished state. So the hero shows the completed
+     * figure, which is the only honest thing to show somewhere a reader cannot scroll. Motion
+     * belongs where there is travel left to spend - `.case-story-body`, whose subject keeps
+     * scrolling while the figure is pinned beside the argument explaining it.
+     */
+    .case-stage .case-stage-figure *:not(figcaption) {
+      animation: none;
+    }
+
     /* Chapter heads and copy arrive as the chapter enters, not on the chapter's own scrub. */
     .chapter-head,
     .chapter-copy,
