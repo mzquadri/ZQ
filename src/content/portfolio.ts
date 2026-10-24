@@ -50,6 +50,15 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  breakEvenText as claimsBreakEvenText,
+  calibration as claimsCalibration,
+  costs as claimsCosts,
+  models as claimsModels,
+  repository as claimsRepository,
+  selectionMethods as claimsSelection,
+  stages as claimsStages,
+} from "./claims-chapter";
+import {
   benchmarkNeeds as battBenchmarkNeeds,
   capacity as battCapacity,
   companions as battCompanions,
@@ -598,6 +607,65 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "insurance-claims-threshold",
+    title: "A Probability Is Not a Decision",
+    eyebrow: "Insurance claims prediction",
+    classification: "Engineering prototype",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "Predicting whether a policy will claim is only the first of three problems. The probability also has to mean what it says, and someone has to decide which probabilities are worth acting on. This pipeline keeps the three apart - classifiers, calibration, and a cost-sensitive cut - so that each can be argued about on its own terms.",
+    metaDescription:
+      "An insurance claims pipeline that separates ranking, calibration and the decision threshold, with no published model result and an explicitly illustrative cost matrix.",
+    problem:
+      "A classifier that ranks well can still be badly wrong about magnitude, and a probability that is right is still not an action. Most of the distance between a model and a decision lives in those two gaps, and collapsing them into one accuracy number hides both - along with the fact that in claims the two kinds of error cost wildly different amounts.",
+    contribution:
+      "Built the pipeline as three separable stages rather than one: a train/test split with encoders and scaling fit on training data only, classifiers compared under one interface, cross-validated calibration scored by Brier, and a threshold search that can optimise for statistical or cost-weighted criteria. The cost matrix is a parameter of that search, not a constant buried in it.",
+    workflow: [
+      "Split, then fit encoders and scaling on the training side only",
+      "Compare the classifiers under one interface",
+      `Calibrate with ${claimsCalibration.methods.join(" or ")}, cross-validated, scored by ${claimsCalibration.score}`,
+      "Search the decision threshold against the chosen criterion",
+      "Attribute the resulting model with SHAP",
+    ],
+    tools: ["Python", "scikit-learn", "XGBoost", "LightGBM", "SHAP", "pandas"],
+    evidence: [
+      {
+        label: "Where the cost matrix puts the cut",
+        value: `${claimsBreakEvenText.percent}%`,
+        note: `The repository's example matrix values a claim caught early at +${claimsCosts.truePositive}, an unnecessary investigation at ${claimsCosts.falsePositive}, and a missed claim at ${claimsCosts.falseNegative}. Setting the value of acting equal to the value of not acting solves to ${claimsBreakEvenText.percent}% with no dataset involved - ${claimsBreakEvenText.ratio} times below the 0.5 a classifier defaults to. That is arithmetic from four published numbers, and the matrix they come from is illustrative rather than a validated policy.`,
+      },
+      {
+        label: "What is published",
+        value: "no model result",
+        note: "The repository versions no data, no train/test split, no trained model, no calibration output and no evaluation report, and states that it therefore makes no verified accuracy, AUC, calibration-improvement or business-value claim. This page makes none either.",
+      },
+      {
+        label: "What is separated",
+        value: `${claimsStages.length} stages`,
+        note: `${claimsStages.map((x) => `${x.label} - ${x.note}`).join("; ")}. The cut can be chosen ${claimsSelection.length} ways: ${claimsSelection.map((m) => m.label).join(", ")}.`,
+      },
+    ],
+    quality: [
+      "Encoders and scaling are fit on the training split only, so the test side is not quietly informed by the data it is meant to judge",
+      "Calibration is cross-validated and scored by Brier rather than asserted, because a calibration step that is not measured is a hope",
+      "The cost matrix is an argument to the threshold search rather than a constant inside it, which is what makes it reviewable",
+      "The README states the matrix is illustrative and must not be used without domain, legal, fairness and risk review, rather than leaving a reader to assume it was validated",
+    ],
+    limitations: [
+      "No data, no split, no trained model, no calibration output and no evaluation report are versioned. There is no performance claim here because there is nothing to substantiate one",
+      "The cost matrix is an example. The threshold derived from it is correct arithmetic about those four numbers and says nothing about what a real insurer's numbers would be",
+      "Calibration method and threshold should be chosen on a validation set kept separate from the final test set; the supplied scripts are exploratory and do not implement that governance",
+      "It must not be used to make automated decisions about people or policies, which is the repository's own instruction and the reason this page stops at the arithmetic",
+    ],
+    learned:
+      "The threshold is where the modelling stops and the policy starts, and it is the step most likely to be left at a default nobody chose. Working the cost matrix through to a break-even was the moment the project became about decisions rather than about classifiers: the honest answer was fifteen times away from the habit, and it came from four numbers rather than from any amount of model tuning.",
+    repository: claimsRepository,
+    systemSummary: `Five modules, one per stage: the data pipeline, the classifier comparison across ${claimsModels.join(", ")}, the calibration fit, the threshold search, and SHAP attribution. Generated artefacts stay out of version control, which is why the repository can be read without being mistaken for a result.`,
+    nextStep:
+      "Give the threshold a validation set of its own. Choosing the calibration method and the cut on the same data that reports the final number is the flaw the README already names, and fixing it is a split rather than a model - which makes it the cheapest honest improvement available.",
   },
   {
     slug: "battery-soc",

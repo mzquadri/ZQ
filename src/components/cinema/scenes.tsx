@@ -8,6 +8,16 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  breakEven as claimsBreakEven,
+  breakEvenText as claimsBreakEvenText,
+  cells as claimsCells,
+  defaultCut as claimsDefaultCut,
+  stages as claimsStages,
+  valueBand as claimsBand,
+  valueOfFlagging,
+  valueOfHolding,
+} from "@/content/claims-chapter";
+import {
   capacity as battCapacity,
   detail as battDetail,
   detailMagnification as battMagnification,
@@ -832,6 +842,129 @@ export function BatteryScene() {
       <p className="scene-batt-note" {...at(66, 82)}>
         The curve is the generator&rsquo;s own voltage formula, evaluated rather than drawn. It is a
         synthetic cell: the repository ships no battery data, no trained model and no score.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Insurance claims - where a probability becomes a decision
+ *
+ * There is no model result in this figure, because the repository publishes none: no data, no
+ * split, no trained model, no calibration output, no evaluation report, and it says so rather
+ * than implying otherwise. What it does ship is an illustrative cost matrix, and four numbers
+ * plus a calibrated probability fix the decision boundary in closed form - no dataset involved.
+ *
+ * So the figure is that derivation. Two straight lines: what acting on a policy is worth as its
+ * probability of claiming rises, and what leaving it alone is worth. They cross once. Everything
+ * to the right of the crossing is worth acting on, and the crossing is nowhere near the one half
+ * that almost everything defaults to - which is the entire point of the module.
+ * ========================================================================================== */
+export function ClaimsThresholdScene() {
+  const L = 34;
+  const R = 290;
+  const T = 16;
+  const B = 118;
+  const x = (p: number) => L + p * (R - L);
+  const y = (v: number) =>
+    B - ((v - claimsBand.low) / (claimsBand.high - claimsBand.low)) * (B - T);
+
+  /* Both are linear in p, so two endpoints each describe them exactly. */
+  const line = (f: (p: number) => number) =>
+    `${x(0).toFixed(1)},${y(f(0)).toFixed(1)} ${x(1).toFixed(1)},${y(f(1)).toFixed(1)}`;
+
+  return (
+    <div
+      className="scene-claims"
+      role="img"
+      aria-label={`Two lines over a policy's probability of claiming: the value of acting on it, and the value of leaving it alone. They cross at ${claimsBreakEvenText.percent} percent, which is where the repository's illustrative cost matrix puts the decision boundary - ${claimsBreakEvenText.ratio} times lower than the one half a classifier defaults to.`}
+    >
+      <svg
+        className="scene-svg scene-claims-plot"
+        viewBox="0 0 300 136"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
+        <g className="scene-claims-axes">
+          <line x1={L} x2={R} y1={y(0)} y2={y(0)} />
+          <line x1={L} x2={L} y1={T} y2={B} />
+        </g>
+
+        {/* Leaving a policy alone: free until it claims, then the whole payout. */}
+        <polyline
+          className="scene-claims-line"
+          data-side="hold"
+          pathLength={100}
+          points={line(valueOfHolding)}
+          {...at(24, 44)}
+        />
+
+        {/* Acting on it: a small standing cost, repaid as the risk rises. */}
+        <polyline
+          className="scene-claims-line"
+          data-side="flag"
+          pathLength={100}
+          points={line(valueOfFlagging)}
+          {...at(28, 48)}
+        />
+
+        {/* The crossing. The only threshold those four numbers justify. */}
+        <g className="scene-claims-cross" {...at(46, 62)}>
+          <line x1={x(claimsBreakEven)} x2={x(claimsBreakEven)} y1={T} y2={B} />
+          <circle cx={x(claimsBreakEven)} cy={y(valueOfHolding(claimsBreakEven))} r={3} />
+        </g>
+
+        {/* And the habit, for scale. */}
+        <g className="scene-claims-default" {...at(54, 70)}>
+          <line x1={x(claimsDefaultCut)} x2={x(claimsDefaultCut)} y1={T} y2={B} />
+          {/* Anchored left of its own rule: to the right of it the value line climbs straight
+              through where this label would otherwise sit. */}
+          <text x={x(claimsDefaultCut) - 4} y={T + 9} textAnchor="end">
+            the usual 0.5
+          </text>
+        </g>
+
+        <g className="scene-claims-labels" {...at(58, 74)}>
+          <text x={x(claimsBreakEven)} y={B + 13} textAnchor="start">
+            {claimsBreakEvenText.percent}%
+          </text>
+          <text x={R} y={B + 13} textAnchor="end">
+            certain to claim
+          </text>
+        </g>
+      </svg>
+
+      {/* The four numbers the crossing is derived from, stated rather than implied. */}
+      <ol className="scene-claims-cells" aria-hidden="true">
+        {claimsCells.map((c, i) => (
+          <li
+            className="scene-claims-cell"
+            data-sign={c.value < 0 ? "loss" : c.value > 0 ? "gain" : "zero"}
+            key={c.key}
+            {...at(60 + i * 2.5, 74 + i * 2.5)}
+          >
+            <span>{c.label}</span>
+            <strong>
+              {c.value > 0 ? "+" : ""}
+              {c.value}
+            </strong>
+          </li>
+        ))}
+      </ol>
+
+      <ol className="scene-claims-stages" aria-hidden="true">
+        {claimsStages.map((st, i) => (
+          <li key={st.key} {...at(70 + i * 3, 84 + i * 3)}>
+            <b>{st.label}</b>
+            <span>{st.note}</span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-claims-note" {...at(78, 92)}>
+        The matrix those four numbers come from is the repository&rsquo;s own example and is not a
+        validated policy. The crossing is arithmetic, not a result: no data, no model and no score
+        are published here.
       </p>
     </div>
   );

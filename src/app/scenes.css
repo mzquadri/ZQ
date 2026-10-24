@@ -458,6 +458,12 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-claims-cross,
+    .scene-claims-default,
+    .scene-claims-labels,
+    .scene-claims-cell,
+    .scene-claims-stages li,
+    .scene-claims-note,
     .scene-batt-zoom,
     .scene-batt-labels,
     .scene-batt-keys li,
@@ -490,6 +496,22 @@
      */
     /* The two voltage curves draw themselves; the read-off is a verdict on them. */
     .scene-batt-curve {
+      animation: mz-connect 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+      --path-length: 100;
+      stroke-dasharray: 100;
+    }
+
+    .scene-claims-cross { animation-name: mz-verify; }
+    .scene-claims-default { animation-name: mz-reveal; }
+    .scene-claims-labels { animation-name: mz-reveal; }
+    .scene-claims-cell { animation-name: mz-propagate; }
+    .scene-claims-stages li { animation-name: mz-propagate; }
+    .scene-claims-note { animation-name: mz-reveal; }
+
+    /* Both value lines draw across the probability axis as the argument reaches them. */
+    .scene-claims-line {
       animation: mz-connect 1s var(--ease-precise) both;
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);

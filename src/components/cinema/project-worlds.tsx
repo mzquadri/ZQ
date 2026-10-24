@@ -13,6 +13,7 @@ import {
   ParityScene,
   FloodScene,
   BatteryScene,
+  ClaimsThresholdScene,
   IdentifiabilityScene,
   ReleaseScene,
   TranslationScene,
@@ -209,6 +210,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "insurance-claims-threshold": {
+    accent: "var(--accent-systems)",
+    title: "A Probability Is Not a Decision",
+    eyebrow: "Research pipeline / Classification",
+    question:
+      "A claims model gives every policy a number. Someone still has to decide which numbers are worth acting on - and the cost of being wrong is wildly different in the two directions, so where does the line actually belong?",
+    evidence: evidenceOf("insurance-claims-threshold"),
+    href: "/work/insurance-claims-threshold",
+    figureNote:
+      "The value of acting on a policy and the value of leaving it alone, over its probability of claiming. They cross once, and nowhere near one half.",
+    scale: "compact",
+    scene: () => <ClaimsThresholdScene />,
   },
 
   "battery-soc": {

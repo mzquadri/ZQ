@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "insurance-claims-threshold": {
+    title: "Three problems that get reported as one",
+    intro:
+      "A claims model is usually judged by a single number, which quietly assumes that ranking policies, stating honest probabilities and deciding what to do about them are the same achievement. They are not, and they fail separately. This pipeline keeps them apart.",
+    beats: [
+      {
+        verb: "Rank",
+        text: "The first question is only whether the model orders policies by risk at all. A model can do this well and still be badly wrong about how likely anything is.",
+      },
+      {
+        verb: "Calibrate",
+        text: "The second is whether the numbers mean what they say - whether policies given a one in five chance claim about one time in five. This is fitted and then scored, because a calibration step nobody measured is an assumption.",
+      },
+      {
+        verb: "Weigh",
+        text: "The two errors are not comparable. Investigating a policy that was never going to claim costs a little; missing one that does costs the payout. Those magnitudes are inputs, not details.",
+      },
+      {
+        verb: "Cut",
+        text: "Given calibrated probabilities and those costs, the break-even follows as arithmetic: act when acting is worth more than not acting. It lands a long way from the one half a classifier hands you by default.",
+      },
+      {
+        verb: "Attribute",
+        text: "Last, the decision has to be explainable to someone who did not build it, which is why attribution is part of the pipeline rather than a postscript to it.",
+      },
+    ],
+    caveat:
+      "The cost matrix is the repository's own example and is not a validated business policy. Nothing here is a result: no data, split, trained model, calibration output or evaluation report is versioned, so there is no accuracy, no AUC and no business value to report - and the code must not be used to make automated decisions about people or policies.",
+  },
+
   "battery-soc": {
     title: "Why a charge gauge goes wrong in one direction",
     intro:

@@ -404,6 +404,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Works through classification, probability calibration with Platt scaling or isotonic regression, cost-sensitive threshold selection, and SHAP-based attribution.",
     boundary:
       "Source and notebooks only, with no versioned data, model, or evaluation report. It is not an underwriting, pricing, or claims-decision system.",
+    caseStudySlug: "insurance-claims-threshold",
   },
   {
     name: "NLP-Text-Classification-Transformers",

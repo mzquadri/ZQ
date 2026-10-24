@@ -4133,3 +4133,90 @@
 @media (max-width: 560px) {
   .scene-batt-keys li { font-size: 0.7rem; }
 }
+
+/* ---- Insurance claims: where a probability becomes a decision -------------------------------
+ *
+ * No model result appears here. The two lines are the repository's own illustrative cost matrix
+ * evaluated over a probability axis, which is arithmetic rather than measurement.
+ */
+
+.scene-claims { display: grid; gap: 0.7rem; width: 100%; }
+
+.scene-claims-plot { width: 100%; height: auto; display: block; }
+
+.scene-claims-axes line { stroke: var(--line); stroke-width: 1; }
+
+.scene-claims-line { fill: none; stroke-width: 1.8; stroke-linecap: round; }
+.scene-claims-line[data-side="hold"] { stroke: var(--line-strong); }
+.scene-claims-line[data-side="flag"] { stroke: var(--accent); }
+
+/* The crossing is the finding, so it is the only full-height rule drawn solid. */
+.scene-claims-cross line { stroke: var(--accent); stroke-width: 1.4; }
+.scene-claims-cross circle { fill: var(--accent); }
+
+.scene-claims-default line { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 3; }
+
+.scene-claims-default text,
+.scene-claims-labels text {
+  fill: var(--ink-soft);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 8.5px;
+}
+
+.scene-claims-cells {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-claims-cell {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.scene-claims-cell strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+/* The expensive error is the missed claim, and the figure should not make that subtle. */
+.scene-claims-cell[data-sign="loss"] strong { color: var(--accent); }
+
+.scene-claims-stages {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-claims-stages li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.scene-claims-stages b {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.scene-claims-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-claims-cells { grid-template-columns: 1fr; }
+  .scene-claims-stages li { grid-template-columns: 3.8rem 1fr; font-size: 0.68rem; }
+}
