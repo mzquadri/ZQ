@@ -12,10 +12,19 @@
  * There are no activations and no per-image predictions here, because the repository
  * deliberately does not version a checkpoint. Nothing in this module is a guess at what the
  * trained model would have produced.
+ *
+ * Every value below was read from files at commit d86a55a, and `project.commit`
+ * records it, so an evidence link resolves to the file the number actually came from. The
+ * generator used to fetch `main` instead, which left nothing saying which commit a published
+ * number described. tests/cifar-evidence.test.ts compares this module with a committed
+ * fixture of that file, so moving the pin without regenerating fails.
  */
 
 export const project = {
   repository: "https://github.com/mzquadri/CNN-Image-Classification-PyTorch",
+  commit: "d86a55aeed5587fbb765182e2b74be381fcecd2d",
+  /** The results file every headline number here was read from, at the pinned commit. */
+  metricsSource: "results/test_results.json",
   dataset: "CIFAR-10",
   classes: 10,
   imageSize: "32 x 32 RGB",
