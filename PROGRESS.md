@@ -231,3 +231,44 @@ in the index fails the build.
 Private repositories are skipped because the page would publish a link that
 answers 404 for every reader. If any of them is made public, it moves into the
 order of work above.
+
+## Phase 2: the end-to-end review
+
+Run against production over every route in the sitemap - 64 of them - at 390,
+768 and 1440, in light and dark. Console errors, failed requests, horizontal
+overflow, images without alt text, links with no accessible name, heading
+order, titles, descriptions, Open Graph images, and every internal link
+target followed.
+
+**Findings: two, both mine, both the same thing** - a meta description over
+the length a search engine will show. Ten were tightened in the end, since the
+field's own doc comment sets the target at about 160 and the two the audit
+flagged were only the worst of them.
+
+Everything else came back clean: no console errors, no failed requests, no
+horizontal overflow at any width, every image carries alt text, every link has
+an accessible name, one `h1` per page with no skipped heading levels, and all
+65 internal link targets resolve. A missing page returns 404. All 38 external
+links resolve. Open Graph images render for every new route.
+
+Three American spellings were corrected in British prose. The wider
+`artifact`/`artefact` split is real, predates this work and runs both ways;
+it is left alone deliberately, because sweeping it would mean editing quoted
+repository text and the `"immutable-artifact"` type literal.
+
+### Lighthouse
+
+| | performance | accessibility | best practices | SEO |
+|---|---|---|---|---|
+| `/` | 70 | 100 | 100 | 100 |
+| `/work/battery-soc` | 91 | 100 | 100 | 100 |
+| `/work/jobhunter` | 90 | 100 | 100 | 100 |
+
+The home page's score is main-thread work, not weight: 780ms total blocking
+time against a 1.0s largest contentful paint, zero layout shift and 167KiB of
+JavaScript. It is the WebGL portrait's shader initialising. `DepthPortrait`
+already defers behind an `IntersectionObserver`, and on the home page it is
+visible immediately because it is the hero - so deferring it further would
+delay the one visual the page is built around in order to improve a number.
+**Left as it is, deliberately.** Worth revisiting only with a cheaper first
+frame, not with a later one.
