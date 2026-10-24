@@ -288,6 +288,43 @@ neighbouring samples while transforming completely end to end, and a thumbnail
 raised from 180px to 320px, because at 180 a moving hairline averages into its
 background. The negative control passes at both.
 
+### Layer 4: the three story figures that were never bound
+
+`hydrology-uq`, `streamflow-forecasting` and `cifar10-cnn` each pinned a figure
+that measured exactly zero movement - not weak, not partial. The cause was not
+the one already documented above. Their elements set `--range` inline through
+`at()` perfectly well; their class names simply never appeared in the binding
+selector list in `scenes.css`, so `animation-timeline` never resolved and no
+`animation-name` was ever assigned. Three figures staged themselves against a
+timeline that was not listening.
+
+It survived this long because all three pages also carry a WebGL world, which
+does animate, so each page looked alive while the figure under its argument did
+not move at all.
+
+Two fixes. The bindings now name `.scene-hydro-*`, `.scene-sf-*` and
+`.scene-cifar-*`, and the three draw-on polylines get the `mz-connect` pattern
+their `pathLength={100}` markup was already written for. And the hydrology and
+streamflow ranges moved later - 6-46% became 26-60%, and so on - because the
+chapter's cover begins when the story body first touches the viewport, well
+before the stage pins, so an early range is finished before anyone can see it.
+That is the same correction the newer figures were given when they were built.
+
+`cifar10-cnn` went from 0/9 to 9/9 and `streamflow-forecasting` from 0/9 to
+4/9.
+
+**`hydrology-uq` is fixed, and the audit tool still reports it static.** Worth
+stating plainly rather than quietly. The evidence that it is fixed is direct
+and was reproduced with and without the GPU: its band's animation progress
+advances 0 → 0.167 → 0.389 → 0.612 across the pinned window, and the stage
+changes 1.1%, 1.9% and 3.3% of its pixels between those four positions. The
+aggregate tool disagrees because its capture window is an intersection across
+the sampled positions, and on a figure made of two stacked panels that
+intersection collapsed to a 604x173 slice of a 604x452 figure - the slice being
+the upper panel, whose band is deliberately too narrow to see. Three successive
+fixes to the window logic did not clear it. The tool is right about
+twenty-five pages and has a blind spot on this one.
+
 ### What is missing, grouped
 
 * **Layer 2 is missing from all 26.** No page renders a scrubbed scene stage.

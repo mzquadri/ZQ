@@ -451,10 +451,10 @@ function HydrologyPanel({
         preserveAspectRatio="xMidYMid meet"
         viewBox={`0 0 ${HYDRO_W} ${HYDRO_H}`}
       >
-        <polygon className="scene-hydro-band" points={band} {...at(24, 70)} />
-        <polyline className="scene-hydro-line" points={hydroLine} pathLength={100} {...at(6, 46)} />
+        <polygon className="scene-hydro-band" points={band} {...at(44, 80)} />
+        <polyline className="scene-hydro-line" points={hydroLine} pathLength={100} {...at(26, 60)} />
       </svg>
-      <p className="scene-hydro-label">
+      <p className="scene-hydro-label" {...at(62, 86)}>
         <strong>{label}</strong>
         <span>{count}</span>
       </p>
@@ -527,10 +527,10 @@ function HorizonFlat() {
         preserveAspectRatio="xMidYMid meet"
         viewBox={`0 0 ${SF_W} ${SF_H}`}
       >
-        <polyline className="scene-sf-truth" points={sfTruth} pathLength={100} {...at(8, 46)} />
-        <polyline className="scene-sf-pred" points={sfPred} pathLength={100} {...at(24, 62)} />
+        <polyline className="scene-sf-truth" points={sfTruth} pathLength={100} {...at(28, 58)} />
+        <polyline className="scene-sf-pred" points={sfPred} pathLength={100} {...at(44, 74)} />
       </svg>
-      <p className="scene-sf-caption" {...at(50, 66)}>
+      <p className="scene-sf-caption" {...at(64, 88)}>
         <strong>R2 {streamflowChapter.r2}</strong>
         <span>
           one step ahead, given yesterday&rsquo;s measurement &mdash; lag&nbsp;1 and lag&nbsp;2

@@ -175,7 +175,30 @@ for (const slug of slugs) {
     continue;
   }
 
-  /* Structure, read once before anything is scrolled. */
+  /*
+   * Walk the page once before measuring anything.
+   *
+   * These pages mount their heavy parts lazily - a WebGL world waits on an IntersectionObserver -
+   * and mounting one changes the document's height, which moves every element below it. Measuring
+   * a figure's scroll range before that has happened and then sampling after it has means sampling
+   * a window that has since moved: on hydrology-uq it put every sample outside the stretch where
+   * the figure animates and reported a working figure as static, which cost an hour to pin down
+   * against a hand-built probe that disagreed.
+   *
+   * So: scroll to the bottom, let everything that is going to mount mount, come back, and only
+   * then ask where anything is.
+   */
+  await page.evaluate(async () => {
+    const step = window.innerHeight;
+    for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    }
+    window.scrollTo(0, 0);
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  });
+
+  /* Structure, read once the page has settled at its final height. */
   const structure = await page.evaluate(() => ({
     heroScene: Boolean(document.querySelector(".case-stage .scn-identity")),
     heroFlat: Boolean(document.querySelector(".case-stage-figure")),
@@ -217,20 +240,45 @@ for (const slug of slugs) {
   for (const [kind, selector] of FIGURES) {
     const count = await page.locator(selector).count();
     if (count === 0) continue;
+    /*
+     * The scene stage is not measurable under reduced motion, and saying so is more honest than
+     * producing a number for it. Reduced motion collapses the stage track by design - the canvas
+     * is never created and the still is the whole picture - so there is no scroll window to sample
+     * and whatever the sampler finds instead is an artefact. It reported the same 4.5% on three
+     * different pages, which is the signature of measuring page chrome rather than a figure.
+     *
+     * The world and story layers do measure correctly under reduced motion and report 0.0%, which
+     * is what keeps the negative control meaningful.
+     */
+    if (REDUCED && kind === "scene") continue;
     const range = await page.evaluate((sel) => {
       const el = document.querySelector(sel);
       if (!el) return null;
       /*
-       * The subject a view timeline would be bound to: the nearest ancestor meaningfully taller
-       * than the viewport. A sticky figure's own box freezes once pinned, so measuring its travel
-       * would report zero movement for the entire time the reader is looking at it.
+       * The scroll range to measure over is the travel of the thing the figure is pinned *inside*.
+       *
+       * The threshold is 1.05 viewports, not 1.2, and the difference is not cosmetic.
+       * `.case-story-body` is 1057px tall against a 900px viewport - 1.17, just under the old
+       * threshold - so the walk sailed past it and settled on the article, twenty thousand pixels
+       * of it. Twenty-four coarse samples across that step straight over the five hundred pixels
+       * where the figure actually animates, and a figure measured at 1.1 to 3.3 per cent per step
+       * by hand was reported as flat zero.
        */
       let track = el;
-      for (let node = el; node && node !== document.body; node = node.parentElement) {
-        if (node.getBoundingClientRect().height > window.innerHeight * 1.2) {
+      /*
+       * Bounded to five ancestors. Unbounded, the walk does not stop at the section a figure lives
+       * in - it keeps going until something is tall enough, and on a reduced-motion run, where the
+       * scene track is collapsed to nothing by design, that was the article itself. Sampling twenty
+       * thousand pixels of page and calling the result the figure is how three different pages came
+       * back with the same 4.5% of movement on a site with every animation switched off.
+       */
+      let node = el;
+      for (let depth = 0; depth < 5 && node && node !== document.body; depth += 1) {
+        if (node.getBoundingClientRect().height > window.innerHeight * 1.05) {
           track = node;
           break;
         }
+        node = node.parentElement;
       }
       const box = track.getBoundingClientRect();
       const top = box.top + window.scrollY;
@@ -336,8 +384,24 @@ for (const slug of slugs) {
      */
     const plateaus = new Map();
     scan.forEach((s, i) => {
-      if (visible(s.rect) < 0.5) return;
-      const key = `${Math.round(s.rect.left / 4)}:${Math.round(s.rect.top / 4)}`;
+      /*
+       * Only positions where essentially the whole figure is on screen.
+       *
+       * At 0.5 the plateau could include positions where the figure was half out of the viewport,
+       * and the common window is an intersection - so one such position shrinks it to a band.
+       * hydrology-uq is the case that found this: its figure is two stacked panels, the window
+       * collapsed to 604x173 of a 604x452 figure, and the slice that survived was the top panel,
+       * whose band is deliberately too narrow to see. A figure measured at 1.1 to 3.3 per cent per
+       * step by hand read as 0.2.
+       */
+      if (visible(s.rect) < 0.98) return;
+      /*
+       * Exact, not within four pixels. A tolerance here is what let a reduced-motion run - where
+       * the stage does not pin at all and the frame slides steadily through the viewport - collect
+       * a run of nearly-equal positions and call it a plateau, then report 4.5% of invented
+       * movement for a page with every animation switched off.
+       */
+      const key = `${Math.round(s.rect.left)}:${Math.round(s.rect.top)}`;
       if (!plateaus.has(key)) plateaus.set(key, []);
       plateaus.get(key).push(i);
     });
@@ -345,7 +409,7 @@ for (const slug of slugs) {
     for (const indices of plateaus.values()) {
       if (!chosen || indices.length > chosen.length) chosen = indices;
     }
-    if (!chosen || chosen.length < 4) {
+    if (!chosen || chosen.length < 5) {
       chosen = scan.map((_, i) => i).filter((i) => visible(scan[i].rect) >= 0.92);
     }
     if (chosen.length < 3) {
@@ -390,7 +454,7 @@ for (const slug of slugs) {
       data.unmeasurable = `no aligned window (${cw}x${ch})`;
       continue;
     }
-    data.window = { width: cw, height: ch, samples: positions.length };
+    data.window = { width: cw, height: ch, samples: positions.length, from: positions[0], to: positions[positions.length-1], trackTop: Math.round(data.range.top), trackBottom: Math.round(data.range.bottom) };
 
     /* Pass two: that window, at every sampled position. */
     for (const y of positions) {
@@ -445,6 +509,7 @@ for (const slug of slugs) {
     motion[kind] = {
       instances: data.instances,
       sampled: data.frames.length,
+      window: data.window,
       steps,
       peak: Number(peak.toFixed(4)),
       span: Number(span.toFixed(4)),

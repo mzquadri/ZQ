@@ -497,7 +497,27 @@
     .scene-batt-labels,
     .scene-batt-keys li,
     .scene-batt-split,
-    .scene-batt-note {
+    .scene-batt-note,
+    /*
+     * The three flagship story figures that were never bound at all.
+     *
+     * hydrology-uq, streamflow-forecasting and cifar10-cnn each pinned a figure that measured
+     * exactly zero movement across its whole scroll - not weak, not partial: static. The cause was
+     * not the one the rest of this block documents. Their elements set `--range` inline through
+     * `at()` perfectly well; the class names simply never appeared in this selector list, so
+     * `animation-timeline` never resolved and `animation-name` was never assigned. Three figures
+     * staged themselves against a timeline that was not listening.
+     *
+     * It survived because each of these pages also carries a WebGL world, which does animate, so
+     * the page looked alive while the figure under the argument did not move at all.
+     */
+    .scene-hydro-band,
+    .scene-hydro-label,
+    .scene-sf-caption,
+    .scene-cifar-head img,
+    .scene-cifar-head p,
+    .scene-cifar-bars li,
+    .scene-cifar-note {
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
       animation-fill-mode: both;
@@ -541,6 +561,35 @@
 
     /* Both value lines draw across the probability axis as the argument reaches them. */
     .scene-claims-line {
+      animation: mz-connect 1s var(--ease-precise) both;
+      animation-timeline: --chapter;
+      animation-range: var(--range, cover 0% cover 100%);
+      --path-length: 100;
+      stroke-dasharray: 100;
+    }
+
+    /*
+     * The three figures the binding above restored, given the staging their markup already asks
+     * for. `at()` ranges are on the elements already; these only name the animation.
+     */
+    .scene-hydro-band { animation-name: mz-expand; }
+    .scene-hydro-label { animation-name: mz-reveal; }
+    .scene-sf-caption { animation-name: mz-reveal; }
+    .scene-cifar-head img { animation-name: mz-propagate; }
+    .scene-cifar-head p { animation-name: mz-reveal; }
+    .scene-cifar-bars li { animation-name: mz-propagate; }
+    .scene-cifar-note { animation-name: mz-reveal; }
+
+    /*
+     * The three polylines that draw themselves along their own length.
+     *
+     * Each carries `pathLength={100}` in the markup, which is what makes `stroke-dasharray: 100`
+     * mean the whole path rather than a hundred user units - the mistake already documented
+     * against GraphSurrogateFlat, which renders a polyline as disconnected segments.
+     */
+    .scene-hydro-line,
+    .scene-sf-truth,
+    .scene-sf-pred {
       animation: mz-connect 1s var(--ease-precise) both;
       animation-timeline: --chapter;
       animation-range: var(--range, cover 0% cover 100%);
