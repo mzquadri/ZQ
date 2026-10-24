@@ -277,6 +277,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Three graded problem sets from a TUM master's course: linear regression and diagnostics; then PCA, support vector machines and tree ensembles; then backpropagation, Bayesian optimisation, sequence forecasting, Markov decision processes and convolution.",
     boundary:
       "University coursework, published for reference rather than as a research contribution. Sixty-six of the numbers its reports quote were recomputed afterwards from the committed artifacts and all sixty-six matched. The problem sheets it includes are the chair's material, not mine.",
+    caseStudySlug: "statistical-learning",
   },
   {
     name: "MLOps-End-to-End-Pipeline",

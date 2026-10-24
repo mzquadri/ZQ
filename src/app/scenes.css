@@ -458,6 +458,11 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-stat-wall,
+    .scene-stat-mark,
+    .scene-stat-key,
+    .scene-stat-checks li,
+    .scene-stat-note,
     .scene-supply-bar,
     .scene-supply-brace,
     .scene-supply-key,
@@ -543,6 +548,12 @@
     .scene-supply-key { animation-name: mz-propagate; }
     .scene-supply-formulas li { animation-name: mz-propagate; }
     .scene-supply-note { animation-name: mz-reveal; }
+
+    .scene-stat-wall { animation-name: mz-verify; }
+    .scene-stat-mark { animation-name: mz-propagate; }
+    .scene-stat-key { animation-name: mz-propagate; }
+    .scene-stat-checks li { animation-name: mz-reveal; }
+    .scene-stat-note { animation-name: mz-reveal; }
 
     .scene-batt-read { animation-name: mz-verify; }
     .scene-batt-zoom { animation-name: mz-expand; }

@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "statistical-learning": {
+    title: "What a report can be stopped from leaving out",
+    intro:
+      "Coursework reports are easy to make look right: figures get pasted, numbers get retyped, and the runs that went badly simply never appear. These were written so that could not happen, and the two results worth reading are both ones that would otherwise have been dropped.",
+    beats: [
+      {
+        verb: "Derive",
+        text: "Backpropagation is worked out by hand and implemented from the derivation rather than from a library. At that point there is no reason yet to believe any of it.",
+      },
+      {
+        verb: "Check",
+        text: "So the gradients are compared against central differences, and then against autograd. Two independent references, because one agreement can be a shared mistake.",
+      },
+      {
+        verb: "Baseline",
+        text: "The untouched configuration is scored beside the accuracy of simply guessing the majority class - and loses to it. That comparison is the only reason the failure reads as a failure.",
+      },
+      {
+        verb: "Tune",
+        text: "What fixed it was the learning rate, four orders of magnitude up, rather than anything about the model. Two hyperparameter searches then run on the same budget, one with a surrogate and one without.",
+      },
+      {
+        verb: "Resolve",
+        text: "The search with the surrogate loses, by a single correctly classified point out of sixty. On a test set that size, that is the smallest difference it is possible to observe, which makes it the wrong thing to call a winner.",
+      },
+    ],
+    caveat:
+      "Sixty held-out points, single runs, no seeds repeated. Every margin here is an observation rather than an estimate, and the closest of them is one test point wide - which is why the figure is ruled in test points rather than in percentages. This is coursework: the questions were set rather than chosen, and the problem sheets in the repository are the chair's material, included for context only.",
+  },
+
   "supply-chain": {
     title: "How a composite score hides its own structure",
     intro:

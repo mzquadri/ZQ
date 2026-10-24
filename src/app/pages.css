@@ -4493,3 +4493,87 @@
   .scene-supply-formulas li { grid-template-columns: 1fr; gap: 0; }
   .scene-supply-seg { font-size: 0.58rem; }
 }
+
+/* ---- Statistical learning: an axis ruled in test points -------------------------------------
+ *
+ * `preserveAspectRatio: none` on the axis is deliberate - the ticks are a count, not a shape, and
+ * stretching them horizontally keeps one tick equal to one test point at every width.
+ */
+
+.scene-stat { display: grid; gap: 0.5rem; width: 100%; }
+
+.scene-stat-axis { width: 100%; height: 4.6rem; display: block; }
+
+.scene-stat-ticks line { stroke: var(--line); stroke-width: 0.6; }
+.scene-stat-rule { stroke: var(--line-strong); stroke-width: 1; }
+
+/* Clearing this is the first thing a model has to do, so it is a wall and not a mark. */
+.scene-stat-wall line { stroke: var(--ink-soft); stroke-width: 1.4; stroke-dasharray: 3 2; }
+
+.scene-stat-mark line { stroke: var(--line-strong); stroke-width: 1; }
+.scene-stat-mark circle { fill: var(--paper-raised); stroke: var(--line-strong); stroke-width: 1.4; }
+.scene-stat-mark[data-kind="best"] circle { fill: var(--accent); stroke: var(--accent); }
+
+/*
+ * The run that failed is marked by form, not hue. `--orange` is aliased to `--violet` in this
+ * palette and this chapter's accent is also a violet, so colouring the failure left it looking
+ * like the winner. Position against the wall carries the meaning; the dashed drop line echoes
+ * the wall it does not reach.
+ */
+.scene-stat-mark[data-under] circle { fill: var(--paper-raised); stroke: var(--ink-soft); }
+.scene-stat-mark[data-under] line { stroke: var(--ink-soft); stroke-dasharray: 2 2; }
+
+.scene-stat-keys,
+.scene-stat-checks {
+  display: grid;
+  gap: 0.22rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-stat-key,
+.scene-stat-checks li {
+  display: grid;
+  grid-template-columns: 3.6rem 11rem 1fr;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.71rem;
+  color: var(--ink-soft);
+}
+
+.scene-stat-checks li { grid-template-columns: 3.6rem 1fr; }
+
+.scene-stat-key b,
+.scene-stat-checks b {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.scene-stat-key[data-kind="best"] b { color: var(--accent); }
+
+/* The baseline row is a threshold in the list as well as on the axis: rows above it are runs
+   that did not clear it. */
+.scene-stat-key[data-kind="baseline"] {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0.18rem 0;
+}
+
+.scene-stat-key[data-kind="baseline"] span { font-style: italic; }
+
+.scene-stat-key em { font-style: normal; opacity: 0.8; }
+
+.scene-stat-checks {
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--line);
+}
+
+.scene-stat-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 680px) {
+  .scene-stat-key { grid-template-columns: 3.2rem 1fr; }
+  .scene-stat-key em { grid-column: 1 / -1; font-size: 0.66rem; }
+  .scene-stat-axis { height: 4rem; }
+}

@@ -50,6 +50,21 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  baseline as statBaseline,
+  bayesRun as statBayesRun,
+  correctOf as statCorrectOf,
+  course as statCourse,
+  defaultRun as statDefaultRun,
+  gradientChecks as statGradientChecks,
+  ledger as statLedger,
+  randomRun as statRandomRun,
+  repository as statRepository,
+  searchMarginPoints as statMarginPoints,
+  testPoints as statTestPoints,
+  text as statText,
+  topics as statTopics,
+} from "./statlearn-chapter";
+import {
   components as supplyComponents,
   distinctSignals as supplyDistinct,
   duplicated as supplyDuplicated,
@@ -641,6 +656,67 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "statistical-learning",
+    title: "Sixty Test Points and What They Can Resolve",
+    eyebrow: "Statistical learning coursework",
+    classification: "Reproducible experiment",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    institution: statCourse.institution,
+    summary:
+      "Three problem sets from a TUM master's course, published with every figure written by the notebook that produced it and every number in the final report listed beside the cell it came from. The ledger is the point: it is what makes the two results worth reading impossible to quietly drop.",
+    metaDescription:
+      "TUM statistical learning coursework with a provenance ledger: hand-derived backpropagation checked twice, a default configuration below the majority baseline, and random search beating Bayesian optimisation by one test point.",
+    problem:
+      "A coursework report is the easiest document in the world to make look right. Figures get pasted, numbers get retyped, and the runs that embarrassed you simply do not appear - not dishonestly, just by omission, because nothing in the format requires them.",
+    contribution:
+      "Wrote the assignments so that the report could not drift from the notebook: every figure and table is written by the code, and the final assignment carries a ledger naming each quoted number and the cell that produced it. Backpropagation is derived by hand and checked against two independent references rather than trusted.",
+    workflow: [
+      "Derive the gradients by hand and implement them",
+      "Check them against central differences, then against autograd",
+      "Run the default configuration against a majority-class baseline",
+      "Sweep the learning rate, then tune with two different searches",
+      "Write every figure, table and quoted number from the notebook itself",
+    ],
+    tools: ["Python", "NumPy", "PyTorch", "scikit-learn", "Jupyter", "LaTeX"],
+    evidence: [
+      {
+        label: "Random search over Bayesian optimisation",
+        value: `${statMarginPoints} test point`,
+        note: `Both searches were given the same budget. Bayesian optimisation finished on ${statCorrectOf(statBayesRun)} of ${statTestPoints} held-out points and random search on ${statCorrectOf(statRandomRun)} - a margin of exactly ${statMarginPoints} correctly classified point, or ${statText.onePoint} of the axis. Reporting that as a percentage would make it look like a finding; reporting it as one point out of ${statTestPoints} is what it is.`,
+      },
+      {
+        label: "The default configuration against no model",
+        value: `${statText.belowBaseline} below baseline`,
+        note: `Out of the box the network scored ${statCorrectOf(statDefaultRun)} of ${statTestPoints}, while guessing the majority class scores ${statCorrectOf(statBaseline)}. What closed the gap was a learning rate ${statText.lrFactor} times larger, not a different architecture - and the only reason the failure is visible at all is that the baseline was recorded next to it.`,
+      },
+      {
+        label: "Gradients, checked twice",
+        value: statGradientChecks[0].value.toExponential(1),
+        note: `${statGradientChecks.map((c) => `${c.value.toExponential(1)} ${c.kind} ${c.label}`).join(", and ")}. The finite-difference figure is bounded by its own step size rather than by the implementation, which is why the two differ by eight orders of magnitude; the autograd comparison is float64 round-off and nothing else.`,
+      },
+    ],
+    quality: [
+      `Every figure and table under the results folders is written by the notebook, so nothing in the reports is transcribed by hand`,
+      `The final assignment ships a ledger of ${statLedger.values} reported values across ${statLedger.problems} problems, each naming the cell that produced it`,
+      "The hand-derived gradients are checked against two independent references rather than one, so a shared mistake has two chances to be caught",
+      "A majority-class baseline is reported beside the model's accuracy, which is what makes the first run legible as a failure rather than as a low number",
+      "The matriculation number is removed from the public copy, and the course's own problem sheets are marked as the chair's material rather than presented as the author's",
+    ],
+    limitations: [
+      `${statTestPoints} held-out points. One point is ${statText.onePoint} of the accuracy axis, so no difference smaller than that is a difference, and several of the comparisons here are exactly that size`,
+      "Single runs rather than repeated ones. There are no seeds-repeated intervals anywhere in this, so the margins reported are observations and not estimates",
+      "Coursework, answering a problem sheet. The questions were set rather than chosen, and the methods are a syllabus rather than a selection made for a problem",
+      "The two hyperparameter searches ran once each on one small problem; nothing here generalises to how either behaves at scale",
+    ],
+    learned:
+      "The ledger changed what I was willing to write. Once each number in the report had to name the cell it came from, the run where the network lost to guessing the majority class had nowhere to go, and it turned out to be the most informative line in the assignment. Reproducibility is usually sold as a courtesy to the reader; in practice it is a constraint on the author.",
+    repository: statRepository,
+    systemSummary: `${statLedger.assignments} assignments, each with its notebook, its report and the LaTeX source behind it: ${statTopics.join("; ")}. Figures and tables are generated rather than pasted, and the third assignment carries the provenance ledger this page is built on.`,
+    nextStep:
+      `Repeat the comparisons over seeds and report intervals instead of points. The ledger already makes every number findable, so the missing piece is not traceability but repetition - and with ${statTestPoints} test points, repetition is the only thing that could turn any of these margins into a result.`,
   },
   {
     slug: "supply-chain",

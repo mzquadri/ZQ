@@ -8,6 +8,15 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  baseline as statBaseline,
+  correctOf as statCorrectOf,
+  gradientChecks as statGradientChecks,
+  runs as statRuns,
+  searchMarginPoints as statMarginPoints,
+  testPoints as statTestPoints,
+  text as statText,
+} from "@/content/statlearn-chapter";
+import {
   components as supplyComponents,
   distinctSignals as supplyDistinct,
   duplicated as supplyDuplicated,
@@ -1246,6 +1255,105 @@ export function SupplierWeightScene() {
         Inverting a min-max normalisation of one minus a series returns the series, so those two
         components are equal for every supplier. The repository publishes no data and no metric;
         the inventory formulas are classical and their assumptions are the user&rsquo;s to justify.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * Statistical learning - sixty test points, and what they can resolve
+ *
+ * The axis is ruled at one tick per test point, because the test set has sixty of them and a tick
+ * is therefore the smallest difference that exists. Everything the report concludes has to be
+ * read at that resolution, which is the whole reason for drawing it this way: the gap between
+ * the two hyperparameter searches is one tick wide.
+ *
+ * The baseline is drawn as a wall rather than a mark. Guessing the majority class scores better
+ * than the untouched configuration does, so the left-hand result is not a weak model - it is a
+ * model that has yet to earn the right to exist, and the figure should not let it hide among the
+ * others.
+ * ========================================================================================== */
+export function StatLearnScene() {
+  const L = 8;
+  const R = 292;
+  const x = (a: number) => L + a * (R - L);
+
+  return (
+    <div
+      className="scene-stat"
+      role="img"
+      aria-label={`Test accuracy on ${statTestPoints} held-out points, ruled one tick per point. The default configuration scores below the majority-class baseline. After a learning-rate sweep and under either hyperparameter search the model clears it, and random search finishes ${statMarginPoints} test point ahead of Bayesian optimisation.`}
+    >
+      <svg
+        className="scene-svg scene-stat-axis"
+        viewBox="0 0 300 42"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        {/* One tick per test point: the resolution of every number on this page. */}
+        <g className="scene-stat-ticks">
+          {Array.from({ length: statTestPoints + 1 }, (_, i) => (
+            <line key={i} x1={x(i / statTestPoints)} x2={x(i / statTestPoints)} y1={26} y2={32} />
+          ))}
+        </g>
+        <line className="scene-stat-rule" x1={L} x2={R} y1={32} y2={32} />
+
+        {/* The baseline, as a wall. */}
+        <g className="scene-stat-wall" {...at(34, 50)}>
+          <line x1={x(statBaseline.accuracy)} x2={x(statBaseline.accuracy)} y1={4} y2={32} />
+        </g>
+
+        {statRuns
+          .filter((r) => r.kind !== "baseline")
+          .map((r, i) => (
+            <g
+              className="scene-stat-mark"
+              data-kind={r.kind ?? undefined}
+              data-under={r.accuracy < statBaseline.accuracy ? "" : undefined}
+              key={r.key}
+              {...at(38 + i * 4, 54 + i * 4)}
+            >
+              <line x1={x(r.accuracy)} x2={x(r.accuracy)} y1={10 + i * 4} y2={32} />
+              <circle cx={x(r.accuracy)} cy={10 + i * 4} r={3} />
+            </g>
+          ))}
+      </svg>
+
+      <ol className="scene-stat-keys">
+        {statRuns.map((r, i) => (
+          <li
+            className="scene-stat-key"
+            data-kind={r.kind ?? undefined}
+            data-under={r.accuracy < statBaseline.accuracy ? "" : undefined}
+            key={r.key}
+            {...at(42 + i * 3, 58 + i * 3)}
+          >
+            <b>
+              {statCorrectOf(r)}/{statTestPoints}
+            </b>
+            <span>{r.label}</span>
+            <em>{r.note}</em>
+          </li>
+        ))}
+      </ol>
+
+      {/* The two gradient checks, which are the reason to believe any of the above. */}
+      <ol className="scene-stat-checks" aria-hidden="true">
+        {statGradientChecks.map((c, i) => (
+          <li key={c.key} {...at(58 + i * 3, 72 + i * 3)}>
+            <b>{c.value.toExponential(1)}</b>
+            <span>
+              {c.kind} {c.label}
+            </span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-stat-note" {...at(66, 80)}>
+        One tick is one test point, {statText.onePoint} of the axis, and random search finishes
+        exactly {statMarginPoints} tick ahead of Bayesian optimisation. The untouched
+        configuration sits {statText.belowBaseline} below guessing the majority class; what fixed
+        it was a learning rate {statText.lrFactor} times larger, not a better model.
       </p>
     </div>
   );

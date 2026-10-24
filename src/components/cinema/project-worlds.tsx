@@ -15,6 +15,7 @@ import {
   BatteryScene,
   ClaimsThresholdScene,
   WaterIntervalScene,
+  StatLearnScene,
   SupplierWeightScene,
   WeatherRecoveryScene,
   IdentifiabilityScene,
@@ -213,6 +214,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "statistical-learning": {
+    accent: "var(--accent-corpus)",
+    title: "Sixty Test Points and What They Can Resolve",
+    eyebrow: "TUM coursework / Statistical learning",
+    question:
+      "Backpropagation derived by hand and checked two ways, then tuned by two different searches. With sixty held-out points to judge it on, which of the differences between those runs is a difference at all?",
+    evidence: evidenceOf("statistical-learning"),
+    href: "/work/statistical-learning",
+    figureNote:
+      "Test accuracy ruled at one tick per held-out point, with the majority-class baseline drawn as a wall the untouched configuration does not clear.",
+    scale: "compact",
+    scene: () => <StatLearnScene />,
   },
 
   "supply-chain": {
