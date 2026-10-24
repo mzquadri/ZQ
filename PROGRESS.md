@@ -43,9 +43,17 @@ Two fixes went in with project 9:
 2. `battery-soc` gets a `caseStories` entry, which is what gives it real
    scroll-driven motion and the beat reveals.
 
-**So Phase 1 is now: give every project page a `caseStories` entry.** That is
-what "bring every work page to the same animation standard" actually requires.
-Projects 1-8 need it retrofitted.
+**Phase 1 is done.** Every project page on the dynamic route now has a
+`caseStories` entry, so every one of them has a pinned figure that stages
+itself against the argument, plus the beat reveals. Verified animating at 390
+and 1440 on all of them.
+
+Two deliberate exceptions. `mcp-policy-gateway` has no flat figure at all - its
+world entry returns null, because it postdates the procedural scene runtime and
+SCENES is the only rendering it has ever had - so a story there would pin an
+empty stage. `medico` and `reliable-knowledge-systems` have bespoke route files
+that do not render `CaseStory`; giving them one is a layout change to two
+flagship pages rather than a retrofit, and is left alone.
 
 ### Traps that cost time here, worth not repeating
 

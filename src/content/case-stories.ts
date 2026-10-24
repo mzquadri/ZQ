@@ -27,7 +27,255 @@ export interface CaseStory {
   caveat: string;
 }
 
+/*
+ * No story for the policy gateway.
+ *
+ * It is the one project whose world entry returns no flat figure - it was added after the
+ * procedural scene runtime and SCENES is the only rendering it has ever had. A story here would
+ * pin an empty stage beside the argument, so it keeps its sequence object in the hero instead.
+ */
+
 export const caseStories: Readonly<Record<string, CaseStory>> = {
+  "nn-identifiability": {
+    title: "A check that is able to fail",
+    intro:
+      "Two networks with identical weights compute the same function. The interesting question is the reverse, and the honest version of asking it is not constructing an example that works - it is making sure the test would notice if it did not.",
+    beats: [
+      {
+        verb: "Build",
+        text: "A small fully connected network, chosen to be understandable rather than capable. Nothing here is trained to do a task; the subject is the parameters, not the performance.",
+      },
+      {
+        verb: "Relabel",
+        text: "A second network is constructed from the first by permuting its hidden units and flipping signs in matched pairs. By construction it should compute exactly the same function.",
+      },
+      {
+        verb: "Agree",
+        text: "The two are compared on sampled inputs and agree. On its own that proves very little: it is the outcome the construction was designed to produce.",
+      },
+      {
+        verb: "Align",
+        text: "So the parameters are checked separately, under the relabelling. Output agreement without parameter alignment is the whole phenomenon being studied, and collapsing the two would hide it.",
+      },
+      {
+        verb: "Reject",
+        text: "Finally the identical comparison runs against an unrelated network, and rejects it. That step is what turns the first four into evidence rather than a demonstration.",
+      },
+    ],
+    caveat:
+      "These are finite numerical diagnostics on sampled inputs. They can find exact clone pairs and inactive contributions; they do not prove global functional equivalence, and they do not satisfy the hypotheses of any published identifiability theorem. The repository versions no configuration, model or result, and this section claims none.",
+  },
+
+  "flood-lstm": {
+    title: "Measuring a model against what is possible",
+    intro:
+      "A network scores well on a river series. The question that decides whether that means anything is not how well, but how well compared with what - and on a generated catchment both halves of that comparison can actually be known.",
+    beats: [
+      {
+        verb: "Generate",
+        text: "Twenty years of discharge from a fixed seed. Because the signal was composed rather than observed, what it is made of is not an estimate.",
+      },
+      {
+        verb: "Decompose",
+        text: "Most of it turns out to be seasonal, and some of it is independent noise. The noise is the part no model can predict, which means there is a ceiling and it can be computed rather than guessed at.",
+      },
+      {
+        verb: "Baseline",
+        text: "A lookup table of mean discharge per calendar day is fitted alongside the network. It is the simplest thing anyone would try, and on a strongly seasonal series it is not a weak opponent.",
+      },
+      {
+        verb: "Score",
+        text: "Both are scored once, after a chronological split with scalers fitted on the training side only. One score each, because scoring repeatedly and reporting the best is how a gap gets manufactured.",
+      },
+      {
+        verb: "Concede",
+        text: "The network wins, and the margin over the calendar is small against the distance to the ceiling. Drawn on an untruncated axis that is the honest shape of the result.",
+      },
+    ],
+    caveat:
+      "The catchment is generated, not observed: there is no gauge and no site, and nothing here is flood forecasting, a warning system or validated environmental modelling. The ceiling is knowable only because the noise was put in deliberately, which is exactly the circumstance real hydrology never offers.",
+  },
+
+  "audi-release-tracking": {
+    title: "Changing the shape of the work, not the amount",
+    intro:
+      "The tracking already existed, in a spreadsheet wide enough that finding the right cell was the job. Nothing about the data needed to change. What needed to change was how much of it a person had to hold in their head to enter one update.",
+    beats: [
+      {
+        verb: "Start",
+        text: "From the sheet people already had, rather than from a new system. The column order was an accident of how it grew, and that accident was the thing making the work slow.",
+      },
+      {
+        verb: "Choose",
+        text: "The user picks a component from a list instead of locating a row. This is the only step that was genuinely removed, and it is the one that was costing the most.",
+      },
+      {
+        verb: "Group",
+        text: "The remaining fields are gathered into frames by subject, so each screen asks about one thing. Deciding which fields belonged beside which others was the actual design work.",
+      },
+      {
+        verb: "Write",
+        text: "Updates go back to the same sheet. Nothing downstream changes, nobody migrates, and the tool can be abandoned without stranding the data - which is also why it could be adopted at all.",
+      },
+      {
+        verb: "Spread",
+        text: "It was taken up beyond the department it was written for. That is the strongest evidence available here, and it is evidence about usefulness rather than about hours saved.",
+      },
+    ],
+    caveat:
+      "The tool is not public and cannot be. What is public is the problem, the design and the figures, drawn by a script from the internship report rather than captured from the application - so a reader can check the argument but not the artefact. No time saving is claimed, because none was measured.",
+  },
+
+  "keras-pytorch-parity": {
+    title: "Making two frameworks answerable to the same number",
+    intro:
+      "Comparing two deep-learning frameworks is usually a comparison of two different experiments wearing the same name. Before any accuracy can mean anything, the two models have to be shown to be the same model - and that is a claim with an exact answer.",
+    beats: [
+      {
+        verb: "Fix",
+        text: "The data split is exported by running one framework and then reused by the other. Two independently shuffled splits would make every later difference uninterpretable.",
+      },
+      {
+        verb: "Translate",
+        text: "The architecture is rebuilt rather than ported. Defaults differ between the two in ways that are easy to miss and that change the model without changing the diagram of it.",
+      },
+      {
+        verb: "Derive",
+        text: "The parameter count is worked out by hand from the layer definitions, so there is a number to be wrong about that does not come from either framework.",
+      },
+      {
+        verb: "Correct",
+        text: "Each known difference between the two is applied deliberately. Most are reconciled; the ones that cannot be are enumerated rather than absorbed into the comparison.",
+      },
+      {
+        verb: "Assert",
+        text: "The count is then asserted on every push, so the two models cannot silently diverge later. Parity that is checked once is a claim about a particular afternoon.",
+      },
+    ],
+    caveat:
+      "No accuracy comparison is published, because the second run has not been made: the results directory is empty and the repository's own table records it as pending. What is established is that the two models are the same model, which is the precondition for a comparison rather than the comparison itself.",
+  },
+
+  "eurostat-modal-split": {
+    title: "A report that can be re-run against its own source",
+    intro:
+      "Descriptive statistics are the easiest thing to publish and the hardest to trust later, because the numbers in the prose and the numbers in the data drift apart quietly. This one is built so that cannot happen without the build failing.",
+    beats: [
+      {
+        verb: "Retrieve",
+        text: "The source table is fetched and the response itself committed, so what the report was written against is in the repository rather than on somebody else's server.",
+      },
+      {
+        verb: "Pin",
+        text: "It is fixed by checksum, recomputed in continuous integration. If the upstream table changes, the build says so instead of the report quietly describing different data.",
+      },
+      {
+        verb: "Decode",
+        text: "The response format is unpacked by hand rather than through a convenience wrapper, which keeps the transformation from source to table readable and reviewable.",
+      },
+      {
+        verb: "Select",
+        text: "The comparison year is chosen by coverage rather than by recency, because the most recent year is the one where the fewest countries have reported.",
+      },
+      {
+        verb: "Render",
+        text: "Prose and figures are produced in the same pass from the same table, so a sentence and the chart beside it cannot disagree.",
+      },
+    ],
+    caveat:
+      "This is descriptive. It measures shares and says nothing about why any of them moved or stayed put, and the cross-country differences it shows are differences in geography, settlement and policy that it makes no attempt to separate.",
+  },
+
+  "bm25-rrf-java": {
+    title: "Proving two implementations agree before trusting either",
+    intro:
+      "A search implementation in one language is usually checked against intuition. This one is checked against a reference implementation in another, at every stage, on the way to showing that agreement is not the same as correctness.",
+    beats: [
+      {
+        verb: "Verify",
+        text: "The corpus is checked against its checksum first. A parity test over slightly different inputs is a test that passes for the wrong reason.",
+      },
+      {
+        verb: "Chunk",
+        text: "Text is split on the JVM rather than loaded from a fixture, so the first thing compared is the step most likely to differ and least likely to be looked at.",
+      },
+      {
+        verb: "Score",
+        text: "The index is built and the ranking function applied. Floating-point arithmetic will not match exactly across languages, so scores are compared to a tolerance and order is compared exactly.",
+      },
+      {
+        verb: "Fuse",
+        text: "Ranked lists are combined by position rather than by score, which is what makes the comparison robust to the small numerical differences the previous step tolerated.",
+      },
+      {
+        verb: "Expose",
+        text: "The closest pair of scores in the whole corpus is reported, because that pair is the one a smaller tolerance would break - and naming it is more useful than asserting the test passes.",
+      },
+    ],
+    caveat:
+      "Parity is against one reference implementation on one corpus. It establishes that the two agree, not that either is correct, and a shared misreading of the algorithm would pass every check here.",
+  },
+
+  "munich-accident-forecasting": {
+    title: "The same protocol, asked twice",
+    intro:
+      "A forecasting model beats its baseline on a published series, and the margin looks worth reporting. The question this section is about is whether that margin is about the model or about the years it was tested on.",
+    beats: [
+      {
+        verb: "Model",
+        text: "One model per published series, each fitted on its own history. Nothing is pooled, so no series borrows strength from another and the result stays attributable.",
+      },
+      {
+        verb: "Select",
+        text: "The trend window is chosen on validation years and then left alone. Choosing it against the years being reported is the most common way a margin like this gets manufactured.",
+      },
+      {
+        verb: "Score",
+        text: "Refit once and score once on the years that follow. The headline margin falls out here, and on its own it reads as a clear result.",
+      },
+      {
+        verb: "Repeat",
+        text: "The identical protocol is then re-run on an earlier, ordinary window. The margin reverses sign - so what was being measured was partly the unusual years, not the method.",
+      },
+      {
+        verb: "Bound",
+        text: "Both margins are bootstrapped over held-out months, and neither is comfortably away from zero. The honest reading is two numbers with intervals, not a winner.",
+      },
+    ],
+    caveat:
+      "Both margins rest on twenty-four months across seven series. Neither should be read as settled, and the pre-pandemic one explicitly cannot be distinguished from zero. The series are published counts of recorded accidents, which is not the same as accidents.",
+  },
+
+  "drift-aware-platform": {
+    title: "Knowing when a model has gone stale",
+    intro:
+      "A deployed model degrades without announcing it. The platform's job is to notice, to be specific about what moved, and to refuse to promote a replacement that is not actually better - including when the replacement is the obvious thing to do.",
+    beats: [
+      {
+        verb: "Pin",
+        text: "The dataset is fixed by checksum before anything is fitted, so every later comparison is against a known input rather than against whatever the source happened to be serving.",
+      },
+      {
+        verb: "Compare",
+        text: "A serving window is held against the same seasons a year earlier, not against the window immediately before it. Comparing a winter with the autumn that preceded it finds drift that is only the calendar.",
+      },
+      {
+        verb: "Detect",
+        text: "Two signals can trigger a retrain, because the distribution of the inputs moving and the relationship itself moving are different failures and either one is enough.",
+      },
+      {
+        verb: "Gate",
+        text: "A challenger is fitted and then has to earn promotion. The gate exists to be failed, and the record of it refusing a candidate is the only evidence that it does anything.",
+      },
+      {
+        verb: "Promote",
+        text: "Only then does the alias the service loads move. Promotion is a pointer change rather than a deployment, which is what makes it reversible when the gate was wrong.",
+      },
+    ],
+    caveat:
+      "The drift score here is label shift - a distance between two marginal distributions of the target. It is a proxy for the relationship moving rather than a measurement of it, and real concept drift is not monitored directly. A streaming detector was also tried and was not faster than the windowed comparison, which is recorded rather than omitted.",
+  },
+
   "transport-uq": {
     title: "How a fast approximation earns the right to be used",
     intro:
