@@ -120,10 +120,20 @@ function draw(s: Surface, progress: number, p: Palette) {
       baseline: "middle",
     });
 
-    /* The single-split value the table ranks on. Always present; it is the published number. */
-    s.circle(px(model.f1), y, s.unit * 0.0075, {
+    /*
+     * The published single-split value, which then travels to the cross-validated one.
+     *
+     * Drawing the two as separate marks and fading between them was the first version, and it
+     * barely moved: measured against production, the whole scene changed two per cent end to end
+     * where the reference chapter changes nine. Re-measuring a model is a mark moving, so the mark
+     * moves, and the ghost it left is kept so the distance stays readable.
+     */
+    const landed = model.cvMean === undefined ? px(model.f1) : px(model.cvMean);
+    const travelled = px(model.f1) + (landed - px(model.f1)) * cv;
+    s.circle(px(model.f1), y, s.unit * 0.0055, { fill: p.soft, alpha: 0.28 * cv });
+    s.circle(travelled, y, s.unit * 0.0075, {
       fill: p.soft,
-      alpha: 0.85 - cv * 0.45,
+      alpha: 0.85 - cv * 0.5,
     });
 
     if (model.cvMean === undefined) {

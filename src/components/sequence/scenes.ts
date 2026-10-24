@@ -6,10 +6,14 @@ import { hydrology } from "./scenes/hydrology";
 import { insureassist } from "./scenes/insureassist";
 import { medico } from "./scenes/medico";
 import { mlops } from "./scenes/mlops";
+import { nlp } from "./scenes/nlp";
 import { reliableKnowledge } from "./scenes/reliable-knowledge";
+import { statlearn } from "./scenes/statlearn";
 import { streamflow } from "./scenes/streamflow";
+import { supply } from "./scenes/supply";
 import { transport } from "./scenes/transport";
 import { water } from "./scenes/water";
+import { weather } from "./scenes/weather";
 import type { SceneDefinition } from "./scene";
 
 /**
@@ -40,4 +44,8 @@ export const SCENES: Readonly<Record<string, SceneDefinition>> = {
   "drift-aware-platform": driftScene,
   "water-quality": water,
   "insurance-claims-threshold": claims,
+  "weather-eda": weather,
+  "supply-chain": supply,
+  "statistical-learning": statlearn,
+  "nlp-transformers": nlp,
 };

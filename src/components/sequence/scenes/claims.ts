@@ -117,6 +117,38 @@ function draw(s: Surface, progress: number, p: Palette) {
     anchor: "end",
   });
 
+  /*
+   * A cursor that sweeps the whole probability axis as the reader scrolls.
+   *
+   * Without it this scene barely moved. The two lines are straight and complete in the resting
+   * frame - they have to be, that frame is what ships in the HTML - so every beat after it was an
+   * annotation fading in, and the picture changed two per cent from end to end against the nine
+   * the reference chapter manages.
+   *
+   * The sweep is not decoration bolted on to fix a number. It is the one thing a reader actually
+   * wants to do with a pair of crossing lines: take a probability and find out which action wins.
+   * The marker rides whichever line is higher, so the moment it crosses 3.23% the answer flips
+   * under the reader's own scroll, and the flip is the argument of the page.
+   */
+  {
+    const probability = progress;
+    const x = pxAt(probability);
+    const flag = valueOfFlagging(probability);
+    const hold = valueOfHolding(probability);
+    const winning = flag >= hold;
+    const y = vy(winning ? flag : hold);
+    s.line(x, top, x, bottom, { stroke: p.ink, width: 1, alpha: 0.28 });
+    s.circle(x, y, s.unit * 0.011, { fill: winning ? p.accent : p.warn, alpha: 0.95 });
+    /* The probability and the verdict. The two line-end labels are the legend; this is the read. */
+    s.text(x, top - s.unit * 0.016, `${(probability * 100).toFixed(0)}% ${winning ? "act" : "hold"}`, {
+      size: type * 0.9,
+      fill: winning ? p.accent : p.warn,
+      alpha: 0.95,
+      mono: true,
+      anchor: x > (x0 + x1) / 2 ? "end" : "start",
+    });
+  }
+
   /* ---- the four cells that set the slopes ---- */
   if (matrix > 0.02) {
     const mx = x0;
