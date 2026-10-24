@@ -698,7 +698,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "The architecture half of this portfolio: diagrams and written decisions covering four AI workstreams on one event-driven platform. It exists as its own repository because publishing employer architecture needs a discipline the diagrams themselves cannot carry - an authorship class on every component, and a list of the things it will not claim.",
     metaDescription:
-      "Architecture case studies of employer AI systems, published with a per-component authorship class, measured commit shares, and an explicit list of claims the repository refuses to make.",
+      "Architecture case studies of employer AI systems, with an authorship class per component and an explicit list of the claims they refuse to make.",
     problem:
       "Architecture from a workplace is the most useful thing an engineer can show and the hardest to publish honestly. Say nothing and the work is invisible; say it plainly and every diagram quietly becomes a claim of sole authorship over systems that teams built, with impact figures nobody measured attached to them.",
     contribution:
@@ -759,7 +759,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "A job search tool built on the premise that an advert is a wish list rather than a minimum, so it ranks almost everything instead of filtering it. The interesting part is the two requirements that broke that premise, and what had to be added to the scoring model to say so.",
     metaDescription:
-      "A job search and ranking tool that penalises rather than filters, reads applicant-tracking systems directly, and needed flat penalties where its weighted average could not express a disqualifying requirement.",
+      "A job search tool that penalises rather than filters, and the two requirements whose flat penalty had to outgrow the weighted term beside it.",
     problem:
       "A search for machine learning roles in one country returns thousands of results, almost all of them senior, expired, part-time or somewhere you cannot legally work. Reading them is the actual work. The obvious fix - filter hard - throws away the roles a recent graduate should be applying to, because an advert lists what an employer would like rather than what it requires.",
     contribution:
@@ -878,7 +878,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "Three problem sets from a TUM master's course, published with every figure written by the notebook that produced it and every number in the final report listed beside the cell it came from. The ledger is the point: it is what makes the two results worth reading impossible to quietly drop.",
     metaDescription:
-      "TUM statistical learning coursework with a provenance ledger: hand-derived backpropagation checked twice, a default configuration below the majority baseline, and random search beating Bayesian optimisation by one test point.",
+      "TUM coursework with a ledger tying each reported number to the cell behind it: a default run below the majority baseline, margins one test point wide.",
     problem:
       "A coursework report is the easiest document in the world to make look right. Figures get pasted, numbers get retyped, and the runs that embarrassed you simply do not appear - not dishonestly, just by omission, because nothing in the format requires them.",
     contribution:
@@ -991,7 +991,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "Ten years of daily weather for six cities, all of it generated. Nothing it finds is evidence about weather - but the configuration and the summary statistics are both in the repository, so the analysis can be held against the thing that produced its data. Two of three comparisons come back clean, and the third does not.",
     metaDescription:
-      "An exploratory analysis of generated weather data, checked against the generator's own configuration: temperature recovers exactly, humidity is systematically offset in every city.",
+      "An exploratory analysis of generated weather data held against its own generator: temperature recovers, humidity is offset the same way in every city.",
     problem:
       "An exploratory analysis of synthetic data is easy to present and hard to justify. Every chart looks like a finding and none of them is one, because the patterns were put there on purpose. The question worth answering is what such a project can be held to at all.",
     contribution:
@@ -1050,7 +1050,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "A four-model comparison on a generated dataset, with the cross-validation statistics the headline table leaves out. Drawn as intervals rather than as places, three of the four models are not separated by the run at all - which is the most useful thing the project has to say.",
     metaDescription:
-      "A synthetic water-quality classification run whose own cross-validation intervals overlap, so the leaderboard it reports does not separate three of its four models.",
+      "A synthetic classification run whose own cross-validation intervals overlap, so the leaderboard it reports separates only one of its four models.",
     problem:
       "A model comparison that reports one score per model invites a reading it cannot support. Fold-to-fold variation is usually larger than the gaps being ranked, so the order is partly an artefact of which split was drawn - and the table that gets copied into a README is exactly the artefact that hides this.",
     contribution:
@@ -1107,7 +1107,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "Predicting whether a policy will claim is only the first of three problems. The probability also has to mean what it says, and someone has to decide which probabilities are worth acting on. This pipeline keeps the three apart - classifiers, calibration, and a cost-sensitive cut - so that each can be argued about on its own terms.",
     metaDescription:
-      "An insurance claims pipeline that separates ranking, calibration and the decision threshold, with no published model result and an explicitly illustrative cost matrix.",
+      "An insurance claims pipeline separating ranking, calibration and the decision cut, with no published result and an explicitly illustrative cost matrix.",
     problem:
       "A classifier that ranks well can still be badly wrong about magnitude, and a probability that is right is still not an action. Most of the distance between a model and a decision lives in those two gaps, and collapsing them into one accuracy number hides both - along with the fact that in claims the two kinds of error cost wildly different amounts.",
     contribution:
@@ -1225,7 +1225,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "A prototype for a question from a TUM mathematics seminar: if two networks agree on every input, must their parameters agree too, and what can a finite numerical check actually tell you about that.",
     metaDescription:
-      "A seminar prototype on neural network identifiability: constructing a network related by a hidden-unit permutation and sign flip, and checking it against an unrelated one.",
+      "A seminar prototype on neural network identifiability: a relabelled, sign-flipped network, checked against an unrelated one so the test can fail.",
     problem:
       "Two networks with identical weights always compute the same function. The reverse does not follow, and a fully connected network can hide equivalent behaviour inside different weights, which is what makes a weight worth interpreting an open question rather than an obvious one.",
     contribution:
@@ -1348,7 +1348,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "An Excel VBA application that answered one question about one component from a dropdown and a click, kept the spreadsheet as the source of truth, and reached the release system the rest of the company already used.",
     metaDescription:
-      "A release sheet of about 600 rows and 130 or more columns, read by scanning, replaced by a form with fields grouped by subject. A public case study with no employer code in it.",
+      "A release sheet of about 600 rows read by scanning, replaced by a form grouped by subject. A public case study with no employer code in it.",
     problem:
       "One spreadsheet carried the development release state for a department's components: about 600 rows and 130 or more columns. People wanted one record and the sheet made them look at all of them, repeatedly, as part of their job. Two markets carried different fields, so the same question had two shapes.",
     contribution:
@@ -1414,7 +1414,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "The CIFAR-10 model from the PyTorch experiment rebuilt in Keras and trained on exactly the same images, to separate what a framework changes from what everything else changes.",
     metaDescription:
-      "A CIFAR-10 CNN translated from PyTorch to Keras on the same exported split, with 815,018 parameters asserted on every push and five framework differences enumerated.",
+      "A CIFAR-10 CNN translated from PyTorch to Keras on one exported split, with its parameter count asserted on every push and the differences enumerated.",
     problem:
       "A framework comparison is worth nothing if the two models see different images or are not the same model. Both are easy to get wrong quietly: two random number streams cannot be made to draw the same augmentations, and two block diagrams can agree while the models underneath them do not.",
     contribution:
@@ -1601,7 +1601,7 @@ const authoredProjects: readonly Project[] = [
     summary:
       "Monthly forecasts for the seven road accident series Munich publishes, and a measurement of how much of the headline result is the method rather than the two years it was scored on.",
     metaDescription:
-      "A seasonal-trend forecaster beats its baseline by 23.4% on 2021 and 2022, and loses to it on 2018 and 2019. The repository measures that rather than caveating it.",
+      "A seasonal-trend forecaster beats its baseline on 2021-22 and loses to it on 2018-19. The repository measures that reversal rather than caveating it.",
     problem:
       "The model beats a seasonal-naive baseline by 23.4% on the published window, on all seven series. That baseline repeats the previous calendar month, and on this window the previous year is 2020, so the baseline forecasts a pandemic. Saying so in a caveat is not the same as measuring it.",
     contribution:
