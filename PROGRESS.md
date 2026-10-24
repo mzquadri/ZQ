@@ -61,6 +61,12 @@ Projects 1-8 need it retrofitted.
 * `stroke-dasharray: 100` without `pathLength={100}` means 100 *user units*,
   which renders a polyline as disconnected segments. Already documented in
   `GraphSurrogateFlat`; it caught the battery detail panel too.
+* Scroll-driven progress is not committed to `getComputedStyle` until the next
+  frame. A fixed `waitForTimeout(35)` after scrolling reads the *previous*
+  frame, which on a long page (jobhunter is 9,700px at 390) reported a scene
+  that animates perfectly well as `STATIC`. Wait on two `requestAnimationFrame`
+  callbacks instead. Half an hour went into chasing a bug that was in the
+  probe.
 * `checkproject.mjs` reports `complete(above fold)` as a pass. For a page with
   a story that verdict is about the **hero** copy and says nothing about the
   story copy, which is the one that animates. Probe
@@ -100,9 +106,9 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | 12 | `Weather-Data-Analytics-EDA` | `weather-eda` | **done** |
 | 13 | `Supply-Chain-Analytics-Dashboard` | `supply-chain-analytics` | todo |
 | 14 | `Statistical-Learning-Transportation` | `statistical-learning-transport` | todo |
-| 15 | `NLP-Text-Classification-Transformers` | `ag-news-classification` | todo |
-| 16 | `jobhunter` | `jobhunter` | next |
-| 17 | `ai-engineering-portfolio` | `ai-engineering-portfolio` | todo |
+| 15 | `NLP-Text-Classification-Transformers` | `nlp-transformers` | **done** |
+| 16 | `jobhunter` | `jobhunter` | **done** |
+| 17 | `ai-engineering-portfolio` | `ai-engineering-portfolio` | next |
 
 Slugs are provisional until the page is written; the row is updated with the
 one that shipped.

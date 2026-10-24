@@ -8,6 +8,11 @@ import {
 } from "@/content/cifar-chapter";
 import { drift as driftScores } from "@/content/drift-chapter";
 import {
+  percentOfAxis as careerAxis,
+  rejections as careerRejections,
+  weights as careerWeights,
+} from "@/content/career-chapter";
+import {
   exclusivePercent as nlpExclusivePercent,
   outcomes as nlpOutcomes,
   templateCount as nlpTemplateCount,
@@ -1424,6 +1429,74 @@ export function NewsLoaderScene() {
         {nlpTemplateCount} template sentences: {nlpText.exclusiveShare} of its vocabulary. Sorting
         text like that is a lookup rather than a classification, which is why the loader will not
         reach for it on its own. The repository publishes no accuracy, and this page reports none.
+      </p>
+    </div>
+  );
+}
+
+/* ============================================================================================
+ * CareerOS - where the weighted average ran out of room
+ *
+ * The score is a weighted sum over seven components, so each term can move the total by at most
+ * its own weight. That is fine for "slightly junior" and useless for "the job requires native
+ * German", which is not a weak match but an unavailable one.
+ *
+ * So the figure draws each weight as a bar and, on the two components that needed it, the flat
+ * penalty that sits on top - deliberately on the same axis, because the whole point is that the
+ * penalty is longer than the term it belongs to. Language can contribute thirteen points and is
+ * docked thirty.
+ * ========================================================================================== */
+export function CareerWeightScene() {
+  return (
+    <div
+      className="scene-career"
+      role="img"
+      aria-label={`The scoring model's seven weights drawn as bars, with the flat penalties applied on two of them. Location is worth ${careerWeights[1].weight} points and an unreachable location is docked ${careerWeights[1].penalty}; language is worth ${careerWeights[4].weight} and a native-German requirement is docked ${careerWeights[4].penalty}. In both cases the penalty is larger than the term it sits beside, which is why the weighted average alone could not express them.`}
+    >
+      <ol className="scene-career-rows">
+        {careerWeights.map((w, i) => (
+          <li className="scene-career-row" key={w.key} {...at(22 + i * 3, 40 + i * 3)}>
+            <span className="scene-career-name" aria-hidden="true">
+              {w.label}
+            </span>
+            <span className="scene-career-track" aria-hidden="true">
+              <i
+                className="scene-career-weight"
+                style={{ "--w": `${careerAxis(w.weight)}%` } as React.CSSProperties}
+              />
+              {w.penalty !== undefined ? (
+                <i
+                  className="scene-career-penalty"
+                  style={{ "--w": `${careerAxis(w.penalty)}%` } as React.CSSProperties}
+                />
+              ) : null}
+            </span>
+            <strong className="scene-career-value" aria-hidden="true">
+              {w.penalty !== undefined ? `${w.weight} / \u2212${w.penalty}` : w.weight}
+            </strong>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-career-legend" aria-hidden="true" {...at(44, 60)}>
+        <span data-kind="weight">what the term can contribute</span>
+        <span data-kind="penalty">what it is docked when the job is unavailable</span>
+      </p>
+
+      {/* The four things that are thrown away, as against everything that is merely penalised. */}
+      <ol className="scene-career-rejects" {...at(50, 66)}>
+        {careerRejections.map((r) => (
+          <li key={r.key}>
+            <b>{r.label}</b>
+            <span>{r.detail}</span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="scene-career-note" {...at(58, 74)}>
+        Those four are the only conditions that discard a posting, and each one answers whether
+        the opportunity exists rather than whether the candidate is good enough. Everything else
+        is a penalty, because a penalty can be read and argued with and a filter cannot.
       </p>
     </div>
   );

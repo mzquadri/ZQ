@@ -4661,3 +4661,111 @@
   .scene-nlp-outcome { grid-template-columns: 1fr; gap: 0.1rem; }
   .scene-nlp-bar { grid-template-columns: 4rem 1fr 2.9rem; font-size: 0.66rem; }
 }
+
+/* ---- CareerOS: weights, and the penalties that outgrew them --------------------------------
+ *
+ * Weight and penalty share one axis on purpose. The finding is that two of the penalties are
+ * longer than the bars they sit under, which only reads if they are measured the same way.
+ */
+
+.scene-career { display: grid; gap: 0.5rem; width: 100%; }
+
+.scene-career-rows { display: grid; gap: 0.28rem; margin: 0; padding: 0; list-style: none; }
+
+.scene-career-row {
+  display: grid;
+  grid-template-columns: 5.4rem 1fr 4.2rem;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.71rem;
+  color: var(--ink-soft);
+}
+
+.scene-career-track {
+  position: relative;
+  display: block;
+  height: 0.95rem;
+}
+
+.scene-career-weight,
+.scene-career-penalty {
+  position: absolute;
+  left: 0;
+  width: var(--w);
+  transform-origin: left center;
+}
+
+.scene-career-weight {
+  top: 0;
+  height: 0.5rem;
+  background: color-mix(in oklab, var(--line-strong) 55%, transparent);
+}
+
+/* Drawn under its own weight bar so the overshoot is the thing you see. */
+.scene-career-penalty {
+  bottom: 0;
+  height: 0.32rem;
+  background: var(--accent);
+}
+
+.scene-career-value {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-align: right;
+  color: var(--ink-soft);
+}
+
+.scene-career-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin: 0;
+  font-size: 0.66rem;
+  color: var(--ink-soft);
+}
+
+.scene-career-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+.scene-career-legend span::before {
+  content: "";
+  width: 14px;
+  height: 0.32rem;
+  background: var(--accent);
+}
+
+.scene-career-legend span[data-kind="weight"]::before {
+  height: 0.5rem;
+  background: color-mix(in oklab, var(--line-strong) 55%, transparent);
+}
+
+.scene-career-rejects {
+  display: grid;
+  gap: 0.22rem;
+  margin: 0;
+  padding: 0.4rem 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.scene-career-rejects li {
+  display: grid;
+  /* "older than the age limit" is the longest of the four and wrapped at 10rem. */
+  grid-template-columns: 11.5rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.71rem;
+  color: var(--ink-soft);
+}
+
+.scene-career-rejects b {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.scene-career-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 620px) {
+  .scene-career-row { grid-template-columns: 4.4rem 1fr 3.6rem; font-size: 0.66rem; }
+  .scene-career-rejects li { grid-template-columns: 1fr; gap: 0; }
+}

@@ -458,6 +458,10 @@
     .scene-ident-verdict,
     .scene-ident-note,
     .scene-batt-read,
+    .scene-career-row,
+    .scene-career-legend,
+    .scene-career-rejects,
+    .scene-career-note,
     .scene-nlp-outcome,
     .scene-nlp-why,
     .scene-nlp-bar,
@@ -563,6 +567,11 @@
     .scene-nlp-why { animation-name: mz-reveal; }
     .scene-nlp-bar { animation-name: mz-propagate; }
     .scene-nlp-note { animation-name: mz-reveal; }
+
+    .scene-career-row { animation-name: mz-propagate; }
+    .scene-career-legend { animation-name: mz-reveal; }
+    .scene-career-rejects { animation-name: mz-reveal; }
+    .scene-career-note { animation-name: mz-reveal; }
 
     .scene-batt-read { animation-name: mz-verify; }
     .scene-batt-zoom { animation-name: mz-expand; }

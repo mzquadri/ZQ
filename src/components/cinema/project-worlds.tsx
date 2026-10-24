@@ -15,6 +15,7 @@ import {
   BatteryScene,
   ClaimsThresholdScene,
   WaterIntervalScene,
+  CareerWeightScene,
   NewsLoaderScene,
   StatLearnScene,
   SupplierWeightScene,
@@ -215,6 +216,20 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
       to: "ceiling",
       note: "Parameters that cannot be recovered becomes a score that cannot be exceeded.",
     },
+  },
+
+  "jobhunter": {
+    accent: "var(--accent-systems)",
+    title: "Where the Weighted Average Ran Out of Room",
+    eyebrow: "Personal product / Search and ranking",
+    question:
+      "If a job advert is a wish list rather than a minimum, a search tool should rank rather than filter. So what do you do with the two requirements that really are disqualifying?",
+    evidence: evidenceOf("jobhunter"),
+    href: "/work/jobhunter",
+    figureNote:
+      "The seven scoring weights, with the flat penalties applied on two of them drawn on the same axis - which is how you can see they are longer than the terms they belong to.",
+    scale: "compact",
+    scene: () => <CareerWeightScene />,
   },
 
   "nlp-transformers": {

@@ -444,6 +444,7 @@ export const ecosystemRepositories: readonly EcosystemRepository[] = [
       "Reads 119 verified job sources every hour, scores each posting against one profile, shows why each score came out the way it did, tracks the roles pursued through a drag-and-drop application pipeline, and drafts the covering letter, so the work left is reading and deciding rather than searching.",
     boundary:
       "It never applies on anyone's behalf, by design. The scores are editorial heuristics tuned to a single profile and establish nothing about how any employer actually reads an application.",
+    caseStudySlug: "jobhunter",
   },
   {
     name: "mzquadri",

@@ -50,6 +50,18 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  adapterCount as careerAdapterCount,
+  employerCount as careerEmployerCount,
+  languagePenalties as careerLanguagePenalties,
+  locationPenalties as careerLocationPenalties,
+  overridden as careerOverridden,
+  probe as careerProbe,
+  rejections as careerRejections,
+  repository as careerRepository,
+  text as careerText,
+  weights as careerWeights,
+} from "./career-chapter";
+import {
   repository as nlpRepository,
   splits as nlpSplits,
   task as nlpTask,
@@ -665,6 +677,66 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "jobhunter",
+    title: "Where the Weighted Average Ran Out of Room",
+    eyebrow: "Job search and ranking",
+    classification: "Engineering prototype",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Author",
+    summary:
+      "A job search tool built on the premise that an advert is a wish list rather than a minimum, so it ranks almost everything instead of filtering it. The interesting part is the two requirements that broke that premise, and what had to be added to the scoring model to say so.",
+    metaDescription:
+      "A job search and ranking tool that penalises rather than filters, reads applicant-tracking systems directly, and needed flat penalties where its weighted average could not express a disqualifying requirement.",
+    problem:
+      "A search for machine learning roles in one country returns thousands of results, almost all of them senior, expired, part-time or somewhere you cannot legally work. Reading them is the actual work. The obvious fix - filter hard - throws away the roles a recent graduate should be applying to, because an advert lists what an employer would like rather than what it requires.",
+    contribution:
+      `Built the whole application: one adapter per applicant-tracking system rather than one scraper per company, a scoring model that penalises instead of filtering, and the interfaces around them. Then fixed the model where it could not say what needed saying - two requirements now carry a flat penalty because a weighted term could not carry it.`,
+    workflow: [
+      `Read employer systems through ${careerAdapterCount} adapters, one per applicant-tracking system`,
+      "Discard a posting only where the opportunity does not exist or is not this profession",
+      "Score the rest as a weighted sum over seven components",
+      "Apply flat penalties where a weighted term cannot express unavailability",
+      "Name every deduction on the job rather than removing the job",
+    ],
+    tools: ["Python", "FastAPI", "TypeScript", "React", "PostgreSQL", "YAML"],
+    evidence: [
+      {
+        label: "Penalties larger than their own weight",
+        value: `${careerOverridden.length} of ${careerWeights.length} components`,
+        note: `${careerOverridden.map((w) => `${w.label} is worth ${w.weight} points of the score and is docked up to ${w.penalty} when the job is ${w.penaltyFor}`).join("; ")}. A weighted term can only move the total by its own weight, so neither could express "you cannot take this job" - a mandatory ${careerLanguagePenalties[2].label} role and a role on another continent both scored in the high seventies on technical merit before the flat penalties were added. The full ladders are ${careerLanguagePenalties.map((l) => `${l.label} ${l.points}`).join(", ")} and ${careerLocationPenalties.map((l) => `${l.label} ${l.points}`).join(", ")}.`,
+      },
+      {
+        label: "Conditions that discard a posting",
+        value: `${careerRejections.length}`,
+        note: `${careerRejections.map((r) => r.label).join(", ")}. Each answers whether the opportunity is available or in this profession, never whether the candidate is good enough. Everything else is a penalty, which is visible on the job and can be argued with, where a filter is silent.`,
+      },
+      {
+        label: "Employers wired to a real endpoint",
+        value: `${careerEmployerCount} across ${careerAdapterCount} adapters`,
+        note: `Large employers rent one of a handful of applicant-tracking systems, each with a public endpoint, so there is one adapter per system rather than one scraper per company and adding an employer is a line of configuration. The repository reports probing ${careerProbe.candidates} plausible-looking candidates before writing the shipped list, of which ${careerProbe.missing} - ${careerText.probeShare} - did not exist; the tool that checked them ships with it.`,
+      },
+    ],
+    quality: [
+      "Rejection is reserved for four conditions about the opportunity, so a poor match is ranked down and explained rather than disappearing",
+      "Every deduction is named on the job, which is what makes the ranking arguable instead of merely obeyed",
+      "Employers were probed against their real endpoints before being configured, and the verification tool is in the repository so the next expansion can be checked the same way",
+      "Candidate match and field relevance stay separate measures rather than being folded into one number",
+      "It never applies on anyone's behalf, and the coverage document states which employers are monitored automatically and which remain manual",
+    ],
+    limitations: [
+      "The weights are one person's judgement about their own search. Nothing here is calibrated against outcomes, because the outcome data is a handful of applications and cannot support calibration",
+      "Manual watchlist employers are not automatically monitored, so coverage is uneven in a way the dashboard has to state rather than hide",
+      "Field relevance is graded from the title and description together, which recovers roles a title-only rule discarded and still makes mistakes in both directions",
+      "A personal product with one user. It has not been tested against anybody else's search, and the 60% premise it is built on is an argument rather than a measurement",
+    ],
+    learned:
+      "A weighted average is a statement that every consideration is tradeable against every other, and some are not. Both failures looked like scoring bugs and were actually a modelling error: no setting of a thirteen-point language weight makes a native-German requirement disqualifying, because thirteen points is the most it can ever remove. The fix was to stop pretending that constraint was a preference.",
+    repository: careerRepository,
+    systemSummary: `Adapters for ${careerAdapterCount} applicant-tracking systems reaching ${careerEmployerCount} configured employers, a matching engine with seven weighted components and explicit penalties, and a full application over the top: setup, review queues, an application pipeline, employer management, automation and analytics.`,
+    nextStep:
+      "Calibrate the weights against something. They currently encode an argument about how graduates should apply, and the honest version of that argument needs outcomes behind it - which means recording what happened to the applications, not tuning the numbers until the ranking looks right.",
   },
   {
     slug: "nlp-transformers",

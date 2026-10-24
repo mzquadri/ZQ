@@ -162,6 +162,36 @@ export const caseStories: Readonly<Record<string, CaseStory>> = {
       "This benchmark is deterministic and synthetic, and its evaluation is one step ahead with observed discharge supplied as an input. It exercises an evaluation pipeline honestly; it is not a claim about any particular river.",
   },
 
+  "jobhunter": {
+    title: "When a preference turns out to be a constraint",
+    intro:
+      "The tool is built on one claim: a job advert is a wish list, not a minimum, so a search should rank rather than filter. That holds for almost everything it reads, and then it stops holding, and the place it stops is the interesting part.",
+    beats: [
+      {
+        verb: "Read",
+        text: "Employers rent their career pages from a handful of applicant-tracking systems, each with a public endpoint. So there is one adapter per system rather than one scraper per company, and every configured employer was probed against its real endpoint before being written down.",
+      },
+      {
+        verb: "Keep",
+        text: "Only four conditions throw a posting away, and each asks whether the opportunity exists or is in this profession. Not whether the candidate is good enough - that question never deletes anything.",
+      },
+      {
+        verb: "Penalise",
+        text: "Everything else lowers the score and is named on the job. A missing tool, an ambitious experience requirement, a language you do not have: all visible, all arguable, none hidden.",
+      },
+      {
+        verb: "Fail",
+        text: "Then two roles scored in the high seventies that nobody could take: one requiring native German, one on another continent. Both were ranked highly because their technical fit was genuinely good.",
+      },
+      {
+        verb: "Separate",
+        text: "A weighted term can only move the total by its own weight, so no setting of those weights could express unavailability. Both now carry a flat penalty on top - larger, in each case, than the whole term beside it.",
+      },
+    ],
+    caveat:
+      "The weights are one person's judgement about their own search, calibrated against nothing: there is no outcome data behind them, and the premise that a graduate should apply at roughly sixty percent of a posting is an argument rather than a finding. Coverage is uneven - manually watched employers are not monitored automatically - and the tool never applies on anyone's behalf.",
+  },
+
   "nlp-transformers": {
     title: "What to do when the data does not arrive",
     intro:
