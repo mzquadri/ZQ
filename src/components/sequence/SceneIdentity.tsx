@@ -43,7 +43,13 @@ export default function SceneIdentity({
       */}
       <div
         className="scn-identity-frame"
-        style={viewTransitionName ? { viewTransitionName } : undefined}
+        style={
+          {
+            /* The scene's own ground, so the frame does not go to paper under the light theme. */
+            "--scn-ground": scene.palette.ground,
+            ...(viewTransitionName ? { viewTransitionName } : {}),
+          } as React.CSSProperties
+        }
       >
         <svg
           aria-hidden="true"

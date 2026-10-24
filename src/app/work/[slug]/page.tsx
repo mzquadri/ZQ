@@ -18,6 +18,7 @@ import PageShell from "@/components/PageShell";
 import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVisuals";
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import NextSystem from "@/components/cinema/NextSystem";
+import CaseScene from "@/components/cinema/CaseScene";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
 import RatingAmplification from "@/components/research/RatingAmplification";
@@ -176,6 +177,17 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           opening figure, which is the object a visitor actually clicked and the only one of the
           two that is on screen when the navigation happens.
         */}
+        {/*
+          The object the reader just clicked, opening under their scroll.
+
+          This is the scene the hero shows at rest, run as a pure function of scroll position
+          against a pinned full-bleed canvas. It is deliberately above the WebGL world rather than
+          instead of it: the scene is the identity of the project and renders at every width, on
+          every renderer and under reduced motion, where a world is gated on all three. On a phone
+          this is the only moving stage a page has.
+        */}
+        <CaseScene slug={project.slug} />
+
         <div>
         {project.slug === "insureassist-rag" ? (
           <InsureAssistWorld flat={<InsureAssistWorldFlat />} />

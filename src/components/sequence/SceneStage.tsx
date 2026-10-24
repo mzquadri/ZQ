@@ -49,6 +49,19 @@ export default function SceneStage({
         {
           "--scn-travel": String(scene.travel),
           "--scn-travel-portrait": String(scene.portraitTravel),
+          /*
+           * The scene's own ground and ink, bound here rather than taken from the theme.
+           *
+           * A palette is fixed dark, because a canvas cannot resolve a custom property and the
+           * still has to match the canvas exactly. Every surface around it used `var(--stage)`,
+           * which follows light and dark - so in the light theme the stage went to paper while the
+           * drawing on it stayed built for near-black. Binding the palette makes the stage agree
+           * with the only thing that was never in doubt: the drawing.
+           */
+          "--scn-ground": scene.palette.ground,
+          "--scn-ink": scene.palette.ink,
+          "--scn-ink-soft": scene.palette.soft,
+          "--scn-line": scene.palette.line,
         } as React.CSSProperties
       }
     >

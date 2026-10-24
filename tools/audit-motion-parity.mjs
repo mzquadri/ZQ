@@ -421,11 +421,21 @@ for (const slug of slugs) {
       if (d > MOVED) steps += 1;
       if (d > peak) peak = d;
     }
+    /*
+     * How different the end is from the beginning, which `peak` cannot tell you.
+     *
+     * A scene that keeps its whole inventory on screen and moves emphasis across it - the house
+     * pattern, and the one that makes the resting frame informative - changes only a few per cent
+     * between neighbouring samples while transforming completely from end to end. Judged on `peak`
+     * alone that reads as barely moving, which is the wrong verdict about the right design.
+     */
+    const span = difference(data.frames[0], data.frames[data.frames.length - 1]);
     motion[kind] = {
       instances: data.instances,
       sampled: data.frames.length,
       steps,
       peak: Number(peak.toFixed(4)),
+      span: Number(span.toFixed(4)),
       animates: steps > 0,
     };
   }
@@ -459,7 +469,7 @@ for (const r of results) {
     .map(([kind, m]) =>
       m.unmeasurable
         ? `${kind}:? ${m.unmeasurable}`
-        : `${kind}:${m.steps}/${m.sampled - 1}(${(m.peak * 100).toFixed(1)}%)${m.animates ? "" : " STATIC"}`,
+        : `${kind}:${m.steps}/${m.sampled - 1} peak ${(m.peak * 100).toFixed(1)}% span ${(m.span * 100).toFixed(0)}%${m.animates ? "" : " STATIC"}`,
     )
     .join("  ");
   console.log(
