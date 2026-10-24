@@ -22,6 +22,7 @@ import CaseScene from "@/components/cinema/CaseScene";
 import AuthorshipWorld from "@/components/authorship-world/AuthorshipWorld";
 import CareerWorld from "@/components/career-world/CareerWorld";
 import GatewayWorld from "@/components/gateway-world/GatewayWorld";
+import NlpWorld from "@/components/nlp-world/NlpWorld";
 import ThesisWorld from "@/components/thesis-world/ThesisWorld";
 import ThesisWorldFlat from "@/components/thesis-world/ThesisWorldFlat";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
@@ -223,6 +224,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "jobhunter" ? (
           <CareerWorld flat={<SceneIdentity slug="jobhunter" />} />
+        ) : null}
+
+        {/*
+          A road that stops at a barrier, then the fixture's vocabulary separating into four
+          columns. The refusal is animated rather than labelled: nothing is drawn continuing past
+          the barrier, because nothing does.
+        */}
+        {project.slug === "nlp-transformers" ? (
+          <NlpWorld flat={<SceneIdentity slug="nlp-transformers" />} />
         ) : null}
 
         {/*

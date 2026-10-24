@@ -374,6 +374,8 @@ check deliberately; not what the tool's name says it does.
 | 1 | `mcp-policy-gateway` | **done** | world 9/9, peak 13.7%, span 6% |
 | 2 | `transport-uq` | **done** | world 9/9, peak 38.2%, span 13% |
 | 3 | `ai-engineering-portfolio` | **done** | world 9/9, peak 14.4%, span 12% |
+| 4 | `jobhunter` | **done** | world 9/9, peak 21.5%, span 24% |
+| 5 | `nlp-transformers` | **done** | world 9/9, peak 14.5%, span 18% |
 
 **`mcp-policy-gateway`.** The page the before-audit found with nothing
 measurable moving at all. Its composition is depth-as-authorship: three planes
@@ -408,6 +410,20 @@ figures were rewritten to end, when transport showed an extruded bar field on
 its case study and a flat isometric network on the homepage. It keeps its own
 `.thesis-world` class, which predates the shared one, so both the audit tool
 and `check-worlds.mjs` now name that class as well.
+
+**`nlp-transformers`.** A road that stops. The project's decision worth a page
+is a refusal - when the dataset will not download the loader raises rather than
+quietly substituting its fixture - so the world animates a thing that does not
+happen: a request travels the road, meets a barrier and halts, and nothing is
+drawn continuing past it. The second half is the evidence, every distinct word
+in the fixture as a token, the exclusive ones settling into their own class's
+column and the shared ones drifting to the middle. Almost nothing is in the
+middle, which is what 86 per cent exclusive looks like.
+
+Its camera needed a fourth component. `lookAt` was fixed at the junction while
+the vocabulary sits four units further back, so the tokens fell out of frame
+entirely at the beats that are about them; the shot table carries a `look`
+target now and the camera aims at whatever the beat is about.
 
 **`ai-engineering-portfolio`.** Five solids sized by the whole of each
 component's commit history, with the share that is mine lit inside them. The

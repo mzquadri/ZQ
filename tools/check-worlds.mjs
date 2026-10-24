@@ -20,6 +20,7 @@ export const WORLDS = [
   ["/work/transport-uq", ".thesis-world", "transport"],
   ["/work/ai-engineering-portfolio", ".world-stage", "authorship"],
   ["/work/jobhunter", ".world-stage", "career"],
+  ["/work/nlp-transformers", ".world-stage", "nlp"],
   ["/work/cifar10-cnn", ".world-stage", "cifar"],
   ["/work/hydrology-uq", ".world-stage", "hydrology"],
   ["/work/insureassist-rag", ".world-stage", "insureassist"],
