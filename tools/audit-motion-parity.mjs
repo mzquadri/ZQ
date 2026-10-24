@@ -44,8 +44,20 @@ import { writeFile } from "node:fs/promises";
  * per-pixel threshold. A frame counts as changed only when a real share of the picture moved.
  * ------------------------------------------------------------------------------------------- */
 
-/** Decode to a fixed small greyscale raster so two frames are always comparable. */
-const THUMB = 180;
+/**
+ * Decode to a fixed greyscale raster so two frames are always comparable.
+ *
+ * 180 was too coarse and it under-reported a whole class of scene. A figure built from filled
+ * rectangles - a confusion matrix, a stack of bars - changes a large share of a small thumbnail
+ * when it animates. A figure built from one-pixel strokes and small type does not: downscaled by
+ * eight, a moving hairline averages into its background and the scene reads as static while a
+ * reader watches it move. Two scenes measured 0.3% and 0.4% peak that way.
+ *
+ * 320 keeps strokes above a pixel at the sizes these stages render at, and the negative control
+ * still passes, which is the constraint that matters: raising this far enough to pick up noise
+ * would have shown up there first.
+ */
+const THUMB = 320;
 async function thumbnail(png) {
   return sharp(png).greyscale().resize(THUMB, THUMB, { fit: "fill" }).raw().toBuffer();
 }

@@ -1,17 +1,27 @@
+import { authorship } from "./scenes/authorship";
+import { battery } from "./scenes/battery";
+import { career } from "./scenes/career";
 import { cifar } from "./scenes/cifar";
 import { claims } from "./scenes/claims";
 import { driftScene } from "./scenes/drift";
+import { flood } from "./scenes/flood";
 import { gateway } from "./scenes/gateway";
 import { hydrology } from "./scenes/hydrology";
+import { identifiability } from "./scenes/identifiability";
 import { insureassist } from "./scenes/insureassist";
 import { medico } from "./scenes/medico";
+import { modalSplit } from "./scenes/modalsplit";
 import { mlops } from "./scenes/mlops";
+import { munich } from "./scenes/munich";
 import { nlp } from "./scenes/nlp";
 import { reliableKnowledge } from "./scenes/reliable-knowledge";
+import { parityScene } from "./scenes/parity";
+import { release } from "./scenes/release";
 import { statlearn } from "./scenes/statlearn";
 import { streamflow } from "./scenes/streamflow";
 import { supply } from "./scenes/supply";
 import { transport } from "./scenes/transport";
+import { translation } from "./scenes/translation";
 import { water } from "./scenes/water";
 import { weather } from "./scenes/weather";
 import type { SceneDefinition } from "./scene";
@@ -48,4 +58,14 @@ export const SCENES: Readonly<Record<string, SceneDefinition>> = {
   "supply-chain": supply,
   "statistical-learning": statlearn,
   "nlp-transformers": nlp,
+  "nn-identifiability": identifiability,
+  "flood-lstm": flood,
+  "audi-release-tracking": release,
+  "keras-pytorch-parity": translation,
+  "bm25-rrf-java": parityScene,
+  "eurostat-modal-split": modalSplit,
+  "munich-accident-forecasting": munich,
+  "battery-soc": battery,
+  jobhunter: career,
+  "ai-engineering-portfolio": authorship,
 };

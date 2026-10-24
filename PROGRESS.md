@@ -239,6 +239,55 @@ largest share of the picture that moved between two neighbours.
 | `munich-accident-forecasting` | flat | - | - | yes | 0 | - | story 6/9 (6.7%) |
 | `drift-aware-platform` | flat | - | - | yes | 0 | - | story 6/9 (11.1%) |
 
+### Layer 2 is done: all 26 pages carry a scrubbed scene
+
+Seventeen new `SceneDefinition`s, one per catalogue project, each drawn from the
+numbers already extracted from its repository into `src/content/*-chapter.ts`.
+`CaseScene` renders the revived `SceneStage` on the work route, so every page
+now has a pinned full-bleed canvas that evaluates its scene as a pure function
+of scroll, with the same drawing SSR'd to SVG as the reduced-motion frame.
+
+Three things followed from the `SCENES` entry rather than being built
+separately: every page's hero became the scene still instead of a flat figure,
+every band that offers the next project now previews it with its own object,
+and the catalogue pages gained the identity continuity the chapters had.
+
+**Rules that held, and what breaking them cost.**
+
+* *The object is complete in the resting frame; the beats move emphasis across
+  it.* The first draft of the drift scene gated every block behind its own beat
+  and rested at six elements against sixty - informative only to a reader who
+  scrolled. The resting frame is what ships in the HTML and what a
+  reduced-motion reader gets, so it is the one that must be whole.
+* *A scene has to move, not just fade.* Measured against production after the
+  first three shipped, `water-quality` and `insurance-claims-threshold` changed
+  two per cent end to end against the reference chapter's nine. Both were
+  correct and nearly still. The fix in each case was the honest one: water
+  re-measures five models, so the marks travel from their single-split F1 to
+  their cross-validated mean; claims gained a cursor that sweeps the
+  probability axis and rides whichever value line is higher, so the verdict
+  flips under the reader's own scroll at exactly the 3.23% the cost matrix
+  implies.
+* *Hairlines do not read on a full-bleed stage.* `weather-eda` and
+  `nn-identifiability` measured 0.3% and 0.4% peak - reported STATIC - and the
+  first suspicion was the instrument. It was not: rendering the drawings
+  outside the browser and diffing progress 0 against progress 1 gave 1.5% and
+  1.7%, so the page was faithful and the figures were thin. Thickening strokes
+  and enlarging marks took both to 2%, which registers. They remain the
+  quietest two scenes on the site, and a scatter of six cities is inherently
+  less dense than a ten-by-ten confusion matrix.
+* *A drawing that must come out exactly right is not a job for a random
+  number.* The release scene allocated its column ticks to four frames with
+  `hash01`, the site's stable pseudo-random, and it put all forty-four into two
+  of them - the other two frames closed around nothing. It is a declared
+  allocation now.
+
+The audit instrument gained two things in the process: a `span` metric, because
+a scene that keeps its inventory on screen changes a few per cent between
+neighbouring samples while transforming completely end to end, and a thumbnail
+raised from 180px to 320px, because at 180 a moving hairline averages into its
+background. The negative control passes at both.
+
 ### What is missing, grouped
 
 * **Layer 2 is missing from all 26.** No page renders a scrubbed scene stage.

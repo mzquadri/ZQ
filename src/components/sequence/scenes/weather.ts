@@ -74,12 +74,12 @@ function draw(s: Surface, progress: number, p: Palette) {
     oneWay: boolean,
   ) => {
     if (alpha <= 0.02) return;
-    s.line(x0, y, x0 + axisW, y, { stroke: p.line, width: 1, alpha });
+    s.line(x0, y, x0 + axisW, y, { stroke: p.line, width: 2, alpha });
     /* Zero is the claim being tested, so it is the only tick drawn full height. */
     s.line(mid, y - s.unit * 0.05, mid, y + s.unit * 0.05, {
       stroke: p.ink,
-      width: 1.5,
-      alpha: alpha * 0.8,
+      width: 3,
+      alpha: alpha * 0.85,
     });
     s.text(mid, y + s.unit * 0.072, "0", {
       size: type * 0.85,
@@ -109,7 +109,7 @@ function draw(s: Surface, progress: number, p: Palette) {
       const v = value(city);
       const x = mid + (v / half) * (axisW / 2);
       const lift = (i % 2 === 0 ? -1 : 1) * s.unit * 0.026;
-      s.circle(x, y, s.unit * 0.008, {
+      s.circle(x, y, s.unit * 0.015, {
         fill: oneWay ? p.warn : p.accent,
         alpha: on * 0.95,
       });
@@ -120,8 +120,8 @@ function draw(s: Surface, progress: number, p: Palette) {
       if (configured > 0.02) {
         s.line(mid, y, x, y, {
           stroke: oneWay ? p.warn : p.accent,
-          width: 1.5,
-          alpha: on * configured * 0.7,
+          width: 5,
+          alpha: on * configured * 0.8,
         });
       }
       /*
@@ -171,9 +171,9 @@ function draw(s: Surface, progress: number, p: Palette) {
     const y = s.h * b.humidity;
     const lo = mid + (Number(text.humidityLow) / humidityAxis) * (axisW / 2);
     const hi = mid + (Number(text.humidityHigh) / humidityAxis) * (axisW / 2);
-    s.rect(lo, y - s.unit * 0.034, (hi - lo) * bias, s.unit * 0.068, {
+    s.rect(lo, y - s.unit * 0.055, (hi - lo) * bias, s.unit * 0.11, {
       fill: p.warn,
-      alpha: bias * 0.14,
+      alpha: bias * 0.38,
     });
     s.text(hi + s.unit * 0.014, y, `+${text.humidityLow} to +${text.humidityHigh}`, {
       size: type * 0.9,
@@ -199,11 +199,11 @@ function draw(s: Surface, progress: number, p: Palette) {
       const height = s.unit * 0.05;
       s.line(fromX, y, toX, y + height, {
         stroke: amplitudeOrderRecovered ? p.accent : p.warn,
-        width: 1.5,
-        alpha: on * 0.8,
+        width: 4,
+        alpha: on * 0.85,
       });
-      s.circle(fromX, y, s.unit * 0.005, { fill: p.soft, alpha: on });
-      s.circle(toX, y + height, s.unit * 0.005, { fill: p.accent, alpha: on });
+      s.circle(fromX, y, s.unit * 0.009, { fill: p.soft, alpha: on });
+      s.circle(toX, y + height, s.unit * 0.011, { fill: p.accent, alpha: on });
     });
     s.text(x0, y - s.unit * 0.022, "configured swing", {
       size: type * 0.8,
