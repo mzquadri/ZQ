@@ -16,6 +16,10 @@ const REDUCED = process.argv.includes("--reduced");
 
 /** route, the stage selector, and a human name. */
 export const WORLDS = [
+  ["/work/mcp-policy-gateway", ".world-stage", "gateway"],
+  ["/work/transport-uq", ".thesis-world", "transport"],
+  ["/work/ai-engineering-portfolio", ".world-stage", "authorship"],
+  ["/work/jobhunter", ".world-stage", "career"],
   ["/work/cifar10-cnn", ".world-stage", "cifar"],
   ["/work/hydrology-uq", ".world-stage", "hydrology"],
   ["/work/insureassist-rag", ".world-stage", "insureassist"],

@@ -7,6 +7,7 @@ import PageShell from "@/components/PageShell";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
 import NextSystem from "@/components/cinema/NextSystem";
+import CaseScene from "@/components/cinema/CaseScene";
 import { VerbScene } from "@/components/cinema/scenes";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import ReliableWorld from "@/components/reliable-world/ReliableWorld";
@@ -86,6 +87,15 @@ export default function ReliableKnowledgeSystemsPage() {
           The machine, before the prose. On a phone, a narrow window, or for a reader who declined
           motion, the same schematic is drawn once and completely instead.
         */}
+        {/*
+          The project's own object, opening under the reader's scroll, before the world below it.
+          The world is gated on viewport width, on motion being wanted and on a renderer that is
+          not a software rasteriser; this renders everywhere, because its resting composition is
+          SSR'd markup and the canvas over it is the enhancement. On a phone it is the only moving
+          stage this page has.
+        */}
+        <CaseScene slug="reliable-knowledge-systems" />
+
         <div>
           <ReliableWorld flat={<ReliableWorldFlat />} />
         </div>

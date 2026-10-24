@@ -19,6 +19,12 @@ import { HeldOutResultFigure, ReferenceRunTerminal } from "@/components/MlopsVis
 import { MlopsPipeline, SelectiveRiskChart, ThesisPipeline } from "@/components/ResearchVisuals";
 import NextSystem from "@/components/cinema/NextSystem";
 import CaseScene from "@/components/cinema/CaseScene";
+import AuthorshipWorld from "@/components/authorship-world/AuthorshipWorld";
+import CareerWorld from "@/components/career-world/CareerWorld";
+import GatewayWorld from "@/components/gateway-world/GatewayWorld";
+import ThesisWorld from "@/components/thesis-world/ThesisWorld";
+import ThesisWorldFlat from "@/components/thesis-world/ThesisWorldFlat";
+import SceneIdentity from "@/components/sequence/SceneIdentity";
 import WritingCard from "@/components/writing/WritingCard";
 import { getPublishedWritingForProject } from "@/content/writing/repository";
 import RatingAmplification from "@/components/research/RatingAmplification";
@@ -189,6 +195,46 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <CaseScene slug={project.slug} />
 
         <div>
+        {/*
+          The thesis world, on the case study as well as on the thesis record.
+
+          These are two pages about one piece of work, and the world draws the surrogate with its
+          uncertainty on it - which is the subject of both. Building a second world for this page
+          would mean two different pictures of one system, which is the exact mistake the opening
+          figures were rewritten to end: transport once showed an extruded bar field here and a
+          flat isometric network on the homepage, recognisably the same topic and visibly not the
+          same picture.
+        */}
+        {project.slug === "transport-uq" ? <ThesisWorld flat={<ThesisWorldFlat />} /> : null}
+
+        {/*
+          Five solids sized by the whole of each component's history, with the share that is mine
+          lit inside them. The dark part is never shrunk - that is the point of the figure - and
+          one of the five never lights at all.
+        */}
+        {project.slug === "ai-engineering-portfolio" ? (
+          <AuthorshipWorld flat={<SceneIdentity slug="ai-engineering-portfolio" />} />
+        ) : null}
+
+        {/*
+          Seven weighted terms with a ceiling over each, and the two flat penalties drawn in the
+          same unit so that passing through a ceiling is a fact about the picture rather than a
+          claim made over it.
+        */}
+        {project.slug === "jobhunter" ? (
+          <CareerWorld flat={<SceneIdentity slug="jobhunter" />} />
+        ) : null}
+
+        {/*
+          The boundary, in depth. Its flat figure is the project's own scene at rest - the same
+          drawing the hero and the stage above use - because this project has never had a second
+          one: it postdates the procedural scene runtime, and inventing a separate static diagram
+          for the fallback would mean maintaining two pictures of one argument.
+        */}
+        {project.slug === "mcp-policy-gateway" ? (
+          <GatewayWorld flat={<SceneIdentity slug="mcp-policy-gateway" />} />
+        ) : null}
+
         {project.slug === "insureassist-rag" ? (
           <InsureAssistWorld flat={<InsureAssistWorldFlat />} />
         ) : null}

@@ -35,7 +35,22 @@ export default function SceneIdentity({
   const stills = sceneStills(scene);
 
   return (
-    <figure className="scn-identity">
+    <figure
+      className="scn-identity"
+      style={
+        {
+          /*
+           * The scene's own ground and soft ink, bound on the figure rather than on the frame.
+           *
+           * The frame was the obvious place and it is the wrong one: the caption is the frame's
+           * *sibling*, so a custom property set there is invisible to it, and the caption went on
+           * rendering in the paper ink at 3.33:1 against a world's dark ground.
+           */
+          "--scn-ground": scene.palette.ground,
+          "--scn-ink-soft": scene.palette.soft,
+        } as React.CSSProperties
+      }
+    >
       {/*
         The name goes on the frame, not on the figure around it. The figure includes the caption,
         so naming it handed the browser a box that was not 16 / 9 to morph a 16 / 9 chapter frame
@@ -43,13 +58,7 @@ export default function SceneIdentity({
       */}
       <div
         className="scn-identity-frame"
-        style={
-          {
-            /* The scene's own ground, so the frame does not go to paper under the light theme. */
-            "--scn-ground": scene.palette.ground,
-            ...(viewTransitionName ? { viewTransitionName } : {}),
-          } as React.CSSProperties
-        }
+        style={viewTransitionName ? { viewTransitionName } : undefined}
       >
         <svg
           aria-hidden="true"

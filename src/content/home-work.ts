@@ -50,9 +50,13 @@ export const selectedWork: readonly WorkCard[] = [
      * This card used to point at /work/transport-uq while carrying this name.
      * That was fine while both routes were titled "Master's Thesis: Uncertainty
      * for a Traffic GNN", and stopped being fine when the case study was
-     * renamed to "Uncertainty Quantification for Traffic Prediction (Project)"
-     * to end the duplicate title: the card would have named the thesis and
-     * opened the project.
+     * renamed to "Uncertainty Quantification for Traffic Prediction" to end the
+     * duplicate title: the card would have named the thesis and opened the
+     * project.
+     *
+     * That rename originally carried a "(Project)" suffix as the disambiguator.
+     * It was redundant - the two titles share no words in that order - and it
+     * read as an editing artefact in an h1, so it is gone.
      *
      * The name is the one worth keeping on a front page, so the destination
      * moved to match it rather than the other way round. /research/thesis is

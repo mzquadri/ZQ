@@ -279,7 +279,7 @@ test("canonical and structured metadata are present", async ({ page }) => {
     ["/learn", "Writing"],
     ["/learn/selective-prediction-when-models-should-abstain", "Selective Prediction: When Models Should Abstain"],
     /* The registry title, the same one the heading and the index now use. */
-    ["/work/transport-uq", "Uncertainty Quantification for Traffic Prediction (Project)"],
+    ["/work/transport-uq", "Uncertainty Quantification for Traffic Prediction"],
     ["/work/insureassist-rag", "InsureAssist: A Measured RAG Benchmark"],
     ["/work/mlops-reference-pipeline", "A Testable End-to-End MLOps Pipeline"],
     ["/work/hydrology-uq", "Uncertainty Quantification in Hydrology"],
@@ -3048,6 +3048,98 @@ test("the catalogue leads on from page to page and ends at the index", async ({ 
       expect(href, "the last catalogue page does not return to the index").toBe("/work");
     }
   }
+});
+
+/*
+ * Motion parity, as a structural test rather than a measured one.
+ *
+ * `tools/audit-motion-parity.mjs` is what measures whether a figure actually moves - it
+ * photographs each one at a series of scroll positions and compares frames, because reading the
+ * source says what was written and `getComputedStyle` reports `opacity: 1` for an element Chrome
+ * is painting at zero. That belongs in a tool a person runs, not in CI: it needs a GPU to see a
+ * WebGL world at all, and it takes minutes per page.
+ *
+ * What CI can hold is the structure the measurement depends on. Every one of these three absences
+ * had the same single cause - a missing SCENES entry - and between them they are what separated
+ * the seventeen catalogue pages from the nine chapters: no scrubbed stage, a flat hero figure
+ * instead of the project's own object, and a closing band with nothing in it.
+ */
+test("every work page has a scene of its own", () => {
+  const ordered = [...WORLD_ORDER, ...CATALOGUE_ORDER];
+  for (const slug of ordered) {
+    expect(SCENES[slug], `${slug} has no SCENES entry, so it can have no scrubbed stage`).toBeTruthy();
+  }
+
+  /*
+   * And no two pages share one. A scene is the project's identity object - it is what the hero
+   * rests on, what the stage scrubs and what the next-system band draws - so two slugs pointing at
+   * one definition would be two projects wearing the same face.
+   */
+  const seen = new Map<unknown, string>();
+  for (const slug of ordered) {
+    const first = seen.get(SCENES[slug]);
+    expect(first, `${slug} and ${first} are drawn by the same scene`).toBeUndefined();
+    seen.set(SCENES[slug], slug);
+  }
+});
+
+/*
+ * The three things a SCENES entry is supposed to produce, checked on a sample rather than on all
+ * twenty-six.
+ *
+ * The coverage question is settled above, without a browser, for every page. What is left is
+ * whether an entry still reaches the DOM, and that is a property of three shared components -
+ * CaseScene, CaseHero and NextSystem - not of any individual page. Walking fifty-two routes to
+ * re-answer it for each one added minutes to the suite and, on this machine, failed for memory
+ * rather than for cause.
+ *
+ * The sample is one page of each kind: a chapter on the dynamic route, a chapter on a bespoke
+ * route, the first catalogue page and one in the middle of it.
+ */
+const SCENE_SAMPLE = ["cifar10-cnn", "medico", "ai-engineering-portfolio", "battery-soc"];
+
+test("a work page renders the stage that scrubs its scene", async ({ page }) => {
+  for (const slug of SCENE_SAMPLE) {
+    await page.goto(`/work/${slug}`);
+    /*
+     * The pinned frame, not `.scn-canvas`: the canvas is created only once motion is wanted and
+     * the stage is near, so requiring it here would be requiring the enhancement rather than the
+     * thing it enhances.
+     */
+    await expect(page.locator(".scn-frame"), `${slug} renders no scrubbed scene stage`).toHaveCount(1);
+
+    /*
+     * The resting composition, in the markup, with its own ground painted behind it. A still that
+     * emits no backing rect is invisible in the light theme, which is how nine chapter pages
+     * shipped a hero nobody could read.
+     */
+    const still = page.locator(".scn-frame .scn-still-wide").first();
+    await expect(still, `${slug} has no resting still`).toHaveCount(1);
+    await expect(
+      still.locator("rect").first(),
+      `${slug}'s still paints no ground, so it vanishes on paper`,
+    ).toHaveCount(1);
+  }
+});
+
+test("a catalogue page opens on its own object and closes offering the next one", async ({ page }) => {
+  /* The bespoke routes do not use CaseHero, so the hero assertion is the dynamic route's. */
+  await page.goto("/work/ai-engineering-portfolio");
+  await expect(
+    page.locator(".case-stage .scn-identity"),
+    "a catalogue page opens on a flat figure rather than its scene",
+  ).toHaveCount(1);
+
+  /*
+   * The band's object, checked on the page *before* the last catalogue entry: the last one offers
+   * the index, which correctly has no object to preview.
+   */
+  const penultimate = CATALOGUE_ORDER[CATALOGUE_ORDER.length - 2];
+  await page.goto(`/work/${penultimate}`);
+  await expect(
+    page.locator(".next-system-object"),
+    `${penultimate} offers the next project without drawing it`,
+  ).toHaveCount(1);
 });
 
 /*

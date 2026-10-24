@@ -96,6 +96,27 @@ flagship pages rather than a retrofit, and is left alone.
   old routes render the *new* markup. A correct change looked broken until the
   stale process - started three hours and seven commits earlier - was killed.
   Check what is listening on 3100 before believing an e2e failure.
+* **This machine cannot run the whole Playwright suite in one go, and when it
+  fails it lies about why.** Two runs reported 324 and then 401 failures. None
+  were real: Windows had run out of process headroom and was refusing to launch
+  Chromium at all, with `worker process exited unexpectedly
+  (code=3221225794)` - `STATUS_DLL_INIT_FAILED` - and Playwright counts every
+  test it could not start as failed. At the time there were 480 processes and
+  0.84 GB free of 7.73 GB, of which 1.29 GB was 28 orphaned headless Chromium
+  processes left behind by earlier *killed* runs, plus 46 stale node processes
+  holding no listening socket.
+  The constraint is process headroom, not worker count: dropping from two
+  workers to one changed nothing, because Playwright launches a browser per
+  test file either way. What works is `--shard=i/N` with cleanup between
+  shards - eight shards at one worker gave 388 passed, 0 failed, 0 crashes,
+  where the single run had died after eight tests. `scratchpad/shard.sh` in a
+  session's temp directory is the loop; it reaps orphaned headless Chromium
+  between shards.
+* **Never rebuild while a suite is in flight.** Doing it produced four
+  confident-looking failures - a hydration error, a rating-curve assertion, a
+  keyboard test - that were all one cause: `npm start` was serving HTML from
+  the old build referencing chunks the new build had just deleted. The errors
+  name the symptom and say nothing about the cause.
 * `checkproject.mjs` reports `complete(above fold)` as a pass. For a page with
   a story that verdict is about the **hero** copy and says nothing about the
   story copy, which is the one that animates. Probe
@@ -324,6 +345,78 @@ intersection collapsed to a 604x173 slice of a 604x452 figure - the slice being
 the upper panel, whose band is deliberately too narrow to see. Three successive
 fixes to the window logic did not clear it. The tool is right about
 twenty-five pages and has a blind spot on this one.
+
+### Layer 3: a world per page, one page at a time
+
+19 pages lack one: the seventeen catalogue pages, `transport-uq` (whose world
+lives on `/research/thesis` rather than on its case study) and
+`mcp-policy-gateway` (which has never had one).
+
+Two pieces of shared work went in first, because both make the remaining
+eighteen cheaper and both were worth doing anyway.
+
+`WorldStage` holds the four gates and the scroll sampler that the five existing
+worlds each carried their own copy of - the copies had converged on the same
+hundred lines, differing in a class name and a minimum width. What is
+deliberately *not* shared is anything a reader can see move: the state list,
+the camera, the scene graph and the readout stay with each world, for the same
+reason `worlds/choreography.ts` keeps its primitives and nothing else. The
+canvas arrives as a render prop so each world keeps its own `dynamic()` import
+and its Three.js stays out of every other page's bundle.
+
+`tools/shoot-world.mjs` gained `--gpu`. It launched SwiftShader, which is
+exactly the renderer `worldRenderingIsWorthIt()` refuses to mount a world on,
+so every frame it had ever taken was of the flat fallback. Useful to be able to
+check deliberately; not what the tool's name says it does.
+
+| # | Page | World | Measured |
+|---|---|---|---|
+| 1 | `mcp-policy-gateway` | **done** | world 9/9, peak 13.7%, span 6% |
+| 2 | `transport-uq` | **done** | world 9/9, peak 38.2%, span 13% |
+| 3 | `ai-engineering-portfolio` | **done** | world 9/9, peak 14.4%, span 12% |
+
+**`mcp-policy-gateway`.** The page the before-audit found with nothing
+measurable moving at all. Its composition is depth-as-authorship: three planes
+along the axis the reader looks down - declarations, arguments, results - with
+the corpus's 47 cases coming toward them. Only the first plane fills in,
+because a tool description exists before any call and the document a tool
+returns does not; that absence is the project's premise, so it is drawn as
+absence rather than labelled. The three configurations then pull apart into
+lanes at their real caught and false-block shares, and the latency bars stand
+at 0.9, 4.9 and 190.7 microseconds. Every number is read from
+`gateway-world.ts`, which reads the repository's generated evidence files.
+
+Two things it cost, both worth recording:
+
+* **The camera was inside the thing it was looking at.** The first shot table
+  put it at z 2.4, between the second and third planes, and the composition
+  came out as two enormous clipped rectangles with the traffic scattered over
+  them. Depth only reads as depth from outside it; every value in that table is
+  now in front of the client.
+* **A contrast regression, caught by axe.** The world's flat figure is the
+  project's scene still, and `.scn-identity`'s caption defaults to the paper
+  ink - 3.33:1 against a world's dark ground. The fix needed the scene's
+  palette bound on the *figure* rather than on the frame: the caption is the
+  frame's sibling, so a custom property set there is invisible to it. That is
+  also why the first attempt at the fix changed nothing.
+
+**`transport-uq` reuses the thesis world rather than getting a new one.** These
+are two pages about one piece of work and the world draws the surrogate with
+its uncertainty on it, which is the subject of both. Building a second would
+mean two different pictures of one system - the exact mistake the opening
+figures were rewritten to end, when transport showed an extruded bar field on
+its case study and a flat isometric network on the homepage. It keeps its own
+`.thesis-world` class, which predates the shared one, so both the audit tool
+and `check-worlds.mjs` now name that class as well.
+
+**`ai-engineering-portfolio`.** Five solids sized by the whole of each
+component's commit history, with the share that is mine lit inside them. The
+rule the composition turns on is that the unlit part is never shrunk, never
+faded and never left out - which is the opposite of what a figure about one's
+own contribution usually does - and one of the five never lights at all. The
+components stay unnamed for the same reason they are unnamed everywhere else.
+Its first shot table cropped the largest volume out of frame: five volumes span
+6.7 units, so nothing may come closer than about eight.
 
 ### What is missing, grouped
 

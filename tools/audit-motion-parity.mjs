@@ -142,7 +142,8 @@ const CATALOGUE = [
  */
 const FIGURES = [
   ["scene", ".scn-frame"],
-  ["world", ".world-stage"],
+  /* The thesis world predates the shared class and keeps its own; check-worlds.mjs says the same. */
+  ["world", ".world-stage, .thesis-world"],
   ["story", ".case-story-stage"],
   ["section", "section.visual-section"],
 ];

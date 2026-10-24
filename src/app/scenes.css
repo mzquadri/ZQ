@@ -1733,6 +1733,20 @@
 }
 
 /*
+ * The same correction, for the same reason, where a world uses the scene still as its flat figure.
+ *
+ * A world's ground is dark whatever the theme, and this caption's default is the paper ink, so it
+ * landed at 3.33:1 - which axe failed, correctly. `--scn-ink-soft` is the scene's own palette,
+ * bound by SceneIdentity, so the caption is read against the ground it is actually painted on
+ * rather than against whichever one the theme happens to be using.
+ */
+.world-flat .scn-identity figcaption {
+  color: var(--scn-ink-soft, var(--stage-ink-soft));
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+/*
  * The two routes that carry the object in their hero get it as a framed panel.
  *
  * The comment here used to say those heroes were on paper, and the caption above was left on the

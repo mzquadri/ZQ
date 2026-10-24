@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import NextSystem from "@/components/cinema/NextSystem";
+import CaseScene from "@/components/cinema/CaseScene";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import MedicoWorld from "@/components/medico-world/MedicoWorld";
 import MedicoWorldFlat from "@/components/medico-world/MedicoWorldFlat";
@@ -86,6 +87,15 @@ export default function MedicoPage() {
           script; on a phone, a narrow window, or for a reader who declined motion, the coverage
           matrix is drawn once and completely instead.
         */}
+        {/*
+          The project's own object, opening under the reader's scroll, before the world below it.
+          The world is gated on viewport width, on motion being wanted and on a renderer that is
+          not a software rasteriser; this renders everywhere, because its resting composition is
+          SSR'd markup and the canvas over it is the enhancement. On a phone it is the only moving
+          stage this page has.
+        */}
+        <CaseScene slug="medico" />
+
         <div>
           <MedicoWorld flat={<MedicoWorldFlat />} />
         </div>
