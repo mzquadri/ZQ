@@ -89,6 +89,20 @@ function draw(s: Surface, progress: number, p: Palette) {
   });
 
   /*
+   * The two regions the crossing divides the axis into, drawn as regions.
+   *
+   * A threshold's whole content is "below this, do one thing; above it, do the other", and that is
+   * a statement about two areas rather than about a point. Shading them is also the only thing in
+   * this figure with enough area to register: measured as marks and rules the scene changed about
+   * one per cent end to end against the reference chapters' three to five.
+   */
+  if (cross > 0.02) {
+    const x = pxAt(breakEven);
+    s.rect(x0, top, (x - x0) * cross, height, { fill: p.warn, alpha: cross * 0.14 });
+    s.rect(x, top, (x1 - x) * cross, height, { fill: p.accent, alpha: cross * 0.14 });
+  }
+
+  /*
    * The two lines. Both are straight because both are expectations linear in one probability,
    * which is exactly why a single crossing exists and why it can be solved rather than searched.
    */

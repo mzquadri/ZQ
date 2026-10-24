@@ -25,6 +25,8 @@ export const WORLDS = [
   ["/work/supply-chain", ".world-stage", "supply"],
   ["/work/weather-eda", ".world-stage", "weather"],
   ["/work/water-quality", ".world-stage", "water"],
+  ["/work/insurance-claims-threshold", ".world-stage", "claims"],
+  ["/work/battery-soc", ".world-stage", "battery"],
   ["/work/cifar10-cnn", ".world-stage", "cifar"],
   ["/work/hydrology-uq", ".world-stage", "hydrology"],
   ["/work/insureassist-rag", ".world-stage", "insureassist"],

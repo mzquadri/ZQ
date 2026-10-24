@@ -390,6 +390,8 @@ check deliberately; not what the tool's name says it does.
 | 7 | `supply-chain` | **done** | world 9/9, peak 9.6%, span 6% |
 | 8 | `weather-eda` | **done** | world 11/11, peak 10.5%, span 4% |
 | 9 | `water-quality` | **done** | world 11/11, peak 15.2%, span 5% |
+| 10 | `insurance-claims-threshold` | **done** | world 11/11, peak 26.7%, span 10% |
+| 11 | `battery-soc` | **done** | world 11/11, peak 12.4%, span 14% |
 
 **`mcp-policy-gateway`.** The page the before-audit found with nothing
 measurable moving at all. Its composition is depth-as-authorship: three planes
@@ -479,15 +481,54 @@ looking:
   tuning: `aimY` is where the camera looks, so lifting a subject up the frame
   means aiming below it.
 
-Its 2D scene needed separate work for the same underlying reason - thin marks on
-a wide axis - and so did `weather-eda`'s. Both measured ~1% against the
-references' 2.6-5.3% offline, and both were fixed by giving the thing that
-changes *area*: filled interval bars instead of hairlines, leader bars instead
-of rules, and in both cases by drawing the **exclusion** rather than only the
-inclusion. The band is 0.0055 of F1 on an axis 0.2 wide, so shading what it
-rules out is both the bigger picture and the better argument; the half of the
-humidity axis that no city landed on is likewise the finding drawn as the
-absence it actually is.
+**`insurance-claims-threshold`.** Two planes that meet along a line. Both
+expectations are linear in one probability, so both are flat, so the threshold
+is a straight edge standing in space rather than a point on a chart - and it was
+there as soon as the four signed values were chosen, which is what makes
+"solved rather than searched for" something a reader can see. The default cut at
+one half stands as a wall 15.5 times further along the same axis, with the
+distance between them drawn on the floor. The surfaces thin out for the closing
+beat, because arithmetic on an illustrative matrix should not look like a
+measurement.
+
+**`battery-soc` folds its own cycle axis away, and that turned out to be the
+argument.** Voltage over state of charge and cycle number is a surface, and the
+repository ships the generator that defines it, so the sheet is `ocv` evaluated
+on a grid rather than a drawing of anything. Ageing tilts it by 0.02 V against a
+voltage axis almost a volt wide.
+
+The first close-up was wrong in a way worth recording. At a distance short
+enough to see a two per cent voltage gap, the sheet's near edge renders twice
+the size of its far edge, and a reader would take that perspective difference
+for the ageing. Collapsing the cycle axis to nothing during the beat leaves
+exactly what a gauge has - two curves on one voltage-against-charge plane, with
+no cycle number anywhere - so the only separation left on screen is the
+separation being claimed. The flat figure had already arrived at the same view
+by having no third axis to begin with.
+
+Its scene also had two labels printed over each other at the same baseline,
+which no test catches and only a rendered still shows.
+
+**Four 2D scenes needed the same fix for the same underlying reason, and the
+fix is worth generalising.** `water-quality`, `weather-eda`,
+`insurance-claims-threshold` and `battery-soc` all measured around one per cent
+against the reference chapters' 2.6 to 5.3 offline, and all four were thin marks
+and hairlines on a wide axis - true to the data and almost nothing to a
+difference metric averaging at thumbnail scale.
+
+What fixed every one of them was giving the thing that changes **area**, and in
+three of the four the honest way to do that was to draw the **exclusion** rather
+than only the inclusion:
+
+* the band consistent with all three contenders is 0.0055 of F1 on an axis 0.2
+  wide, so what it rules out is both the bigger picture and the better argument;
+* "every city the same direction" is a claim about an absence, so the half of
+  the humidity axis nothing landed on is shaded;
+* a threshold's whole content is two regions, so both regions are drawn;
+* and the band between the fresh and aged voltage curves is filled, because what
+  a reader is meant to see is a gap opening, and a gap is a region.
+
+Measured after: 1.9%, 5.0%, 10.4% and 1.5% in page, none reporting static.
 
 ### What is missing, grouped
 

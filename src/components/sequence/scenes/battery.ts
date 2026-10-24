@@ -140,11 +140,14 @@ function draw(s: Surface, progress: number, p: Palette) {
     const wl = sx(detail.from);
     const wr = sx(detail.to);
     s.rect(wl, top, (wr - wl) * zoom, height, { stroke: p.accent, width: 1, alpha: zoom * 0.6 });
-    s.text(x0, dy - s.unit * 0.026, `${detail.from} to ${detail.to} of charge, magnified ${detailMagnification}x`, {
+    /* Anchored right: the plot's own axis label sits at `x0` on this exact baseline, and the two
+     * printed over each other into an unreadable smear. */
+    s.text(x1, dy - s.unit * 0.026, `${detail.from} to ${detail.to} of charge, magnified ${detailMagnification}x`, {
       size: type * 0.8,
       fill: p.accent,
       alpha: zoom * 0.9,
       mono: true,
+      anchor: "end",
     });
 
     const detailCurve = (cycle: number): [number, number][] =>
@@ -152,6 +155,19 @@ function draw(s: Surface, progress: number, p: Palette) {
         const soc = detail.from + (i / (SAMPLES - 1)) * (detail.to - detail.from);
         return [dx(soc), dvy(ocv(soc, cycle))] as [number, number];
       });
+    /*
+     * The band between the two curves, filled.
+     *
+     * This region is the whole of what ageing costs, and at the magnification the window already
+     * declares it is the one thing in the figure with any area to it. Drawn as two strokes the
+     * detail panel changed under a per cent end to end against the reference chapters' three to
+     * five; what a reader is meant to see is a gap opening, and a gap is a region.
+     */
+    s.poly([...detailCurve(1), ...detailCurve(generator.cycles).reverse()], {
+      fill: p.warn,
+      close: true,
+      alpha: zoom * 0.28,
+    });
     s.poly(detailCurve(1), { stroke: p.accent, width: 2.5, alpha: zoom });
     s.poly(detailCurve(generator.cycles), { stroke: p.warn, width: 2.5, alpha: zoom });
 

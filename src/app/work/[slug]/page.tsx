@@ -25,6 +25,7 @@ import GatewayWorld from "@/components/gateway-world/GatewayWorld";
 import NlpWorld from "@/components/nlp-world/NlpWorld";
 import StatlearnWorld from "@/components/statlearn-world/StatlearnWorld";
 import SupplyWorld from "@/components/supply-world/SupplyWorld";
+import BatteryWorld from "@/components/battery-world/BatteryWorld";
 import ClaimsWorld from "@/components/claims-world/ClaimsWorld";
 import WaterWorld from "@/components/water-world/WaterWorld";
 import WeatherWorld from "@/components/weather-world/WeatherWorld";
@@ -281,6 +282,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "insurance-claims-threshold" ? (
           <ClaimsWorld flat={<SceneIdentity slug="insurance-claims-threshold" />} />
+        ) : null}
+
+        {/*
+          The generator's own voltage surface, evaluated rather than drawn. Ageing tilts it by two
+          per cent of its own height, which is why a lookup built on its fresh edge drifts and why
+          the beat that shows the drift is a magnification rather than an exaggeration.
+        */}
+        {project.slug === "battery-soc" ? (
+          <BatteryWorld flat={<SceneIdentity slug="battery-soc" />} />
         ) : null}
 
         {/*
