@@ -558,3 +558,48 @@ export const WORLD_ORDER: readonly string[] = [
   "streamflow-forecasting",
   "cifar10-cnn",
 ];
+
+/**
+ * The way through everything else.
+ *
+ * `WORLD_ORDER` is the curated nine, and it is load-bearing in two places beyond the "next
+ * system" link: it is the order the homepage index presents, and the seams between those detail
+ * routes are written to carry the eye from one of them into the next. Splicing seventeen more
+ * pages into it would rewrite both. So the rest of the work gets its own track.
+ *
+ * Without one, every page added after the exhibition dead-ended. `NextSystem` looked the slug up
+ * in `WORLD_ORDER`, found nothing and rendered nothing, which left a reader at the foot of a case
+ * study with no way on but the browser's back button.
+ *
+ * The order is the one `/work` already presents them in - `registryItems` follows the declaration
+ * order of `projects` - so the catalogue reads the same whether it is entered from the index or
+ * walked end to end. It is the index's order rather than a second opinion about it.
+ *
+ * It does not wrap, and that asymmetry is deliberate. Nine curated chapters are a loop worth
+ * closing, so `WORLD_ORDER` returns its last chapter to its first. Seventeen pages are a
+ * catalogue, and the honest end of a catalogue is the index rather than a lap back to the top of
+ * it: `NextSystem` sends the last entry to `/work`.
+ *
+ * Every world that is not a chapter belongs here. A page in neither track is not a dead end
+ * either - `NextSystem` offers it the index - but it is an oversight, and
+ * `tests/portfolio.spec.ts` fails on one.
+ */
+export const CATALOGUE_ORDER: readonly string[] = [
+  "ai-engineering-portfolio",
+  "jobhunter",
+  "nlp-transformers",
+  "statistical-learning",
+  "supply-chain",
+  "weather-eda",
+  "water-quality",
+  "insurance-claims-threshold",
+  "battery-soc",
+  "nn-identifiability",
+  "flood-lstm",
+  "audi-release-tracking",
+  "keras-pytorch-parity",
+  "eurostat-modal-split",
+  "bm25-rrf-java",
+  "munich-accident-forecasting",
+  "drift-aware-platform",
+];

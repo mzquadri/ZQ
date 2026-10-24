@@ -77,12 +77,25 @@ flagship pages rather than a retrofit, and is left alone.
   `VERCEL_ENV=production npm run build && npm run privacy:scan`; without that
   env var the scan reports pre-existing `[build]` offences on routes production
   does not emit, so a local run looks worse than CI rather than better.
+  The two names were `Legal KB Dashboard` and `Legal KB Health Service`, both
+  matching the single `ALWAYS` pattern `/legal[-\s]kb[-\s](health|dashboard)/i`,
+  and both only ever in `src/content/authorship-chapter.ts` as `counted[]`
+  labels - rendered on `/work/ai-engineering-portfolio` only, as the figure's
+  `.scene-auth-name` spans. Re-checked on 24 October 2026 against production:
+  all 64 sitemap routes fetched, zero matches for any `ALWAYS` term.
 * Scroll-driven progress is not committed to `getComputedStyle` until the next
   frame. A fixed `waitForTimeout(35)` after scrolling reads the *previous*
   frame, which on a long page (jobhunter is 9,700px at 390) reported a scene
   that animates perfectly well as `STATIC`. Wait on two `requestAnimationFrame`
   callbacks instead. Half an hour went into chasing a bug that was in the
   probe.
+* `playwright.config.ts` sets `reuseExistingServer: !CI`, so a `npm start` left
+  running on port 3100 by an earlier session is reused silently. A server holds
+  its route manifest from the build it started with while serving page files
+  from disk, which produces a genuinely confusing failure: new routes 404 while
+  old routes render the *new* markup. A correct change looked broken until the
+  stale process - started three hours and seven commits earlier - was killed.
+  Check what is listening on 3100 before believing an e2e failure.
 * `checkproject.mjs` reports `complete(above fold)` as a pass. For a page with
   a story that verdict is about the **hero** copy and says nothing about the
   story copy, which is the one that animates. Probe
@@ -91,14 +104,36 @@ flagship pages rather than a retrofit, and is left alone.
 
 ### Open, not yet decided
 
-* `WORLD_ORDER` contains only the nine homepage chapters, so `NextSystem`
-  returns null on every new project page: they dead-end with no "next system"
-  link. Extending it changes the curated homepage running order, which is a
-  design decision rather than a bug fix - raise it rather than silently
-  restructure.
 * `cifar10-cnn`, `hydrology-uq` and `streamflow-forecasting` report only four
   animations in their story body, which looks like the beat reveals alone.
   Check in Phase 1 whether their scene figures are actually staged.
+
+### Decided: two orders, not one
+
+The dead-end was real - `NextSystem` looked a slug up in `WORLD_ORDER`, found
+nothing and rendered nothing, so all seventeen new pages ended with no way on.
+The decision was to leave the homepage's running order exactly as it is and
+give everything else its own track, `CATALOGUE_ORDER`.
+
+* The catalogue order **is** the order `/work` already lists them in, which is
+  `registryItems` following the declaration order of `projects`. It is not a
+  second opinion about the ranking; a reader walking it end to end meets the
+  pages in the order the index showed them.
+* It **terminates rather than wraps**. Nine curated chapters are a loop worth
+  closing; seventeen catalogue pages are a list, and the end of a list is the
+  index. The last entry offers `/work` under the kicker "End of the catalogue",
+  and drops the duplicate "All work" action beneath it.
+* The first catalogue entry has no "previous" link. It deliberately does not
+  reach back into the chapters: two orders are two claims about the work, and a
+  link across the seam would imply one list.
+* `NextSystem` now never returns null. A slug in neither order - the withheld
+  employer study, which has no world entry - still gets the index. Three tests
+  in `portfolio.spec.ts` hold this: the two orders together account for every
+  world and neither claims a page twice; the catalogue walks page to page and
+  ends at `/work`; anything in neither order is still not a dead end.
+* Only the nine chapters have a `SCENES` object to preview, so the band is
+  one-column on catalogue pages (`[data-solo]`). Without that override the copy
+  sat in `1fr` of a two-column grid with 46% of the band empty beside it.
 
 ## Order of work
 

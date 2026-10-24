@@ -2694,7 +2694,8 @@
  * The way onward from a project.
  *
  * A dark band at the end of a case study, carrying the next system's own object rather than a
- * link list. It follows the manifest order and wraps; it is an offer, not a carousel.
+ * link list. It follows the manifest order for the nine chapters and the catalogue order for
+ * everything else; it is an offer, not a carousel.
  * ------------------------------------------------------------------------------------------- */
 
 .next-system {
@@ -2714,6 +2715,13 @@
 
 @media (min-width: 900px) {
   .next-system-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr); }
+
+  /*
+   * Only the nine chapters have a scene object to preview. Without the override the catalogue
+   * pages would still reserve the second column for one, which sets the copy in 1fr of a
+   * two-column grid and leaves 46% of the band empty next to it.
+   */
+  .next-system-inner[data-solo] { grid-template-columns: minmax(0, 1fr); }
 }
 
 .next-system-kicker {

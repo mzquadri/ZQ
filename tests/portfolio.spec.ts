@@ -3,7 +3,11 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { ecosystemRepositories } from "../src/content/ecosystem";
 import { site } from "../src/content/truth";
-import { WORLD_ORDER } from "../src/components/cinema/project-worlds";
+import {
+  CATALOGUE_ORDER,
+  PROJECT_WORLDS,
+  WORLD_ORDER,
+} from "../src/components/cinema/project-worlds";
 import { SCENES } from "../src/components/sequence/scenes";
 import { stages as cifarStages } from "../src/content/cifar-world";
 import { canonicalMlopsEvidence, mlopsReferenceRun, projects } from "../src/content/portfolio";
@@ -2997,6 +3001,67 @@ test("a project offers the next system rather than only the index", async ({ pag
     expect(href, `${REEL[i]} points at the wrong next system`).toContain(expected);
 
     await expect(nav.getByRole("link", { name: "All work" })).toHaveCount(1);
+  }
+});
+
+/*
+ * The two orders, checked against the manifest rather than against each other's length.
+ *
+ * This is the test for the failure the second order was added to fix, and it is a list test
+ * rather than a browser one because the fault is in the data: a page added to PROJECT_WORLDS and
+ * left out of both orders is reachable from /work and from nowhere else, which is how seventeen
+ * case studies came to have no "next system" link at all.
+ */
+test("both orders together account for every world, and neither claims a page twice", () => {
+  const chapters = new Set(WORLD_ORDER);
+  const catalogue = new Set(CATALOGUE_ORDER);
+
+  expect(chapters.size, "a chapter is listed twice").toBe(WORLD_ORDER.length);
+  expect(catalogue.size, "a catalogue entry is listed twice").toBe(CATALOGUE_ORDER.length);
+
+  for (const slug of CATALOGUE_ORDER) {
+    expect(chapters.has(slug), `${slug} is in both orders`).toBe(false);
+    expect(PROJECT_WORLDS[slug], `${slug} is ordered but has no world to preview`).toBeTruthy();
+  }
+
+  for (const slug of Object.keys(PROJECT_WORLDS)) {
+    expect(chapters.has(slug) || catalogue.has(slug), `${slug} is in neither order`).toBe(true);
+  }
+});
+
+test("the catalogue leads on from page to page and ends at the index", async ({ page }) => {
+  test.slow();
+  for (let i = 0; i < CATALOGUE_ORDER.length; i += 1) {
+    await page.goto(`/work/${CATALOGUE_ORDER[i]}`);
+    const nav = page.locator(".next-system");
+    await expect(nav, `${CATALOGUE_ORDER[i]} has no way onward`).toHaveCount(1);
+
+    const href = await nav.locator(".next-system-title a").getAttribute("href");
+    const following = CATALOGUE_ORDER[i + 1];
+    if (following) {
+      expect(href, `${CATALOGUE_ORDER[i]} points at the wrong next page`).toContain(following);
+    } else {
+      /*
+       * It terminates where WORLD_ORDER wraps. A lap back to the top of a seventeen-entry
+       * catalogue is not an offer, it is a loop the reader has to notice they are in.
+       */
+      expect(href, "the last catalogue page does not return to the index").toBe("/work");
+    }
+  }
+});
+
+/*
+ * Whatever is in neither order - normally just the withheld employer study, which has no world -
+ * still gets the index. Empty in a production build, where that study is not published at all.
+ */
+test("a case study in neither order is still not a dead end", async ({ page }) => {
+  const ordered = new Set([...WORLD_ORDER, ...CATALOGUE_ORDER]);
+  for (const project of projects) {
+    if (ordered.has(project.slug)) continue;
+    await page.goto(`/work/${project.slug}`);
+    const nav = page.locator(".next-system");
+    await expect(nav, `${project.slug} has no way onward`).toHaveCount(1);
+    await expect(nav.locator(".next-system-title a")).toHaveAttribute("href", "/work");
   }
 });
 
