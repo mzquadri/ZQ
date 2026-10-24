@@ -57,6 +57,16 @@ flagship pages rather than a retrofit, and is left alone.
 
 ### Traps that cost time here, worth not repeating
 
+* **The world caption's scrim is the stage's own colour, so it dims objects
+  without being visible.** `.world-caption` is `min(46rem, 64%)` wide with a
+  bottom-anchored gradient reaching `0.94` alpha, and anything a world draws in
+  the lower left comes out dark for no apparent reason. Sampling the background
+  next to it proves nothing - the scrim over the background *is* the background.
+  Aim the subject into the clear part of the frame; `water-world` does it with a
+  `PLATE_BIAS` share of the current frame width so it survives a zoom.
+* **A camera's vertical aim moves the subject the other way.** Pointing higher
+  puts the subject lower in the frame. Costly only because it looks like a
+  sign-flip you would never make.
 * Removing the *timeline* rather than the animation makes it worse. An
   animation whose named timeline resolves to nothing is inactive, and an
   inactive animation with `fill: both` holds its **first** keyframe - which
@@ -378,6 +388,8 @@ check deliberately; not what the tool's name says it does.
 | 5 | `nlp-transformers` | **done** | world 9/9, peak 14.5%, span 18% |
 | 6 | `statistical-learning` | **done** | world 9/9, peak 16.9%, span 16% |
 | 7 | `supply-chain` | **done** | world 9/9, peak 9.6%, span 6% |
+| 8 | `weather-eda` | **done** | world 11/11, peak 10.5%, span 4% |
+| 9 | `water-quality` | **done** | world 11/11, peak 15.2%, span 5% |
 
 **`mcp-policy-gateway`.** The page the before-audit found with nothing
 measurable moving at all. Its composition is depth-as-authorship: three planes
@@ -435,6 +447,47 @@ own contribution usually does - and one of the five never lights at all. The
 components stay unnamed for the same reason they are unnamed everywhere else.
 Its first shot table cropped the largest volume out of frame: five volumes span
 6.7 units, so nothing may come closer than about eight.
+
+**`weather-eda`.** A plane at zero and twelve marks. The temperature row
+straddles the plane; the humidity row does not touch it, and because zero is a
+solid object rather than a tick on an axis, "none of them crossed" is something
+the eye settles rather than something the caption claims.
+
+**`water-quality` cost four rebuilds of its own composition, and three of them
+were the same mistake.** Five models stacked in rank order, their
+one-standard-deviation intervals passing through a wall standing in the range of
+F1 consistent with all three contenders, with the one model the run does
+separate clear of it. Three things had to be found by measuring rather than by
+looking:
+
+* **The axis was too short before it was too long.** Four of the five models sit
+  inside 0.032 of F1, so an axis framed whole puts them on top of each other.
+  The axis is drawn at a scale where one standard deviation is a visible length
+  and the camera closes in by a factor of six instead - a zoom, not a
+  distortion. That needed `target` and `aimY` on the shot, so the camera can be
+  pointed along the axis rather than always at the origin.
+* **The caption scrim erases whatever is under it, invisibly.** `.world-caption`
+  is `min(46rem, 64%)` wide with a bottom-anchored gradient in the stage's *own*
+  colour, so it is undetectable over empty background and quietly took the one
+  model this world is about down to nine per cent alpha. Sampling the background
+  beside the mark proved nothing, because the scrim over the background is the
+  background. Half an hour went into depth-write and render-order theories
+  before the arithmetic on the pixel - 0.92 of the ground over a 0.95-alpha blue
+  - matched the gradient's own stop. **Any world whose subject reaches the lower
+  left has this problem and will not look like it has a problem.**
+* **Aiming higher moves the subject *down*.** Obvious in hindsight and not while
+  tuning: `aimY` is where the camera looks, so lifting a subject up the frame
+  means aiming below it.
+
+Its 2D scene needed separate work for the same underlying reason - thin marks on
+a wide axis - and so did `weather-eda`'s. Both measured ~1% against the
+references' 2.6-5.3% offline, and both were fixed by giving the thing that
+changes *area*: filled interval bars instead of hairlines, leader bars instead
+of rules, and in both cases by drawing the **exclusion** rather than only the
+inclusion. The band is 0.0055 of F1 on an axis 0.2 wide, so shading what it
+rules out is both the bigger picture and the better argument; the half of the
+humidity axis that no city landed on is likewise the finding drawn as the
+absence it actually is.
 
 ### What is missing, grouped
 

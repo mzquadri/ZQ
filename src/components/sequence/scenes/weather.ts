@@ -109,7 +109,7 @@ function draw(s: Surface, progress: number, p: Palette) {
       const v = value(city);
       const x = mid + (v / half) * (axisW / 2);
       const lift = (i % 2 === 0 ? -1 : 1) * s.unit * 0.026;
-      s.circle(x, y, s.unit * 0.015, {
+      s.circle(x, y, s.unit * 0.019, {
         fill: oneWay ? p.warn : p.accent,
         alpha: on * 0.95,
       });
@@ -118,10 +118,17 @@ function draw(s: Surface, progress: number, p: Palette) {
        * miss, which is the quantity, and the city name is what a reader needs to tell them apart.
        */
       if (configured > 0.02) {
-        s.line(mid, y, x, y, {
-          stroke: oneWay ? p.warn : p.accent,
-          width: 5,
-          alpha: on * configured * 0.8,
+        /*
+         * A bar rather than a rule. The six humidity misses sit between 2.20 and 2.53 on an axis
+         * six points wide, so the marks barely move and the leaders are most of what this figure
+         * has to change with: measured as hairlines the whole scene read as static against the
+         * reference chapters. Area, and the quantity is still the length.
+         */
+        const grow = on * configured;
+        const thick = s.unit * 0.042;
+        s.rect(Math.min(mid, x), y - thick * 0.5, Math.abs(x - mid) * grow, thick, {
+          fill: oneWay ? p.warn : p.accent,
+          alpha: grow * 0.7,
         });
       }
       /*
@@ -169,9 +176,26 @@ function draw(s: Surface, progress: number, p: Palette) {
   /* ---- the bias, named ---- */
   if (bias > 0.02 && humidityAllOneWay) {
     const y = s.h * b.humidity;
+    /*
+     * The half of the axis nothing landed on.
+     *
+     * "Every one of them, the same direction" is a statement about an absence, and an absence is
+     * hard to see among six marks that are nearly coincident anyway. Shading the side that stayed
+     * empty draws the absence itself, and it is derived from `humidityAllOneWay` rather than
+     * asserted, so a run that scattered would not shade anything.
+     */
+    const empty = s.unit * 0.13;
+    s.rect(x0, y - empty, (mid - x0) * bias, empty * 2, { fill: p.line, alpha: bias * 0.55 });
+    s.text(x0 + (mid - x0) / 2, y - empty - s.unit * 0.022, "no city landed here", {
+      size: type * 0.8,
+      fill: p.soft,
+      alpha: bias * 0.8,
+      mono: true,
+      anchor: "middle",
+    });
     const lo = mid + (Number(text.humidityLow) / humidityAxis) * (axisW / 2);
     const hi = mid + (Number(text.humidityHigh) / humidityAxis) * (axisW / 2);
-    s.rect(lo, y - s.unit * 0.055, (hi - lo) * bias, s.unit * 0.11, {
+    s.rect(lo, y - s.unit * 0.07, (hi - lo) * bias, s.unit * 0.14, {
       fill: p.warn,
       alpha: bias * 0.38,
     });
@@ -197,13 +221,13 @@ function draw(s: Surface, progress: number, p: Palette) {
       const fromX = x0 + i * step + step / 2;
       const toX = x0 + to * step + step / 2;
       const height = s.unit * 0.05;
-      s.line(fromX, y, toX, y + height, {
+      s.line(fromX, y, toX, y + height * on, {
         stroke: amplitudeOrderRecovered ? p.accent : p.warn,
-        width: 4,
+        width: 7,
         alpha: on * 0.85,
       });
       s.circle(fromX, y, s.unit * 0.009, { fill: p.soft, alpha: on });
-      s.circle(toX, y + height, s.unit * 0.011, { fill: p.accent, alpha: on });
+      s.circle(toX, y + height * on, s.unit * 0.013, { fill: p.accent, alpha: on });
     });
     s.text(x0, y - s.unit * 0.022, "configured swing", {
       size: type * 0.8,

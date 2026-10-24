@@ -93,9 +93,9 @@ function draw(s: Surface, progress: number, p: Palette) {
     const to = px(commonBand.to);
     const top = s.h * b.rows - s.unit * 0.03;
     const height = s.h * b.rowStep * (withInterval.length - 0.4);
-    s.rect(from, top, (to - from) * band, height, { fill: p.accent, alpha: band * 0.16 });
-    s.line(from, top, from, top + height, { stroke: p.accent, width: 1, alpha: band * 0.7 });
-    s.line(to, top, to, top + height, { stroke: p.accent, width: 1, alpha: band * 0.7 });
+    s.rect(from, top, (to - from) * band, height, { fill: p.accent, alpha: band * 0.3 });
+    s.line(from, top, from, top + height, { stroke: p.accent, width: 2, alpha: band * 0.8 });
+    s.line(to, top, to, top + height, { stroke: p.accent, width: 2, alpha: band * 0.8 });
   }
 
   /* ---- the five models ---- */
@@ -160,18 +160,23 @@ function draw(s: Surface, progress: number, p: Palette) {
     const hi = px(model.cvMean + sd);
 
     if (bars > 0.02) {
+      /*
+       * Filled, not a hairline.
+       *
+       * Drawn as a two-pixel rule first, and measured: at the thumbnail scale the motion audit
+       * works in, a line that thin averages into the ground and the whole figure read as static
+       * against the reference chapters. The interval is an amount of uncertainty, so giving it
+       * area is also the more honest drawing of it.
+       */
       const half = (hi - lo) * 0.5 * bars;
-      s.line(mean - half, y, mean + half, y, {
-        stroke: isSeparated && apart > 0.3 ? p.accent : p.ink,
-        width: 2,
-        alpha: bars * 0.8,
-        cap: "round",
-      });
+      const thick = s.unit * (s.portrait ? 0.034 : 0.03);
+      const tone = isSeparated && apart > 0.3 ? p.accent : p.ink;
+      s.rect(mean - half, y - thick * 0.5, half * 2, thick, { fill: tone, alpha: bars * 0.55 });
       for (const end of [mean - half, mean + half]) {
-        s.line(end, y - s.unit * 0.012, end, y + s.unit * 0.012, {
-          stroke: isSeparated && apart > 0.3 ? p.accent : p.ink,
-          width: 1.5,
-          alpha: bars * 0.8,
+        s.line(end, y - s.unit * 0.014, end, y + s.unit * 0.014, {
+          stroke: tone,
+          width: 2,
+          alpha: bars * 0.85,
         });
       }
     }
@@ -191,6 +196,33 @@ function draw(s: Surface, progress: number, p: Palette) {
     }
   });
 
+  /*
+   * What the band rules out, drawn over the rows it rules out.
+   *
+   * The band is 0.0055 of F1 on an axis 0.2 wide, so as a shaded sliver it is true to the
+   * measurement and nearly invisible as a picture. What the beat actually says is that everything
+   * outside those five thousandths is inconsistent with at least one contender, so the excluded
+   * ranges are what closes in and the sliver is what the three are left standing in. Drawn after
+   * the rows because it has to dim them: an exclusion that leaves the excluded marks at full
+   * strength is a decoration rather than an argument.
+   */
+  /*
+   * It lifts again for the two beats that need what it is covering: the model the README bolds
+   * with no interval to show, and the model that sits clear of the band on purpose. Dimming is
+   * the argument while the argument is about the band, and in the way once it is not.
+   */
+  const excluded = band * (1 - missing * 0.6) * (1 - apart * 0.92);
+  if (excluded > 0.02) {
+    const top = s.h * (b.rows - 0.08);
+    const height = s.h * b.rowStep * (ranked.length + 0.2);
+    for (const [from, to] of [
+      [x0, px(commonBand.from)],
+      [px(commonBand.to), x1],
+    ] as const) {
+      s.rect(from, top, to - from, height, { fill: p.ground, alpha: excluded * 0.78 });
+    }
+  }
+
   /* ---- the one model the run does separate ---- */
   if (apart > 0.02) {
     const i = ranked.findIndex((m) => m.name === separated.name);
@@ -207,20 +239,20 @@ function draw(s: Surface, progress: number, p: Palette) {
   /* ---- the closest gap against the widest spread ---- */
   if (spread > 0.02) {
     const y = s.h * b.foot;
-    const scale = axisW * 0.5;
+    const scale = axisW * 0.85;
     const gapW = (closestGap / (axis.to - axis.from)) * scale;
     const sdW = (widestSd.cvSd / (axis.to - axis.from)) * scale;
-    s.rect(x0, y, gapW * spread, s.unit * 0.018, { fill: p.ink, alpha: spread * 0.8 });
-    s.text(x0 + gapW + s.unit * 0.012, y + s.unit * 0.009, `closest gap ${closestGap.toFixed(3)}`, {
+    s.rect(x0, y, gapW * spread, s.unit * 0.055, { fill: p.ink, alpha: spread * 0.8 });
+    s.text(x0 + gapW + s.unit * 0.012, y + s.unit * 0.016, `closest gap ${closestGap.toFixed(3)}`, {
       size: type * 0.85,
       fill: p.ink,
       alpha: spread,
       mono: true,
       baseline: "middle",
     });
-    const y2 = y + s.unit * 0.04;
-    s.rect(x0, y2, sdW * spread, s.unit * 0.018, { fill: p.warn, alpha: spread * 0.75 });
-    s.text(x0 + sdW + s.unit * 0.012, y2 + s.unit * 0.009, `fold spread ${widestSd.cvSd.toFixed(4)}`, {
+    const y2 = y + s.unit * 0.085;
+    s.rect(x0, y2, sdW * spread, s.unit * 0.055, { fill: p.warn, alpha: spread * 0.75 });
+    s.text(x0 + sdW + s.unit * 0.012, y2 + s.unit * 0.016, `fold spread ${widestSd.cvSd.toFixed(4)}`, {
       size: type * 0.85,
       fill: p.warn,
       alpha: spread,

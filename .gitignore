@@ -132,6 +132,10 @@ __pycache__/
 # the site in the history and grow the clone for nothing.
 tools/shots/
 
+# The same, for the frames tools/shoot-world.mjs and tools/preview-scene.ts
+# write while a world is being composed. Default output lands here.
+.shots/
+
 # Lighthouse JSON reports. Large, machine-specific, and regenerated per run.
 tools/lh/
 .env*.local

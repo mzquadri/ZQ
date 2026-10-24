@@ -25,6 +25,9 @@ import GatewayWorld from "@/components/gateway-world/GatewayWorld";
 import NlpWorld from "@/components/nlp-world/NlpWorld";
 import StatlearnWorld from "@/components/statlearn-world/StatlearnWorld";
 import SupplyWorld from "@/components/supply-world/SupplyWorld";
+import ClaimsWorld from "@/components/claims-world/ClaimsWorld";
+import WaterWorld from "@/components/water-world/WaterWorld";
+import WeatherWorld from "@/components/weather-world/WeatherWorld";
 import ThesisWorld from "@/components/thesis-world/ThesisWorld";
 import ThesisWorldFlat from "@/components/thesis-world/ThesisWorldFlat";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
@@ -253,6 +256,31 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "supply-chain" ? (
           <SupplyWorld flat={<SceneIdentity slug="supply-chain" />} />
+        ) : null}
+
+        {/*
+          Zero as a solid plane, with two rows of six cities either side of it. The temperature row
+          straddles it; the humidity row never touches it, which is the finding.
+        */}
+        {project.slug === "weather-eda" ? (
+          <WeatherWorld flat={<SceneIdentity slug="weather-eda" />} />
+        ) : null}
+
+        {/*
+          Five intervals and one slab. The slab is the range of F1 consistent with every contender
+          at once, and the intervals that meet it run through it rather than stopping at it.
+        */}
+        {project.slug === "water-quality" ? (
+          <WaterWorld flat={<SceneIdentity slug="water-quality" />} />
+        ) : null}
+
+        {/*
+          Two planes that meet along a line. Both expectations are linear in one probability, so
+          their intersection is a straight edge standing in the air - the only threshold the
+          repository's illustrative cost matrix justifies, and one that needs no data to place.
+        */}
+        {project.slug === "insurance-claims-threshold" ? (
+          <ClaimsWorld flat={<SceneIdentity slug="insurance-claims-threshold" />} />
         ) : null}
 
         {/*
