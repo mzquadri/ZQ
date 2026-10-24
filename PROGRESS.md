@@ -376,6 +376,8 @@ check deliberately; not what the tool's name says it does.
 | 3 | `ai-engineering-portfolio` | **done** | world 9/9, peak 14.4%, span 12% |
 | 4 | `jobhunter` | **done** | world 9/9, peak 21.5%, span 24% |
 | 5 | `nlp-transformers` | **done** | world 9/9, peak 14.5%, span 18% |
+| 6 | `statistical-learning` | **done** | world 9/9, peak 16.9%, span 16% |
+| 7 | `supply-chain` | **done** | world 9/9, peak 9.6%, span 6% |
 
 **`mcp-policy-gateway`.** The page the before-audit found with nothing
 measurable moving at all. Its composition is depth-as-authorship: three planes

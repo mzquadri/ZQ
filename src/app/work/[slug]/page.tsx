@@ -23,6 +23,8 @@ import AuthorshipWorld from "@/components/authorship-world/AuthorshipWorld";
 import CareerWorld from "@/components/career-world/CareerWorld";
 import GatewayWorld from "@/components/gateway-world/GatewayWorld";
 import NlpWorld from "@/components/nlp-world/NlpWorld";
+import StatlearnWorld from "@/components/statlearn-world/StatlearnWorld";
+import SupplyWorld from "@/components/supply-world/SupplyWorld";
 import ThesisWorld from "@/components/thesis-world/ThesisWorld";
 import ThesisWorldFlat from "@/components/thesis-world/ThesisWorldFlat";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
@@ -233,6 +235,24 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         */}
         {project.slug === "nlp-transformers" ? (
           <NlpWorld flat={<SceneIdentity slug="nlp-transformers" />} />
+        ) : null}
+
+        {/*
+          Sixty tiles, lit by count rather than by percentage, because a count out of sixty is the
+          unit the held-out set has. The one-point margin between the two searches is one tile,
+          lifted out of the plane - the only thing in that world with any height.
+        */}
+        {project.slug === "statistical-learning" ? (
+          <StatlearnWorld flat={<SceneIdentity slug="statistical-learning" />} />
+        ) : null}
+
+        {/*
+          One composite bar, its distinct source columns standing behind it, and the ties between.
+          Two of those ties land on the same column, which is the finding and is a thing depth can
+          show better than a sentence can.
+        */}
+        {project.slug === "supply-chain" ? (
+          <SupplyWorld flat={<SceneIdentity slug="supply-chain" />} />
         ) : null}
 
         {/*
