@@ -3924,3 +3924,100 @@
 @media (max-width: 560px) {
   .scene-flood-keys { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ---- Identifiability: the same function, relabelled -----------------------------------------
+ *
+ * No measurement appears here, because the repository publishes none. The figure is the
+ * construction the code performs: a network, the same network with its hidden units relabelled
+ * and some of them sign-flipped, and the verdict of comparing the two.
+ */
+
+.scene-ident { display: grid; gap: 0.9rem; width: 100%; }
+
+.scene-ident-pair {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr 2.2rem;
+  gap: 0.8rem;
+  align-items: stretch;
+}
+
+.scene-ident-col {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-ident-unit {
+  display: grid;
+  place-items: center;
+  height: 1.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.68rem;
+  color: var(--ink-soft);
+  background: color-mix(in oklab, var(--paper-raised) 70%, transparent);
+}
+
+/* A unit carrying a sign flip, marked rather than left to the caption. */
+.scene-ident-unit[data-flip] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scene-ident-map { position: relative; }
+
+/*
+ * The relabelling is carried by the numbers in the right-hand column, not by
+ * lines crossing between them: row three on the left reads 3 and the row
+ * beside it reads 1, which is the mapping. An earlier version leaned each line
+ * towards where its unit lands, which computed to nothing because the two ends
+ * were percentages of different boxes, and read no better when it did not.
+ */
+.scene-ident-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--from);
+  height: 1px;
+  transform-origin: left center;
+  background: var(--line-strong);
+}
+
+.scene-ident-line[data-flip] { background: var(--accent); }
+
+.scene-ident-verdicts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scene-ident-verdict {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.scene-ident-verdict strong {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+
+.scene-ident-verdict[data-agrees] { border-color: var(--accent); }
+.scene-ident-verdict[data-agrees] strong { color: var(--accent); }
+
+.scene-ident-note { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--ink-soft); }
+
+@media (max-width: 560px) {
+  .scene-ident-verdicts { grid-template-columns: 1fr; }
+}

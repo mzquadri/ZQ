@@ -50,6 +50,14 @@ import {
   split as floodSplit,
 } from "./flood-chapter";
 import {
+  activations as identActivations,
+  diagnostics as identDiagnostics,
+  references as identReferences,
+  repository as identRepository,
+  seminar as identSeminar,
+  symmetries as identSymmetries,
+} from "./identifiability-chapter";
+import {
   closestGap as parityClosest,
   parity as parityFacts,
   repository as parityRepository,
@@ -576,6 +584,65 @@ const authoredProjects: readonly Project[] = [
     ],
     nextStep:
       "Slice-aware evaluation. The dataset pools Amazon, IMDb, and Yelp sentences into one score, and an aggregate number hides per-segment failure. The next evidence milestone is per-source metrics on the held-out split, and a gate that can refuse a model which is strong overall but weak on one source.",
+  },
+  {
+    slug: "nn-identifiability",
+    title: "Same Answers, Different Weights",
+    eyebrow: "Mathematics seminar",
+    classification: "Academic research",
+    authors: [{ name: site.name, url: site.github }],
+    projectRole: "Seminar author",
+    institution: "Technical University of Munich",
+    summary:
+      "A prototype for a question from a TUM mathematics seminar: if two networks agree on every input, must their parameters agree too, and what can a finite numerical check actually tell you about that.",
+    metaDescription:
+      "A seminar prototype on neural network identifiability: constructing a network related by a hidden-unit permutation and sign flip, and checking it against an unrelated one.",
+    problem:
+      "Two networks with identical weights always compute the same function. The reverse does not follow, and a fully connected network can hide equivalent behaviour inside different weights, which is what makes a weight worth interpreting an open question rather than an obvious one.",
+    contribution:
+      "Built the prototype that constructs a network related to another by relabelling its hidden units and flipping signs, verifies that the two agree numerically on sampled inputs and that their parameters align under that relabelling, and runs the same comparison against an unrelated network so that the check is one that can fail.",
+    workflow: [
+      "Build a small fully connected network",
+      "Relabel its hidden units and flip signs",
+      "Check the two agree on sampled inputs",
+      "Check the parameters align under the relabelling",
+      "Reject an unrelated network put through the same test",
+    ],
+    tools: ["PyTorch", "NumPy", "Jupyter", "unittest"],
+    evidence: [
+      {
+        label: "What is published",
+        value: "no numerical finding",
+        note: "The repository's experiments and results directories intentionally hold no versioned configurations, no trained models and no findings, and it makes no claim of experimentally establishing identifiability for any trained model or activation family. That is its own scope statement, and this page claims nothing beyond it.",
+      },
+      {
+        label: "What the code constructs",
+        value: `${identSymmetries.length} transformations`,
+        note: `${identSymmetries.map((x) => x.label).join(", then ")}. The constructed network is then checked for numerical output agreement and parameter alignment against the one it came from.`,
+      },
+      {
+        label: "What the diagnostics look for",
+        value: `${identDiagnostics.length} checks`,
+        note: `${identDiagnostics.join(", ")}. They are finite and numerical, on sampled inputs, across ${identActivations.join(", ")}.`,
+      },
+    ],
+    quality: [
+      "The comparison is run against an unrelated network as well as a related one, so it is a check that can fail rather than one that always passes",
+      "Output agreement and parameter alignment are checked separately, because the first without the second is the whole phenomenon being studied",
+      "The scope statement is in the README rather than left implicit, and it is the first thing after the question",
+      "The activation names in the code are described as the assumptions this prototype considers, with the formal conditions left to the cited papers",
+    ],
+    limitations: [
+      "Finite numerical diagnostics on sampled inputs. They can find patterns such as exact clone pairs or inactive contributions; they do not prove global functional equivalence",
+      "They do not satisfy every hypothesis of any published identifiability theorem, and the repository says so rather than implying otherwise",
+      "Source code and exploratory notebooks, not a validated empirical benchmark. Nothing is versioned under experiments or results",
+      "A seminar prototype. The mathematics it points at belongs to the cited papers rather than to this repository",
+    ],
+    learned:
+      "A check that always passes is not a check. Constructing the equivalent network is the easy half; the half that makes it mean anything is running the identical comparison against a network that should be rejected, and watching it be rejected.",
+    repository: identRepository,
+    systemSummary: `A seminar prototype supervised at ${identSeminar.institution}. One module builds networks, one constructs the relabelled and sign-flipped relatives, one runs the diagnostics, and the notebooks are where they are explored rather than where results are kept.`,
+    nextStep: `Hold a diagnostic to a theorem. The references the repository cites, ${identReferences.map((r) => `${r.author} ${r.year}`).join(", ")}, state conditions the prototype's checks do not test, and the useful next step is to make one check correspond to one hypothesis rather than to an intuition about it.`,
   },
   {
     slug: "flood-lstm",

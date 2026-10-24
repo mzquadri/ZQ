@@ -30,8 +30,8 @@ reduced motion, commit, push, deploy, verify live, then move on.
 | 5 | `tf-keras-vs-pytorch-cifar10` | `keras-pytorch-parity` | **done** |
 | 6 | `audi-release-tracking-case-study` | `audi-release-tracking` | **done** |
 | 7 | `Deep-Learning-Flood-Prediction-LSTM` | `flood-lstm` | **done** |
-| 8 | `Neural-Network-Identifiability-Analysis` | `nn-identifiability` | next |
-| 9 | `Battery-SOC-Estimation-ML` | `battery-soc` | todo |
+| 8 | `Neural-Network-Identifiability-Analysis` | `nn-identifiability` | **done** |
+| 9 | `Battery-SOC-Estimation-ML` | `battery-soc` | next |
 | 10 | `Insurance-Claims-Prediction-ML` | `insurance-claims-threshold` | todo |
 | 11 | `ML-Water-Quality-Classification` | `water-quality` | todo |
 | 12 | `Weather-Data-Analytics-EDA` | `weather-eda` | todo |
