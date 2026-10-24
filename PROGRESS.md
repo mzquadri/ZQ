@@ -83,6 +83,19 @@ Still open, for Phase 1 rather than now:
 - `transport-uq` reports static only because the probe reads its flat SVG,
   which is `opacity: 0` behind the WebGL canvas that replaced it. Not a defect.
 
+## Do not use `git add -A` in this tree
+
+Another session works in this repository at the same time. Committing with
+`git add -A` swept two of its untracked, half-finished test files into a
+commit of mine and pushed them. They referenced fields that did not exist yet,
+so `tsc --noEmit` failed, and `npm run check` is both the CI gate and the
+Vercel build command: the production build errored. The previous good
+deployment stayed live throughout, and the fix was to untrack the two files
+while leaving them on disk.
+
+Stage explicitly from now on, by path, and run the check against what is
+actually staged rather than against the working tree.
+
 ## After the new pages
 
 | Phase | What | State |
