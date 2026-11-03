@@ -1056,9 +1056,16 @@ check(
 
 const standaloneSlugs = new Set(standaloneWork.map((work) => work.slug));
 
+/*
+ * Looked up in `allProjects`, not `projects`. A diagram may belong to a confidential draft, which
+ * `projects` drops in a production build. The registry is the same in every environment, so the
+ * check has to be too; against the filtered list it passes in CI and fails only on Vercel.
+ */
+const diagramProjectBySlug = new Map(allProjects.map((project) => [project.slug, project]));
+
 for (const diagram of allDiagrams) {
   const label = `Diagram "${diagram.slug}"`;
-  const project = projectBySlug.get(diagram.slug);
+  const project = diagramProjectBySlug.get(diagram.slug);
 
   check(
     project !== undefined || standaloneSlugs.has(diagram.slug),

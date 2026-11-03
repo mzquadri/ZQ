@@ -70,21 +70,23 @@ export default function ArchDiagram({ diagram }: { diagram: ProjectDiagram }) {
 
   /* Scoped, because two diagrams can appear on one page and markers are document-global. */
   const uid = `arch-${diagram.slug}`;
-  const titleId = `${uid}-title`;
   const captionId = `${uid}-caption`;
 
   const markerKinds = ["data", "control", "feedback", "refused"] as const;
 
   return (
     <figure className={styles.figure} style={{ "--diagram-accent": diagram.accent } as React.CSSProperties}>
+      {/*
+       * Named with aria-label, never a <title> child: React 19 treats <title> as document metadata
+       * and hoists it, which is the hydration failure portfolio.spec.ts guards against.
+       */}
       <svg
-        aria-labelledby={`${titleId} ${captionId}`}
+        aria-describedby={captionId}
+        aria-label={diagram.title}
         className={styles.svg}
         role="img"
         viewBox={`0 0 ${width} ${height}`}
       >
-        <title id={titleId}>{diagram.title}</title>
-
         <defs>
           {markerKinds.map((kind) => (
             <marker
@@ -165,6 +167,9 @@ export default function ArchDiagram({ diagram }: { diagram: ProjectDiagram }) {
       {/*
        * The figure in words.
        *
+       * The label is a paragraph, not a heading. This component lands at different depths on
+       * different pages, so any fixed level skips one somewhere and fails heading order.
+       *
        * Always rendered, never behind a disclosure. It was a `<details>` for one draft, which was
        * wrong in both directions: on a narrow screen, where the drawing is withdrawn and this list
        * *is* the figure, a closed `<details>` left the reader with a summary and nothing else -
@@ -177,7 +182,7 @@ export default function ArchDiagram({ diagram }: { diagram: ProjectDiagram }) {
        * only form of the diagram that survives being copied into a plain-text email.
        */}
       <div className={styles.key}>
-        <h3 className={styles.keyHeading}>This diagram in words</h3>
+        <p className={styles.keyHeading}>This diagram in words</p>
         <ol className={styles.keyList}>
           {placed.map((node) => (
             <li key={node.id}>

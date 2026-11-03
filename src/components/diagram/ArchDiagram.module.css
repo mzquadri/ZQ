@@ -201,12 +201,10 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  opacity: 0.75;
 }
 
 .keyTools {
   font-size: 0.86em;
-  opacity: 0.85;
 }
 
 /*
