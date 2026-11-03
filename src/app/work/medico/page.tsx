@@ -4,7 +4,8 @@ import Link from "next/link";
 import NextSystem from "@/components/cinema/NextSystem";
 import CaseScene from "@/components/cinema/CaseScene";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
-import ArchDiagram from "@/components/diagram/ArchDiagram";
+import PinnedShowcase from "@/components/showcase/PinnedShowcase";
+import { pinnedStories } from "@/content/pinned-stories";
 import { medicoDiagram } from "@/content/diagrams/medico";
 import MedicoWorld from "@/components/medico-world/MedicoWorld";
 import MedicoWorldFlat from "@/components/medico-world/MedicoWorldFlat";
@@ -99,9 +100,7 @@ export default function MedicoPage() {
         <CaseScene slug="medico" />
 
         {/* What the system is made of, before what it does. Same position as on a case study. */}
-        <section className="section-wrap visual-section" aria-label="AI Radiologist: architecture">
-          <ArchDiagram diagram={medicoDiagram} />
-        </section>
+        <PinnedShowcase diagram={medicoDiagram} story={pinnedStories["medico"]} />
 
         <div>
           <MedicoWorld flat={<MedicoWorldFlat />} />

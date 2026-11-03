@@ -161,6 +161,14 @@
  * The figure in words
  * ------------------------------------------------------------------------------------------- */
 
+.title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
 .caption {
   margin-top: 0.9rem;
   color: var(--ink-soft);

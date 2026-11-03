@@ -1,0 +1,44 @@
+/* A drawing needs more width than the scene figures, or its labels fall below a legible size. */
+.inner {
+  width: min(100% - 3rem, 88rem);
+}
+
+.body {
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 0.75fr);
+}
+
+.key {
+  margin-top: clamp(2rem, 5vh, 3.5rem);
+  max-width: 62rem;
+}
+
+/* Under this width the drawing cannot hold its column, so nothing pins. */
+@media (max-width: 1100px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .body > :global(.case-story-stage) {
+    position: static;
+    margin-bottom: 2rem;
+  }
+
+  .body :global(.case-story-beat),
+  .body :global(.case-story-caveat) {
+    min-height: 0;
+  }
+}
+
+/*
+ * The lines draw while the figure is pinned. Same reason as the zoom: a pinned element's own view
+ * progress stalls, so these read the story body's timeline. The percentages sit inside the stretch
+ * of that timeline during which the stage is actually stuck.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1101px) {
+    .body :global(.mz-scrub) {
+      animation-timeline: --chapter;
+      animation-range: cover calc(26% + var(--i, 0) * 1.6%) cover calc(36% + var(--i, 0) * 1.8%);
+    }
+  }
+}

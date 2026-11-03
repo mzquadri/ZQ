@@ -5,7 +5,9 @@ import JsonLd from "@/components/JsonLd";
 import CaseHero from "@/components/cinema/CaseHero";
 import CaseStory from "@/components/cinema/CaseStory";
 import ArchDiagram from "@/components/diagram/ArchDiagram";
+import PinnedShowcase from "@/components/showcase/PinnedShowcase";
 import { getDiagram } from "@/content/diagrams";
+import { pinnedStories } from "@/content/pinned-stories";
 import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld";
 import HydrologyWorld from "@/components/hydrology-world/HydrologyWorld";
 import HydrologyWorldFlat from "@/components/hydrology-world/HydrologyWorldFlat";
@@ -226,7 +228,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           Driven by the registry rather than by a slug test, so adding a diagram file is the whole
           of adding a diagram. Projects without one are unchanged.
         */}
-        {diagram ? (
+        {diagram && project.slug === "mcp-policy-gateway" ? (
+          <PinnedShowcase diagram={diagram} story={pinnedStories["mcp-policy-gateway"]} />
+        ) : diagram ? (
           <section className="section-wrap visual-section" aria-label={`${project.title}: architecture`}>
             <ArchDiagram diagram={diagram} />
           </section>

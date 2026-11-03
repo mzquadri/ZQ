@@ -3782,3 +3782,41 @@ test("the renderer probe creates one context and hands it back", async ({ browse
     await context.close();
   }
 });
+
+for (const route of ["/work/supply-chain", "/work/transport-uq", "/work/audi-release-tracking"]) {
+  test(`${route} puts its architecture on the shared showcase`, async ({ page }) => {
+    await page.goto(route);
+    await expect(page.locator("section.visual-section [data-showcase][data-zoom]")).toHaveCount(1);
+  });
+}
+
+for (const route of ["/work/medico", "/work/reliable-knowledge-systems", "/work/mcp-policy-gateway"]) {
+  test(`${route} pins its architecture beside the argument`, async ({ page, isMobile }) => {
+    test.skip(isMobile, "Nothing pins below 1100px, by design");
+    await page.goto(route);
+    const stage = page.locator(".case-story-stage:has([data-showcase][data-pinned])");
+    await expect(stage).toHaveCount(1);
+    await expect(stage).toHaveCSS("position", "sticky");
+    await expect(page.getByText("This diagram in words")).toHaveCount(1);
+  });
+}
+
+test("the showcase tilts for a pointer and settles back", async ({ page, isMobile }) => {
+  test.skip(isMobile, "Tilt needs a fine pointer");
+  await page.goto("/work/supply-chain");
+  const stage = page.locator("section.visual-section [data-showcase]");
+  await stage.scrollIntoViewIfNeeded();
+  const plane = stage.locator("> div");
+  await stage.hover({ position: { x: 20, y: 20 } });
+  await expect(plane).toHaveAttribute("data-tilting", "");
+  await page.mouse.move(0, 0);
+  await expect(plane).not.toHaveAttribute("data-tilting", "");
+});
+
+test("the showcase stays flat and complete under reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/work/supply-chain");
+  const stage = page.locator("section.visual-section [data-showcase]");
+  await expect(stage).toHaveCSS("animation-name", "none");
+  await expect(stage).toHaveCSS("transform", "none");
+});

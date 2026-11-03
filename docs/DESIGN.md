@@ -117,6 +117,12 @@ reads as machine-made.
 `prefers-reduced-motion` removes the hero animation entirely and leaves the
 final frame, which is the informative one.
 
+**One deliberate exception, added in November 2026.** Project figures and index
+cards share `ProjectShowcase3D`: a tilt with glare that answers the pointer, and
+on figures a zoom bound to scroll position. Both answer something the reader
+did, neither needs a library, and with no fine pointer or with reduced motion
+the figure is flat and complete.
+
 ## What this deliberately is not
 
 - Not a warm cream page with a high-contrast serif and a clay accent.

@@ -130,7 +130,8 @@ export const selective = [
 
 /** Can the uncertainty find the worst errors at all? Ranking quality, by error percentile. */
 export const errorDetection = [
-  { percentile: 90, auroc: 0.7561, auprc: 0.3115, cutoff: 9.93 },
+  // Corrected to the audited top-10% values in the thesis repository, docs/CORRIGENDUM.md C7a.
+  { percentile: 90, auroc: 0.7585, auprc: 0.3148, cutoff: 9.93 },
   { percentile: 95, auroc: 0.7764, auprc: 0.215, cutoff: 14.49 },
   { percentile: 99, auroc: 0.8339, auprc: 0.1001, cutoff: 28.0 },
 ] as const;

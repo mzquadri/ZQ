@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import ProjectShowcase3D from "@/components/showcase/ProjectShowcase3D";
+
 import { Mark } from "./marks";
 import styles from "./PortfolioIndex.module.css";
 
@@ -91,17 +93,20 @@ export default function PortfolioIndex({
 
           return (
             <li className={styles.item} key={item.slug} style={style}>
-              {item.external ? (
-                /* An outbound card says so in its accessible name, not only by an icon. */
-                <a className={styles.link} href={item.href}>
-                  {inner}
-                  <span className={styles.external}>Opens the case-study site</span>
-                </a>
-              ) : (
-                <Link className={styles.link} href={item.href}>
-                  {inner}
-                </Link>
-              )}
+              {/* Tilt only. Zoom stays off, because the rule above is that nothing here is staged. */}
+              <ProjectShowcase3D fill zoom={false}>
+                {item.external ? (
+                  /* An outbound card says so in its accessible name, not only by an icon. */
+                  <a className={styles.link} href={item.href}>
+                    {inner}
+                    <span className={styles.external}>Opens the case-study site</span>
+                  </a>
+                ) : (
+                  <Link className={styles.link} href={item.href}>
+                    {inner}
+                  </Link>
+                )}
+              </ProjectShowcase3D>
             </li>
           );
         })}

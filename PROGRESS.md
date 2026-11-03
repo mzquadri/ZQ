@@ -630,6 +630,17 @@ Everything else in the before-state list is closed: all 26 work pages render a
 scrubbed scene stage, 25 of 26 carry a bespoke world that measures 11 of 11
 moving scroll steps, and no page has a figure the audit calls static.
 
+## The shared showcase
+
+Added 3 November 2026. `ProjectShowcase3D` gives every architecture figure a
+scroll-bound zoom, a pointer tilt with glare and a floating title. Index cards
+get the tilt only. `PinnedShowcase` gives `medico`,
+`reliable-knowledge-systems` and `mcp-policy-gateway` the pinned section they
+were missing, with the diagram standing in for the flat figure they do not have.
+
+Lenis and GSAP were left out: the zoom and the line drawing stay on CSS scroll
+timelines, for the reasons at the top of `motion.css`.
+
 ## Order of work
 
 One project at a time, fully finished before the next: read the repository,

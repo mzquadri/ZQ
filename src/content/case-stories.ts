@@ -32,7 +32,8 @@ export interface CaseStory {
  *
  * It is the one project whose world entry returns no flat figure - it was added after the
  * procedural scene runtime and SCENES is the only rendering it has ever had. A story here would
- * pin an empty stage beside the argument, so it keeps its sequence object in the hero instead.
+ * pin an empty stage beside the argument, so it pins its architecture diagram instead: see
+ * `pinned-stories.ts`, which does the same for the two pages with bespoke routes.
  */
 
 export const caseStories: Readonly<Record<string, CaseStory>> = {

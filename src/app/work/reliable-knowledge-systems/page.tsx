@@ -10,7 +10,8 @@ import NextSystem from "@/components/cinema/NextSystem";
 import CaseScene from "@/components/cinema/CaseScene";
 import { VerbScene } from "@/components/cinema/scenes";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
-import ArchDiagram from "@/components/diagram/ArchDiagram";
+import PinnedShowcase from "@/components/showcase/PinnedShowcase";
+import { pinnedStories } from "@/content/pinned-stories";
 import { reliableKnowledgeDiagram } from "@/content/diagrams/reliable-knowledge-systems";
 import ReliableWorld from "@/components/reliable-world/ReliableWorld";
 import ReliableWorldFlat from "@/components/reliable-world/ReliableWorldFlat";
@@ -99,9 +100,7 @@ export default function ReliableKnowledgeSystemsPage() {
         <CaseScene slug="reliable-knowledge-systems" />
 
         {/* What the system is made of, before what it does. Same position as on a case study. */}
-        <section className="section-wrap visual-section" aria-label="Legal Knowledge Base: architecture">
-          <ArchDiagram diagram={reliableKnowledgeDiagram} />
-        </section>
+        <PinnedShowcase diagram={reliableKnowledgeDiagram} story={pinnedStories["reliable-knowledge-systems"]} />
 
         <div>
           <ReliableWorld flat={<ReliableWorldFlat />} />

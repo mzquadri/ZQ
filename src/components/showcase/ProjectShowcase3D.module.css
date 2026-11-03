@@ -1,0 +1,91 @@
+/*
+ * The rule from motion.css holds here too: the resting state is the finished state. Keyframes only
+ * say where the figure comes from, so a browser without scroll timelines, or a reader who has asked
+ * for less motion, gets the figure at full size and flat.
+ */
+
+.stage {
+  perspective: 1200px;
+}
+
+.stage[data-fill] {
+  height: 100%;
+}
+
+.plane {
+  position: relative;
+  transform: rotateX(var(--ps-rx, 0deg)) rotateY(var(--ps-ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform var(--dur-base) var(--ease-exit);
+}
+
+.stage[data-fill] .plane {
+  height: 100%;
+}
+
+/* Tracking the pointer closely while it moves; the slower transition is for settling back. */
+.plane[data-tilting] {
+  transition-duration: var(--dur-instant);
+}
+
+/* A layer's distance from the plane. `transform-style` above is what makes these real depth. */
+.plane [data-depth="near"] {
+  transform: translateZ(32px);
+}
+
+.plane [data-depth="mid"] {
+  transform: translateZ(14px);
+}
+
+.glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--ps-gx, 50%) var(--ps-gy, 50%),
+    color-mix(in oklab, var(--ink) 11%, transparent),
+    transparent 58%
+  );
+  transform: translateZ(40px);
+  transition: opacity var(--dur-base) var(--ease-exit);
+}
+
+.plane[data-tilting] .glare {
+  opacity: 1;
+}
+
+@keyframes ps-dolly {
+  from {
+    transform: perspective(1200px) translate3d(0, 0, -120px) scale(0.85);
+  }
+  30%,
+  70% {
+    transform: perspective(1200px) translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: perspective(1200px) translate3d(0, 0, -60px) scale(0.94);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .stage[data-zoom] {
+      animation: ps-dolly linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    /*
+     * Pinned, a figure stops moving against the viewport, so its own view progress stalls while
+     * the reader is looking at it. It reads the story body's timeline instead, which scenes.css
+     * declares. Above 1100px only, because below that PinnedShowcase does not pin.
+     */
+    @media (min-width: 1101px) {
+      .stage[data-zoom][data-pinned] {
+        animation-timeline: --chapter;
+      }
+    }
+  }
+}
