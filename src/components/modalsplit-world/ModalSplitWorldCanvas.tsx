@@ -3,6 +3,8 @@
 import { Canvas } from "@react-three/fiber";
 import type { RefObject } from "react";
 
+import PortraitFit from "@/components/world/PortraitFit";
+
 import ModalSplitWorldScene, { type Frame } from "./ModalSplitWorldScene";
 
 /** Everything that touches WebGL, behind one dynamic import. Same boundary as the other worlds. */
@@ -22,6 +24,7 @@ export default function ModalSplitWorldCanvas({
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >
+      <PortraitFit />
       <ModalSplitWorldScene frame={frame} />
     </Canvas>
   );

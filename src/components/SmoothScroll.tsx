@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { worldRenderingIsWorthIt } from "@/components/world/webgl-support";
 import { Lenis } from "@/vendor/lenis/lenis";
 import "@/vendor/lenis/lenis.css";
 
@@ -16,6 +17,9 @@ import "@/vendor/lenis/lenis.css";
  */
 export default function SmoothScroll() {
   useEffect(() => {
+    // Read by phone-motion.css, which only pins a 3D stage on a device that can draw one.
+    document.documentElement.dataset.webgl = worldRenderingIsWorthIt() ? "yes" : "no";
+
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const wheel = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     if (calm || !wheel) return;

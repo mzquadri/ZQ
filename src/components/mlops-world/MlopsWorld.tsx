@@ -24,7 +24,7 @@ import type { Frame } from "./MlopsWorldScene";
 
 const WorldCanvas = dynamic(() => import("./MlopsWorldCanvas"), { ssr: false });
 
-const MIN_WIDTH = 1000;
+const MIN_WIDTH = 320;
 
 export default function MlopsWorld({ flat }: { flat: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);

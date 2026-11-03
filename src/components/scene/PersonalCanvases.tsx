@@ -14,7 +14,7 @@ import type { Camera } from "@/components/scene/projector";
  * the better experience rather than merely the cheaper one.
  */
 
-const MIN_WIDTH = 900;
+const MIN_WIDTH = 320;
 
 function useCamera(overrides: Partial<Camera>) {
   return useMemo<Camera>(

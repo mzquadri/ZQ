@@ -23,7 +23,7 @@ const VectorSpaceScene = dynamic(() => import("./VectorSpaceScene"), {
   loading: () => null,
 });
 
-const MIN_WIDTH = 720;
+const MIN_WIDTH = 320;
 
 function webglAvailable() {
   try {

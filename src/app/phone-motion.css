@@ -1,0 +1,80 @@
+/*
+ * The same motion on a phone as on a desktop.
+ *
+ * `data-webgl` is set on <html> by SmoothScroll once the device has proved it has a real renderer.
+ * Until then, and on a device that does not, the stacked flat layout in pages.css stands, so a weak
+ * phone gets a complete page rather than an empty pinned stage.
+ */
+
+@media (max-width: 999px) and (prefers-reduced-motion: no-preference) {
+  html[data-webgl="yes"] .world-track {
+    height: 560vh;
+  }
+
+  html[data-webgl="yes"] .thesis-world-track {
+    height: 520vh;
+  }
+
+  html[data-webgl="yes"] .world-viewport,
+  html[data-webgl="yes"] .thesis-world-viewport {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    padding: 0;
+  }
+
+  /* The figure the renderer replaces, which must not show behind the scene on a short screen. */
+  html[data-webgl="yes"] .world-stage .world-flat {
+    visibility: hidden;
+  }
+
+  html[data-webgl="yes"] .world-stage .world-caption,
+  html[data-webgl="yes"] .thesis-world-caption {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: none;
+    max-height: 44svh;
+    margin: 0;
+    padding: 4rem 1.25rem 1.5rem;
+    overflow: hidden;
+    background: linear-gradient(to top, rgb(10 13 15 / 0.94) 62%, rgb(10 13 15 / 0));
+    background-size: 100% 100%;
+  }
+
+  /* The headline carries the state on a phone. The detail panels need a desktop's room. */
+  html[data-webgl="yes"] .world-stage .world-readout,
+  html[data-webgl="yes"] .world-stage .world-readout-list,
+  html[data-webgl="yes"] .world-stage .world-formula {
+    display: none;
+  }
+
+  /*
+   * The pinned story. The figure holds the top of the screen and the steps scroll beneath it.
+   * PinnedShowcase keeps its own layout, because its figure is the vertical flow below.
+   */
+  .case-story-body:not([class*="PinnedShowcase"]) > .case-story-stage {
+    position: sticky;
+    top: 4.25rem;
+    z-index: 2;
+    max-height: 40svh;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    overflow: hidden;
+    background: var(--stage);
+    border-bottom: 1px solid var(--stage-line);
+  }
+
+  .case-story-body:not([class*="PinnedShowcase"]) .case-story-figure :is(.scene-svg, .scene-pipeline, .scene-featuremap) {
+    max-height: 36svh;
+  }
+
+  .case-story-beat,
+  .case-story-caveat {
+    min-height: 38svh;
+  }
+}

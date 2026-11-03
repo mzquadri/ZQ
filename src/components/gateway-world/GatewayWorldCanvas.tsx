@@ -3,6 +3,8 @@
 import { Canvas } from "@react-three/fiber";
 import type { RefObject } from "react";
 
+import PortraitFit from "@/components/world/PortraitFit";
+
 import GatewayWorldScene, { type Frame } from "./GatewayWorldScene";
 
 /** Everything that touches WebGL, behind one dynamic import. Same boundary as the other worlds. */
@@ -27,6 +29,7 @@ export default function GatewayWorldCanvas({
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >
+      <PortraitFit />
       <GatewayWorldScene frame={frame} />
     </Canvas>
   );

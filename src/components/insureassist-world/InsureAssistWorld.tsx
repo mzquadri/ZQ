@@ -31,7 +31,7 @@ import type { Frame } from "./InsureAssistWorldScene";
 
 const WorldCanvas = dynamic(() => import("./InsureAssistWorldCanvas"), { ssr: false });
 
-const MIN_WIDTH = 1000;
+const MIN_WIDTH = 320;
 
 export default function InsureAssistWorld({ flat }: { flat: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);

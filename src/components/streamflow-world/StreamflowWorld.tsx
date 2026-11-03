@@ -22,7 +22,7 @@ import type { Frame } from "./StreamflowWorldScene";
 
 const WorldCanvas = dynamic(() => import("./StreamflowWorldCanvas"), { ssr: false });
 
-const MIN_WIDTH = 1000;
+const MIN_WIDTH = 320;
 
 export default function StreamflowWorld({ flat }: { flat: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);

@@ -22,7 +22,7 @@ import type { Frame } from "./CifarWorldScene";
 
 const WorldCanvas = dynamic(() => import("./CifarWorldCanvas"), { ssr: false });
 
-const MIN_WIDTH = 1000;
+const MIN_WIDTH = 320;
 
 export default function CifarWorld({ flat }: { flat: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);

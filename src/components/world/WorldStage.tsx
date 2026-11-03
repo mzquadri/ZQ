@@ -46,7 +46,7 @@ export default function WorldStage<K extends string>({
   flat,
   readout,
   canvas,
-  minWidth = 1000,
+  minWidth = 320,
 }: {
   states: readonly WorldState<K>[];
   /** The state the reader is inside, for the caption and the live region. */

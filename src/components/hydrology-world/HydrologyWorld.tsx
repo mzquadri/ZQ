@@ -22,7 +22,7 @@ import type { Frame } from "./HydrologyWorldScene";
 
 const WorldCanvas = dynamic(() => import("./HydrologyWorldCanvas"), { ssr: false });
 
-const MIN_WIDTH = 1000;
+const MIN_WIDTH = 320;
 
 export default function HydrologyWorld({ flat }: { flat: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);

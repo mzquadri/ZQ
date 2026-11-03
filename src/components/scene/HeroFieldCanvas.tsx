@@ -205,7 +205,7 @@ export default function HeroFieldCanvas({ flat }: { flat: ReactNode }) {
       className="hero-field"
       draw={draw}
       fallback={flat}
-      minWidth={900}
+      minWidth={320}
       trackSelector=".cine-hero"
       label="The forecast and its uncertainty interval drawn as a surface running into depth: the interval widens where the signal is hard, narrows where it is not, and the region the model declines to answer in is marked."
     />

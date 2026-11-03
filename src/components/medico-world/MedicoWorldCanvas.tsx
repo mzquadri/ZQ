@@ -3,6 +3,8 @@
 import { Canvas } from "@react-three/fiber";
 import type { RefObject } from "react";
 
+import PortraitFit from "@/components/world/PortraitFit";
+
 import MedicoWorldScene, { type Frame } from "./MedicoWorldScene";
 
 /**
@@ -28,6 +30,7 @@ export default function MedicoWorldCanvas({
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >
+      <PortraitFit />
       <MedicoWorldScene frame={frame} />
     </Canvas>
   );

@@ -231,8 +231,65 @@
     margin-top: 0;
   }
 
+  /* On a phone the words become the flow chart: boxes joined by a line that draws as you scroll. */
   .keyList {
-    padding-left: 1rem;
+    gap: 1.5rem;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .keyList > li {
+    position: relative;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--diagram-accent, var(--line));
+    border-radius: 8px;
+  }
+
+  .keyList > li + li::before {
+    content: "";
+    position: absolute;
+    left: 1.2rem;
+    top: calc(-1.5rem - 1px);
+    width: 2px;
+    height: 1.5rem;
+    background: var(--diagram-accent, var(--ink));
+    transform-origin: top;
+  }
+}
+
+@keyframes arch-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes arch-box {
+  from {
+    opacity: 0.15;
+    transform: perspective(700px) translate3d(0, 1rem, -50px) rotateX(14deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(700px) translate3d(0, 0, 0) rotateX(0deg);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (max-width: 720px) {
+    .keyList > li {
+      animation: arch-box linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+
+    .keyList > li + li::before {
+      animation: arch-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
   }
 }
 

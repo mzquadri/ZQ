@@ -36,7 +36,7 @@ import type { Camera } from "@/components/scene/projector";
 const SHARED_CAMERA: Camera = { distance: 13, focal: 1150, yaw: -0.95, pitch: 0.3 };
 
 /** Below this the flat figure is the better experience, not merely the cheaper one. */
-const MIN_WIDTH = 900;
+const MIN_WIDTH = 320;
 
 function useCamera(overrides?: Partial<Camera>) {
   return useMemo<Camera>(() => ({ ...SHARED_CAMERA, ...overrides }), [overrides]);

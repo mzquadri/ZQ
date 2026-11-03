@@ -29,7 +29,7 @@ import type { Frame } from "./ThesisWorldScene";
 
 const WorldCanvas = dynamic(() => import("./ThesisWorldCanvas"), { ssr: false });
 
-const MIN_WIDTH = 1000;
+const MIN_WIDTH = 320;
 
 export default function ThesisWorld({ flat }: { flat: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);

@@ -32,7 +32,7 @@
  * A layer's distance from the plane. `transform-style` above is what makes these real depth.
  * Only where the plane can tilt: at rest, perspective alone would just nudge the layer out of line.
  */
-@media (hover: hover) and (pointer: fine) {
+@media (hover: hover) and (pointer: fine), (hover: none) {
   .plane [data-depth="near"] {
     transform: translateZ(32px);
   }
@@ -74,12 +74,68 @@
   }
 }
 
+@keyframes ps-sway {
+  from {
+    transform: rotateX(16deg) rotateY(-7deg);
+  }
+  50% {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(-12deg) rotateY(6deg);
+  }
+}
+
+@keyframes ps-sheen {
+  from {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ps-card {
+  from {
+    transform: rotateX(32deg) translateZ(-70px);
+    opacity: 0.35;
+  }
+  to {
+    transform: rotateX(0deg) translateZ(0);
+    opacity: 1;
+  }
+}
+
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .stage[data-zoom] {
       animation: ps-dolly linear both;
       animation-timeline: view();
       animation-range: cover 0% cover 100%;
+    }
+
+    /* A phone has no pointer to tilt with, so scroll position turns the plane instead. */
+    @media (hover: none) {
+      .stage[data-zoom] .plane {
+        animation: ps-sway linear both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+      }
+
+      .stage[data-zoom] .glare {
+        animation: ps-sheen linear both;
+        animation-timeline: view();
+        animation-range: cover 20% cover 80%;
+      }
+
+      .stage:not([data-zoom]) .plane {
+        animation: ps-card linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 90%;
+      }
     }
 
     /*

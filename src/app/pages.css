@@ -1160,7 +1160,7 @@
 /*
  * The in-flow caption belongs to readers who will never be given a scene.
  *
- * A world mounts its renderer only at 1000px and above with motion allowed, and until it does the
+ * On a desktop a world mounts its renderer with motion allowed, and until it does the
  * stage renders `data-mode="static"`. This rule used to apply there too, which meant that on a wide
  * desktop the caption sat in the grid flow before mount and became an absolute overlay after it -
  * a positioning-mode change on a live page, measured at up to 0.106 full-scroll CLS with the

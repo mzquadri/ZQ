@@ -3,6 +3,8 @@
 import { Canvas } from "@react-three/fiber";
 import type { RefObject } from "react";
 
+import PortraitFit from "@/components/world/PortraitFit";
+
 import ThesisWorldScene, { type Frame } from "./ThesisWorldScene";
 
 /**
@@ -32,6 +34,7 @@ export default function ThesisWorldCanvas({
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >
+      <PortraitFit />
       <ThesisWorldScene frame={frame} />
     </Canvas>
   );

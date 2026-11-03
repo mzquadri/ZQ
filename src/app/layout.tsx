@@ -10,6 +10,8 @@ import "./scenes.css";
 import "./home.css";
 import "./rail.css";
 import "./pages.css";
+import "./reveal.css";
+import "./phone-motion.css";
 
 /*
  * Archivo and IBM Plex Mono, self-hosted and subset to Latin-1.

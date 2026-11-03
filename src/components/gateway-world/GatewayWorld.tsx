@@ -29,7 +29,7 @@ export default function GatewayWorld({ flat }: { flat: ReactNode }) {
       active={active}
       className="gateway-world"
       flat={flat}
-      minWidth={1100}
+      minWidth={320}
       readout={(state) => <Readout state={state} />}
       canvas={({ frame, frameloop }) => <WorldCanvas frame={frame} frameloop={frameloop} />}
     />
