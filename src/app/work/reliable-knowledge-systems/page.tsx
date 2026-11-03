@@ -11,6 +11,7 @@ import CaseScene from "@/components/cinema/CaseScene";
 import { VerbScene } from "@/components/cinema/scenes";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import PinnedShowcase from "@/components/showcase/PinnedShowcase";
+import ProjectStory3D from "@/components/story/ProjectStory3D";
 import { pinnedStories } from "@/content/pinned-stories";
 import { reliableKnowledgeDiagram } from "@/content/diagrams/reliable-knowledge-systems";
 import ReliableWorld from "@/components/reliable-world/ReliableWorld";
@@ -97,6 +98,8 @@ export default function ReliableKnowledgeSystemsPage() {
           SSR'd markup and the canvas over it is the enhancement. On a phone it is the only moving
           stage this page has.
         */}
+        <ProjectStory3D slug="reliable-knowledge-systems" />
+
         <CaseScene slug="reliable-knowledge-systems" />
 
         {/* What the system is made of, before what it does. Same position as on a case study. */}

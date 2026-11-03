@@ -4874,3 +4874,20 @@
   .scene-auth-class,
   .scene-auth-notclaimed li { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* The long background on a project page, closed until a reader asks for it. */
+.case-more {
+  margin-block: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+.case-more > summary {
+  cursor: pointer;
+  width: fit-content;
+  font-weight: 600;
+  text-underline-offset: 0.2em;
+}
+
+.case-more > .section-wrap {
+  width: 100%;
+  padding-inline: 0;
+}

@@ -5,6 +5,7 @@ import NextSystem from "@/components/cinema/NextSystem";
 import CaseScene from "@/components/cinema/CaseScene";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import PinnedShowcase from "@/components/showcase/PinnedShowcase";
+import ProjectStory3D from "@/components/story/ProjectStory3D";
 import { pinnedStories } from "@/content/pinned-stories";
 import { medicoDiagram } from "@/content/diagrams/medico";
 import MedicoWorld from "@/components/medico-world/MedicoWorld";
@@ -97,6 +98,8 @@ export default function MedicoPage() {
           SSR'd markup and the canvas over it is the enhancement. On a phone it is the only moving
           stage this page has.
         */}
+        <ProjectStory3D repository={REPOSITORY} slug="medico" />
+
         <CaseScene slug="medico" />
 
         {/* What the system is made of, before what it does. Same position as on a case study. */}

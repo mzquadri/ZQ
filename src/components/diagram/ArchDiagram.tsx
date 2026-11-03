@@ -135,6 +135,13 @@ export default function ArchDiagram({
                       { "--mz-anim": "mz-connect", "--path-length": "100", "--i": `${i}` } as React.CSSProperties
                     }
                   />
+                  {/* A pulse of data running the line, on the same scroll position that draws it. */}
+                  <circle
+                    aria-hidden="true"
+                    className={styles.pulse}
+                    r="4"
+                    style={{ offsetPath: `path("${d}")`, "--i": `${i}` } as React.CSSProperties}
+                  />
                   {/*
                    * Deliberately not scrubbed. The shared keyframes move elements by `--lift-md`,
                    * which is a rem length; inside a viewBox that is user units, so a label would

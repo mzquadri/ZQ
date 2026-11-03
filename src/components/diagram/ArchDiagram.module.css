@@ -235,3 +235,40 @@
     padding-left: 1rem;
   }
 }
+
+/*
+ * Data moving through the system, and each box lighting as it passes. At rest a pulse is hidden,
+ * so a browser without scroll timelines or a reader asking for less motion gets the plain drawing.
+ */
+.pulse {
+  fill: var(--diagram-accent, var(--ink));
+  opacity: 0;
+  offset-rotate: 0deg;
+}
+
+@keyframes arch-pulse {
+  0% { offset-distance: 0%; opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+@keyframes arch-light {
+  0%, 100% { stroke-width: 1.2; }
+  50% { stroke-width: 3; stroke: var(--diagram-accent, var(--ink)); }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pulse {
+      animation: arch-pulse linear both;
+      animation-timeline: view();
+      animation-range: cover calc(24% + var(--i, 0) * 2%) cover calc(44% + var(--i, 0) * 2%);
+    }
+
+    .node rect {
+      animation: arch-light linear both;
+      animation-timeline: view();
+      animation-range: cover 30% cover 62%;
+    }
+  }
+}

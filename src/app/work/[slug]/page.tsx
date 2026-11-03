@@ -5,7 +5,9 @@ import JsonLd from "@/components/JsonLd";
 import CaseHero from "@/components/cinema/CaseHero";
 import CaseStory from "@/components/cinema/CaseStory";
 import ArchDiagram from "@/components/diagram/ArchDiagram";
+import { PROJECT_WORLDS } from "@/components/cinema/project-worlds";
 import PinnedShowcase from "@/components/showcase/PinnedShowcase";
+import ProjectStory3D from "@/components/story/ProjectStory3D";
 import { getDiagram } from "@/content/diagrams";
 import { pinnedStories } from "@/content/pinned-stories";
 import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld";
@@ -193,6 +195,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </a>
           )}
         </CaseHero>
+
+        <ProjectStory3D
+          accent={PROJECT_WORLDS[project.slug]?.accent}
+          repository={isEmployerConfidential(project) ? undefined : project.repository}
+          slug={project.slug}
+        />
 
         {/*
           The InsureAssist world runs full-bleed, before the prose and before the hero copy has
@@ -509,18 +517,22 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </section>
         ) : null}
 
-        <section className="section-wrap case-section two-column-copy">
-          <div>
-            <p className="section-index">Problem</p>
-            <h2>Why this work exists</h2>
-            <p>{project.problem}</p>
-          </div>
-          <div>
-            <p className="section-index">Contribution</p>
-            <h2>What I can claim</h2>
-            <p>{project.contribution}</p>
-          </div>
-        </section>
+        {/* The three beats above carry this now, so the full text waits to be asked for. */}
+        <details className="section-wrap case-more">
+          <summary>Read the full background</summary>
+          <section className="section-wrap case-section two-column-copy">
+            <div>
+              <p className="section-index">Problem</p>
+              <h2>Why this work exists</h2>
+              <p>{project.problem}</p>
+            </div>
+            <div>
+              <p className="section-index">Contribution</p>
+              <h2>What I can claim</h2>
+              <p>{project.contribution}</p>
+            </div>
+          </section>
+        </details>
 
         {project.slug === "legal-knowledge-platform" ? (
           <section aria-label="Why a count is not a check" className="section-wrap visual-section">

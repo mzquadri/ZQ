@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import JsonLd from "@/components/JsonLd";
+import SmoothScroll from "@/components/SmoothScroll";
 import { site } from "@/content/portfolio";
 import "./globals.css";
 import "./motion.css";
@@ -236,6 +237,7 @@ export default function RootLayout({
             description: site.description,
           }}
         />
+        <SmoothScroll />
         {children}
       </body>
     </html>

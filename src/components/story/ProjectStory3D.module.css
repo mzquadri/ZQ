@@ -1,0 +1,198 @@
+/* At rest this is three cards in a row. Everything that moves is inside the @supports block. */
+
+.track {
+  --story-accent: color-mix(in oklab, var(--accent, var(--ink)) 80%, var(--ink));
+  background: var(--stage);
+  color: var(--stage-ink);
+  border-block: 1px solid var(--stage-line);
+}
+
+.stage {
+  width: min(100% - 3rem, 76rem);
+  margin: 0 auto;
+  padding-block: clamp(2.5rem, 6vh, 4rem);
+}
+
+.scene {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  align-content: start;
+  gap: 0.7rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--stage-line-strong);
+  border-radius: 12px;
+  background: var(--stage);
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  color: var(--story-accent);
+}
+
+.line {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.value {
+  margin: 0;
+  font-size: clamp(2.1rem, 6vw, 4.4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--story-accent);
+}
+
+.label {
+  margin: 0;
+  max-width: 34ch;
+  font-size: clamp(1rem, 1.6vw, 1.15rem);
+  line-height: 1.45;
+}
+
+.evidence {
+  justify-self: start;
+  margin-top: 0.4rem;
+  color: inherit;
+  font-size: 0.95rem;
+  text-underline-offset: 0.2em;
+}
+
+/* A small flow chart: each step is a box, each connector a line that draws. */
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.6rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow li {
+  position: relative;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--story-accent);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.flow li + li::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(-1.6rem - 1px);
+  width: 1.6rem;
+  height: 1.5px;
+  background: var(--story-accent);
+  transform-origin: left;
+}
+
+@keyframes story-near {
+  from { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(0, 0, 340px); }
+}
+
+@keyframes story-mid {
+  from { opacity: 0; transform: translate3d(0, 0, -520px); }
+  32%, 68% { opacity: 1; transform: translate3d(0, 0, 0); }
+  to { opacity: 0; transform: translate3d(0, 0, 340px); }
+}
+
+@keyframes story-far {
+  from { opacity: 0; transform: translate3d(0, 0, -520px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes story-step {
+  from { opacity: 0.2; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes story-link {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .track {
+      height: 340vh;
+      view-timeline-name: --story;
+      view-timeline-axis: block;
+    }
+
+    .stage {
+      position: sticky;
+      top: 0;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100vh;
+      padding: 0 1.5rem;
+      overflow: hidden;
+      perspective: 900px;
+    }
+
+    .scene {
+      display: grid;
+      width: min(100%, 44rem);
+      transform-style: preserve-3d;
+    }
+
+    .card {
+      grid-area: 1 / 1;
+      border: 0;
+      background: transparent;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --story;
+    }
+
+    .card[data-step="1"] {
+      animation-name: story-near;
+      animation-range: contain 6% contain 36%;
+    }
+
+    .card[data-step="2"] {
+      animation-name: story-mid;
+      animation-range: contain 14% contain 74%;
+    }
+
+    .card[data-step="3"] {
+      animation-name: story-far;
+      animation-range: contain 52% contain 88%;
+    }
+
+    .flow li {
+      animation: story-step linear both;
+      animation-timeline: --story;
+      animation-range: contain calc(30% + var(--i) * 5%) contain calc(36% + var(--i) * 5%);
+    }
+
+    .flow li + li::before {
+      animation: story-link linear both;
+      animation-timeline: --story;
+      animation-range: contain calc(26% + var(--i) * 5%) contain calc(30% + var(--i) * 5%);
+    }
+  }
+}
+
+@media print {
+  .track {
+    height: auto;
+  }
+}

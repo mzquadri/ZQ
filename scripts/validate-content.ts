@@ -36,6 +36,7 @@ import {
   verificationStates,
 } from "../src/content/legal-kb";
 import { allDiagrams } from "../src/content/diagrams";
+import { projectStories } from "../src/content/project-stories";
 import { standaloneWork } from "../src/content/work-routes";
 import { graphEdges, graphNodes, graphStages } from "../src/content/systems-graph";
 import {
@@ -1055,6 +1056,16 @@ check(
  * ------------------------------------------------------------------------------------------- */
 
 const standaloneSlugs = new Set(standaloneWork.map((work) => work.slug));
+
+/* Every public project page opens on its three beats, and no entry may name a page that is gone. */
+for (const project of projects) {
+  if (isEmployerConfidential(project)) continue;
+  check(projectStories[project.slug] !== undefined, `${project.slug} has no entry in project-stories.ts`);
+}
+for (const [slug, story] of Object.entries(projectStories)) {
+  check(projectBySlug.has(slug) || standaloneSlugs.has(slug), `Story "${slug}" names no project`);
+  check(story.flow.length >= 3 && story.flow.length <= 4, `Story "${slug}" flow must have 3 or 4 steps`);
+}
 
 /*
  * Looked up in `allProjects`, not `projects`. A diagram may belong to a confidential draft, which

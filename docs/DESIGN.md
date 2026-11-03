@@ -123,6 +123,10 @@ on figures a zoom bound to scroll position. Both answer something the reader
 did, neither needs a library, and with no fine pointer or with reduced motion
 the figure is flat and complete.
 
+Project pages now open on `ProjectStory3D`, a pinned fly-through of problem, why
+and result, and wheel scrolling uses a vendored copy of Lenis. Touch devices and
+reduced-motion readers keep native scrolling and three flat cards.
+
 ## What this deliberately is not
 
 - Not a warm cream page with a high-contrast serif and a clay accent.
