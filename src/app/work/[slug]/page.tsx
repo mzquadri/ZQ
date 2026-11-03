@@ -517,8 +517,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </section>
         ) : null}
 
-        {/* The three beats above carry this now, so the full text waits to be asked for. */}
-        <details className="section-wrap case-more">
+        {/* The three beats above carry this now. The guided run steps through it, so it stays open there. */}
+        <details className="section-wrap case-more" open={guided}>
           <summary>Read the full background</summary>
           <section className="section-wrap case-section two-column-copy">
             <div>
