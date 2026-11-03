@@ -3793,6 +3793,7 @@ for (const route of ["/work/supply-chain", "/work/transport-uq", "/work/audi-rel
 for (const route of ["/work/medico", "/work/reliable-knowledge-systems", "/work/mcp-policy-gateway"]) {
   test(`${route} pins its architecture beside the argument`, async ({ page, isMobile }) => {
     test.skip(isMobile, "Nothing pins below 1100px, by design");
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto(route);
     const stage = page.locator(".case-story-stage:has([data-showcase][data-pinned])");
     await expect(stage).toHaveCount(1);
@@ -3803,6 +3804,7 @@ for (const route of ["/work/medico", "/work/reliable-knowledge-systems", "/work/
 
 test("the showcase tilts for a pointer and settles back", async ({ page, isMobile }) => {
   test.skip(isMobile, "Tilt needs a fine pointer");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/work/supply-chain");
   const stage = page.locator("section.visual-section [data-showcase]");
   await stage.scrollIntoViewIfNeeded();
