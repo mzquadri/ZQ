@@ -3822,3 +3822,11 @@ test("the showcase stays flat and complete under reduced motion", async ({ page 
   await expect(stage).toHaveCSS("animation-name", "none");
   await expect(stage).toHaveCSS("transform", "none");
 });
+
+test("no two project cards share a mark", async ({ page }) => {
+  await page.goto("/work");
+  for (const list of await page.locator('nav:has([data-showcase])').all()) {
+    const marks = await list.locator("li svg").evaluateAll((svgs) => svgs.map((svg) => svg.innerHTML));
+    expect(new Set(marks).size).toBe(marks.length);
+  }
+});

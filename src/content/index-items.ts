@@ -91,5 +91,6 @@ export function registryItems(
       kind: project.classification,
       summary: project.summary,
       href: `/work/${project.slug}`,
+      accent: PROJECT_WORLDS[project.slug]?.accent,
     }));
 }

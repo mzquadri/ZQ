@@ -189,6 +189,168 @@ export function Mark({ slug }: { slug: string }) {
           <circle className="mark-fill-soft" cx="29" cy="14" r="3" />
         </>
       );
+    case "cifar10-cnn":
+      return (
+        <>
+          <rect height="20" width="9" x="4" y="4" />
+          <rect height="12" width="8" x="15" y="8" />
+          <rect className="mark-fill" height="6" width="6" x="25" y="11" />
+          <path d="M33 14 H37" />
+        </>
+      );
+    case "ai-engineering-portfolio":
+      return (
+        <>
+          <rect height="9" width="11" x="8" y="4" />
+          <rect className="mark-fill" height="9" width="11" x="21" y="4" />
+          <rect height="9" width="11" x="8" y="15" />
+          <rect height="9" width="11" x="21" y="15" />
+        </>
+      );
+    case "jobhunter":
+      return (
+        <>
+          <path className="mark-dash" d="M4 6 H36" />
+          <rect height="17" width="5" x="8" y="6" />
+          <rect height="17" width="5" x="17" y="6" />
+          <rect className="mark-fill" height="17" width="5" x="26" y="6" />
+        </>
+      );
+    case "nlp-transformers":
+      return (
+        <>
+          <path d="M4 14 H26" />
+          <rect className="mark-fill" height="16" width="3" x="28" y="6" />
+          <path className="mark-dash" d="M33 14 H37" />
+        </>
+      );
+    case "statistical-learning":
+      return (
+        <>
+          {[0, 1, 2].map((row) =>
+            [0, 1, 2, 3, 4].map((col) => (
+              <circle
+                className={row === 1 && col === 3 ? "mark-fill" : undefined}
+                cx={8 + col * 6}
+                cy={7 + row * 7}
+                key={`${row}-${col}`}
+                r="1.6"
+              />
+            )),
+          )}
+        </>
+      );
+    case "supply-chain":
+      return (
+        <>
+          <path d="M4 8 H15 L24 14 M4 20 H15 L24 14" />
+          <rect className="mark-fill" height="8" width="11" x="25" y="10" />
+        </>
+      );
+    case "weather-eda":
+      return (
+        <>
+          <path d="M20 3 V25 M4 14 H36" />
+          <circle cx="12" cy="20" r="1.8" />
+          <circle cx="16" cy="9" r="1.8" />
+          <circle cx="26" cy="19" r="1.8" />
+          <circle className="mark-fill" cx="30" cy="8" r="2.4" />
+        </>
+      );
+    case "water-quality":
+      return (
+        <>
+          <path d="M6 7 H30 M10 14 H34 M8 21 H32" />
+          <circle className="mark-fill" cx="18" cy="7" r="2.2" />
+          <circle className="mark-fill" cx="22" cy="14" r="2.2" />
+          <circle className="mark-fill" cx="20" cy="21" r="2.2" />
+        </>
+      );
+    case "insurance-claims-threshold":
+      return (
+        <>
+          <path d="M4 23 C18 23 20 5 36 5" />
+          <path className="mark-dash" d="M24 3 V25" />
+          <circle className="mark-fill" cx="24" cy="10" r="2.4" />
+        </>
+      );
+    case "battery-soc":
+      return (
+        <>
+          <rect height="12" width="26" x="5" y="8" />
+          <rect height="4" width="3" x="31" y="12" />
+          <rect className="mark-fill" height="8" width="12" x="7" y="10" />
+        </>
+      );
+    case "nn-identifiability":
+      return (
+        <>
+          <path d="M7 7 L33 21 M7 21 L33 7" />
+          <circle cx="7" cy="7" r="2.6" />
+          <circle cx="7" cy="21" r="2.6" />
+          <circle cx="33" cy="7" r="2.6" />
+          <circle className="mark-fill" cx="33" cy="21" r="2.6" />
+        </>
+      );
+    case "flood-lstm":
+      return (
+        <>
+          <path d="M3 16 Q9 5 15 16 T27 16 T37 14" />
+          <path className="mark-dash" d="M3 23 H37" />
+          <circle className="mark-fill" cx="9" cy="10.5" r="2.2" />
+        </>
+      );
+    case "audi-release-tracking":
+      return (
+        <>
+          <rect height="16" width="34" x="3" y="6" />
+          <rect className="mark-fill" height="4" width="34" x="3" y="12" />
+          <path d="M12 6 V22 M21 6 V22 M30 6 V22" />
+        </>
+      );
+    case "keras-pytorch-parity":
+      return (
+        <>
+          <rect height="12" width="12" x="4" y="8" />
+          <path d="M17 12 H23 M17 16 H23" />
+          <rect className="mark-fill" height="12" width="12" x="24" y="8" />
+        </>
+      );
+    case "eurostat-modal-split":
+      return (
+        <>
+          <rect height="20" width="9" x="8" y="4" />
+          <rect height="20" width="9" x="23" y="4" />
+          <path d="M8 15 H17" />
+          <rect className="mark-fill" height="10" width="9" x="23" y="14" />
+        </>
+      );
+    case "bm25-rrf-java":
+      return (
+        <>
+          <path d="M5 7 H14 M5 14 H14 M5 21 H14 M26 7 H35 M26 14 H35 M26 21 H35" />
+          <path className="mark-dash" d="M16 7 H24 M16 14 H24 M16 21 H24" />
+        </>
+      );
+    case "munich-accident-forecasting":
+      return (
+        <>
+          <rect height="10" width="4" x="5" y="14" />
+          <rect height="13" width="4" x="11" y="11" />
+          <rect height="9" width="4" x="17" y="15" />
+          <rect height="12" width="4" x="23" y="12" />
+          <rect className="mark-fill" height="15" width="4" x="29" y="9" />
+          <path className="mark-dash" d="M3 6 H37" />
+        </>
+      );
+    case "drift-aware-platform":
+      return (
+        <>
+          <path d="M30 8 A10 10 0 1 0 31 19" />
+          <path d="M31 3 V8 H26" />
+          <circle className="mark-fill" cx="20" cy="14" r="3" />
+        </>
+      );
     default:
       return (
         <>
