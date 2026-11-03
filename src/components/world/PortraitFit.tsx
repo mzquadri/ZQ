@@ -16,11 +16,12 @@ const WIDEST_LENS = 100;
  * field instead. Nothing changes at or above the composed aspect.
  */
 export default function PortraitFit() {
-  const camera = useThree((state) => state.camera) as PerspectiveCamera;
+  const read = useThree((state) => state.get);
   const width = useThree((state) => state.size.width);
   const height = useThree((state) => state.size.height);
 
   useLayoutEffect(() => {
+    const camera = read().camera as PerspectiveCamera;
     if (!("fov" in camera) || height === 0) return;
     const base = (camera.userData.composedFov as number | undefined) ?? camera.fov;
     camera.userData.composedFov = base;
@@ -30,7 +31,7 @@ export default function PortraitFit() {
     const fitted = (Math.atan((half * COMPOSED_ASPECT) / aspect) * 360) / Math.PI;
     camera.fov = aspect < COMPOSED_ASPECT ? Math.min(fitted, WIDEST_LENS) : base;
     camera.updateProjectionMatrix();
-  }, [camera, height, width]);
+  }, [height, read, width]);
 
   return null;
 }
