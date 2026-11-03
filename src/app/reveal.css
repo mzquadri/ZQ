@@ -17,13 +17,29 @@
   }
 }
 
+/* Moves in depth but never fades: the home page has to be fully legible on first paint. */
+@keyframes reveal-solid {
+  from {
+    transform: perspective(900px) translate3d(0, 1.5rem, -60px) rotateX(9deg);
+  }
+  to {
+    transform: perspective(900px) translate3d(0, 0, 0) rotateX(0deg);
+  }
+}
+
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
+    main :is(.work-card, .exp-item, .edu-item, .res-item, .skill-group, .hs-h, .hs-lede, .es-grid > *) {
+      animation: reveal-solid linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+      transform-origin: center top;
+    }
+
     main .section-wrap:not(.visual-section) > :is(h2, h3, p, ul, ol, blockquote, figure),
     main .two-column-copy > div,
     main :is(.metric, .workflow-list > li, .artifact-links > a, .editorial-list > li, .tool-list > li),
     main :is(.xp-role, .cred-list > li, .writing-grid > *, .ending-inner > *, .reliable-list > li),
-    main :is(.work-card, .exp-item, .edu-item, .res-item, .skill-group, .hs-h, .hs-lede, .es-grid > *),
     main :is(.medico-flat-limits > li, .work-jump, .research-theme-links > *, .topic-chips > *) {
       animation: reveal-depth linear both;
       animation-timeline: view();
