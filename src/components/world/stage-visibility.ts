@@ -39,7 +39,8 @@ export function useStageVisibility(host: RefObject<HTMLElement | null>, eligible
      */
     const arrival = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && setMounted(true)),
-      { rootMargin: "0px 0px -35% 0px" },
+      // A phone has a slower network, so it starts fetching a full screen before the stage arrives.
+      { rootMargin: window.innerWidth < 1000 ? "0px 0px 100% 0px" : "0px 0px -35% 0px" },
     );
     arrival.observe(element);
 

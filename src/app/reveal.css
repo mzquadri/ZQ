@@ -23,6 +23,7 @@
     main .two-column-copy > div,
     main :is(.metric, .workflow-list > li, .artifact-links > a, .editorial-list > li, .tool-list > li),
     main :is(.xp-role, .cred-list > li, .writing-grid > *, .ending-inner > *, .reliable-list > li),
+    main :is(.work-card, .exp-item, .edu-item, .res-item, .skill-group, .hs-h, .hs-lede, .es-grid > *),
     main :is(.medico-flat-limits > li, .work-jump, .research-theme-links > *, .topic-chips > *) {
       animation: reveal-depth linear both;
       animation-timeline: view();

@@ -24,9 +24,12 @@
     padding: 0;
   }
 
-  /* The figure the renderer replaces, which must not show behind the scene on a short screen. */
+  /* The flat figure holds the stage while the renderer loads, then pages.css hides it. */
   html[data-webgl="yes"] .world-stage .world-flat {
-    visibility: hidden;
+    width: 100%;
+    max-height: 60svh;
+    padding: 1rem;
+    overflow: hidden;
   }
 
   html[data-webgl="yes"] .world-stage .world-caption,
