@@ -35,6 +35,8 @@ import {
   representationFanOut,
   verificationStates,
 } from "../src/content/legal-kb";
+import { allDiagrams } from "../src/content/diagrams";
+import { standaloneWork } from "../src/content/work-routes";
 import { graphEdges, graphNodes, graphStages } from "../src/content/systems-graph";
 import {
   currentPublicFacts,
@@ -1037,6 +1039,120 @@ check(
   selectivePredictionTutorial?.body.includes(`${halfRetention?.reductionPct.toFixed(1)}% lower`) ?? false,
   "Selective-prediction tutorial diverges from the audited 50% reduction",
 );
+/* ---------------------------------------------------------------------------------------------
+ * Architecture diagrams.
+ *
+ * The registry in `src/content/diagrams` is allowed to be incomplete - a project without a diagram
+ * simply does not render one - but it is not allowed to be wrong. These are the checks that make
+ * the difference, and they exist because a diagram is the one figure on this site a reader will
+ * believe without reading the prose around it.
+ *
+ * The two that matter are the last two. A box may not credit a project with a technology its own
+ * registry entry does not claim, and the boxes together must account for every step of its stated
+ * workflow - so a diagram cannot quietly gain a component the project does not have, or lose a
+ * stage that is inconvenient to draw. The same discipline the gateway repository applies when it
+ * generates its own architecture SVG out of the control registry.
+ * ------------------------------------------------------------------------------------------- */
+
+const standaloneSlugs = new Set(standaloneWork.map((work) => work.slug));
+
+for (const diagram of allDiagrams) {
+  const label = `Diagram "${diagram.slug}"`;
+  const project = projectBySlug.get(diagram.slug);
+
+  check(
+    project !== undefined || standaloneSlugs.has(diagram.slug),
+    `${label} names no project in the registry or standalone work`,
+  );
+
+  check(
+    /^var\(--accent-[a-z]+\)$/.test(diagram.accent),
+    `${label} accent must be one of the site's --accent-* custom properties, got "${diagram.accent}"`,
+  );
+
+  const ids = diagram.nodes.map((node) => node.id);
+  check(new Set(ids).size === ids.length, `${label} has duplicate node ids`);
+
+  const known = new Set(ids);
+  for (const edge of diagram.edges) {
+    check(known.has(edge.from), `${label} has an edge from unknown node "${edge.from}"`);
+    check(known.has(edge.to), `${label} has an edge to unknown node "${edge.to}"`);
+    check(edge.from !== edge.to, `${label} has an edge from "${edge.from}" to itself`);
+  }
+
+  /* Two boxes in one grid cell draw on top of each other, which no type can catch. */
+  const cells = diagram.nodes.map((node) => `${node.col},${node.row}`);
+  check(new Set(cells).size === cells.length, `${label} places two nodes in the same grid cell`);
+
+  /* A box nothing reaches and nothing leaves is either a mistake or an undrawn edge. */
+  for (const node of diagram.nodes) {
+    const touched = diagram.edges.some((edge) => edge.from === node.id || edge.to === node.id);
+    check(touched, `${label} node "${node.id}" is not connected to anything`);
+  }
+
+  /*
+   * An edge that spans a column has to pass through it.
+   *
+   * The router turns once, at the midpoint between the two boxes, which for a two-column span
+   * lands inside the column between them. So a forward edge from (1,0) to (3,1) runs horizontally
+   * along row 0 and then along row 1, straight through anything parked at column 2 on either row.
+   * A line crossing a box is the one way an architecture diagram can be wrong that no type and no
+   * test would notice, and it is only visible if you render it and look.
+   *
+   * Deliberately conservative: it flags an intermediate column occupied at *either* endpoint row,
+   * without working out whether the box and the run really overlap in pixels. The fix - move the
+   * box, or route the edge through a node that is actually on the path - is an improvement to the
+   * drawing either way.
+   */
+  const byCell = new Map(diagram.nodes.map((node) => [`${node.col},${node.row}`, node]));
+  for (const edge of diagram.edges) {
+    const from = diagram.nodes.find((node) => node.id === edge.from);
+    const to = diagram.nodes.find((node) => node.id === edge.to);
+    if (!from || !to || to.col <= from.col + 1) continue;
+    for (let col = from.col + 1; col < to.col; col += 1) {
+      for (const row of new Set([from.row, to.row])) {
+        const blocker = byCell.get(`${col},${row}`);
+        check(
+          blocker === undefined,
+          `${label} edge "${edge.from}" to "${edge.to}" passes through node "${blocker?.id}" at column ${col}, row ${row}`,
+        );
+      }
+    }
+  }
+
+  if (!project) continue;
+
+  const declaredTools = new Set(project.tools);
+  for (const node of diagram.nodes) {
+    for (const tool of node.tools ?? []) {
+      check(
+        declaredTools.has(tool),
+        `${label} node "${node.id}" claims tool "${tool}", which is not in that project's tools`,
+      );
+    }
+  }
+
+  const covered = new Set<number>();
+  for (const node of diagram.nodes) {
+    for (const stage of node.stages ?? []) {
+      check(
+        Number.isInteger(stage) && stage >= 0 && stage < project.workflow.length,
+        `${label} node "${node.id}" cites workflow stage ${stage}, which that project does not have`,
+      );
+      covered.add(stage);
+    }
+  }
+
+  const missing = project.workflow
+    .map((_, index) => index)
+    .filter((index) => !covered.has(index));
+  check(
+    missing.length === 0,
+    `${label} does not account for workflow stage(s) ${missing.join(", ")}: ` +
+      missing.map((index) => `"${project.workflow[index]}"`).join("; "),
+  );
+}
+
 if (failures.length > 0) {
   console.error(failures.map((failure) => `- ${failure}`).join("\n"));
   process.exit(1);

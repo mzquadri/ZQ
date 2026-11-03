@@ -29,6 +29,7 @@ export const WORLDS = [
   ["/work/battery-soc", ".world-stage", "battery"],
   ["/work/nn-identifiability", ".world-stage", "identifiability"],
   ["/work/flood-lstm", ".world-stage", "flood"],
+  ["/work/audi-release-tracking", ".world-stage", "release"],
   ["/work/keras-pytorch-parity", ".world-stage", "translation"],
   ["/work/eurostat-modal-split", ".world-stage", "modalsplit"],
   ["/work/munich-accident-forecasting", ".world-stage", "munich"],

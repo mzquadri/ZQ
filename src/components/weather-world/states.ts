@@ -82,16 +82,22 @@ export const { at, active } = choreograph(STATES);
  * Its own language: this one slides along the zero plane and sights down it. A plane viewed
  * face-on is a rectangle; viewed along its own surface it is an edge, and an edge is what makes
  * "all of them on one side" something you can see at a glance.
+ *
+ * The slide along the plane is lateral and was doing all the work; the two beats that bracket it
+ * now carry depth as well. `cities` establishes the set before any statistic is recovered from
+ * it, and `generated` withdraws to the remove the closing admission is made from - that none of
+ * this is evidence about weather. The sighting shots, `zero` and `bias`, are untouched: they are
+ * the closest in the world and that is where the argument wants the eye.
  */
 export const SHOTS: Record<
   WeatherKey,
   { height: number; distance: number; swing: number; look: number }
 > = {
-  cities: { height: 1.6, distance: 9.4, swing: 0.0, look: 0.0 },
+  cities: { height: 1.6, distance: 11.6, swing: 0.0, look: 0.0 },
   temperature: { height: 1.4, distance: 8.6, swing: 0.4, look: 0.6 },
   zero: { height: 1.0, distance: 7.6, swing: 3.4, look: 0.4 },
   humidity: { height: 2.2, distance: 9.0, swing: 2.2, look: -0.4 },
   bias: { height: 1.2, distance: 7.8, swing: 4.0, look: -0.6 },
   ranking: { height: 4.0, distance: 9.6, swing: 0.0, look: -1.6 },
-  generated: { height: 5.0, distance: 11.6, swing: 0.0, look: -0.4 },
+  generated: { height: 6.4, distance: 15.6, swing: 0.0, look: -0.4 },
 };

@@ -1,0 +1,231 @@
+/*
+ * Architecture diagram styling.
+ *
+ * The rule that governs this file: **every resting state here is a finished state.** The scroll
+ * animation only ever supplies a `from` keyframe - lines start undrawn, boxes start small and
+ * transparent - so a browser that never runs the animation, or a reader who has asked for no
+ * motion, lands on fully drawn lines and solid boxes without a single override. Nothing below
+ * sets an initial hidden state, and nothing should ever be added that does.
+ *
+ * Colour never carries meaning alone. The four edge kinds differ in weight, dash and arrowhead
+ * first, and take a colour second, so the diagram survives a monochrome print and a reader who
+ * cannot separate the two blues.
+ */
+
+.figure {
+  margin: 0 0 var(--space-xl, 3rem);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * Edges
+ * ------------------------------------------------------------------------------------------- */
+
+.edge {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Drawn. `mz-connect` animates the offset away from `--path-length` towards this. */
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+
+.edge_data {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.edge_control {
+  stroke: var(--diagram-accent, var(--ink-soft));
+  stroke-width: 1.4;
+}
+
+/*
+ * A return path. Dashed, because left-to-right is the one direction a reader infers without being
+ * told, and this is the edge that contradicts it.
+ *
+ * The dash pattern has to be expressed within the 100-unit `pathLength`, or it would not survive
+ * `stroke-dasharray` being used by the draw animation. So the gap is painted by opacity and
+ * weight instead, and the dashing is carried by the marker and the lighter stroke.
+ */
+.edge_feedback {
+  stroke: var(--ink-soft);
+  stroke-width: 1.3;
+  opacity: 0.85;
+}
+
+.edge_refused {
+  stroke: var(--ink-soft);
+  stroke-width: 1.3;
+  opacity: 0.7;
+}
+
+.edgeLabel {
+  fill: var(--ink-soft);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.head_data {
+  fill: var(--ink);
+}
+
+.head_control {
+  fill: var(--diagram-accent, var(--ink-soft));
+}
+
+.head_feedback {
+  fill: var(--ink-soft);
+}
+
+/* Open, unfilled head: "was not allowed to go here". */
+.head_refused {
+  fill: none;
+  stroke: var(--ink-soft);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * Nodes
+ * ------------------------------------------------------------------------------------------- */
+
+.node {
+  /* `mz-propagate` scales from 0.4; without a fill-box origin an SVG group scales from the
+   * viewBox origin and every node flies in from the top-left corner. */
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.node rect {
+  fill: var(--paper-raised);
+  stroke: var(--ink-soft);
+  stroke-width: 1.3;
+}
+
+.nodeLabel {
+  fill: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.nodeNote {
+  fill: var(--ink-soft);
+  font-size: 10px;
+  letter-spacing: 0.005em;
+}
+
+/* Where traffic enters. Heavier edge, because nothing upstream of it is drawn. */
+.node_source rect {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.node_process rect {
+  stroke: var(--ink-soft);
+}
+
+.node_store rect {
+  fill: var(--paper-deep);
+}
+
+/* A decision. Square corners and the accent stroke: something is refused here. */
+.node_gate rect {
+  rx: 0;
+  stroke: var(--diagram-accent, var(--ink));
+  stroke-width: 2.2;
+}
+
+/* A published artifact. Dashed, because it leaves the running system. */
+.node_artifact rect {
+  fill: var(--paper-deep);
+  stroke-dasharray: 4 3;
+}
+
+.node_sink rect {
+  fill: var(--paper-deep);
+  stroke: var(--ink);
+  stroke-width: 1.8;
+}
+
+/* ---------------------------------------------------------------------------------------------
+ * The figure in words
+ * ------------------------------------------------------------------------------------------- */
+
+.caption {
+  margin-top: 0.9rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  max-width: 62ch;
+}
+
+.key {
+  margin-top: 1rem;
+  font-size: 0.88rem;
+}
+
+.keyHeading {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.keyList {
+  margin: 0.6rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.45rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.keyList strong {
+  color: var(--ink);
+}
+
+.keyKind {
+  font-size: 0.78em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  opacity: 0.75;
+}
+
+.keyTools {
+  font-size: 0.86em;
+  opacity: 0.85;
+}
+
+/*
+ * Below the width where the grid is legible, the drawing is replaced by the words.
+ *
+ * Not a scaled-down diagram: an eleven-box graph at 390px is a picture of a graph rather than a
+ * readable one, and the list already carries every fact in it. The same judgement the worlds make
+ * at 1000px, made here at the width this particular figure stops working.
+ */
+@media (max-width: 720px) {
+  .svg {
+    display: none;
+  }
+
+  .key {
+    margin-top: 0;
+  }
+
+  .keyList {
+    padding-left: 1rem;
+  }
+}

@@ -4,6 +4,8 @@ import Link from "next/link";
 import NextSystem from "@/components/cinema/NextSystem";
 import CaseScene from "@/components/cinema/CaseScene";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
+import ArchDiagram from "@/components/diagram/ArchDiagram";
+import { medicoDiagram } from "@/content/diagrams/medico";
 import MedicoWorld from "@/components/medico-world/MedicoWorld";
 import MedicoWorldFlat from "@/components/medico-world/MedicoWorldFlat";
 import PageShell from "@/components/PageShell";
@@ -95,6 +97,11 @@ export default function MedicoPage() {
           stage this page has.
         */}
         <CaseScene slug="medico" />
+
+        {/* What the system is made of, before what it does. Same position as on a case study. */}
+        <section className="section-wrap visual-section" aria-label="AI Radiologist: architecture">
+          <ArchDiagram diagram={medicoDiagram} />
+        </section>
 
         <div>
           <MedicoWorld flat={<MedicoWorldFlat />} />

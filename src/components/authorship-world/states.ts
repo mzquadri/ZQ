@@ -86,6 +86,12 @@ export const { at, active } = choreograph(STATES);
  * judgement rather than a count, and ends looking down on the whole set - which is the position
  * the argument finishes in, since the last thing it says is about the shape rather than about any
  * one component.
+ *
+ * It now also recedes. The rise was real but it happened at an almost fixed standoff, so the end
+ * of the sequence changed the angle on the set without changing how much of it was in view - and
+ * "about the shape rather than any one component" is a statement about how much you can see at
+ * once. The measured floor below is untouched; `volumes` and `unnamed` are the two that moved,
+ * both outward.
  */
 export const SHOTS: Record<
   AuthorshipKey,
@@ -97,11 +103,11 @@ export const SHOTS: Record<
    * whole figure opens on. `swing` is kept small for the same reason; only the beat that is
    * genuinely about one volume moves far enough off-centre to crop the others.
    */
-  volumes: { height: 1.4, distance: 9.4, swing: 0.0, tilt: 0.07 },
+  volumes: { height: 1.4, distance: 11.8, swing: 0.0, tilt: 0.07 },
   share: { height: 1.6, distance: 8.6, swing: -0.5, tilt: 0.1 },
   zero: { height: 1.2, distance: 7.4, swing: -2.4, tilt: 0.08 },
   classes: { height: 2.6, distance: 9.4, swing: 0.0, tilt: 0.2 },
   judged: { height: 3.0, distance: 8.6, swing: 1.6, tilt: 0.26 },
   refused: { height: 1.8, distance: 7.8, swing: 0.0, tilt: 0.12 },
-  unnamed: { height: 4.4, distance: 12.0, swing: 0.0, tilt: 0.38 },
+  unnamed: { height: 5.6, distance: 15.4, swing: 0.0, tilt: 0.38 },
 };

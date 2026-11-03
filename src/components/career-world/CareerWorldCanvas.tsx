@@ -19,7 +19,7 @@ export default function CareerWorldCanvas({
     <Canvas
       frameloop={frameloop}
       /* Square to the bars and low: a ceiling being broken is only legible from the side. */
-      camera={{ far: 90, fov: 36, near: 0.1, position: [0, 1.1, 9.2] }}
+      camera={{ far: 90, fov: 36, near: 0.1, position: [0, 1.1, 12.8] }}
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >

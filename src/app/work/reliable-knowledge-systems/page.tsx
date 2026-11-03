@@ -10,6 +10,8 @@ import NextSystem from "@/components/cinema/NextSystem";
 import CaseScene from "@/components/cinema/CaseScene";
 import { VerbScene } from "@/components/cinema/scenes";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
+import ArchDiagram from "@/components/diagram/ArchDiagram";
+import { reliableKnowledgeDiagram } from "@/content/diagrams/reliable-knowledge-systems";
 import ReliableWorld from "@/components/reliable-world/ReliableWorld";
 import ReliableWorldFlat from "@/components/reliable-world/ReliableWorldFlat";
 import {
@@ -95,6 +97,11 @@ export default function ReliableKnowledgeSystemsPage() {
           stage this page has.
         */}
         <CaseScene slug="reliable-knowledge-systems" />
+
+        {/* What the system is made of, before what it does. Same position as on a case study. */}
+        <section className="section-wrap visual-section" aria-label="Legal Knowledge Base: architecture">
+          <ArchDiagram diagram={reliableKnowledgeDiagram} />
+        </section>
 
         <div>
           <ReliableWorld flat={<ReliableWorldFlat />} />

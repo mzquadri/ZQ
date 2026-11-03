@@ -15,10 +15,12 @@ export default function HydrologyWorldCanvas({
    * main thread with whatever the reader moved on to. */
   frameloop: "always" | "never";
 }) {
+  /* The camera starts on the `event` keyframe in `states.ts`, so the first drawn frame is not a
+   * jump from a default position into the opening shot. */
   return (
     <Canvas
       frameloop={frameloop}
-      camera={{ far: 90, fov: 38, near: 0.1, position: [0, 0.55, 11.4] }}
+      camera={{ far: 90, fov: 38, near: 0.1, position: [0, 1.6, 15.4] }}
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >

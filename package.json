@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "validate:content": "tsx scripts/validate-content.ts",
+    "export:diagrams": "tsx scripts/export-diagrams.ts",
     "check:docs": "tsx scripts/check-docs-freshness.ts",
     "check:security": "tsx scripts/check-dependency-security.ts",
     "test:content": "tsx --test tests/content-foundation.test.ts tests/ecosystem.test.ts tests/confidential-project.test.ts tests/walkthrough.test.ts tests/systems-showcase.test.ts tests/strong-work.test.ts tests/gateway-evidence.test.ts tests/insureassist-evidence.test.ts tests/mlops-evidence.test.ts tests/streamflow-evidence.test.ts tests/cifar-evidence.test.ts tests/home-facts.test.ts",

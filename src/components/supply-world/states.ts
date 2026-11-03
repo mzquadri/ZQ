@@ -82,6 +82,12 @@ export const { at, active } = choreograph(STATES);
  * Its own language: this one swings around to find the angle where two lines can be seen landing
  * on one column. Convergence read head-on is two lines overlapping; read from the side it is two
  * lines meeting, which is the difference between a diagram and a demonstration.
+ *
+ * The swing is capped for the reason recorded below, and that cap used to leave the world with
+ * almost no movement of any kind: seven shots inside four units of each other. The depth is taken
+ * at the far end, where there is no bar to go edge-on - `composite` establishes the scorecard
+ * whole and `withheld` withdraws from it - so the approach into `merge` is now an approach rather
+ * than the only distance the world has.
  */
 export const SHOTS: Record<
   SupplyKey,
@@ -93,11 +99,11 @@ export const SHOTS: Record<
    * edge-on, which turned two lines meeting into two lines overlapping. Height does the work that
    * swing was being asked to do, and swing is kept small enough to keep the bar legible.
    */
-  composite: { height: 2.0, distance: 9.6, swing: 0.0, look: -0.4 },
+  composite: { height: 2.0, distance: 11.8, swing: 0.0, look: -0.4 },
   sources: { height: 4.0, distance: 9.4, swing: 0.8, look: -1.4 },
   converge: { height: 5.4, distance: 8.6, swing: 1.4, look: -1.8 },
   merge: { height: 4.8, distance: 8.4, swing: 1.0, look: -1.5 },
   remaining: { height: 2.4, distance: 9.4, swing: 0.3, look: -0.4 },
   classical: { height: 2.8, distance: 10.4, swing: -1.2, look: 0.6 },
-  withheld: { height: 5.0, distance: 12.4, swing: 0.0, look: 0.0 },
+  withheld: { height: 6.2, distance: 16.0, swing: 0.0, look: 0.0 },
 };

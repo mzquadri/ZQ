@@ -130,21 +130,34 @@ export const active = readers.active;
  *
  * The rotation only arrives with the stage experiment, where there is finally something in depth
  * worth turning to look at. That turn is the argument: the familiar flat plot was hiding a volume.
+ *
+ * `distance` carries a second, independent argument, and it used to carry none: every shot sat
+ * between 8.6 and 11.4, so across twelve states the camera travelled less than a third of its own
+ * standoff and the sequence read as one held frame with the contents changing inside it. The
+ * depth axis now opens and closes with the reasoning. Both ends of the track are wide - the event
+ * is established whole before anything is done to it, and the limits are read back at the same
+ * remove - and the approach tightens monotonically through the stage experiment to `verdict`,
+ * which is the closest shot in the world because "not one of the 2,000" is its closest claim.
+ *
+ * 7.4 is the floor, not a round number: the hydrograph spans 8.6 and at fov 38 the frame is
+ * 1.226 x distance wide, so anything nearer than 7.0 cuts the ends off an event the reader is
+ * being asked to judge as a whole. `look` is left alone; it aims the shot and is not a dolly.
  */
 export const SHOTS: Record<
   HydrologyKey,
   { swing: number; height: number; distance: number; look: number }
 > = {
-  event: { swing: 0.0, height: 0.55, distance: 11.4, look: 0.0 },
-  calibrated: { swing: 0.0, height: 0.5, distance: 10.2, look: 0.0 },
-  rain: { swing: 0.04, height: 0.6, distance: 9.8, look: 0.05 },
-  rainVerdict: { swing: 0.0, height: 0.45, distance: 8.6, look: 0.05 },
-  stage: { swing: 0.02, height: 0.5, distance: 9.4, look: 0.05 },
-  curve: { swing: 0.05, height: 1.05, distance: 9.8, look: 0.42 },
-  diverge: { swing: 0.58, height: 1.35, distance: 10.2, look: 0.25 },
-  envelope: { swing: 0.26, height: 0.8, distance: 9.4, look: 0.12 },
-  verdict: { swing: 0.05, height: 0.6, distance: 9.0, look: 0.08 },
-  recalibrate: { swing: 0.2, height: 0.75, distance: 8.8, look: 0.1 },
-  standpoint: { swing: 0.35, height: 1.25, distance: 9.2, look: 0.25 },
-  limits: { swing: 0.1, height: 0.9, distance: 11.0, look: 0.1 },
+  event: { swing: 0.0, height: 1.6, distance: 15.4, look: 0.0 },
+  calibrated: { swing: 0.0, height: 0.5, distance: 11.6, look: 0.0 },
+  rain: { swing: 0.04, height: 0.6, distance: 10.4, look: 0.05 },
+  /* Holds where `rain` left it. A spread you cannot see should not be helped by the camera. */
+  rainVerdict: { swing: 0.0, height: 0.45, distance: 10.0, look: 0.05 },
+  stage: { swing: 0.02, height: 0.5, distance: 9.6, look: 0.05 },
+  curve: { swing: 0.05, height: 1.05, distance: 8.8, look: 0.42 },
+  diverge: { swing: 0.58, height: 1.35, distance: 8.2, look: 0.25 },
+  envelope: { swing: 0.26, height: 0.8, distance: 8.6, look: 0.12 },
+  verdict: { swing: 0.05, height: 0.35, distance: 7.4, look: 0.08 },
+  recalibrate: { swing: 0.2, height: 0.75, distance: 8.4, look: 0.1 },
+  standpoint: { swing: 0.35, height: 1.25, distance: 10.2, look: 0.25 },
+  limits: { swing: 0.1, height: 1.5, distance: 15.4, look: 0.1 },
 };

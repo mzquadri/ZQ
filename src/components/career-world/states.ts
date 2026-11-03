@@ -82,6 +82,11 @@ export const { at, active } = choreograph(STATES);
  * Its own language: this one stays low and square to the bars for as long as the argument is about
  * height, because a ceiling being broken is only legible from the side. It lifts once, at the end,
  * for the only beat that is about breadth rather than height.
+ *
+ * The near floor below is measured and is not negotiable, so the depth this world was missing is
+ * taken at the far end instead: `weights` now establishes the full scorecard before the argument
+ * starts, and `reach` withdraws far enough that the lift at the end reads as a change of position
+ * rather than a change of angle. Nothing moved inward. The closest shot is still `ladder`.
  */
 export const SHOTS: Record<
   CareerKey,
@@ -94,11 +99,11 @@ export const SHOTS: Record<
    * and cropped the largest term - technical, at 26 - out of the frame exactly when the reader
    * needed it for comparison.
    */
-  weights: { height: 1.1, distance: 9.6, swing: 0.0, tilt: 0.03 },
+  weights: { height: 1.1, distance: 12.8, swing: 0.0, tilt: 0.03 },
   ceilings: { height: 1.4, distance: 9.0, swing: 0.0, tilt: 0.05 },
   penalties: { height: 1.2, distance: 8.8, swing: -0.6, tilt: 0.04 },
   through: { height: 1.3, distance: 8.6, swing: -0.9, tilt: 0.04 },
   ladder: { height: 1.5, distance: 8.2, swing: 1.4, tilt: 0.06 },
   rejects: { height: 2.0, distance: 8.6, swing: 0.0, tilt: 0.12 },
-  reach: { height: 4.2, distance: 11.4, swing: 0.0, tilt: 0.34 },
+  reach: { height: 5.6, distance: 15.6, swing: 0.0, tilt: 0.34 },
 };

@@ -18,7 +18,7 @@ export default function WeatherWorldCanvas({
   return (
     <Canvas
       frameloop={frameloop}
-      camera={{ far: 90, fov: 38, near: 0.1, position: [0, 1.6, 9.4] }}
+      camera={{ far: 90, fov: 38, near: 0.1, position: [0, 1.6, 11.6] }}
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >

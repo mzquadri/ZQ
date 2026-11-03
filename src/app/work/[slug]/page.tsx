@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import JsonLd from "@/components/JsonLd";
 import CaseHero from "@/components/cinema/CaseHero";
 import CaseStory from "@/components/cinema/CaseStory";
+import ArchDiagram from "@/components/diagram/ArchDiagram";
+import { getDiagram } from "@/content/diagrams";
 import InsureAssistWorld from "@/components/insureassist-world/InsureAssistWorld";
 import HydrologyWorld from "@/components/hydrology-world/HydrologyWorld";
 import HydrologyWorldFlat from "@/components/hydrology-world/HydrologyWorldFlat";
@@ -27,6 +29,7 @@ import StatlearnWorld from "@/components/statlearn-world/StatlearnWorld";
 import SupplyWorld from "@/components/supply-world/SupplyWorld";
 import BatteryWorld from "@/components/battery-world/BatteryWorld";
 import FloodWorld from "@/components/flood-world/FloodWorld";
+import ReleaseWorld from "@/components/release-world/ReleaseWorld";
 import TranslationWorld from "@/components/translation-world/TranslationWorld";
 import ModalSplitWorld from "@/components/modalsplit-world/ModalSplitWorld";
 import MunichWorld from "@/components/munich-world/MunichWorld";
@@ -140,6 +143,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   // Only this case study has a guided run, so only it pays for the controller.
   const guided = project.slug === "legal-knowledge-platform";
+
+  // Undefined for every project that has not been drawn yet; the section is then not rendered.
+  const diagram = getDiagram(project.slug);
   /*
    * At most three.
    *
@@ -207,6 +213,24 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           this is the only moving stage a page has.
         */}
         <CaseScene slug={project.slug} />
+
+        {/*
+          What the system is made of, before what it measured.
+
+          Above the world rather than below it, and that order is the argument for having both. A
+          world draws one finding and is gated on width, motion preference and renderer; this draws
+          the parts and the flow between them, renders as server-side SVG at every width and on
+          every machine, and is the thing a reader who has never seen the project asks for first.
+          Reading the evidence before knowing what produced it is the wrong way round.
+
+          Driven by the registry rather than by a slug test, so adding a diagram file is the whole
+          of adding a diagram. Projects without one are unchanged.
+        */}
+        {diagram ? (
+          <section className="section-wrap visual-section" aria-label={`${project.title}: architecture`}>
+            <ArchDiagram diagram={diagram} />
+          </section>
+        ) : null}
 
         <div>
         {/*
@@ -318,6 +342,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <FloodWorld flat={<SceneIdentity slug="flood-lstm" />} />
         ) : null}
 
+        {/*
+          A run of column ticks that regroups itself into four frames. Built only from what the
+          public case study publishes - approximate sheet dimensions, four subject groups, six
+          milestone codes - and it carries no field name, value, part, supplier or department,
+          because that repository carries none.
+        */}
+        {project.slug === "audi-release-tracking" ? (
+          <ReleaseWorld flat={<SceneIdentity slug="audi-release-tracking" />} />
+        ) : null}
 
         {/*
           Two frameworks as two walls, the five differences between them as spans across the gap,

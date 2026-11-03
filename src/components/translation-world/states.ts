@@ -105,16 +105,31 @@ const MIDDLE = WALL.height / 2;
  * Its own language: this one stands in the gap. Two walls either side of the eye is the position
  * the project is written from - not comparing two results, but standing between two ways of
  * saying the same thing and counting what differs.
+ *
+ * It also approaches, which it did not before: every shot used to sit between 19 and 21, a range
+ * of one tenth, so the world held a single frame for its whole track while the spans opened
+ * inside it. Standing in the gap is a position, not a distance, and it is kept at both ends -
+ * `two` establishes the walls whole and `pending` withdraws to the same remove.
+ *
+ * The binding constraint here is vertical, not lateral, which is what gives this world the room
+ * the bar-chart worlds do not have. The beam sits at y 8.3 and at fov 38 the frame is 0.689 x
+ * distance tall, so the whole structure is framed from about 13.5 outward. Lateral crop - the
+ * failure the career and authorship tables record - cannot happen at these distances: the walls
+ * span 9.3 and the frame is 1.226 x distance wide, so even the closest shot here leaves 1.2 units
+ * of air either side. `floor` is the exception that proves it: at 12.0 it cuts the wall bases,
+ * deliberately, because the irreducible difference is read off the beam and not off the floor.
  */
 export const SHOTS: Record<TranslationKey, Shot> = {
-  two: { height: 0.8, distance: 21.0, swing: 0.0, look: 0.0, target: 0, aimY: MIDDLE },
-  count: { height: 1.6, distance: 20.0, swing: 1.5, look: 0.0, target: 0, aimY: BEAM.y - 1.4 },
-  differences: { height: 0.4, distance: 21.0, swing: 1.8, look: 0.0, target: 0, aimY: MIDDLE },
-  resolved: { height: -0.4, distance: 20.0, swing: 2.2, look: 0.4, target: 0, aimY: MIDDLE - 0.4 },
-  floor: { height: -0.8, distance: 19.0, swing: 2.5, look: 0.6, target: 0, aimY: 5.4 },
+  two: { height: 0.8, distance: 24.0, swing: 0.0, look: 0.0, target: 0, aimY: MIDDLE },
+  count: { height: 1.6, distance: 18.0, swing: 1.5, look: 0.0, target: 0, aimY: BEAM.y - 1.4 },
+  differences: { height: 0.4, distance: 16.0, swing: 1.8, look: 0.0, target: 0, aimY: MIDDLE },
+  resolved: { height: -0.4, distance: 14.0, swing: 2.2, look: 0.4, target: 0, aimY: MIDDLE - 0.4 },
+  /* The closest shot in the world, because the one difference that cannot be removed is its
+   * closest claim. Crops the wall bases; the beam is what is being read. */
+  floor: { height: -0.8, distance: 12.0, swing: 2.5, look: 0.6, target: 0, aimY: 5.4 },
   /* Low, so the trap passing under the beam and the beam not moving are in one frame. */
-  missed: { height: -1.2, distance: 21.0, swing: 1.2, look: 0.0, target: 0, aimY: MIDDLE + 0.8 },
-  pending: { height: 1.0, distance: 19.0, swing: -1.6, look: -0.4, target: 0, aimY: 2.4 },
+  missed: { height: -1.2, distance: 14.5, swing: 1.2, look: 0.0, target: 0, aimY: MIDDLE + 0.8 },
+  pending: { height: 1.0, distance: 23.0, swing: -1.6, look: -0.4, target: 0, aimY: 2.4 },
 };
 
 /**

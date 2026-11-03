@@ -18,7 +18,7 @@ export default function SupplyWorldCanvas({
   return (
     <Canvas
       frameloop={frameloop}
-      camera={{ far: 90, fov: 38, near: 0.1, position: [0, 1.4, 9.6] }}
+      camera={{ far: 90, fov: 38, near: 0.1, position: [0, 2.0, 11.8] }}
       dpr={[1, 1.75]}
       gl={{ antialias: true, powerPreference: "high-performance" }}
     >
