@@ -7,6 +7,11 @@
   grid-template-columns: minmax(0, 1.75fr) minmax(0, 0.75fr);
 }
 
+/* The caveat is a grid, which would otherwise stretch the button across the column. */
+.body :global(.case-story-caveat .cine-cta) {
+  justify-self: start;
+}
+
 .key {
   margin-top: clamp(2rem, 5vh, 3.5rem);
   max-width: 62rem;

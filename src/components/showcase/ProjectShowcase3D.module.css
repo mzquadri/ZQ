@@ -28,13 +28,18 @@
   transition-duration: var(--dur-instant);
 }
 
-/* A layer's distance from the plane. `transform-style` above is what makes these real depth. */
-.plane [data-depth="near"] {
-  transform: translateZ(32px);
-}
+/*
+ * A layer's distance from the plane. `transform-style` above is what makes these real depth.
+ * Only where the plane can tilt: at rest, perspective alone would just nudge the layer out of line.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .plane [data-depth="near"] {
+    transform: translateZ(32px);
+  }
 
-.plane [data-depth="mid"] {
-  transform: translateZ(14px);
+  .plane [data-depth="mid"] {
+    transform: translateZ(14px);
+  }
 }
 
 .glare {
