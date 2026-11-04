@@ -216,6 +216,21 @@
 }
 
 /*
+ * On a screen wide enough for the drawing the drawing is the explanation, so the same facts stay
+ * for screen readers without repeating on the page. A phone shows them as its flow chart instead.
+ */
+@media (min-width: 721px) {
+  .key {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/*
  * Below the width where the grid is legible, the drawing is replaced by the words.
  *
  * Not a scaled-down diagram: an eleven-box graph at 390px is a picture of a graph rather than a

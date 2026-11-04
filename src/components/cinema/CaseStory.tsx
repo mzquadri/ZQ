@@ -18,6 +18,9 @@ import type { Project } from "@/content/portfolio";
  * because a figure that has just made an argument is exactly where its limits are load-bearing.
  */
 
+/** One point per step. The full argument sits under "How it was built" and in the repository. */
+const firstSentence = (text: string) => text.split(/(?<=[.?!])\s/)[0];
+
 export default function CaseStory({ project }: { project: Project }) {
   const story = caseStories[project.slug];
   const world = PROJECT_WORLDS[project.slug];
@@ -33,7 +36,7 @@ export default function CaseStory({ project }: { project: Project }) {
         <header className="case-story-head">
           <p className="case-story-eyebrow">Method</p>
           <h2 className="case-story-title" id={`story-${project.slug}`}>{story.title}</h2>
-          <p className="case-story-intro">{story.intro}</p>
+          <p className="case-story-intro">{firstSentence(story.intro)}</p>
         </header>
 
         <div className="case-story-body">
@@ -46,7 +49,7 @@ export default function CaseStory({ project }: { project: Project }) {
             {story.beats.map((beat, i) => (
               <li className="case-story-beat" key={beat.verb} style={{ "--i": i } as React.CSSProperties}>
                 <p className="case-story-verb">{beat.verb}</p>
-                <p className="case-story-text">{beat.text}</p>
+                <p className="case-story-text">{firstSentence(beat.text)}</p>
               </li>
             ))}
             <li className="case-story-caveat">
