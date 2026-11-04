@@ -37,7 +37,7 @@ export default function CaseHero({ project, children }: { project: Project; chil
 
           <p className="case-stage-eyebrow">{project.eyebrow}</p>
           <h1 className="case-stage-title">{project.title}</h1>
-          <p className="case-stage-summary">{project.summary}</p>
+          <p className="case-stage-summary">{project.summary.split(/(?<=[.?!])\s/)[0]}</p>
 
           <dl className="case-stage-facts">
             <div>

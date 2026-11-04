@@ -4907,3 +4907,28 @@
     width: min(100%, 22rem);
   }
 }
+
+/* Short by default: a card shows its number and one line, and opens on hover, focus or tap. */
+.metric p,
+.artifact-links a span {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.metric:is(:hover, :focus-within, :active) p,
+.artifact-links a:is(:hover, :focus-visible, :active) span {
+  -webkit-line-clamp: unset;
+}
+
+.metric strong {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.case-learning blockquote {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}

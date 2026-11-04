@@ -109,59 +109,63 @@ export default function MedicoPage() {
           <MedicoWorld flat={<MedicoWorldFlat />} />
         </div>
 
-        <section className="section-wrap">
-          <p className="section-index">What this is</p>
-          <h2>Three corpora, one label space, and a great deal of silence.</h2>
-          <p>
-            The model predicts {findings.length} findings at once. Only one of its three sources
-            can speak to all {findings.length} of them: NIH ChestX-ray14. CheXpert supplies{" "}
-            {coverage[0].covered}, and the pneumonia set supplies {coverage[2].covered}. Within the
-            findings CheXpert does carry, an entry can still be explicitly uncertain, or simply not
-            mentioned at all.
-          </p>
-          <p>
-            The decision that shapes the whole project is what to do with that silence. Treating it
-            as a negative is cheap and wrong: it would teach the model that every CheXpert chest is
-            free of emphysema, fibrosis and hernia, and that every image in the pneumonia set is
-            free of the other thirteen findings. Instead each of those entries is masked, and a
-            masked entry contributes nothing to the loss and nothing to the metrics.
-          </p>
-        </section>
+        <details className="section-wrap case-more">
+          <summary>Read the full method</summary>
+          <section className="section-wrap">
+            <p className="section-index">What this is</p>
+            <h2>Three corpora, one label space, and a great deal of silence.</h2>
+            <p>
+              The model predicts {findings.length} findings at once. Only one of its three sources
+              can speak to all {findings.length} of them: NIH ChestX-ray14. CheXpert supplies{" "}
+              {coverage[0].covered}, and the pneumonia set supplies {coverage[2].covered}. Within the
+              findings CheXpert does carry, an entry can still be explicitly uncertain, or simply not
+              mentioned at all.
+            </p>
+            <p>
+              The decision that shapes the whole project is what to do with that silence. Treating it
+              as a negative is cheap and wrong: it would teach the model that every CheXpert chest is
+              free of emphysema, fibrosis and hernia, and that every image in the pneumonia set is
+              free of the other thirteen findings. Instead each of those entries is masked, and a
+              masked entry contributes nothing to the loss and nothing to the metrics.
+            </p>
+          </section>
 
-        <section className="section-wrap">
-          <p className="section-index">The loss</p>
-          <h2>Focal weighting, and then a switch that can turn the whole term off.</h2>
-          <p>
-            The loss is a focal loss with label smoothing ({config.labelSmoothing}), alpha{" "}
-            {config.focalAlpha} so positives are weighted three to one, gamma {config.focalGamma}{" "}
-            so confident examples stop dominating, and a class weight applied to positives only so
-            that boosting a rare finding does not also boost the flood of negatives around it. All
-            of that is multiplied by the mask, and normalised by the sum of the mask times the
-            weights rather than by the element count &mdash; otherwise batches with a lot of masked
-            entries would be scaled as though those entries had been learned from.
-          </p>
-        </section>
+          <section className="section-wrap">
+            <p className="section-index">The loss</p>
+            <h2>Focal weighting, and then a switch that can turn the whole term off.</h2>
+            <p>
+              The loss is a focal loss with label smoothing ({config.labelSmoothing}), alpha{" "}
+              {config.focalAlpha} so positives are weighted three to one, gamma {config.focalGamma}{" "}
+              so confident examples stop dominating, and a class weight applied to positives only so
+              that boosting a rare finding does not also boost the flood of negatives around it. All
+              of that is multiplied by the mask, and normalised by the sum of the mask times the
+              weights rather than by the element count &mdash; otherwise batches with a lot of masked
+              entries would be scaled as though those entries had been learned from.
+            </p>
+          </section>
 
-        <section className="section-wrap">
-          <p className="section-index">Splits and evaluation</p>
-          <h2>Split by patient, and judged on the worst finding.</h2>
-          <p>
-            Both CheXpert and NIH are split 80/10/10 at the level of the patient, not the image, so
-            two views of the same person cannot land on both sides of the split. The NIH split is
-            retried until every finding has at least twenty positives in both validation and test,
-            because a split that leaves a rare finding with three positives produces a metric that
-            means nothing.
-          </p>
-          <p>
-            {evaluation.metric}, computed only over samples where that channel is certain. The
-            checkpoint is then selected on the <em>minimum</em> class AUC rather than the mean, with
-            Hernia excluded as too rare to steer on &mdash; a mean would let a strong majority class
-            hide a finding the model cannot do at all.
-          </p>
-          <p className="section-note">
-            {evaluation.publishedNote}
-          </p>
-        </section>
+          <section className="section-wrap">
+            <p className="section-index">Splits and evaluation</p>
+            <h2>Split by patient, and judged on the worst finding.</h2>
+            <p>
+              Both CheXpert and NIH are split 80/10/10 at the level of the patient, not the image, so
+              two views of the same person cannot land on both sides of the split. The NIH split is
+              retried until every finding has at least twenty positives in both validation and test,
+              because a split that leaves a rare finding with three positives produces a metric that
+              means nothing.
+            </p>
+            <p>
+              {evaluation.metric}, computed only over samples where that channel is certain. The
+              checkpoint is then selected on the <em>minimum</em> class AUC rather than the mean, with
+              Hernia excluded as too rare to steer on &mdash; a mean would let a strong majority class
+              hide a finding the model cannot do at all.
+            </p>
+            <p className="section-note">
+              {evaluation.publishedNote}
+            </p>
+          </section>
+
+        </details>
 
         <section className="closing-section section-wrap">
           <p className="kicker">Boundaries</p>
