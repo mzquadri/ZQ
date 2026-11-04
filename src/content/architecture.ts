@@ -112,7 +112,7 @@ export const architectureSubjects = [
     title: "Legal knowledge database",
     kind: "Primary implementation / Browse",
     summary:
-      "Published law turned into verifiable machine-readable knowledge: capture, structure, projection and a control plane. An eleven-step guided walkthrough runs through the same page in the order the work is best explained out loud.",
+      "Published law turned into verified, searchable knowledge.",
     href: `${architecture.site}#legal`,
     accent: "var(--accent-retrieval)",
     external: true,
@@ -122,7 +122,7 @@ export const architectureSubjects = [
     title: "Trust and verification",
     kind: "Primary implementation / About 10 minutes",
     summary:
-      "How a stored representation is checked back against the bytes the publisher served, and why a checker that shares its subject's assumptions cannot falsify anything.",
+      "Fourteen gates check stored law against the publisher's original.",
     href: `${architecture.site}#trust`,
     accent: "var(--accent-graph)",
     external: true,
@@ -132,7 +132,7 @@ export const architectureSubjects = [
     title: "Event-driven systems",
     kind: "Primary implementation / Ingestion",
     summary:
-      "How a document moves between services without any of them holding a distributed transaction, and what has to be true for redelivery to be harmless.",
+      "Documents move between services with no shared transaction.",
     href: `${architecture.site}#events`,
     accent: "var(--accent-pipeline)",
     external: true,
@@ -142,7 +142,7 @@ export const architectureSubjects = [
     title: "Retrieval and answering",
     kind: "Primary implementation / Retrieval",
     summary:
-      "Dense and sparse retrieval over a verified corpus, and what a citation has to point at before it is worth having.",
+      "Search by meaning and by exact citation, over verified text.",
     href: `${architecture.site}#query`,
     accent: "var(--accent-corpus)",
     external: true,
@@ -152,7 +152,7 @@ export const architectureSubjects = [
     title: "Document intelligence",
     kind: "Significant contribution / Extraction",
     summary:
-      "Extraction over insurance paperwork with a deterministic fallback beside the model, corruption detected before the text is trusted, and the fields that failed kept visible.",
+      "Insurance PDFs turned into checked, structured fields.",
     href: `${architecture.site}#documents`,
     accent: "var(--accent-steel)",
     external: true,
@@ -162,7 +162,7 @@ export const architectureSubjects = [
     title: "AI compliance",
     kind: "Integration / shared",
     summary:
-      "A questionnaire-based assessment product built by colleagues, whose results reach the knowledge layer through an ingestion path inside a service I implemented. The product is not mine and the page says so.",
+      "A colleagues' product that reaches the corpus through my ingestion path.",
     href: `${architecture.site}#compliance`,
     accent: "var(--accent-systems)",
     external: true,
@@ -172,7 +172,7 @@ export const architectureSubjects = [
     title: "Medical imaging",
     kind: "Significant contribution / Research-grade",
     summary:
-      "A multi-label chest-radiograph model with per-finding calibrated thresholds and gradient-based attribution. Research-grade only: no certified device, no regulatory clearance, no clinical accuracy figure.",
+      "A research-only X-ray model with a threshold per finding.",
     href: `${architecture.site}#radiology`,
     accent: "var(--accent-flow)",
     external: true,

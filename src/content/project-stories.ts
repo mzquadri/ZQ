@@ -16,7 +16,7 @@ export interface ProjectStory {
   flow: readonly string[];
   result: { value: string; label: string };
   /** Drawn on the result step. Empty where there is nothing honest to compare. */
-  chart: readonly { label: string; shown: string; size: number }[];
+  chart: readonly { label: string; shown: string; size: number; negative?: boolean }[];
   tools: readonly string[];
   /** A path inside the project's repository, or a site route beginning with a slash. */
   evidence: string;
@@ -259,7 +259,7 @@ export const projectStories: Readonly<Record<string, ProjectStory>> = {
     result: { value: "+23.4% → −15.5%", label: "the model's margin in ordinary years" },
     chart: [
       { label: "Published window", shown: "+23.4%", size: 47 },
-      { label: "Ordinary years", shown: "−15.5%", size: 31 },
+      { label: "Ordinary years", shown: "−15.5%", size: 31, negative: true },
     ],
     tools: ["scikit-learn", "pandas", "FastAPI", "pytest"],
     evidence: "README.md",

@@ -132,6 +132,12 @@
   transform-origin: left;
 }
 
+/* A loss reads as a loss: hatched, so the sign survives without colour. */
+.chart li[data-negative] i {
+  background: repeating-linear-gradient(-45deg, var(--story-accent) 0 4px, transparent 4px 8px);
+  outline: 1px solid var(--story-accent);
+}
+
 .tools {
   display: flex;
   flex-wrap: wrap;

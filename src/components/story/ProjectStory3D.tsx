@@ -57,7 +57,7 @@ export default function ProjectStory3D({
             {story.chart.length > 0 ? (
               <ul aria-label="The numbers" className={styles.chart}>
                 {story.chart.map((bar, i) => (
-                  <li key={bar.label} style={{ "--i": i, "--size": `${bar.size}%` } as React.CSSProperties}>
+                  <li data-negative={bar.negative ? "" : undefined} key={bar.label} style={{ "--i": i, "--size": `${bar.size}%` } as React.CSSProperties}>
                     <span>{bar.label}</span>
                     <strong>{bar.shown}</strong>
                     <i aria-hidden="true" />

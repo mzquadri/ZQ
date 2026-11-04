@@ -640,12 +640,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </section>
 
         <section className="case-learning section-wrap">
-          <p className="kicker">What this changed in my practice</p>
-          {/* A pull-quote that is really a paragraph gets paragraph-sized type. General rule, not
-              a per-project override: the slot is designed for a sentence or two. */}
-          <blockquote data-length={project.learned.trim().split(/\s+/).length > 40 ? "long" : undefined}>
-            {project.learned}
-          </blockquote>
+          <details className="case-more" open={guided}>
+            <summary>What this changed in my practice</summary>
+            <p className="kicker">What this changed in my practice</p>
+            {/* A pull-quote that is really a paragraph gets paragraph-sized type. General rule, not
+                a per-project override: the slot is designed for a sentence or two. */}
+            <blockquote data-length={project.learned.trim().split(/\s+/).length > 40 ? "long" : undefined}>
+              {project.learned}
+            </blockquote>
+          </details>
           {project.slug === "legal-knowledge-platform" ? <ClosingAnnotation /> : null}
           {project.nextStep ? <p className="next-step"><strong>Next evidence milestone:</strong> {project.nextStep}</p> : null}
           <div className="case-actions">
