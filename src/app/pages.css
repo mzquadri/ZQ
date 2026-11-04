@@ -4940,3 +4940,25 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
+/*
+ * Long lines rest at two rows and open for a reader who stops on them. Nothing is removed: the
+ * full text stays in the page, and a limitation is shortened on screen, never hidden.
+ */
+.work-what,
+.work-result,
+.next-system-question,
+.limitation-panel li,
+.case-stage-facts dd,
+.scn-identity figcaption {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.work-card:is(:hover, :focus-within, :active) :is(.work-what, .work-result),
+.limitation-panel li:is(:hover, :active),
+.next-system:is(:hover, :focus-within) .next-system-question {
+  -webkit-line-clamp: unset;
+}
