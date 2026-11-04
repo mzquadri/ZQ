@@ -1,0 +1,59 @@
+/*
+ * Motion for what is already on screen when a page opens.
+ *
+ * A scroll-bound reveal cannot play for content that starts in view, which left short pages such as
+ * Contact looking static. So the first screen of every page arrives once, in depth, on a clock.
+ * `backwards` fill means nothing is held afterwards and the tilt in tilt.css stays free to run.
+ */
+
+@keyframes enter-depth {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translate3d(0, 2.2rem, -150px) rotateX(14deg);
+  }
+}
+
+@keyframes enter-dolly {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) translate3d(0, 0, -260px) rotateY(-14deg);
+  }
+}
+
+@keyframes hero-away {
+  to {
+    transform: perspective(1000px) translate3d(0, 0, -180px) rotateX(6deg);
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .page-stage-copy > *,
+  .case-stage-copy > *,
+  .ending-copy > *,
+  .ending-channels > li,
+  .hero-copy > *,
+  .article-header > * {
+    animation: enter-depth 800ms var(--ease-exit) calc(60ms + var(--enter, 0) * 90ms) backwards;
+  }
+
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(2) { --enter: 1; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(3) { --enter: 2; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(4) { --enter: 3; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(5) { --enter: 4; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(n + 6) { --enter: 5; }
+
+  .ending-mark {
+    animation: enter-dolly 1100ms var(--ease-exit) 150ms backwards;
+  }
+
+  /* The hero backs away as the reader scrolls past it, and returns on the way up. */
+  @supports (animation-timeline: scroll()) {
+    .page-stage-inner,
+    .case-stage-inner {
+      animation: hero-away linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}

@@ -31,17 +31,22 @@
   @media (prefers-reduced-motion: no-preference) {
     main :is(.work-card, .exp-item, .edu-item, .res-item, .skill-group, .hs-h, .hs-lede, .es-grid > *) {
       animation: reveal-solid linear both;
+      animation-composition: add;
       animation-timeline: view();
       animation-range: entry 0% entry 60%;
       transform-origin: center top;
     }
 
     main .section-wrap:not(.visual-section) > :is(h2, h3, p, ul, ol, blockquote, figure),
-    main .two-column-copy > div,
+    main .section-wrap:not(.visual-section) > div > *,
+    main .article-prose > *,
+    .footer-grid > *,
+    .footer-links > a,
     main :is(.metric, .workflow-list > li, .artifact-links > a, .editorial-list > li, .tool-list > li),
-    main :is(.xp-role, .cred-list > li, .writing-grid > *, .ending-inner > *, .reliable-list > li),
+    main :is(.xp-role, .cred-list > li, .writing-grid > *, .reliable-list > li),
     main :is(.medico-flat-limits > li, .work-jump, .research-theme-links > *, .topic-chips > *) {
       animation: reveal-depth linear both;
+      animation-composition: add;
       animation-timeline: view();
       animation-range: entry 0% entry 60%;
       transform-origin: center top;

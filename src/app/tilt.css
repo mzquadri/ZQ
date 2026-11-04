@@ -1,0 +1,46 @@
+/*
+ * The drawing half of GlobalTilt. A card tilts toward the pointer, a highlight follows it, and its
+ * contents lift off the surface. `transform` here stays free because reveal.css composes with it.
+ */
+
+.metric,
+.work-card,
+.writing-card,
+.artifact-links > a,
+.ending-channels a,
+.cred-list > li,
+.exp-item,
+.xp-role,
+.res-item,
+.skill-group,
+.edu-item,
+.reliable-list > li,
+.limitation-panel,
+.footer-grid > div {
+  transition: transform var(--dur-base) var(--ease-exit);
+}
+
+[data-tilting] {
+  position: relative;
+  z-index: 2;
+  transform: perspective(900px) rotateX(var(--t-rx, 0deg)) rotateY(var(--t-ry, 0deg)) translateZ(14px);
+  transform-style: preserve-3d;
+  transition-duration: var(--dur-instant);
+  background-image: radial-gradient(
+    circle at var(--t-gx, 50%) var(--t-gy, 50%),
+    color-mix(in oklab, var(--ink) 9%, transparent),
+    transparent 62%
+  );
+}
+
+[data-tilting] > * {
+  transform: translateZ(16px);
+}
+
+/* Touch has no hover, so a press gives the same physical answer. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  :is(.metric, .work-card, .writing-card, .artifact-links > a, .ending-channels a, .cred-list > li):active {
+    transform: perspective(900px) translateZ(-24px);
+    transition-duration: var(--dur-instant);
+  }
+}

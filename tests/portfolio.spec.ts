@@ -3858,3 +3858,22 @@ test("wheel scrolling is smooth unless the reader asks for less motion", async (
   await page.reload();
   await expect(page.locator("html.lenis")).toHaveCount(1);
 });
+
+test("contact opens with motion and rests complete under reduced motion", async ({ page }) => {
+  await page.goto("/contact");
+  await expect(page.locator(".ending-line")).toHaveCSS("animation-name", "none");
+  await expect(page.getByRole("link", { name: /Email/ }).first()).toBeVisible();
+
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.reload();
+  await expect(page.locator(".ending-line")).not.toHaveCSS("animation-name", "none");
+});
+
+test("cards anywhere on the site tilt for a pointer", async ({ page, isMobile }) => {
+  test.skip(isMobile, "Tilt needs a fine pointer");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/contact");
+  const card = page.locator(".ending-channels a").first();
+  await card.hover();
+  await expect(card).toHaveAttribute("data-tilting", "");
+});

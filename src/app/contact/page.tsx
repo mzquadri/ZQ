@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ClosingMark } from "@/components/cinema/PageStages";
 import { ClosingCanvas } from "@/components/scene/PersonalCanvases";
+import ContactSignal from "@/components/ContactSignal";
 import PageShell from "@/components/PageShell";
 import { site } from "@/content/portfolio";
 import { createPageMetadata } from "@/lib/metadata";
@@ -96,6 +97,7 @@ export default function ContactPage() {
 
           <div className="ending-mark" aria-hidden="true">
             <ClosingCanvas flat={<ClosingMark />} />
+            <ContactSignal />
           </div>
         </div>
       </section>

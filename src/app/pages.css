@@ -4891,3 +4891,19 @@
   width: 100%;
   padding-inline: 0;
 }
+
+/* The signal sits over the closing ring, which stays behind it as the ground. */
+.ending-mark {
+  position: relative;
+  width: 100%;
+}
+
+.ending-mark > * {
+  grid-area: 1 / 1;
+}
+
+@media (max-width: 900px) {
+  .ending-mark {
+    width: min(100%, 22rem);
+  }
+}

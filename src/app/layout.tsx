@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import JsonLd from "@/components/JsonLd";
+import GlobalTilt from "@/components/GlobalTilt";
 import SmoothScroll from "@/components/SmoothScroll";
 import { site } from "@/content/portfolio";
 import "./globals.css";
@@ -12,6 +13,8 @@ import "./rail.css";
 import "./pages.css";
 import "./reveal.css";
 import "./phone-motion.css";
+import "./entrance.css";
+import "./tilt.css";
 
 /*
  * Archivo and IBM Plex Mono, self-hosted and subset to Latin-1.
@@ -240,6 +243,7 @@ export default function RootLayout({
           }}
         />
         <SmoothScroll />
+        <GlobalTilt />
         {children}
       </body>
     </html>
