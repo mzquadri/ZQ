@@ -32,16 +32,16 @@
   .case-stage-copy > *,
   .ending-copy > *,
   .ending-channels > li,
-  .hero-copy > *,
+  .hero-intro > *,
   .article-header > * {
     animation: enter-depth 800ms var(--ease-exit) calc(60ms + var(--enter, 0) * 90ms) backwards;
   }
 
-  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(2) { --enter: 1; }
-  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(3) { --enter: 2; }
-  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(4) { --enter: 3; }
-  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(5) { --enter: 4; }
-  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-copy, .article-header) > :nth-child(n + 6) { --enter: 5; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-intro, .article-header) > :nth-child(2) { --enter: 1; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-intro, .article-header) > :nth-child(3) { --enter: 2; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-intro, .article-header) > :nth-child(4) { --enter: 3; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-intro, .article-header) > :nth-child(5) { --enter: 4; }
+  :is(.page-stage-copy, .case-stage-copy, .ending-copy, .ending-channels, .hero-intro, .article-header) > :nth-child(n + 6) { --enter: 5; }
 
   .ending-mark {
     animation: enter-dolly 1100ms var(--ease-exit) 150ms backwards;
