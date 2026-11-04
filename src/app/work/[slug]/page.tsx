@@ -564,6 +564,26 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
         <CaseStory project={project} />
 
+        <details className="section-wrap case-more" open={guided}>
+          <summary>How it was built</summary>
+          <section className="case-section">
+            <p className="section-index">System</p>
+            <h2>Workflow and decisions</h2>
+            {project.systemSummary ? <p className="system-summary">{project.systemSummary}</p> : null}
+            <ol className="workflow-list">
+              {project.workflow.map((step, index) => (
+                <li key={step}>
+                  <span>{(index + 1).toString()}</span>
+                  <strong>{step}</strong>
+                </li>
+              ))}
+            </ol>
+            <ul className="tool-list case-tools" aria-label="Technologies used">
+              {project.tools.map((tool) => <li key={tool}>{tool}</li>)}
+            </ul>
+          </section>
+        </details>
+
         {project.slug === "legal-knowledge-platform" ? (
           <section className="section-wrap visual-section" aria-label="What an amended source changes, and what each class of evidence establishes">
             <SourceChangeConvergence />
@@ -600,44 +620,24 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </section>
         ) : null}
 
-        {/* How it was built and checked, for the reader who asks. The steps above are the short form. */}
-        <details className="section-wrap case-more" open={guided}>
-          <summary>How it was built and checked</summary>
-          <section className="section-wrap case-section">
-            <p className="section-index">System</p>
-            <h2>Workflow and decisions</h2>
-            {project.systemSummary ? <p className="system-summary">{project.systemSummary}</p> : null}
-            <ol className="workflow-list">
-              {project.workflow.map((step, index) => (
-                <li key={step}>
-                  <span>{(index + 1).toString()}</span>
-                  <strong>{step}</strong>
-                </li>
-              ))}
-            </ol>
-            <ul className="tool-list case-tools" aria-label="Technologies used">
-              {project.tools.map((tool) => <li key={tool}>{tool}</li>)}
+        <section className="section-wrap case-section quality-grid">
+          <details className="case-more" open={guided}>
+            <summary>How the work is checked</summary>
+            <p className="section-index">Quality controls</p>
+            <h2>How the work is checked</h2>
+            <ul className="editorial-list positive-list">
+              {project.quality.map((item) => <li key={item}>{item}</li>)}
             </ul>
-          </section>
-
-          <section className="section-wrap case-section quality-grid">
-            <div>
-              <p className="section-index">Quality controls</p>
-              <h2>How the work is checked</h2>
-              <ul className="editorial-list positive-list">
-                {project.quality.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            </div>
-            <div className="limitation-panel">
-              <p className="section-index">Limitations</p>
-              <h2>Where the evidence stops</h2>
-              <ul className="editorial-list">
-                {project.limitations.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            </div>
-          </section>
-
-        </details>
+          </details>
+          {/* Limitations stay open. Shortening a page must never hide where its evidence stops. */}
+          <div className="limitation-panel">
+            <p className="section-index">Limitations</p>
+            <h2>Where the evidence stops</h2>
+            <ul className="editorial-list">
+              {project.limitations.map((item) => <li key={item}>{item}</li>)}
+            </ul>
+          </div>
+        </section>
 
         <section className="case-learning section-wrap">
           <p className="kicker">What this changed in my practice</p>
