@@ -178,67 +178,64 @@ export default function ReliableKnowledgeSystemsPage() {
           </ol>
         </section>
 
-        <details className="section-wrap case-more">
-          <summary>Read the full model</summary>
-          <section className="section-wrap case-section">
-            <p className="section-index">Rules that make a check mean something</p>
-            <h2>Most of the difficulty is ownership, not measurement.</h2>
+        <section className="section-wrap case-section">
+          <p className="section-index">Rules that make a check mean something</p>
+          <h2>Most of the difficulty is ownership, not measurement.</h2>
+          <ul className="reliable-list">
+            {principles.map((principle) => (
+              <li key={principle.label}>
+                <strong>{principle.label}</strong>
+                <span>{principle.note}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="section-wrap case-section two-column-copy">
+          <div>
+            <p className="section-index">When it goes wrong</p>
+            <h2>The failures worth designing for are the quiet ones.</h2>
+            <p>
+              None of these describes an incident. They are the classes of failure this shape of
+              system has, and the reason the checks above are worth running: each of them looks
+              perfectly healthy from inside the store it affects.
+            </p>
+            <p>
+              The response is an operator action rather than a scheduled job. Derived state is
+              discarded and rebuilt from evidence; the evidence itself is never touched.
+            </p>
+          </div>
+          <div>
             <ul className="reliable-list">
-              {principles.map((principle) => (
-                <li key={principle.label}>
-                  <strong>{principle.label}</strong>
-                  <span>{principle.note}</span>
+              {failureModes.map((mode) => (
+                <li data-fault="" key={mode.label}>
+                  <strong>{mode.label}</strong>
+                  <span>{mode.note}</span>
                 </li>
               ))}
             </ul>
-          </section>
-
-          <section className="section-wrap case-section two-column-copy">
-            <div>
-              <p className="section-index">When it goes wrong</p>
-              <h2>The failures worth designing for are the quiet ones.</h2>
-              <p>
-                None of these describes an incident. They are the classes of failure this shape of
-                system has, and the reason the checks above are worth running: each of them looks
-                perfectly healthy from inside the store it affects.
-              </p>
-              <p>
-                The response is an operator action rather than a scheduled job. Derived state is
-                discarded and rebuilt from evidence; the evidence itself is never touched.
-              </p>
-            </div>
-            <div>
-              <ul className="reliable-list">
-                {failureModes.map((mode) => (
-                  <li data-fault="" key={mode.label}>
-                    <strong>{mode.label}</strong>
-                    <span>{mode.note}</span>
-                  </li>
-                ))}
-              </ul>
-              <ul className="reliable-list reliable-actions">
-                {actions.map((action) => (
-                  <li key={action.key}>
-                    <strong>{action.label}</strong>
-                    <span>{action.effect}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-
-          <section className="section-wrap case-section">
-            <p className="section-index">What I worked on</p>
-            <h2>Stated as problems, and only where I can show the commits.</h2>
-            <ul className="reliable-list">
-              {contribution.map((item) => (
-                <li key={item}>
-                  <span>{item}</span>
+            <ul className="reliable-list reliable-actions">
+              {actions.map((action) => (
+                <li key={action.key}>
+                  <strong>{action.label}</strong>
+                  <span>{action.effect}</span>
                 </li>
               ))}
             </ul>
-          </section>
-        </details>
+          </div>
+        </section>
+
+        <section className="section-wrap case-section">
+          <p className="section-index">What I worked on</p>
+          <h2>Stated as problems, and only where I can show the commits.</h2>
+          <ul className="reliable-list">
+            {contribution.map((item) => (
+              <li key={item}>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <section className="closing-section section-wrap">
           <p className="kicker">Boundaries</p>
