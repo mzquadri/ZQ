@@ -73,6 +73,7 @@
 }
 
 /* A small flow chart: each step is a box, each connector a line that draws. */
+/* At rest, four cards. */
 .flow {
   display: flex;
   flex-wrap: wrap;
@@ -101,6 +102,52 @@
   transform-origin: left;
 }
 
+/* A bar chart in plain HTML: the length is data, and scroll only decides how much of it is drawn. */
+.chart {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chart li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.15rem 1rem;
+  font-size: 0.9rem;
+}
+
+.chart strong {
+  font-weight: 600;
+}
+
+.chart i {
+  grid-column: 1 / -1;
+  display: block;
+  width: var(--size);
+  height: 0.55rem;
+  border-radius: 3px;
+  background: var(--story-accent);
+  transform-origin: left;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tools li {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--stage-line-strong);
+  border-radius: 999px;
+  font-size: 0.98rem;
+}
+
 @keyframes story-near {
   from { opacity: 1; transform: translate3d(0, 0, 0); }
   to { opacity: 0; transform: translate3d(0, 0, 340px); }
@@ -122,6 +169,11 @@
   to { opacity: 1; transform: none; }
 }
 
+@keyframes story-bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 @keyframes story-link {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
@@ -130,7 +182,7 @@
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .track {
-      height: 340vh;
+      height: 440vh;
       view-timeline-name: --story;
       view-timeline-axis: block;
     }
@@ -164,29 +216,46 @@
 
     .card[data-step="1"] {
       animation-name: story-near;
-      animation-range: contain 6% contain 36%;
+      animation-range: contain 4% contain 24%;
     }
 
     .card[data-step="2"] {
       animation-name: story-mid;
-      animation-range: contain 14% contain 74%;
+      animation-range: contain 10% contain 50%;
     }
 
     .card[data-step="3"] {
+      animation-name: story-mid;
+      animation-range: contain 38% contain 78%;
+    }
+
+    .card[data-step="4"] {
       animation-name: story-far;
-      animation-range: contain 52% contain 88%;
+      animation-range: contain 66% contain 92%;
+    }
+
+    .chart i {
+      animation: story-bar linear both;
+      animation-timeline: --story;
+      animation-range: contain calc(46% + var(--i) * 3%) contain calc(56% + var(--i) * 3%);
+    }
+
+    .tools li {
+      animation: story-step linear both;
+      animation-timeline: --story;
+      animation-range: contain calc(74% + var(--i) * 2%) contain calc(80% + var(--i) * 2%);
     }
 
     .flow li {
       animation: story-step linear both;
       animation-timeline: --story;
-      animation-range: contain calc(30% + var(--i) * 5%) contain calc(36% + var(--i) * 5%);
+      animation-range: contain calc(20% + var(--i) * 3%) contain calc(25% + var(--i) * 3%);
     }
 
     .flow li + li::before {
       animation: story-link linear both;
       animation-timeline: --story;
-      animation-range: contain calc(26% + var(--i) * 5%) contain calc(30% + var(--i) * 5%);
+      animation-range: contain calc(18% + var(--i) * 3%) contain calc(21% + var(--i) * 3%);
     }
   }
 }

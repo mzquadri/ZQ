@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PROJECT_WORLDS } from "@/components/cinema/project-worlds";
 import SceneIdentity from "@/components/sequence/SceneIdentity";
 import { SCENES } from "@/components/sequence/scenes";
+import { projectStories } from "@/content/project-stories";
 import type { Project } from "@/content/portfolio";
 
 /*
@@ -37,7 +38,7 @@ export default function CaseHero({ project, children }: { project: Project; chil
 
           <p className="case-stage-eyebrow">{project.eyebrow}</p>
           <h1 className="case-stage-title">{project.title}</h1>
-          <p className="case-stage-summary">{project.summary.split(/(?<=[.?!])\s/)[0]}</p>
+          <p className="case-stage-summary">{projectStories[project.slug]?.what ?? project.summary}</p>
 
           <dl className="case-stage-facts">
             <div>

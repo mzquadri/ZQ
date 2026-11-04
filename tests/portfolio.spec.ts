@@ -3832,10 +3832,10 @@ test("no two project cards share a mark", async ({ page }) => {
 });
 
 for (const route of ["/work/transport-uq", "/work/medico", "/work/reliable-knowledge-systems"]) {
-  test(`${route} opens on its problem, why and result`, async ({ page }) => {
+  test(`${route} opens on its problem, method, result and tools`, async ({ page }) => {
     await page.goto(route);
-    const story = page.getByRole("region", { name: "The project in three steps" });
-    for (const label of ["Problem", "Why it mattered", "Result"]) {
+    const story = page.getByRole("region", { name: "The project, step by step" });
+    for (const label of ["Problem", "How it was solved", "Result", "Built with"]) {
       await expect(story.getByText(label, { exact: true })).toBeVisible();
     }
     await expect(story.getByRole("link", { name: /See the evidence/ })).toHaveCount(1);
@@ -3846,7 +3846,7 @@ test("the three steps run on a pinned track when motion is allowed", async ({ pa
   test.skip(isMobile, "Covered by the desktop project");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/work/supply-chain");
-  const track = page.getByRole("region", { name: "The project in three steps" });
+  const track = page.getByRole("region", { name: "The project, step by step" });
   await expect(track.locator("> div")).toHaveCSS("position", "sticky");
 });
 
