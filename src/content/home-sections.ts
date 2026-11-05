@@ -87,7 +87,7 @@ export const homeExperience: readonly HomeRole[] = [
     location: "Munich, Germany",
     bullets: [
       "Built four of the five services in a legal knowledge base: a three-stage pipeline that parses German and EU legislation into PostgreSQL, with embeddings in Qdrant and a citation graph in Neo4j.",
-      "Shipped the verification service that runs up to 14 checks on a law before it is certified, and the dashboard that reports them.",
+      "Shipped the verification service that runs up to 14 checks on a law before it is certified, with 52 laws certified (32 German, 20 EU), and the dashboard that reports them.",
       "Fine-tuned a chest X-ray classifier for a client prototype, delivering five findings and taking the work on to 14, and built the Docker Compose stack behind the services, contributing to the Kubernetes manifests and CI.",
     ],
   },
