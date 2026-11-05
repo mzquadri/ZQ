@@ -159,7 +159,7 @@ export function VolunteeringList() {
           <p className="career-org">
             {[entry.organization, entry.location].filter(Boolean).join(" / ")}
           </p>
-          <p className="career-period">{entry.period}</p>
+          {entry.period ? <p className="career-period">{entry.period}</p> : null}
           <p className="career-practice">{entry.summary}</p>
           {entry.issuer ? <p className="credential-meta">{entry.issuer}</p> : null}
         </li>
