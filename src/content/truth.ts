@@ -373,7 +373,7 @@ export const truthRegistry = {
           id: "aiesec-munich",
           organization: "AIESEC in Munich",
           role: "Incoming Global Talent Volunteer",
-          period: "Jun 2022 - Present",
+          period: "Jun 2022 - Jun 2026",
           location: "Munich, Germany",
           summary:
             "Placement, onboarding and document coordination for international students and interns, and regular contact with host companies.",
