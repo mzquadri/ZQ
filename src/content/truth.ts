@@ -185,7 +185,7 @@ export const truthRegistry = {
           organization: "BP-IT Consulting & Solutions GmbH",
           title: "AI Engineer (Working Student)",
           location: "Munich, Germany",
-          period: "Apr 2025 - Sep 2026",
+          period: "Nov 2025 - Sep 2026",
           // Worded to match the CV exactly: four of the five services, not the
           // platform; a three-stage ingestion pipeline, not a two-stage one;
           // and "up to" fourteen checks, because two of the fourteen are
