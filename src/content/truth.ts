@@ -326,7 +326,7 @@ export const truthRegistry = {
           id: "datacamp-intro-sql",
           title: "Introduction to SQL",
           issuer: "DataCamp",
-          awarded: "Apr 2022",
+          awarded: "Jul 2023",
           credentialUrl:
             "https://www.datacamp.com/statement-of-accomplishment/course/cc6f599bad4e14576d823664f8a722b75ee91f9e",
         },
@@ -334,17 +334,17 @@ export const truthRegistry = {
           id: "datacamp-intro-python",
           title: "Introduction to Python",
           issuer: "DataCamp",
-          awarded: "Apr 2022",
+          awarded: "Apr 2023",
           credentialUrl:
             "https://www.datacamp.com/statement-of-accomplishment/course/0a2ac762470c3c93bb40aa6c72f43416b713ef02",
         },
       ] as const satisfies readonly CredentialRecord[],
       // Titles and issuers are read off the issuers' own verification pages rather than off the
       // CV, which is why they outrank it as a source. The two DataCamp pages do not display a
-      // completion date, so those two dates still come from the CV alone.
+      // completion date, so those two dates come from the issued certificates, checked by the owner.
       source: {
         tier: "approved-document",
-        reference: `Issuer verification pages, read 2026-10-15; DataCamp dates from ${curriculumVitae}`,
+        reference: `Issuer verification pages, read 2026-10-15; DataCamp dates from the issued certificates`,
       },
       verifiedAt,
       reviewAfter: currentFactReviewAfter,
