@@ -25,16 +25,7 @@ export interface ExperienceRecord {
   organization: string;
   title: string;
   location?: string;
-  /**
-   * Employment period, transcribed verbatim from the CV of 19 Aug 2026 and formatted as
-   * "Mon YYYY - Mon YYYY", with "Present" only where the CV itself carries it.
-   *
-   * This field replaces an earlier decision to publish no dates at all. That decision was made
-   * to stop a five-role list reading as a career narrative, and the disciplines grouping still
-   * carries that intent. But a recruiter reading a portfolio needs to know how long something
-   * ran, and withholding it costs more than the narrative it avoided. Dates are published where
-   * a document supports them and nowhere else.
-   */
+  /** Not published. Dates live on the CV, not on the website. */
   period?: string;
   /**
    * Sanitized, abstract description of confidential professional work. It must never name an
@@ -99,7 +90,7 @@ export interface VolunteeringRecord {
   id: string;
   organization: string;
   role: string;
-  period: string;
+  period?: string;
   location?: string;
   summary: string;
   /** The body that issued the certificate, where one exists and differs from the event host. */
@@ -185,7 +176,6 @@ export const truthRegistry = {
           organization: "BP-IT Consulting & Solutions GmbH",
           title: "AI Engineer (Working Student)",
           location: "Munich, Germany",
-          period: "Nov 2025 - Sep 2026",
           // Worded to match the CV exactly: four of the five services, not the
           // platform; a three-stage ingestion pipeline, not a two-stage one;
           // and "up to" fourteen checks, because two of the fourteen are
@@ -209,37 +199,30 @@ export const truthRegistry = {
         {
           id: "tum-programming-visualization",
           organization: "Technical University of Munich",
-          title: "Student Research Assistant / Programming and Visualization",
+          title: "Student Research Assistant (Programming and Visualization)",
           location: "Munich, Germany",
-          period: "Aug 2023 - Mar 2024",
           detail: [
-            "Taught MATLAB lab sessions for mathematics and engineering students, and prepared the starter code they worked from.",
+            "Led programming labs for mathematics and engineering students new to coding, and prepared the Python and MATLAB starter code they worked from.",
           ],
-          tech: ["MATLAB"],
+          tech: ["Python", "MATLAB"],
         },
         {
           id: "audi-workflows-databases",
           organization: "AUDI AG",
           title: "Intern, Programming of Workflows and Linking of Databases",
           location: "Ingolstadt, Germany",
-          period: "Jan 2023 - Jun 2023",
           detail: [
             "Built an Excel VBA application with UserForms that automated development release tracking, replacing a manual search through roughly 600 rows and 130 or more columns with dropdown selection and single-click lookup.",
             "Added separate interfaces for the German and Chinese markets, with forms to create, update and delete records and automatic write-back to the source sheet.",
-            "Integrated the tool with FREIPRO, the release system every department already used, which was the hardest part of the project; numerous departments adopted it.",
+            "Integrated the tool with FREIPRO, the release system used across the company, and grew its use from one team to numerous departments.",
           ],
           tech: ["Excel VBA", "UserForms"],
         },
         {
-          // October, not April. The onboarding pack is signed 31.08.2022, the
-          // LfF insurance form stamped 26.09.2022, and the course this role
-          // taught ran 05.10 to 13.10.2022. Nothing on disk supports April, so
-          // the CV was corrected and this record follows it.
           id: "tum-numerical-methods",
           organization: "Technical University of Munich",
-          title: "Student Research Assistant, Numerical Methods and Scientific Visualization",
+          title: "Student Research Assistant (Numerical Methods and Scientific Visualization)",
           location: "Munich, Germany",
-          period: "Apr 2022 - Dec 2022",
           detail: [
             "Taught the MATLAB labs of Introduction to Programming (MA0010) at the Chair of Numerical Mathematics, covering vectorisation, linear systems and 2D and 3D visualisation.",
           ],
@@ -373,7 +356,6 @@ export const truthRegistry = {
           id: "aiesec-munich",
           organization: "AIESEC in Munich",
           role: "Incoming Global Talent Volunteer",
-          period: "Jun 2022 - Jun 2026",
           location: "Munich, Germany",
           summary:
             "Placement, onboarding and document coordination for international students and interns, and regular contact with host companies.",
@@ -382,7 +364,6 @@ export const truthRegistry = {
           id: "eye-2023",
           organization: "#DiasporaVote!",
           role: "Delegate, #DiasporaVote! delegation",
-          period: "Jun 2023",
           location: "Strasbourg, France",
           summary:
             "Took part in the European Youth Event (EYE 2023), the European Parliament's youth event, held at the Parliament in Strasbourg on 9 and 10 June 2023.",

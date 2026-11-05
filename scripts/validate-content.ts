@@ -313,27 +313,10 @@ for (const found of foundEmails) {
  */
 check(site.experience.length === 4, "Expected four approved experience records");
 check(new Set(site.experience.map((record) => record.id)).size === site.experience.length, "Experience IDs must be unique");
-/*
- * Experience dates are published now, so the check is on their shape rather than their absence.
- *
- * They were withheld because an undated list of five roles still reads as a career narrative, and
- * the disciplines grouping already answers that better. What it did not answer is how long
- * anything ran, which a reader of a portfolio legitimately wants. Each period must match one
- * approved format and end either in a month and year or in "Present", so a half-typed range or an
- * invented one fails the build rather than shipping.
- */
-const PERIOD =
-  /^(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d{2} - (?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) 20\d{2}|Present)$/;
-for (const record of site.experience) {
-  check(
-    typeof record.period === "string" && PERIOD.test(record.period),
-    `${record.id} must publish a period in the approved format, got: ${record.period ?? "none"}`,
-  );
+/* Dates live on the CV. The website publishes none for experience or volunteering. */
+for (const record of [...site.experience, ...site.volunteering]) {
+  check(!record.period, `${record.id} must not publish a period on the website`);
 }
-check(
-  site.experience.filter((record) => record.period?.endsWith("Present")).length <= 1,
-  "At most one role may be marked Present",
-);
 // Three since 15 Oct 2026: the TUM degree, the AMU degree, and the Mathematics of Data Science
 // advanced seminar. The seminar is a graded module of the M.Sc. with a public numerical
 // companion, so it belongs under education rather than under research, and the count moved with

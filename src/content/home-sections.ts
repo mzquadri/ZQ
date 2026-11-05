@@ -95,28 +95,25 @@ export const homeExperience: readonly HomeRole[] = [
     organisation: "AUDI AG",
     role: "Intern, Programming of Workflows and Linking of Databases",
     location: "Ingolstadt, Germany",
-    period: "Jan 2023 to Jun 2023",
     bullets: [
       "Built an Excel VBA application with UserForms for development release tracking, replacing a manual search through roughly 600 rows and 130 or more columns with dropdown selection and single-click lookup.",
       "Added separate interfaces for the German and Chinese markets, with create, update and delete forms writing back to the source sheet.",
-      "Connected the tool to FREIPRO, the release system every department already used, so its records stayed in step. Other departments adopted it.",
+      "Integrated the tool with FREIPRO, the release system used across the company, and grew its use from one team to numerous departments.",
     ],
   },
   {
     organisation: "Technical University of Munich",
-    role: "Student Research Assistant, Programming and Visualization",
+    role: "Student Research Assistant (Programming and Visualization)",
     location: "Munich, Germany",
-    period: "Aug 2023 to Mar 2024",
     bullets: [
-      "Taught MATLAB lab sessions for mathematics and engineering students.",
-      "Wrote the starter code the students worked from.",
+      "Led programming labs for mathematics and engineering students new to coding.",
+      "Prepared the Python and MATLAB starter code they worked from.",
     ],
   },
   {
     organisation: "Technical University of Munich",
-    role: "Student Research Assistant, Numerical Methods and Scientific Visualization",
+    role: "Student Research Assistant (Numerical Methods and Scientific Visualization)",
     location: "Munich, Germany",
-    period: "Apr 2022 to Dec 2022",
     bullets: [
       "Taught the MATLAB labs of Introduction to Programming at the Chair of Numerical Mathematics.",
       "Covered vectorisation, linear systems, and 2D and 3D visualisation.",
