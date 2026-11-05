@@ -21,7 +21,7 @@ import { createPageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = createPageMetadata({
   title: "Medico: multi-label chest X-ray modelling",
   description:
-    "A research prototype for multi-label chest X-ray classification with DenseNet-121. No trained weights, no patient data, and no clinical validation.",
+    "A client prototype for multi-label chest X-ray classification with DenseNet-121. Five findings delivered, work extended to 14. No published weights, no patient data, and no clinical validation.",
   path: "/work/medico",
 });
 
@@ -33,7 +33,7 @@ const REPOSITORY = "https://github.com/mzquadri/medico";
  * Every case study on this site states a problem, a contribution, versioned evidence, and the
  * limitations that bound the claim. This project has no evidence to version: the repository
  * publishes no trained weights and no metrics, by its own design. Listing it beside work that does
- * carry evidence would quietly borrow their credibility for it. It is a research prototype, it is
+ * carry evidence would quietly borrow their credibility for it. It is a client prototype, it is
  * labelled as one throughout, and what it is worth looking at is the engineering - specifically
  * what the loss does with labels that three different corpora disagree about.
  */
@@ -52,7 +52,7 @@ export default function MedicoPage() {
       <article>
         <header className="page-hero section-wrap">
           <Link className="back-link" href="/work">Selected work</Link>
-          <p className="kicker">Research prototype / Medical imaging</p>
+          <p className="kicker">Client prototype / Medical imaging</p>
           <h1>Uncertain is not negative.</h1>
 
           {/*
@@ -169,7 +169,7 @@ export default function MedicoPage() {
 
         <section className="closing-section section-wrap">
           <p className="kicker">Boundaries</p>
-          <h2>A research prototype, and not a clinical one.</h2>
+          <h2>A client prototype, and not a clinical one.</h2>
           <ul className="medico-flat-limits">
             {limits.map((limit) => (
               <li key={limit.label}>

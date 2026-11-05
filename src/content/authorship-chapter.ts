@@ -82,8 +82,7 @@ export const classes = [
 export const notClaimed = [
   { key: "deploy", label: "no production deployment", detail: "the services ran as pods in Dev and QA; there is no production environment" },
   { key: "impact", label: "no business impact metrics", detail: "none exist in any repository" },
-  { key: "certified", label: "no EU law certified", detail: "the parsers work; the assurance contract for them does not exist yet" },
-  { key: "medical", label: "no clinical claim", detail: "the imaging work is a research prototype: no device, no clearance, no validation, no accuracy figure" },
+  { key: "medical", label: "no clinical claim", detail: "the imaging work is a client prototype: no device, no clearance, no validation, no accuracy figure" },
 ] as const;
 
 /** Counted from the tree rather than the prose. */

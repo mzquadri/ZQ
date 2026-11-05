@@ -146,7 +146,7 @@ export const PROJECT_WORLDS: Readonly<Record<string, ProjectWorld>> = {
   medico: {
     accent: "var(--accent-pipeline)",
     title: "AI Radiologist",
-    eyebrow: "Research prototype / Medical imaging",
+    eyebrow: "Client prototype / Medical imaging",
     question:
       "A chest report that never mentions a finding has not ruled it out. Training a classifier as though it had is the mistake this project is about.",
     evidence: { label: "Published performance", value: "None" },

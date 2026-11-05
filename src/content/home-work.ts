@@ -81,8 +81,8 @@ export const selectedWork: readonly WorkCard[] = [
   {
     name: "AI Radiologist",
     context: "BP-IT Consulting",
-    what: "A chest X-ray classifier that flags five findings, shows which part of the image drove each call, and serves predictions behind a queue.",
-    result: "The screening demo scores AUROC 0.834 to 0.909 across the five findings on 4,128 public NIH images. Those are the public pre-trained weights it runs, not a model trained here.",
+    what: "A chest X-ray classifier for a client prototype, trained on NIH, CheXpert and pneumonia data. Five findings were delivered and the work went on to 14. It shows which part of the image drove each call and serves predictions behind a queue.",
+    result: "The screening demo scores AUROC 0.834 to 0.909 across the five findings on 4,128 public NIH images. Those are the public pre-trained weights it runs. The model trained at the company stayed with the company.",
     tech: ["PyTorch", "DenseNet-121", "Grad-CAM++", "Apache Kafka"],
     href: "/work/medico",
   },

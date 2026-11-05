@@ -102,7 +102,7 @@ export const STATES: readonly WorldState<MedicoKey>[] = [
     from: 0.95,
     to: 1.0,
     label: "Where it stops",
-    caption: "A research prototype. No weights, no patient data, no held-out metrics, no clinical validation.",
+    caption: "A client prototype. No published weights, no patient data, no held-out metrics, no clinical validation.",
   },
 ];
 

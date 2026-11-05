@@ -5,7 +5,7 @@ import { getProject, type Project } from "./portfolio";
  *
  * Two pages are in this position, and both for a reason rather than by oversight. The reliable
  * knowledge systems page is the public-safe model of employer work, so it has no repository and no
- * evidence table and would fail every registry invariant. Medico is a research prototype that
+ * evidence table and would fail every registry invariant. Medico is a client prototype that
  * publishes no trained weights and no metrics, and filing it beside work that does carry evidence
  * would lend it credibility it has not earned.
  *
@@ -37,9 +37,9 @@ export const standaloneWork: readonly LinkableWork[] = [
   {
     slug: "medico",
     title: "AI Radiologist",
-    classification: "Research prototype / Medical imaging",
+    classification: "Client prototype / Medical imaging",
     summary:
-      "A multi-label chest X-ray classifier trained across three corpora that disagree about what they label. No trained weights, no patient data, no held-out metrics, and no clinical validation.",
+      "A multi-label chest X-ray classifier trained across three corpora that disagree about what they label. No published weights, no patient data, no held-out metrics, and no clinical validation.",
   },
 ];
 

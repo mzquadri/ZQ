@@ -44,7 +44,7 @@ export const pinnedStories = {
       },
     ],
     caveat:
-      "A research prototype and not a clinical one. The boundaries further down this page are part of the work, and nothing here is a medical claim.",
+      "A client prototype and not a clinical one. The boundaries further down this page are part of the work, and nothing here is a medical claim.",
     link: { href: "https://github.com/mzquadri/medico", label: "Inspect repository" },
   },
 
