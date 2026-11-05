@@ -196,7 +196,7 @@ export const truthRegistry = {
           detail: [
             "Engineered four of the five services of a legal knowledge base: a three-stage pipeline parsing German GII-NORM and EU FORMEX v4 legislation into PostgreSQL, with BGE-M3 embeddings in Qdrant and Neo4j kept consistent by uuid5 point IDs.",
             "Shipped the FastAPI verification service that runs up to 14 checks on every law before it is certified, one of them an oracle parse on an independent XML stack, and the Next.js dashboard that reports them.",
-            "Built the ML core of a DenseNet-121 chest X-ray classifier over five findings, with a calibrated threshold per finding, an ICD-10 severity layer and Grad-CAM++ attribution, served by a Kafka-backed prediction service.",
+            "Fine-tuned a DenseNet-121 chest X-ray classifier for a client prototype on NIH ChestX-ray14, CheXpert and pneumonia data from Kaggle, delivering five findings and taking the work on to 14, and built its ML core: a calibrated threshold per finding, an ICD-10 severity layer and Grad-CAM++ attribution, served by a Kafka-backed prediction service.",
             "Extended a document-extraction pipeline pairing Docling OCR with LLM and regex extraction against declarative templates, so a model can be swapped without touching the pipeline.",
             "Built the Docker Compose stack and contributed to the Kubernetes manifests and CI pipelines; Argo CD ran the services as pods in Dev and QA.",
           ],
@@ -226,7 +226,7 @@ export const truthRegistry = {
           detail: [
             "Built an Excel VBA application with UserForms that automated development release tracking, replacing a manual search through roughly 600 rows and 130 or more columns with dropdown selection and single-click lookup.",
             "Added separate interfaces for the German and Chinese markets, with forms to create, update and delete records and automatic write-back to the source sheet.",
-            "Connected the tool to FREIPRO, the release system every department already used, so its records stayed in step with the company's; numerous departments adopted it.",
+            "Integrated the tool with FREIPRO, the release system every department already used, which was the hardest part of the project; numerous departments adopted it.",
           ],
           tech: ["Excel VBA", "UserForms"],
         },
@@ -239,7 +239,7 @@ export const truthRegistry = {
           organization: "Technical University of Munich",
           title: "Student Research Assistant, Numerical Methods and Scientific Visualization",
           location: "Munich, Germany",
-          period: "Oct 2022 - Dec 2022",
+          period: "Apr 2022 - Dec 2022",
           detail: [
             "Taught the MATLAB labs of Introduction to Programming (MA0010) at the Chair of Numerical Mathematics, covering vectorisation, linear systems and 2D and 3D visualisation.",
           ],

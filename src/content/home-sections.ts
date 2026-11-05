@@ -88,7 +88,7 @@ export const homeExperience: readonly HomeRole[] = [
     bullets: [
       "Built four of the five services in a legal knowledge base: a three-stage pipeline that parses German and EU legislation into PostgreSQL, with embeddings in Qdrant and a citation graph in Neo4j.",
       "Shipped the verification service that runs up to 14 checks on a law before it is certified, and the dashboard that reports them.",
-      "Built the ML core of a chest X-ray classifier over five findings, and the Docker Compose stack behind the services, contributing to the Kubernetes manifests and CI.",
+      "Fine-tuned a chest X-ray classifier for a client prototype, delivering five findings and taking the work on to 14, and built the Docker Compose stack behind the services, contributing to the Kubernetes manifests and CI.",
     ],
   },
   {
@@ -116,7 +116,7 @@ export const homeExperience: readonly HomeRole[] = [
     organisation: "Technical University of Munich",
     role: "Student Research Assistant, Numerical Methods and Scientific Visualization",
     location: "Munich, Germany",
-    period: "Oct 2022 to Dec 2022",
+    period: "Apr 2022 to Dec 2022",
     bullets: [
       "Taught the MATLAB labs of Introduction to Programming at the Chair of Numerical Mathematics.",
       "Covered vectorisation, linear systems, and 2D and 3D visualisation.",

@@ -129,7 +129,7 @@ export const evaluation = {
 
 /** Stated in the repository README. Shown as a state of the world, not as a footnote. */
 export const limits = [
-  { label: "No trained weights", note: "Nothing in the repository can make a prediction." },
+  { label: "No trained weights here", note: "The model was trained at the company, and its weights stayed there." },
   { label: "No patient data", note: "Datasets are downloaded from their owners under their own terms." },
   { label: "No held-out metrics", note: "The evaluation code exists; its output is not published." },
   { label: "No clinical validation", note: "Not for diagnosis, triage, or treatment decisions." },
